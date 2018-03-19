@@ -1,8 +1,15 @@
 # SqlDatabase
 This is a code for a SQL Server database migration tool.
 
+#### Requirements
 
-# CLI
+Microsoft [.NET Framework 4.5.2](https://www.microsoft.com/en-us/download/details.aspx?id=42642) or higher.
+
+#### Download
+
+Download the [latest release](https://github.com/max-ieremenko/SqlDatabase/releases).
+
+#### CLI
 ```bash
 $ SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=c:\MyDatabase\upgrade
 ```
@@ -18,7 +25,7 @@ Exit codes
 * 2 - there are errors during migration
 
 
-# Content example of a folder or .zip file with migration steps
+#### Content example of a folder or .zip file with migration steps
 |File|Description|
 |:--:|:----------|
 |1.0_1.3.zip|.zip file with archived migration steps from database version 1.0 to 1.3 (inclusive).|
@@ -29,7 +36,7 @@ Exit codes
 |2.3_3.0.sql|the database migration step from version 2.3 to 3.0|
 
 
-# Content example of .sql miration step, 1.3_2.0.sql
+#### Content example of .sql miration step, 1.3_2.0.sql
 ```sql
 PRINT 'create schema demo'
 CREATE SCHEMA [demo]
@@ -46,7 +53,7 @@ GO
 ```
 
 
-# Content example of .dll or .exe miration step, 2.1_2.2.dll or 2.2_2.3.exe
+#### Content example of .dll or .exe miration step, 2.1_2.2.dll or 2.2_2.3.exe
 The file must be an .NET assembly with following migration step implementation:
 ```C#
 namespace <any namespace name>
@@ -74,7 +81,7 @@ namespace <any namespace name>
 ```
 
 
-# Determining and updating the database version
+#### Determining and updating the database version
 Sql script to determinine current version
 ```sql
 SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)
@@ -86,7 +93,7 @@ EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'
 Both scripts are configurable in SqlDatabase.exe.config
 
 
-# Variables in .sql migartion steps
+#### Variables in .sql migartion steps
 Any entry like {{VariableName}} is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
 Non defined value of a variable leads to and error and stops migration execution.
 
@@ -102,6 +109,5 @@ Predefined variables:
 |CurrentVersion|the database version before execution of a migration step|
 |TargetVersion|the database version after execution of a migration step|
 
-
-# License
+#### License
 This tool is distributed under the [MIT](LICENSE) license.
