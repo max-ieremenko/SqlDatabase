@@ -90,9 +90,9 @@ Both scripts are configurable in SqlDatabase.exe.config
 Any entry like {{VariableName}} is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
 Non defined value of a variable leads to and error and stops migration execution.
 
-Resolving the value:
-* TODO
-* check environment variable (Environment.GetEnvironmentVariable())
+The value is resolving in the following order:
+1. TODO
+2. check environment variable (Environment.GetEnvironmentVariable())
 
 Predefined variables:
 

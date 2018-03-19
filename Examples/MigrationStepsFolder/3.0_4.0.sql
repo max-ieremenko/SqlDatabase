@@ -1,0 +1,11 @@
+PRINT 'create table Demo'
+GO
+
+CREATE TABLE dbo.Demo
+(
+	Id INT NOT NULL
+)
+GO
+
+ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
+GO

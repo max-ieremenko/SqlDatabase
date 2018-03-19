@@ -1,0 +1,5 @@
+PRINT 'add column'
+GO
+
+ALTER TABLE dbo.Demo ADD Column1 NVARCHAR(100) NULL
+GO

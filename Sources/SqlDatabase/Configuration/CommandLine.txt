@@ -1,0 +1,9 @@
+﻿SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\
+[-database] - connection string to target database
+[-from] - folder or zip file with upgrade scripts
+[-transaction] - transaction mode. Possible values: none, perStep. Default is none.
+Exit codes:
+	0 - OK
+	1 - invalid command line
+	
+https://github.com/rubenv/sql-migrate
