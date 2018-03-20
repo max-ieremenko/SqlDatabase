@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace SqlDatabase.Configuration
@@ -8,6 +9,7 @@ namespace SqlDatabase.Configuration
         private const string ArgDatabase = "-database";
         private const string ArgScripts = "-from";
         private const string ArgTransaction = "-transaction";
+        private const string ArgVariable = "-var";
 
         public Command Command { get; private set; }
 
@@ -16,6 +18,8 @@ namespace SqlDatabase.Configuration
         public TransactionMode Transaction { get; private set; }
 
         public string Scripts { get; private set; }
+
+        public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public static CommandLine Parse(params string[] args)
         {
@@ -89,6 +93,23 @@ namespace SqlDatabase.Configuration
                 }
 
                 cmd.Transaction = mode;
+                return true;
+            }
+
+            if (key.StartsWith(ArgVariable, StringComparison.OrdinalIgnoreCase))
+            {
+                var name = key.Substring(ArgVariable.Length).Trim();
+                if (name.Length == 0)
+                {
+                    throw new InvalidCommandException(key, "Invalid variable name [{0}].".FormatWith(key));
+                }
+
+                if (cmd.Variables.ContainsKey(name))
+                {
+                    throw new InvalidCommandException(key, "Variable with name [{0}] is duplicated.".FormatWith(name));
+                }
+
+                cmd.Variables.Add(name, value);
                 return true;
             }
 

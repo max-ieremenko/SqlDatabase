@@ -42,16 +42,23 @@ namespace SqlDatabase
                              cmd.Connection.InitialCatalog,
                              cmd.Connection.DataSource));
 
+            var database = new Database
+            {
+                ConnectionString = cmd.Connection.ToString(),
+                Log = _logger,
+                Configuration = AppConfiguration.GetCurrent(),
+                Transaction = cmd.Transaction
+            };
+
+            foreach (var entry in cmd.Variables)
+            {
+                database.Variables.SetValue(entry.Key, entry.Value);
+            }
+
             var upgrade = new SequentialUpgrade
             {
                 Log = _logger,
-                Database = new Database
-                {
-                    ConnectionString = cmd.Connection.ToString(),
-                    Log = _logger,
-                    Configuration = AppConfiguration.GetCurrent(),
-                    Transaction = cmd.Transaction
-                },
+                Database = database,
                 ScriptSequence = new ScriptSequence
                 {
                     Root = FileSytemFactory.FolderFromPath(cmd.Scripts),

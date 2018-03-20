@@ -1,7 +1,8 @@
-﻿SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\
+﻿SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\ -varVariable1=value1 -varVariable2=value2
 [-database] - connection string to target database
 [-from] - folder or zip file with upgrade scripts
 [-transaction] - transaction mode. Possible values: none, perStep. Default is none.
+[-var] - set a variable in format "=var[name of variable]=[value of variable]"
 Exit codes:
 	0 - OK
 	1 - invalid command line

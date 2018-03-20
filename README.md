@@ -11,13 +11,14 @@ Download the [latest release](https://github.com/max-ieremenko/SqlDatabase/relea
 
 #### CLI
 ```bash
-$ SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=c:\MyDatabase\upgrade
+$ SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=c:\MyDatabase\upgrade -varVariable1=value1 -varVariable2=value2
 ```
 |Switch|Description|
-|:--:|:----------|
+|:--|:----------|
 |-database|set connection string to target database|
 |-from|path to a folder or .zip file with migration steps|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no trasactions. Option [perStep] means to use one transaction per each migration step|
+|[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 Exit codes
 * 0 - OK
@@ -27,7 +28,7 @@ Exit codes
 
 #### Content example of a folder or .zip file with migration steps
 |File|Description|
-|:--:|:----------|
+|:--|:----------|
 |1.0_1.3.zip|.zip file with archived migration steps from database version 1.0 to 1.3 (inclusive).|
 |1.3_2.0.sql|the database migration step from version 1.3 to 2.0|
 |2.0_2.1.sql|the database migration step from version 2.0 to 2.1|
@@ -101,13 +102,13 @@ Any entry like *{{VariableName}}* is interpreted as variable and has to be chang
 Non defined value of a variable leads to and error and stops migration execution.
 
 The value is resolving in the following order:
-1. TODO
+1. check command line
 2. check environment variable (Environment.GetEnvironmentVariable())
 
 Predefined variables:
 
 |Name|Description|
-|:--:|:----------|
+|:--|:----------|
 |DatabaseName|the target database name|
 |CurrentVersion|the database version before execution of a migration step|
 |TargetVersion|the database version after execution of a migration step|

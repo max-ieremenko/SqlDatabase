@@ -12,7 +12,9 @@ namespace SqlDatabase.Configuration
                 "upgrade",
                 "-database=Data Source=SQL2016DEV;Initial Catalog=test",
                 @"-from=c:\folder",
-                "-transaction=PerStep");
+                "-transaction=PerStep",
+                "-varX=1 2 3",
+                "-varY=value");
 
             Assert.AreEqual(Command.Upgrade, actual.Command);
             StringAssert.AreEqualIgnoringCase(@"c:\folder", actual.Scripts);
@@ -20,7 +22,12 @@ namespace SqlDatabase.Configuration
             Assert.IsNotNull(actual.Connection);
             StringAssert.AreEqualIgnoringCase("test", actual.Connection.InitialCatalog);
             StringAssert.AreEqualIgnoringCase("SQL2016DEV", actual.Connection.DataSource);
+
             Assert.AreEqual(TransactionMode.PerStep, actual.Transaction);
+
+            CollectionAssert.AreEquivalent(new[] { "X", "Y" }, actual.Variables.Keys);
+            Assert.AreEqual("1 2 3", actual.Variables["x"]);
+            Assert.AreEqual("value", actual.Variables["y"]);
         }
 
         [Test]
