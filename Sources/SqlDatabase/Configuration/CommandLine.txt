@@ -5,5 +5,3 @@
 Exit codes:
 	0 - OK
 	1 - invalid command line
-	
-https://github.com/rubenv/sql-migrate

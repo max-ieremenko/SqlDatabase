@@ -34,6 +34,7 @@ Exit codes
 |2.1_2.2.dll|the database migration step from version 2.1 to 2.2|
 |2.2_2.3.exe|the database migration step from version 2.2 to 2.3|
 |2.3_3.0.sql|the database migration step from version 2.3 to 3.0|
+
 see [example](Examples/MigrationStepsFolder/)
 
 
