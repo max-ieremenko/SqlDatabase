@@ -34,6 +34,7 @@ Exit codes
 |2.1_2.2.dll|the database migration step from version 2.1 to 2.2|
 |2.2_2.3.exe|the database migration step from version 2.2 to 2.3|
 |2.3_3.0.sql|the database migration step from version 2.3 to 3.0|
+see [example](Examples/MigrationStepsFolder/)
 
 
 #### Content example of .sql miration step, 1.3_2.0.sql
@@ -79,6 +80,7 @@ namespace <any namespace name>
     }
 }
 ```
+see [example](Examples/CSharpMirationStep/)
 
 
 #### Determining and updating the database version
@@ -90,11 +92,11 @@ Sql script to update current version
 ```sql
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'
 ```
-Both scripts are configurable in SqlDatabase.exe.config
+Both scripts are configurable in SqlDatabase.exe.config, see [example](Examples/ConfigurationFile/)
 
 
 #### Variables in .sql migartion steps
-Any entry like {{VariableName}} is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
+Any entry like *{{VariableName}}* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
 Non defined value of a variable leads to and error and stops migration execution.
 
 The value is resolving in the following order:
@@ -108,6 +110,7 @@ Predefined variables:
 |DatabaseName|the target database name|
 |CurrentVersion|the database version before execution of a migration step|
 |TargetVersion|the database version after execution of a migration step|
+
 
 #### License
 This tool is distributed under the [MIT](LICENSE) license.

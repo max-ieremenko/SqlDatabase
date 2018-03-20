@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Test", "SqlData
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D68226E5-B167-48D9-985C-B13CA6538634}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2.1_2.2", "..\Examples\2.1_2.2\2.1_2.2.csproj", "{2971969A-7988-4191-87AE-53627995669F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMirationStep", "..\Examples\CSharpMirationStep\CSharpMirationStep.csproj", "{2971969A-7988-4191-87AE-53627995669F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

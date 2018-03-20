@@ -33,6 +33,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>..\StyleCope.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -82,7 +84,9 @@
     <Compile Include="TestApi\Query.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\Content.zip" />
   </ItemGroup>
@@ -91,9 +95,9 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Examples\2.1_2.2\2.1_2.2.csproj">
+    <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj">
       <Project>{2971969a-7988-4191-87ae-53627995669f}</Project>
-      <Name>2.1_2.2</Name>
+      <Name>CSharpMirationStep</Name>
     </ProjectReference>
     <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj">
       <Project>{5ee10884-32f2-443b-b136-66e9a1a3c393}</Project>
