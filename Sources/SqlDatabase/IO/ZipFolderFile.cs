@@ -1,31 +1,31 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 
 namespace SqlDatabase.IO
 {
     [DebuggerDisplay(@"zip\{EntryName}")]
     internal sealed partial class ZipFolderFile : IFile
     {
-        public ZipFolderFile(string containerFileName, string entryName)
+        private readonly ZipFolder _parent;
+
+        public ZipFolderFile(ZipFolder parent, string entryName)
         {
-            ContainerFileName = containerFileName;
+            _parent = parent;
+
             EntryName = entryName;
             Name = Path.GetFileName(entryName);
         }
 
         public string Name { get; }
 
-        public string ContainerFileName { get; }
-
         public string EntryName { get; }
 
         public Stream OpenRead()
         {
-            var zip = ZipFile.OpenRead(ContainerFileName);
-            var entry = zip.GetEntry(EntryName);
+            var content = _parent.OpenRead();
+            var entry = content.GetEntry(EntryName);
 
-            return new EntryStream(zip, entry.Open());
+            return new EntryStream(content, entry.Open());
         }
     }
 }
