@@ -44,7 +44,10 @@ namespace SqlDatabase.Scripts
         [Test]
         public void ExecuteShowVariableReplacement()
         {
-            var sut = new TextScript { Sql = "{{var1}} {{var1}}" };
+            var sut = new TextScript
+            {
+                ReadSqlContent = () => "{{var1}} {{var1}}"
+            };
             _variables.SetValue("var1", "[some value]");
 
             sut.Execute(_command.Object, _variables, _logger.Object);
@@ -61,7 +64,7 @@ namespace SqlDatabase.Scripts
         {
             var sut = new TextScript
             {
-                Sql = @"
+                ReadSqlContent = () => @"
 {{var1}}
 go
 text2

@@ -12,7 +12,7 @@ namespace SqlDatabase.Scripts
     {
         public string DisplayName { get; set; }
 
-        public string Sql { get; set; }
+        public Func<string> ReadSqlContent { get; set; }
 
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
@@ -25,8 +25,10 @@ namespace SqlDatabase.Scripts
                 }
             };
 
+            var sql = ReadSqlContent();
+
             var batches = new List<string>();
-            foreach (var batch in SplitByGo(Sql))
+            foreach (var batch in SplitByGo(sql))
             {
                 if (!string.IsNullOrEmpty(batch))
                 {

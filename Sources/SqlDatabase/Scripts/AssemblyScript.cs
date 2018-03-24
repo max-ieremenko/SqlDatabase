@@ -10,10 +10,12 @@ namespace SqlDatabase.Scripts
 
         public string DisplayName { get; set; }
 
-        public byte[] Assembly { get; set; }
+        public Func<byte[]> ReadAssemblyContent { get; set; }
 
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
+            var assembly = ReadAssemblyContent();
+
             var setup = new AppDomainSetup
             {
                 ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
@@ -28,7 +30,7 @@ namespace SqlDatabase.Scripts
                 var logProxy = new LoggerProxy(logger);
 
                 agent.RedirectConsoleOut(logProxy);
-                agent.LoadAssembly(Assembly, logProxy);
+                agent.LoadAssembly(assembly, logProxy);
 
                 if (agent.ResolveScriptExecutor(logProxy))
                 {

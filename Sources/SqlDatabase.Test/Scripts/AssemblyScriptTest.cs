@@ -44,7 +44,7 @@ namespace SqlDatabase.Scripts
             _sut = new AssemblyScript
             {
                 DisplayName = "2.1_2.2.dll",
-                Assembly = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"))
+                ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"))
             };
         }
 

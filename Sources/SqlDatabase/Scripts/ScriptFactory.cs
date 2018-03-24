@@ -21,34 +21,50 @@ namespace SqlDatabase.Scripts
 
             if (".sql".Equals(ext, StringComparison.OrdinalIgnoreCase))
             {
-                using (var stream = file.OpenRead())
-                using (var reader = new StreamReader(stream))
+                return new TextScript
                 {
-                    return new TextScript
-                    {
-                        DisplayName = file.Name,
-                        Sql = reader.ReadToEnd()
-                    };
-                }
+                    DisplayName = file.Name,
+                    ReadSqlContent = CreateTextReader(file)
+                };
             }
 
             if (".exe".Equals(ext, StringComparison.OrdinalIgnoreCase)
                 || ".dll".Equals(ext, StringComparison.OrdinalIgnoreCase))
+            {
+                return new AssemblyScript
+                {
+                    DisplayName = file.Name,
+                    ReadAssemblyContent = CreateBinaryReader(file)
+                };
+            }
+
+            throw new NotSupportedException("File [{0}] cannot be used as script.".FormatWith(file.Name));
+        }
+
+        private static Func<string> CreateTextReader(IFile file)
+        {
+            return () =>
+            {
+                using (var stream = file.OpenRead())
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            };
+        }
+
+        private static Func<byte[]> CreateBinaryReader(IFile file)
+        {
+            return () =>
             {
                 using (var source = file.OpenRead())
                 using (var dest = new MemoryStream())
                 {
                     source.CopyTo(dest);
 
-                    return new AssemblyScript
-                    {
-                        DisplayName = file.Name,
-                        Assembly = dest.ToArray()
-                    };
+                    return dest.ToArray();
                 }
-            }
-
-            throw new NotSupportedException("File [{0}] cannot be used as script.".FormatWith(file.Name));
+            };
         }
     }
 }

@@ -26,9 +26,9 @@ namespace SqlDatabase.Scripts
 
             Assert.IsInstanceOf<TextScript>(script);
 
-            var text = (TextScript)script;
+            var textScript = (TextScript)script;
             Assert.AreEqual("11.sql", script.DisplayName);
-            Assert.AreEqual("some script", text.Sql);
+            Assert.AreEqual("some script", textScript.ReadSqlContent());
         }
 
         [Test]
@@ -41,9 +41,9 @@ namespace SqlDatabase.Scripts
 
             Assert.IsInstanceOf<AssemblyScript>(script);
 
-            var text = (AssemblyScript)script;
+            var assemblyScript = (AssemblyScript)script;
             Assert.AreEqual("11.dll", script.DisplayName);
-            Assert.AreEqual(new byte[] { 1, 2, 3 }, text.Assembly);
+            Assert.AreEqual(new byte[] { 1, 2, 3 }, assemblyScript.ReadAssemblyContent());
         }
 
         [Test]
@@ -56,9 +56,9 @@ namespace SqlDatabase.Scripts
 
             Assert.IsInstanceOf<AssemblyScript>(script);
 
-            var text = (AssemblyScript)script;
+            var assemblyScript = (AssemblyScript)script;
             Assert.AreEqual("11.exe", script.DisplayName);
-            Assert.AreEqual(new byte[] { 1, 2, 3 }, text.Assembly);
+            Assert.AreEqual(new byte[] { 1, 2, 3 }, assemblyScript.ReadAssemblyContent());
         }
 
         [Test]
