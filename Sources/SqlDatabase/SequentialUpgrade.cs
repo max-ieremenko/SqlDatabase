@@ -1,4 +1,6 @@
-﻿using SqlDatabase.Scripts;
+﻿using System.Collections.Generic;
+using System.Text;
+using SqlDatabase.Scripts;
 
 namespace SqlDatabase
 {
@@ -19,9 +21,11 @@ namespace SqlDatabase
             var sequences = ScriptSequence.BuildSequence(version);
             if (sequences.Count == 0)
             {
-                Log.Info("the database is uptodate.");
+                Log.Info("the database is up-to-date.");
                 return;
             }
+
+            ShowMigrationSequence(sequences);
 
             Database.BeforeUpgrade();
 
@@ -30,6 +34,19 @@ namespace SqlDatabase
                 Log.Info("execute {0}".FormatWith(step.Script.DisplayName));
                 Database.ExecuteUpgrade(step.Script, step.From, step.To);
             }
+        }
+
+        private void ShowMigrationSequence(IList<ScriptStep> sequence)
+        {
+            var message = new StringBuilder()
+                .AppendFormat("sequence: {0}", sequence[0].From);
+
+            foreach (var step in sequence)
+            {
+                message.AppendFormat(" => {0}", step.To);
+            }
+
+            Log.Info(message.ToString());
         }
     }
 }
