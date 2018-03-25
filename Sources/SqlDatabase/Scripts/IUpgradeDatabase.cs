@@ -2,12 +2,12 @@
 
 namespace SqlDatabase.Scripts
 {
-    public interface IDatabase
+    public interface IUpgradeDatabase
     {
         Version GetCurrentVersion();
 
         void BeforeUpgrade();
 
-        void ExecuteUpgrade(IScript script, Version currentVersion, Version targetVersion);
+        void Execute(IScript script, Version currentVersion, Version targetVersion);
     }
 }

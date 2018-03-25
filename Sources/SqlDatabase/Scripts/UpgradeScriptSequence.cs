@@ -6,7 +6,7 @@ using SqlDatabase.IO;
 
 namespace SqlDatabase.Scripts
 {
-    internal sealed class ScriptSequence : IScriptSequence
+    internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
     {
         public IFolder Root { get; set; }
 

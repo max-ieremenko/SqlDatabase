@@ -4,6 +4,8 @@
     {
         Unknown,
 
-        Upgrade = 1
+        Upgrade = 1,
+
+        Create = 2
     }
 }

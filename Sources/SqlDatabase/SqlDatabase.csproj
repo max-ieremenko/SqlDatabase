@@ -56,6 +56,8 @@
     <Compile Include="Configuration\TransactionMode.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="ExitCode.cs" />
+    <Compile Include="ICreateDatabase.cs" />
+    <Compile Include="ICreateScriptSequence.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IO\FileSystemFile.cs" />
     <Compile Include="IO\FileSystemFolder.cs" />
@@ -72,19 +74,21 @@
     <Compile Include="Scripts\AssemblyScript.cs" />
     <Compile Include="Scripts\AssemblyScript.DomainAgent.cs" />
     <Compile Include="Scripts\AssemblyScript.VariablesProxy.cs" />
-    <Compile Include="Scripts\IDatabase.cs" />
+    <Compile Include="Scripts\CreateScriptSequence.cs" />
+    <Compile Include="Scripts\IUpgradeDatabase.cs" />
     <Compile Include="Scripts\IScriptFactory.cs" />
-    <Compile Include="Scripts\IScriptSequence.cs" />
+    <Compile Include="Scripts\IUpgradeScriptSequence.cs" />
     <Compile Include="Scripts\IVariables.cs" />
     <Compile Include="Scripts\ScriptFactory.cs" />
     <Compile Include="Scripts\ScriptStep.cs" />
     <Compile Include="Scripts\TextScript.cs" />
     <Compile Include="Scripts\Variables.cs" />
+    <Compile Include="SequentialCreate.cs" />
     <Compile Include="SequentialUpgrade.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Scripts\Database.cs" />
     <Compile Include="Scripts\IScript.cs" />
-    <Compile Include="Scripts\ScriptSequence.cs" />
+    <Compile Include="Scripts\UpgradeScriptSequence.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

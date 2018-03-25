@@ -9,14 +9,14 @@ namespace SqlDatabase
     public class SequentialUpgradeTest
     {
         private SequentialUpgrade _sut;
-        private Mock<IDatabase> _database;
-        private Mock<IScriptSequence> _scriptSequence;
+        private Mock<IUpgradeDatabase> _database;
+        private Mock<IUpgradeScriptSequence> _scriptSequence;
 
         [SetUp]
         public void BeforeEachTest()
         {
-            _database = new Mock<IDatabase>(MockBehavior.Strict);
-            _scriptSequence = new Mock<IScriptSequence>(MockBehavior.Strict);
+            _database = new Mock<IUpgradeDatabase>(MockBehavior.Strict);
+            _scriptSequence = new Mock<IUpgradeScriptSequence>(MockBehavior.Strict);
 
             var log = new Mock<ILogger>(MockBehavior.Strict);
             log
@@ -71,8 +71,8 @@ namespace SqlDatabase
             _database.Setup(d => d.BeforeUpgrade());
             _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
             _database
-                .Setup(d => d.ExecuteUpgrade(updateTo2.Object, stepTo2.From, stepTo2.To))
-                .Callback(() => _database.Setup(d => d.ExecuteUpgrade(updateTo3.Object, stepTo3.From, stepTo3.To)));
+                .Setup(d => d.Execute(updateTo2.Object, stepTo2.From, stepTo2.To))
+                .Callback(() => _database.Setup(d => d.Execute(updateTo3.Object, stepTo3.From, stepTo3.To)));
 
             _scriptSequence.Setup(s => s.BuildSequence(currentVersion)).Returns(new[] { stepTo2, stepTo3 });
 
@@ -98,7 +98,7 @@ namespace SqlDatabase
 
             _database.Setup(d => d.BeforeUpgrade());
             _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
-            _database.Setup(d => d.ExecuteUpgrade(updateTo2.Object, stepTo2.From, stepTo2.To)).Throws<InvalidOperationException>();
+            _database.Setup(d => d.Execute(updateTo2.Object, stepTo2.From, stepTo2.To)).Throws<InvalidOperationException>();
 
             _scriptSequence.Setup(s => s.BuildSequence(currentVersion)).Returns(new[] { stepTo2, stepTo3 });
 

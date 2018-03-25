@@ -51,6 +51,11 @@ namespace SqlDatabase.Configuration
                 throw new InvalidCommandException("Argument {0} is not specified.".FormatWith(ArgScripts));
             }
 
+            if (result.Command == Command.Create && result.Transaction != TransactionMode.None)
+            {
+                throw new InvalidCommandException(ArgTransaction, "Transaction mode is not supported.");
+            }
+
             return result;
         }
 

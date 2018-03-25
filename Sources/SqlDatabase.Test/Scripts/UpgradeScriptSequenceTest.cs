@@ -9,9 +9,9 @@ using SqlDatabase.TestApi;
 namespace SqlDatabase.Scripts
 {
     [TestFixture]
-    public class ScriptSequenceTest
+    public class UpgradeScriptSequenceTest
     {
-        private ScriptSequence _sut;
+        private UpgradeScriptSequence _sut;
         private Mock<IFolder> _root;
 
         [SetUp]
@@ -33,7 +33,7 @@ namespace SqlDatabase.Scripts
                     return script.Object;
                 });
 
-            _sut = new ScriptSequence
+            _sut = new UpgradeScriptSequence
             {
                 Root = _root.Object,
                 ScriptFactory = scriptFactory.Object
@@ -209,7 +209,7 @@ namespace SqlDatabase.Scripts
         [TestCase("2.0_1.0.sql", null, null)]
         public void ParseName(string name, string from, string to)
         {
-            var version = ScriptSequence.ParseName(name);
+            var version = UpgradeScriptSequence.ParseName(name);
 
             if (from == null)
             {

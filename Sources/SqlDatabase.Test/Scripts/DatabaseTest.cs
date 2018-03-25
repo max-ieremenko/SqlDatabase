@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using Dapper;
 using Moq;
 using NUnit.Framework;
@@ -74,7 +75,7 @@ namespace SqlDatabase.Scripts
                     StringAssert.AreEqualIgnoringCase("test", (string)cmd.ExecuteScalar());
                 });
 
-            _sut.ExecuteUpgrade(script.Object, new Version("1.0"), new Version("1.0"));
+            _sut.Execute(script.Object, new Version("1.0"), new Version("1.0"));
             script.VerifyAll();
         }
 
@@ -98,7 +99,7 @@ namespace SqlDatabase.Scripts
                     StringAssert.AreEqualIgnoringCase("test", (string)cmd.ExecuteScalar());
                 });
 
-            _sut.ExecuteUpgrade(script.Object, new Version("1.0"), new Version("1.0"));
+            _sut.Execute(script.Object, new Version("1.0"), new Version("1.0"));
             script.VerifyAll();
         }
 
@@ -118,7 +119,7 @@ namespace SqlDatabase.Scripts
                     throw new InvalidOperationException();
                 });
 
-            Assert.Throws<InvalidOperationException>(() => _sut.ExecuteUpgrade(script.Object, new Version("1.0"), new Version("1.0")));
+            Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object, new Version("1.0"), new Version("1.0")));
             script.VerifyAll();
 
             using (var c = Query.Open())
@@ -140,7 +141,7 @@ namespace SqlDatabase.Scripts
                     Assert.AreEqual("2.0", vars.GetValue("TargetVersion"));
                 });
 
-            _sut.ExecuteUpgrade(script.Object, new Version("1.0"), new Version("2.0"));
+            _sut.Execute(script.Object, new Version("1.0"), new Version("2.0"));
             script.VerifyAll();
         }
 
@@ -153,7 +154,7 @@ namespace SqlDatabase.Scripts
             var script = new Mock<IScript>(MockBehavior.Strict);
             script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
 
-            _sut.ExecuteUpgrade(script.Object, versionFrom, versionTo);
+            _sut.Execute(script.Object, versionFrom, versionTo);
             script.VerifyAll();
 
             Assert.AreEqual(versionTo, _sut.GetCurrentVersion());
@@ -182,7 +183,7 @@ namespace SqlDatabase.Scripts
                     StringAssert.Contains("master", _logOutput[0]);
                 });
 
-            _sut.ExecuteUpgrade(script.Object, new Version("1.0"), new Version("2.0"));
+            _sut.Execute(script.Object, new Version("1.0"), new Version("2.0"));
 
             script.VerifyAll();
         }
@@ -191,6 +192,47 @@ namespace SqlDatabase.Scripts
         public void BeforeUpgrade()
         {
             _sut.BeforeUpgrade();
+        }
+
+        [Test]
+        public void ExecuteSetTargetDatabase()
+        {
+            var currentDatabaseName = new SqlConnectionStringBuilder(_sut.ConnectionString).InitialCatalog;
+
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, vars, s) =>
+                {
+                    cmd.CommandText = "select db_name()";
+                    StringAssert.AreEqualIgnoringCase(currentDatabaseName, (string)cmd.ExecuteScalar());
+                });
+
+            _sut.Execute(script.Object);
+            script.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteSetMasterDatabase()
+        {
+            var builder = new SqlConnectionStringBuilder(_sut.ConnectionString)
+            {
+                InitialCatalog = Guid.NewGuid().ToString()
+            };
+
+            _sut.ConnectionString = builder.ToString();
+
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, vars, s) =>
+                {
+                    cmd.CommandText = "select db_name()";
+                    StringAssert.AreEqualIgnoringCase("master", (string)cmd.ExecuteScalar());
+                });
+
+            _sut.Execute(script.Object);
+            script.VerifyAll();
         }
     }
 }

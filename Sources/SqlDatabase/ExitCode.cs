@@ -6,6 +6,6 @@
 
         InvalidCommandLine = 1,
 
-        MigrationErrors = 2
+        ExecutionErrors = 2
     }
 }

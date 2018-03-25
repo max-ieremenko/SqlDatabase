@@ -1,8 +1,22 @@
-﻿SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\ -varVariable1=value1 -varVariable2=value2
-[-database] - connection string to target database
-[-from] - folder or zip file with upgrade scripts
-[-transaction] - transaction mode. Possible values: none, perStep. Default is none.
-[-var] - set a variable in format "=var[name of variable]=[value of variable]"
-Exit codes:
-	0 - OK
-	1 - invalid command line
+﻿Usage: SqlDatabase <command> <switches>...
+
+<commands>
+  create: create new database
+  upgrade: upgrade existing database
+
+<switches>
+  -database: connection string to target database
+  -from: folder or zip file with scripts
+  -var: set a variable in format "=var[name of variable]=[value of variable]"
+  -transaction: transaction mode. Possible values: none, perStep. Default is none.
+
+exit codes:
+  0 - OK
+  1 - invalid command line
+  2 - errors during migration or database creations
+
+create "database" on "server" based on scripts from "c:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
+SqlDatabase.exe create "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\NewDatabase -varVariable1=value1 -varVariable2=value2
+
+upgrade "database" on "server" based on scripts from "c:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
+SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\MigrationSteps -varVariable1=value1 -varVariable2=value2

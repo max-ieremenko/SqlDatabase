@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SqlDatabase.Scripts
 {
-    public interface IScriptSequence
+    public interface IUpgradeScriptSequence
     {
         IList<ScriptStep> BuildSequence(Version currentVersion);
     }

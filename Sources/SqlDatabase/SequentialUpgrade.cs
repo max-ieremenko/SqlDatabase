@@ -6,9 +6,9 @@ namespace SqlDatabase
 {
     internal sealed class SequentialUpgrade
     {
-        public IDatabase Database { get; set; }
+        public IUpgradeDatabase Database { get; set; }
 
-        public IScriptSequence ScriptSequence { get; set; }
+        public IUpgradeScriptSequence ScriptSequence { get; set; }
 
         public ILogger Log { get; set; }
 
@@ -32,7 +32,7 @@ namespace SqlDatabase
             foreach (var step in sequences)
             {
                 Log.Info("execute {0}".FormatWith(step.Script.DisplayName));
-                Database.ExecuteUpgrade(step.Script, step.From, step.To);
+                Database.Execute(step.Script, step.From, step.To);
             }
         }
 

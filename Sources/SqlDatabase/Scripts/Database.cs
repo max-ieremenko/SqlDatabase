@@ -6,7 +6,7 @@ using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts
 {
-    internal sealed class Database : IDatabase
+    internal sealed class Database : ICreateDatabase, IUpgradeDatabase
     {
         public Database()
         {
@@ -47,9 +47,9 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        public void BeforeUpgrade()
+        public void BeforeCreate()
         {
-            using (var connection = new SqlConnection(ConnectionString))
+            using (var connection = CreateConnection(true))
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = "select @@version";
@@ -59,7 +59,19 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        public void ExecuteUpgrade(IScript script, Version currentVersion, Version targetVersion)
+        public void BeforeUpgrade()
+        {
+            using (var connection = CreateConnection())
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "select @@version";
+
+                connection.Open();
+                Log.Info(Convert.ToString(command.ExecuteScalar()));
+            }
+        }
+
+        public void Execute(IScript script, Version currentVersion, Version targetVersion)
         {
             Variables.CurrentVersion = currentVersion.ToString();
             Variables.TargetVersion = targetVersion.ToString();
@@ -100,9 +112,53 @@ namespace SqlDatabase.Scripts
             }
         }
 
+        public void Execute(IScript script)
+        {
+            Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
+
+            bool useMaster;
+
+            using (var connection = CreateConnection(true))
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandTimeout = 0;
+                connection.Open();
+
+                command.CommandText = "SELECT 1 FROM sys.databases WHERE Name=N'{0}'".FormatWith(Variables.DatabaseName);
+                var value = command.ExecuteScalar();
+
+                useMaster = value == null || Convert.IsDBNull(value);
+            }
+
+            using (var connection = CreateConnection(useMaster))
+            using (var command = connection.CreateCommand())
+            {
+                connection.InfoMessage += OnConnectionInfoMessage;
+
+                command.CommandTimeout = 0;
+                connection.Open();
+
+                script.Execute(command, Variables, Log);
+            }
+        }
+
         private void OnConnectionInfoMessage(object sender, SqlInfoMessageEventArgs e)
         {
             Log.Info("output: {0}".FormatWith(e.ToString()));
+        }
+
+        private SqlConnection CreateConnection(bool switchToMaster = false)
+        {
+            var connectionString = ConnectionString;
+            if (switchToMaster)
+            {
+                var builder = new SqlConnectionStringBuilder(ConnectionString);
+                builder.InitialCatalog = "master";
+                connectionString = builder.ToString();
+            }
+
+            var connection = new SqlConnection(connectionString);
+            return connection;
         }
     }
 }
