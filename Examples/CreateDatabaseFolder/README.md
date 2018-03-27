@@ -54,7 +54,7 @@ namespace <any namespace name>
     }
 }
 ```
-see [example](CSharpMirationStep/)
+see [example](../CSharpMirationStep/)
 
 #### Script`s execution order
 1. all script`s files in the root folder, sorted alphabetically

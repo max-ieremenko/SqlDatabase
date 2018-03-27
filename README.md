@@ -59,7 +59,7 @@ Exit codes
 - *.sql* a text file with Sql Server scripts
 - *.dll* or *.exe* an .NET assembly with following script implementation, see [an example](Examples/CSharpMirationStep)
 
-#### Variables .sql scripts
+#### Variables in .sql scripts
 Any entry like *{{VariableName}}* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
 Non defined value of a variable leads to and error and stops migration execution.
 

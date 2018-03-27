@@ -55,7 +55,7 @@ namespace <any namespace name>
     }
 }
 ```
-see [example](CSharpMirationStep/)
+see [example](../CSharpMirationStep/)
 
 #### Predefined variables
 |Name|Description|
