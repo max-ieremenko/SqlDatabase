@@ -21,18 +21,41 @@ $ SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDataba
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
 
+```bash
+$ SqlDatabase.exe execute "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\Scripts\script.sql -varVariable1=value1 -varVariable2=value2
+```
+execute script from "c:\Scripts\script.sql" on "database" on "server" with "Variable1=value1" and "Variable2=value2"
+
 |Switch|Description|
 |:--|:----------|
 |-database|set connection string to target database|
-|-from|path to a folder or .zip file with scripts|
+|-from|path to a folder or .zip file with scripts or file name for execute command|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no trasactions. Option [perStep] means to use one transaction per each migration step|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 Exit codes
 * 0 - OK
 * 1 - invalid command line
-* 2 - errors during migration or database creations
+* 2 - errors during execution
 
+#### Script types
+- *.sql* a text file with Sql Server scripts
+- *.dll* or *.exe* an .NET assembly with following script implementation, see [an example](Examples/CSharpMirationStep)
+
+#### Variables in .sql scripts
+Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
+Non defined value of a variable leads to and error and stops migration execution.
+
+The value is resolving in the following order:
+1. check command line
+2. check environment variable (Environment.GetEnvironmentVariable())
+
+#### .zip files support
+Parameter *-from* in the command line interprets .zip files in the path as folders, for example
+Yon can set path to sub-folder in the zip file:
+*-from=c:\scripts.zip\archive\tables.zip\demo*
+or set path to file in the zip file
+*-from=c:\scripts.zip\archive\tables.zip\table1.sql*
 
 #### [Example](Examples/MigrationStepsFolder/) of a folder or .zip file with migration steps
 |File|Description|
@@ -54,18 +77,6 @@ Exit codes
 - 03_tables
     - 01_demo.Department.sql
     - 02_demo.Employee.sql
-
-#### Script types
-- *.sql* a text file with Sql Server scripts
-- *.dll* or *.exe* an .NET assembly with following script implementation, see [an example](Examples/CSharpMirationStep)
-
-#### Variables in .sql scripts
-Any entry like *{{VariableName}}* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
-Non defined value of a variable leads to and error and stops migration execution.
-
-The value is resolving in the following order:
-1. check command line
-2. check environment variable (Environment.GetEnvironmentVariable())
 
 
 #### License

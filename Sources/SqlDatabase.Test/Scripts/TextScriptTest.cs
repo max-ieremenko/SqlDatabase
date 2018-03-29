@@ -108,6 +108,29 @@ go"
         }
 
         [Test]
+        [TestCase("[$(value)]", "some name", "[some name]")]
+        [TestCase("$(Value)+$(Value)", "x", "x+x")]
+        public void ApplySqlCmdVariables(string sql, string value, string expected)
+        {
+            var variables = new Mock<IVariables>(MockBehavior.Strict);
+
+            variables
+                .Setup(v => v.GetValue(It.IsAny<string>()))
+                .Returns<string>(name =>
+                {
+                    if ("value".Equals(name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return value;
+                    }
+
+                    return null;
+                });
+
+            var actual = TextScript.ApplyVariables(sql, variables.Object);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         [TestCase("{{Value}}", "value", "123")]
         [TestCase("{{Value1}}", "value1", "123")]
         [TestCase("{{Value_1}}", "value_1", "123")]

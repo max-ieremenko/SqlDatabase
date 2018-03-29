@@ -71,6 +71,31 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
+        public void ParseExecute()
+        {
+            var actual = CommandLine.Parse(
+                "execute",
+                "-database=Data Source=SQL2016DEV;Initial Catalog=test",
+                @"-from=c:\folder\11.sql",
+                "-transaction=perStep",
+                "-varX=1 2 3",
+                "-varY=value");
+
+            Assert.AreEqual(Command.Execute, actual.Command);
+            StringAssert.AreEqualIgnoringCase(@"c:\folder\11.sql", actual.Scripts);
+
+            Assert.IsNotNull(actual.Connection);
+            StringAssert.AreEqualIgnoringCase("test", actual.Connection.InitialCatalog);
+            StringAssert.AreEqualIgnoringCase("SQL2016DEV", actual.Connection.DataSource);
+
+            Assert.AreEqual(TransactionMode.PerStep, actual.Transaction);
+
+            CollectionAssert.AreEquivalent(new[] { "X", "Y" }, actual.Variables.Keys);
+            Assert.AreEqual("1 2 3", actual.Variables["x"]);
+            Assert.AreEqual("value", actual.Variables["y"]);
+        }
+
+        [Test]
         [TestCase("Unknown")]
         [TestCase("")]
         [TestCase("upgrade1")]

@@ -10,7 +10,11 @@ namespace SqlDatabase.Scripts
         public string DatabaseName
         {
             get => GetValue(nameof(DatabaseName));
-            set => SetValue(nameof(DatabaseName), value);
+            set
+            {
+                SetValue(nameof(DatabaseName), value);
+                SetValue("DbName", value);
+            }
         }
 
         public string CurrentVersion

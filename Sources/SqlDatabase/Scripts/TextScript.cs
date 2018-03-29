@@ -61,8 +61,7 @@ namespace SqlDatabase.Scripts
 
             MatchEvaluator evaluator = match =>
             {
-                var name = match.Value.Substring(2);
-                name = name.Substring(0, name.Length - 2);
+                var name = match.Groups["name"].Value;
 
                 var value = variables.GetValue(name);
                 if (value == null)
@@ -74,7 +73,9 @@ namespace SqlDatabase.Scripts
                 return value;
             };
 
-            return Regex.Replace(sql, "\\{\\{\\w+\\}\\}", evaluator, RegexOptions.Compiled);
+            var result = Regex.Replace(sql, @"\{\{(?'name'\w+)\}\}", evaluator, RegexOptions.Compiled);
+
+            return Regex.Replace(result, @"\$\((?'name'\w+)\)", evaluator, RegexOptions.Compiled);
         }
 
         internal static IEnumerable<string> SplitByGo(string sql)
