@@ -11,18 +11,30 @@ Download the [latest release](https://github.com/max-ieremenko/SqlDatabase/relea
 
 #### CLI
 ```bash
-$ SqlDatabase.exe create "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" -from=Examples\MigrationStepsFolder -varVariable1=value1 -varVariable2=value2
+$ SqlDatabase.exe create
+      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
+      -from=Examples\MigrationStepsFolder
+      -varVariable1=value1
+      -varVariable2=value2
 ```
 create new database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\CreateDatabaseFolder](Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
 
 
 ```bash
-$ SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=Examples\MigrationStepsFolder -varVariable1=value1 -varVariable2=value2
+$ SqlDatabase.exe upgrade
+      "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True"
+	  -from=Examples\MigrationStepsFolder
+	  -varVariable1=value1
+	  -varVariable2=value2
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
 
 ```bash
-$ SqlDatabase.exe execute "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\Scripts\script.sql -varVariable1=value1 -varVariable2=value2
+$ SqlDatabase.exe execute
+      "-database=Data Source=server;Initial Catalog=database;Integrated Security=True"
+	  -from=c:\Scripts\script.sql
+	  -varVariable1=value1
+	  -varVariable2=value2
 ```
 execute script from "c:\Scripts\script.sql" on "database" on "server" with "Variable1=value1" and "Variable2=value2"
 
@@ -40,7 +52,7 @@ Exit codes
 
 #### Script types
 - *.sql* a text file with Sql Server scripts
-- *.dll* or *.exe* an .NET assembly with following script implementation, see [an example](Examples/CSharpMirationStep)
+- *.dll* or *.exe* an .NET assembly with a script implementation, see [an example](Examples/CSharpMirationStep)
 
 #### Variables in .sql scripts
 Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
@@ -52,10 +64,7 @@ The value is resolving in the following order:
 
 #### .zip files support
 Parameter *-from* in the command line interprets .zip files in the path as folders, for example
-Yon can set path to sub-folder in the zip file:
-*-from=c:\scripts.zip\archive\tables.zip\demo*
-or set path to file in the zip file
-*-from=c:\scripts.zip\archive\tables.zip\table1.sql*
+*-from=c:\scripts.zip\archive\tables.zip\demo* or *-from=c:\scripts.zip\archive\tables.zip\table1.sql*
 
 #### [Example](Examples/MigrationStepsFolder/) of a folder or .zip file with migration steps
 |File|Description|

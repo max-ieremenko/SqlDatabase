@@ -1,6 +1,10 @@
 #### CLI
 ```bash
-$ SqlDatabase.exe create "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" -from=Examples\MigrationStepsFolder -varVariable1=value1 -varVariable2=value2
+$ SqlDatabase.exe create
+      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
+	  -from=Examples\MigrationStepsFolder
+	  -varVariable1=value1
+	  -varVariable2=value2
 ```
 create new database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\CreateDatabaseFolder* with "Variable1=value1" and "Variable2=value2"
 
