@@ -27,7 +27,7 @@ $ SqlDatabase.exe upgrade
 	  -varVariable1=value1
 	  -varVariable2=value2
 ```
-upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
+upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](Examples/MigrationStepsFolder) with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase.exe execute
