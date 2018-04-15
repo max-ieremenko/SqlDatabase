@@ -25,6 +25,8 @@
   </Target>
 
   <Target Name="buildSources">
+    <Exec Command="$(nuget) restore ..\Sources\SqlDatabase.sln" />
+
     <MSBuild Projects="..\Sources\SqlDatabase.sln"
              Properties="Configuration=$(config);OutDir=..\$(BuildOut)"/>
 
