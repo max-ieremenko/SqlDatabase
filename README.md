@@ -1,4 +1,4 @@
-# SqlDatabase
+﻿# SqlDatabase
 This is a code for a SQL Server database migration tool.
 
 #### Requirements
@@ -17,7 +17,7 @@ $ SqlDatabase.exe create
       -varVariable1=value1
       -varVariable2=value2
 ```
-create new database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\CreateDatabaseFolder](Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
+create new database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\CreateDatabaseFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
 
 
 ```bash
@@ -27,7 +27,7 @@ $ SqlDatabase.exe upgrade
 	  -varVariable1=value1
 	  -varVariable2=value2
 ```
-upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](Examples/MigrationStepsFolder) with "Variable1=value1" and "Variable2=value2"
+upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder) with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase.exe execute
@@ -52,7 +52,7 @@ Exit codes
 
 #### Script types
 - *.sql* a text file with Sql Server scripts
-- *.dll* or *.exe* an .NET assembly with a script implementation, see [an example](Examples/CSharpMirationStep)
+- *.dll* or *.exe* an .NET assembly with a script implementation, see [an example](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
 
 #### Variables in .sql scripts
 Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
@@ -66,7 +66,7 @@ The value is resolving in the following order:
 Parameter *-from* in the command line interprets .zip files in the path as folders, for example
 *-from=c:\scripts.zip\archive\tables.zip\demo* or *-from=c:\scripts.zip\archive\tables.zip\table1.sql*
 
-#### [Example](Examples/MigrationStepsFolder/) of a folder or .zip file with migration steps
+#### [Example](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder/) of a folder or .zip file with migration steps
 |File|Description|
 |:--|:----------|
 |1.0_1.3.zip|.zip file with archived migration steps from database version 1.0 to 1.3 (inclusive).|
@@ -76,17 +76,18 @@ Parameter *-from* in the command line interprets .zip files in the path as folde
 |2.2_2.3.exe|the database migration step from version 2.2 to 2.3|
 |2.3_3.0.sql|the database migration step from version 2.3 to 3.0|
 
-#### [Example](Examples/CreateDatabaseFolder/) of a folder or .zip file with creation scripts
-- 01_database
-    - 01_DropExistsing.sql
-    - 02_Create.sql
-    - 03_Version.sql
-- 02_schemas
-    - 01_demo.sql
-- 03_tables
-    - 01_demo.Department.sql
-    - 02_demo.Employee.sql
-
+#### [Example](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder/) of a folder or .zip file with creation scripts
+```
+├── 01_database
+│   ├── 01_DropExistsing.sql
+│   ├── 02_Create.sql
+│   └── 03_Version.sql
+├── 02_schemas
+│   └── 01_demo.sql
+├── 03_tables
+│   ├── 01_demo.Department.sql
+└── └── 02_demo.Employee.sql
+```
 
 #### License
-This tool is distributed under the [MIT](LICENSE) license.
+This tool is distributed under the [MIT](https://github.com/max-ieremenko/SqlDatabase/tree/master/LICENSE) license.

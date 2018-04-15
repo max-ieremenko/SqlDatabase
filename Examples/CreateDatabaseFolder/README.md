@@ -1,4 +1,4 @@
-#### CLI
+﻿#### CLI
 ```bash
 $ SqlDatabase.exe create
       "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
@@ -67,13 +67,13 @@ see [example](../CSharpMirationStep/)
 |File|Execution order|
 |:--|:----------|
 |01_folder||
-|_ _ 01_script.sql|3|
-|_ _ 02_script.exe|4|
-|_ _ 03_script.sql|5|
+|├── 01_script.sql|3|
+|├── 02_script.exe|4|
+|└── 03_script.sql|5|
 |02_folder||
-|_ _ 02_folder||
-|_ _ _ _ 01_script.sql|7|
-|_ _ 01_script.sql|6|
+|├── 02_folder||
+|│   └── 01_script.sql|7|
+|└── 01_script.sql|6|
 |01_script.sql|2|
 |02_script.sql|1|
 
