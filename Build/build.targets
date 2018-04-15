@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+         ToolsVersion="4.0">
+
+  <PropertyGroup>
+    <!-- 
+    following properties are comming from .cmd:
+      config: Release/Debug
+      PackageVersion: version of the package, according to myget
+      nuget: path to nuget.exe
+    -->
+    
+    <!-- working directory of msbuild is root\build -->
+    <BuildOut>..\build.out</BuildOut>
+  </PropertyGroup>
+
+  <Target Name="main">
+    <RemoveDir Directories="$(BuildOut)" />
+    <MakeDir Directories="$(BuildOut)" />
+
+    <CallTarget Targets="buildSources"
+                ContinueOnError="false" />
+    <CallTarget Targets="buildPackage"
+                ContinueOnError="false" />
+  </Target>
+
+  <Target Name="buildSources">
+    <MSBuild Projects="..\Sources\SqlDatabase.sln"
+             Properties="Configuration=$(config);OutDir=..\$(BuildOut)"/>
+
+    <!--https://stackoverflow.com/questions/443188/msbuild-task-to-read-version-of-dll-->
+    <GetAssemblyIdentity AssemblyFiles="$(BuildOut)\SqlDatabase.exe">
+      <Output TaskParameter="Assemblies"
+              ItemName="AssemblyIdentities"/>
+    </GetAssemblyIdentity>
+
+    <!-- override PackageVersion by value from .exe -->
+    <CreateProperty Value="%(AssemblyIdentities.Version)">
+      <Output TaskParameter="Value"
+              PropertyName="PackageVersion"/>
+    </CreateProperty>
+  </Target>
+
+  <Target Name="buildPackage">
+    <Exec Command="$(nuget) pack ..\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut) -Version $(PackageVersion) -p Configuration=$(config))" />
+  </Target>
+</Project>

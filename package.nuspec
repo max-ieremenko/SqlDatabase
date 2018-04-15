@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SqlDatabase</id>
+    <version>1.0.0</version>
+    <authors>Max Ieremenko</authors>
+    <owners>Max Ieremenko</owners>
+    <licenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/max-ieremenko/test/master/icon-32.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>A command line tool for SQL Server database.</summary>
+    <description>SqlDatabase is a command line tool for SQL Server, allows executing scripts and database migrations.</description>
+    <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
+    <copyright>(C) 2018 Max Ieremenko.</copyright>
+    <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations</tags>
+  </metadata>
+
+  <files>
+    <file src="build.out\SqlDatabase.exe"
+          target="tools" />
+    <file src="build.out\SqlDatabase.exe.config"
+          target="tools" />
+  </files>
+</package>
