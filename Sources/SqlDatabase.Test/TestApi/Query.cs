@@ -7,6 +7,8 @@ namespace SqlDatabase.TestApi
     {
         public static string ConnectionString => ConfigurationManager.ConnectionStrings["test"].ConnectionString;
 
+        public static string DatabaseName => new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
+
         public static SqlConnection Open()
         {
             var con = new SqlConnection(ConnectionString);

@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		StyleCope.ruleset = StyleCope.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Test", "SqlDatabase.Test\SqlDatabase.Test.csproj", "{615BDFB2-2B5A-4758-BA70-EE93D22EAD7D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D68226E5-B167-48D9-985C-B13CA6538634}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Test", "SqlDatabase.Test\SqlDatabase.Test.csproj", "{615BDFB2-2B5A-4758-BA70-EE93D22EAD7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMirationStep", "..\Examples\CSharpMirationStep\CSharpMirationStep.csproj", "{2971969A-7988-4191-87AE-53627995669F}"
 EndProject

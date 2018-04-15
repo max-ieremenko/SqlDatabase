@@ -1,5 +1,5 @@
 ﻿# SqlDatabase
-This is a code for a SQL Server database migration tool.
+SqlDatabase is a command line tool for SQL Server, allows executing scripts and database migrations.
 
 #### Requirements
 

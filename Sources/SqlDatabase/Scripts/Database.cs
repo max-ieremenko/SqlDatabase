@@ -43,7 +43,7 @@ namespace SqlDatabase.Scripts
             }
             catch (ArgumentException)
             {
-                throw new InvalidOperationException("The cuurent value [{0}] of database version is invalid.");
+                throw new InvalidOperationException("The current value [{0}] of database version is invalid.".FormatWith(version));
             }
         }
 

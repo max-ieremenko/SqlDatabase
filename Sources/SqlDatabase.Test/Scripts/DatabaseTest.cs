@@ -72,7 +72,7 @@ namespace SqlDatabase.Scripts
                     Assert.AreEqual(ConnectionState.Open, cmd.Connection.State);
 
                     cmd.CommandText = "select DB_NAME()";
-                    StringAssert.AreEqualIgnoringCase("test", (string)cmd.ExecuteScalar());
+                    StringAssert.AreEqualIgnoringCase(Query.DatabaseName, (string)cmd.ExecuteScalar());
                 });
 
             _sut.Execute(script.Object, new Version("1.0"), new Version("1.0"));
@@ -96,7 +96,7 @@ namespace SqlDatabase.Scripts
                     Assert.AreEqual(ConnectionState.Open, cmd.Connection.State);
 
                     cmd.CommandText = "select DB_NAME()";
-                    StringAssert.AreEqualIgnoringCase("test", (string)cmd.ExecuteScalar());
+                    StringAssert.AreEqualIgnoringCase(Query.DatabaseName, (string)cmd.ExecuteScalar());
                 });
 
             _sut.Execute(script.Object, new Version("1.0"), new Version("1.0"));
@@ -136,7 +136,7 @@ namespace SqlDatabase.Scripts
                 .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
                 .Callback<IDbCommand, IVariables, ILogger>((_, vars, s) =>
                 {
-                    StringAssert.AreEqualIgnoringCase("test", vars.GetValue("DatabaseName"));
+                    StringAssert.AreEqualIgnoringCase(Query.DatabaseName, vars.GetValue("DatabaseName"));
                     Assert.AreEqual("1.0", vars.GetValue("CurrentVersion"));
                     Assert.AreEqual("2.0", vars.GetValue("TargetVersion"));
                 });

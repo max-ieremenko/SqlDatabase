@@ -97,6 +97,7 @@
     </None>
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\Content.zip" />
+    <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
