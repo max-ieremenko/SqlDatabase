@@ -1,13 +1,11 @@
-﻿# SqlDatabase
+﻿﻿# SqlDatabase
 SqlDatabase is a command line tool for SQL Server, allows executing scripts and database migrations.
+
+[![NuGet Version](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square)](https://www.nuget.org/packages/SqlDatabase/) or download the [latest release](https://github.com/max-ieremenko/SqlDatabase/releases).
 
 #### Requirements
 
 Microsoft [.NET Framework 4.5.2](https://www.microsoft.com/en-us/download/details.aspx?id=42642) or higher.
-
-#### Download
-
-Download the [latest release](https://github.com/max-ieremenko/SqlDatabase/releases).
 
 #### CLI
 ```bash
