@@ -2,9 +2,9 @@
 ```bash
 $ SqlDatabase.exe upgrade
       "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
-	  -from=Examples\MigrationStepsFolder
-	  -varVariable1=value1
-	  -varVariable2=value2
+      -from=Examples\MigrationStepsFolder
+      -varVariable1=value1
+      -varVariable2=value2
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2"
 
@@ -19,11 +19,11 @@ upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts
 #### Example of .sql miration step, 1.3_2.0.sql
 ```sql
 PRINT 'create schema demo'
-CREATE SCHEMA [demo]
+CREATE SCHEMA [{{schemaName}}]
 GO
 
 PRINT 'create table demo.Table1'
-CREATE TABLE [demo].[Table1]
+CREATE TABLE [{{schemaName}}].[Table1]
 (
   ID INT
 )

@@ -6,7 +6,7 @@ Assembly must contain only one "public class SqlDatabaseScript", namespace name 
 
 SqlDatabaseScript must contain "public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)".
 
-Method Execute implements the logic of your migration step. See code example.
+Method Execute implements the logic of your migration step. See [code example](https://github.com/max-ieremenko/SqlDatabase/blob/master/Examples/CSharpMirationStep/SqlDatabaseScript.cs).
 
 Use parameter "IDbCommand command" to affect database.
 Use Console.WriteLine() to write something into migration log.

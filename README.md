@@ -1,5 +1,5 @@
 ﻿﻿# SqlDatabase
-SqlDatabase is a command line tool for SQL Server, allows executing scripts and database migrations.
+Command line tool for SQL Server to execute scripts and database migrations.
 
 [![NuGet Version](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square)](https://www.nuget.org/packages/SqlDatabase/) or download the [latest release](https://github.com/max-ieremenko/SqlDatabase/releases).
 
@@ -11,7 +11,7 @@ Microsoft [.NET Framework 4.5.2](https://www.microsoft.com/en-us/download/detail
 ```bash
 $ SqlDatabase.exe create
       "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
-      -from=Examples\MigrationStepsFolder
+      -from=Examples\CreateDatabaseFolder
       -varVariable1=value1
       -varVariable2=value2
 ```
@@ -21,18 +21,18 @@ create new database *MyDatabase* on Sql Server *MyServer* based on scripts from 
 ```bash
 $ SqlDatabase.exe upgrade
       "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True"
-	  -from=Examples\MigrationStepsFolder
-	  -varVariable1=value1
-	  -varVariable2=value2
+      -from=Examples\MigrationStepsFolder
+      -varVariable1=value1
+      -varVariable2=value2
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder) with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase.exe execute
       "-database=Data Source=server;Initial Catalog=database;Integrated Security=True"
-	  -from=c:\Scripts\script.sql
-	  -varVariable1=value1
-	  -varVariable2=value2
+      -from=c:\Scripts\script.sql
+      -varVariable1=value1
+      -varVariable2=value2
 ```
 execute script from "c:\Scripts\script.sql" on "database" on "server" with "Variable1=value1" and "Variable2=value2"
 

@@ -2,9 +2,9 @@
 ```bash
 $ SqlDatabase.exe create
       "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
-	  -from=Examples\MigrationStepsFolder
-	  -varVariable1=value1
-	  -varVariable2=value2
+      -from=Examples\MigrationStepsFolder
+      -varVariable1=value1
+      -varVariable2=value2
 ```
 create new database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\CreateDatabaseFolder* with "Variable1=value1" and "Variable2=value2"
 
@@ -18,11 +18,11 @@ create new database *MyDatabase* on Sql Server *MyServer* based on scripts from 
 #### Example of .sql script
 ```sql
 PRINT 'create schema demo'
-CREATE SCHEMA [demo]
+CREATE SCHEMA [{{schemaName}}]
 GO
 
 PRINT 'create table demo.Table1'
-CREATE TABLE [demo].[Table1]
+CREATE TABLE [{{schemaName}}].[Table1]
 (
   ID INT
 )
@@ -61,8 +61,8 @@ namespace <any namespace name>
 see [example](../CSharpMirationStep/)
 
 #### Script`s execution order
-1. all script`s files in the root folder, sorted alphabetically
-2. all script`s in each sub-folder, sorted alphabetically
+1. run all script`s files in the root folder, sorted alphabetically
+2. run all script`s in each sub-folder, sorted alphabetically
 
 |File|Execution order|
 |:--|:----------|
