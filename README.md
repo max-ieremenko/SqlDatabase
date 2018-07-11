@@ -1,4 +1,4 @@
-﻿﻿# SqlDatabase
+# SqlDatabase
 Command line tool for SQL Server to execute scripts and database migrations.
 
 [![NuGet Version](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square)](https://www.nuget.org/packages/SqlDatabase/) or download the [latest release](https://github.com/max-ieremenko/SqlDatabase/releases).
