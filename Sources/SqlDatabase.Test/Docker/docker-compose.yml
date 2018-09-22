@@ -1,0 +1,18 @@
+# https://hub.docker.com/r/microsoft/mssql-server-linux/
+# https://cardano.github.io/blog/2017/11/15/mssql-docker-container
+version: "3"
+services:
+  database:
+    image: microsoft/mssql-server-linux:latest
+    restart: always
+    container_name: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=P@ssw0rd
+      - MSSQL_PID=Express
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 1433:1433
+    working_dir: /usr/src/app 
+    command: sh -c ' chmod +x ./entrypoint.sh; ./entrypoint.sh & /opt/mssql/bin/sqlservr;'
