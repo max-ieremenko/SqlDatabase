@@ -1,6 +1,6 @@
 ﻿namespace SqlDatabase.Configuration
 {
-    internal enum Command
+    public enum Command
     {
         Unknown,
 

@@ -9,17 +9,15 @@ namespace SqlDatabase
 {
     internal static class Program
     {
-        private static ILogger _logger;
+        private static readonly ILogger Logger = new ConsoleLogger();
 
         public static int Main(string[] args)
         {
-            _logger = new ConsoleLogger();
-
             ExitCode exitCode;
             var cmd = ParseCommandLine(args);
             if (cmd == null)
             {
-                _logger.Info(LoadHelpContent());
+                Logger.Info(LoadHelpContent());
                 exitCode = ExitCode.InvalidCommandLine;
             }
             else
@@ -36,7 +34,7 @@ namespace SqlDatabase
             return (int)exitCode;
         }
 
-        private static bool ExecuteCommand(CommandLine cmd)
+        internal static bool ExecuteCommand(CommandLine cmd)
         {
             if (cmd.Command == Command.Upgrade)
             {
@@ -58,13 +56,13 @@ namespace SqlDatabase
 
         private static bool DoCreate(CommandLine cmd)
         {
-            _logger.Info("Create database [{0}] on [{1}]".FormatWith(
+            Logger.Info("Create database [{0}] on [{1}]".FormatWith(
                 cmd.Connection.InitialCatalog,
                 cmd.Connection.DataSource));
 
             var create = new SequentialCreate
             {
-                Log = _logger,
+                Log = Logger,
                 Database = CreateDatabase(cmd),
                 ScriptSequence = new CreateScriptSequence
                 {
@@ -79,8 +77,8 @@ namespace SqlDatabase
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                _logger.Info(ex.ToString());
+                Logger.Error(ex.Message);
+                Logger.Info(ex.ToString());
 
                 return false;
             }
@@ -90,13 +88,13 @@ namespace SqlDatabase
 
         private static bool DoUpgrade(CommandLine cmd)
         {
-            _logger.Info("Upgrade database [{0}] on [{1}]".FormatWith(
+            Logger.Info("Upgrade database [{0}] on [{1}]".FormatWith(
                              cmd.Connection.InitialCatalog,
                              cmd.Connection.DataSource));
 
             var upgrade = new SequentialUpgrade
             {
-                Log = _logger,
+                Log = Logger,
                 Database = CreateDatabase(cmd),
                 ScriptSequence = new UpgradeScriptSequence
                 {
@@ -111,8 +109,8 @@ namespace SqlDatabase
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                _logger.Info(ex.ToString());
+                Logger.Error(ex.Message);
+                Logger.Info(ex.ToString());
 
                 return false;
             }
@@ -122,12 +120,13 @@ namespace SqlDatabase
 
         private static bool DoExecute(CommandLine cmd)
         {
-            _logger.Info("Execute script on database [{0}] on [{1}]".FormatWith(
-                cmd.Connection.InitialCatalog,
-                cmd.Connection.DataSource));
-
             var file = FileSytemFactory.FileFromPath(cmd.Scripts);
             var script = new ScriptFactory().FromFile(file);
+
+            Logger.Info("Execute script [{0}] on database [{1}] on [{2}]".FormatWith(
+                script.DisplayName,
+                cmd.Connection.InitialCatalog,
+                cmd.Connection.DataSource));
 
             var database = CreateDatabase(cmd);
 
@@ -138,8 +137,8 @@ namespace SqlDatabase
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
-                _logger.Info(ex.ToString());
+                Logger.Error(ex.Message);
+                Logger.Info(ex.ToString());
 
                 return false;
             }
@@ -152,7 +151,7 @@ namespace SqlDatabase
             var database = new Database
             {
                 ConnectionString = cmd.Connection.ToString(),
-                Log = _logger,
+                Log = Logger,
                 Configuration = AppConfiguration.GetCurrent(),
                 Transaction = cmd.Transaction
             };
@@ -174,11 +173,11 @@ namespace SqlDatabase
 
             try
             {
-                return CommandLine.Parse(args);
+                return CommandLineBuilder.FromArguments(args);
             }
             catch (Exception e)
             {
-                _logger.Error("Invalid command line: {0}".FormatWith(e.Message));
+                Logger.Error("Invalid command line: {0}".FormatWith(e.Message));
             }
 
             return null;

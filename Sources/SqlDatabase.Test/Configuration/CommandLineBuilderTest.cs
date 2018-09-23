@@ -1,14 +1,58 @@
-﻿using NUnit.Framework;
+﻿using System.Data.SqlClient;
+using NUnit.Framework;
 
 namespace SqlDatabase.Configuration
 {
     [TestFixture]
-    public class CommandLineTest
+    public class CommandLineBuilderTest
     {
-        [Test]
-        public void ParseCreate()
+        private CommandLineBuilder _sut;
+
+        [SetUp]
+        public void BeforeEachTest()
         {
-            var actual = CommandLine.Parse(
+            _sut = new CommandLineBuilder();
+        }
+
+        [Test]
+        [TestCase("create", Command.Create)]
+        [TestCase("Upgrade", Command.Upgrade)]
+        [TestCase("ExecutE", Command.Execute)]
+        public void SetCommand(string commandName, Command expected)
+        {
+            _sut.SetCommand(commandName);
+            Assert.AreEqual(expected, _sut.Line.Command, commandName);
+        }
+
+        [Test]
+        [TestCase("Unknown")]
+        [TestCase("")]
+        [TestCase("upgrade1")]
+        public void SetInvalidCommand(string commandName)
+        {
+            var ex = Assert.Throws<InvalidCommandException>(() => _sut.SetCommand(commandName));
+            Assert.AreEqual(commandName, ex.Argument);
+        }
+
+        [Test]
+        public void CreateDoesNotSupportTransaction()
+        {
+            _sut.Line.Connection = new SqlConnectionStringBuilder();
+            _sut.Line.Scripts = "does not matter";
+
+            _sut
+                .SetCommand(Command.Create)
+                .SetTransaction(TransactionMode.PerStep);
+
+            var ex = Assert.Throws<InvalidCommandException>(() => _sut.Build());
+
+            Assert.AreEqual("-transaction", ex.Argument);
+        }
+
+        [Test]
+        public void FromArgumentsCreate()
+        {
+            var actual = CommandLineBuilder.FromArguments(
                 "create",
                 "-database=Data Source=SQL2016DEV;Initial Catalog=test",
                 @"-from=c:\folder",
@@ -30,25 +74,9 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        public void CreateDoesnotSupportTransaction()
+        public void FromArgumentsUpgrade()
         {
-            var args = new[]
-            {
-                "create",
-                "-database=Data Source=SQL2016DEV;Initial Catalog=test",
-                @"-from=c:\folder",
-                "-transaction=PerStep"
-            };
-
-            var ex = Assert.Throws<InvalidCommandException>(() => CommandLine.Parse(args));
-
-            Assert.AreEqual("-transaction", ex.Argument);
-        }
-
-        [Test]
-        public void ParseUpgrade()
-        {
-            var actual = CommandLine.Parse(
+            var actual = CommandLineBuilder.FromArguments(
                 "upgrade",
                 "-database=Data Source=SQL2016DEV;Initial Catalog=test",
                 @"-from=c:\folder",
@@ -71,9 +99,9 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        public void ParseExecute()
+        public void FromArgumentsExecute()
         {
-            var actual = CommandLine.Parse(
+            var actual = CommandLineBuilder.FromArguments(
                 "execute",
                 "-database=Data Source=SQL2016DEV;Initial Catalog=test",
                 @"-from=c:\folder\11.sql",
@@ -96,20 +124,10 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        [TestCase("Unknown")]
-        [TestCase("")]
-        [TestCase("upgrade1")]
-        public void ParseInvalidCommand(string command)
+        public void SetInvalidConnection()
         {
-            var ex = Assert.Throws<InvalidCommandException>(() => CommandLine.Parse(command));
-            Assert.AreEqual(command, ex.Argument);
-        }
-
-        [Test]
-        public void ParseInvalidConnectionString()
-        {
-            var ex = Assert.Throws<InvalidCommandException>(() => CommandLine.Parse("upgrade", "-database=xxx"));
-            Assert.AreEqual("xxx", ex.Argument);
+            var ex = Assert.Throws<InvalidCommandException>(() => _sut.SetConnection("-database=xxx"));
+            Assert.AreEqual("-database", ex.Argument);
         }
     }
 }

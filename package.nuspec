@@ -23,5 +23,9 @@
           target="tools" />
     <file src="build.out\SqlDatabase.exe.config"
           target="tools" />
+    <file src="build.out\SqlDatabase.PowerShell.dll"
+          target="tools" />
+    <file src="build.out\SqlDatabase.PowerShell.pdb"
+          target="tools" />
   </files>
 </package>

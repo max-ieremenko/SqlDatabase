@@ -1,11 +1,14 @@
 # SqlDatabase
-Command line tool for SQL Server to execute scripts and database migrations.
+Command line and PowerShell tool for SQL Server to execute scripts and database migrations.
 
 [![NuGet Version](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square)](https://www.nuget.org/packages/SqlDatabase/) or download the [latest release](https://github.com/max-ieremenko/SqlDatabase/releases).
 
 #### Requirements
 
 Microsoft [.NET Framework 4.5.2](https://www.microsoft.com/en-us/download/details.aspx?id=42642) or higher.
+
+#### PowerShell cmdlets
+See [details](https://github.com/max-ieremenko/SqlDatabase/tree/master/Sources/SqlDatabase.PowerShell/README.md).
 
 #### CLI
 ```bash
@@ -33,6 +36,11 @@ $ SqlDatabase.exe execute
       -from=c:\Scripts\script.sql
       -varVariable1=value1
       -varVariable2=value2
+     
+PS> Invoke-SqlDatabase
+      -database "Data Source=server;Initial Catalog=database;Integrated Security=True"
+      -from c:\Scripts\script.sql
+      -var Variable1=value1,Variable2=value2
 ```
 execute script from "c:\Scripts\script.sql" on "database" on "server" with "Variable1=value1" and "Variable2=value2"
 
