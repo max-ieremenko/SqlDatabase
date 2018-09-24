@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace SqlDatabase.Configuration
 {
-    internal sealed class CommandLine
+    public sealed class CommandLine
     {
         public Command Command { get; set; }
 

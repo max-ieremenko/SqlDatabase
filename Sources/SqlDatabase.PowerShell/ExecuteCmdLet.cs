@@ -7,8 +7,6 @@ namespace SqlDatabase.PowerShell
     [Cmdlet(VerbsLifecycle.Invoke, "SqlDatabase")]
     public sealed class ExecuteCmdLet : Cmdlet
     {
-        private CommandLineBuilder _commandLineBuilder;
-
         [Parameter(Mandatory = true, Position = 1, HelpMessage = "Connection string to target database.")]
         [Alias("d")]
         public string Database { get; set; }
@@ -25,29 +23,31 @@ namespace SqlDatabase.PowerShell
         [Alias("v")]
         public string[] Var { get; set; }
 
-        protected override void BeginProcessing()
+        // only for tests
+        internal static ISqlDatabaseProgram Program { get; set; }
+
+        protected override void ProcessRecord()
         {
-            _commandLineBuilder = new CommandLineBuilder()
+            var cmd = new CommandLineBuilder()
                 .SetCommand(Command.Execute)
                 .SetConnection(Database)
-                .SetTransaction(Transaction);
+                .SetTransaction(Transaction)
+                .SetScripts(From.FullName);
 
             if (Var != null && Var.Length > 0)
             {
                 foreach (var value in Var)
                 {
-                    _commandLineBuilder.SetVariable(value);
+                    cmd.SetVariable(value);
                 }
             }
+
+            ResolveProgram().ExecuteCommand(cmd.Build());
         }
 
-        protected override void ProcessRecord()
+        private static ISqlDatabaseProgram ResolveProgram()
         {
-            var cmd = _commandLineBuilder
-                .SetScripts(From.FullName)
-                .Build();
-
-            Program.ExecuteCommand(cmd);
+            return Program ?? new SqlDatabaseProgram();
         }
     }
 }
