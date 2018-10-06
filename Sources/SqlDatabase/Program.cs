@@ -36,19 +36,23 @@ namespace SqlDatabase
 
         internal static bool ExecuteCommand(CommandLine cmd)
         {
-            if (cmd.Command == Command.Upgrade)
+            try
             {
-                return DoUpgrade(cmd);
+                switch (cmd.Command)
+                {
+                    case Command.Upgrade:
+                        return DoUpgrade(cmd);
+                    case Command.Create:
+                        return DoCreate(cmd);
+                    case Command.Execute:
+                        return DoExecute(cmd);
+                }
             }
-
-            if (cmd.Command == Command.Create)
+            catch (Exception ex)
             {
-                return DoCreate(cmd);
-            }
-
-            if (cmd.Command == Command.Execute)
-            {
-                return DoExecute(cmd);
+                Logger.Error(ex.Message);
+                Logger.Info(ex.ToString());
+                return false;
             }
 
             throw new NotImplementedException();

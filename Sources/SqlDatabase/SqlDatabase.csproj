@@ -14,7 +14,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Configuration\CommandLine.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
 
   <ItemGroup>
