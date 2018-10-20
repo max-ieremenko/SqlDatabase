@@ -2,10 +2,8 @@
 
 namespace SqlDatabase.IO
 {
-    public interface IFile
+    public interface IFile : IFileSystemInfo
     {
-        string Name { get; }
-
         Stream OpenRead();
     }
 }

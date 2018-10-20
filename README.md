@@ -47,8 +47,8 @@ execute script from "c:\Scripts\script.sql" on "database" on "server" with "Vari
 |Switch|Description|
 |:--|:----------|
 |-database|set connection string to target database|
-|-from|path to a folder or .zip file with scripts or file name for execute command|
-|-transaction|set transaction mode (none, perStep). Option [none] is default, means no trasactions. Option [perStep] means to use one transaction per each migration step|
+|-from|path to a folder or .zip file with scripts or script file name. Repeat -from to setup several sources|
+|-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 Exit codes

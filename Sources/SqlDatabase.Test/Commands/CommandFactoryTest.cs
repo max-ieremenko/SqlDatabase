@@ -58,7 +58,7 @@ namespace SqlDatabase.Commands
         public void ResolveExecuteCommand()
         {
             _commandLine.Command = Command.Execute;
-            _commandLine.Scripts = GetType().Assembly.Location;
+            _commandLine.Scripts.Add(GetType().Assembly.Location);
 
             var actual = _sut.Resolve(_commandLine);
             Assert.IsInstanceOf<DatabaseExecuteCommand>(actual);

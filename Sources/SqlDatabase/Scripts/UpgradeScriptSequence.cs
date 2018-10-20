@@ -8,13 +8,13 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
     {
-        public IFolder Root { get; set; }
+        public IList<IFileSystemInfo> Sources { get; } = new List<IFileSystemInfo>();
 
         public IScriptFactory ScriptFactory { get; set; }
 
         public IList<ScriptStep> BuildSequence(Version currentVersion)
         {
-            var files = GetContent(Root)
+            var files = ExpandSources(Sources)
                 .Where(i => ScriptFactory.IsSupported(i.Key.Name))
                 .OrderBy(i => i.Value.From)
                 .ThenByDescending(i => i.Value.To)
@@ -110,6 +110,28 @@ namespace SqlDatabase.Scripts
             }
 
             return null;
+        }
+
+        private static IEnumerable<KeyValuePair<IFile, FileVersion>> ExpandSources(IEnumerable<IFileSystemInfo> sources)
+        {
+            var result = Enumerable.Empty<KeyValuePair<IFile, FileVersion>>();
+
+            foreach (var source in sources)
+            {
+                if (source is IFolder folder)
+                {
+                    result = result.Concat(GetContent(folder));
+                }
+                else
+                {
+                    result = result.Concat(new[]
+                    {
+                        new KeyValuePair<IFile, FileVersion>((IFile)source, ParseName(source.Name))
+                    });
+                }
+            }
+
+            return result;
         }
 
         private static IEnumerable<KeyValuePair<IFile, FileVersion>> GetContent(IFolder folder)

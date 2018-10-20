@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SqlDatabase.Configuration;
 using SqlDatabase.IO;
 using SqlDatabase.Scripts;
@@ -24,43 +25,62 @@ namespace SqlDatabase.Commands
             throw new NotImplementedException("Unexpected command type [{0}].".FormatWith(commandLine.Command));
         }
 
+        private static void FillSources(IList<IFileSystemInfo> sources, IList<string> scripts)
+        {
+            foreach (var script in scripts)
+            {
+                sources.Add(FileSystemFactory.FileSystemInfoFromPath(script));
+            }
+        }
+
         private DatabaseExecuteCommand ResolveExecuteCommand(CommandLine commandLine)
         {
-            var file = FileSytemFactory.FileFromPath(commandLine.Scripts);
+            var sequence = new CreateScriptSequence
+            {
+                ScriptFactory = new ScriptFactory()
+            };
+
+            FillSources(sequence.Sources, commandLine.Scripts);
 
             return new DatabaseExecuteCommand
             {
                 Log = Log,
                 Database = CreateDatabase(commandLine),
-                Script = new ScriptFactory().FromFile(file)
+                ScriptSequence = sequence
             };
         }
 
         private DatabaseUpgradeCommand ResolveUpgradeCommand(CommandLine commandLine)
         {
+            var sequence = new UpgradeScriptSequence
+            {
+                ScriptFactory = new ScriptFactory()
+            };
+
+            FillSources(sequence.Sources, commandLine.Scripts);
+
             return new DatabaseUpgradeCommand
             {
                 Log = Log,
                 Database = CreateDatabase(commandLine),
-                ScriptSequence = new UpgradeScriptSequence
-                {
-                    Root = FileSytemFactory.FolderFromPath(commandLine.Scripts),
-                    ScriptFactory = new ScriptFactory()
-                }
+                ScriptSequence = sequence
             };
         }
 
         private DatabaseCreateCommand ResolveCreateCommand(CommandLine commandLine)
         {
+            var sequence = new CreateScriptSequence
+            {
+                ScriptFactory = new ScriptFactory()
+            };
+
+            FillSources(sequence.Sources, commandLine.Scripts);
+
             return new DatabaseCreateCommand
             {
                 Log = Log,
                 Database = CreateDatabase(commandLine),
-                ScriptSequence = new CreateScriptSequence
-                {
-                    Root = FileSytemFactory.FolderFromPath(commandLine.Scripts),
-                    ScriptFactory = new ScriptFactory()
-                }
+                ScriptSequence = sequence
             };
         }
 

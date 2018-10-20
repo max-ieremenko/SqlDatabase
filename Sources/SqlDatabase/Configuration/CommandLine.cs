@@ -12,7 +12,7 @@ namespace SqlDatabase.Configuration
 
         public TransactionMode Transaction { get; set; }
 
-        public string Scripts { get; set; }
+        public IList<string> Scripts { get; } = new List<string>();
 
         public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }

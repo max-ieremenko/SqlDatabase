@@ -14,16 +14,20 @@ namespace SqlDatabase.TestApi
 
         public string Location { get; }
 
-        public void CopyFileFromResources(string resourceName)
+        public string CopyFileFromResources(string resourceName)
         {
             var source = GetType().Assembly.GetManifestResourceStream("SqlDatabase.Resources." + resourceName);
             Assert.IsNotNull(source, resourceName);
 
+            var fileName = Path.Combine(Location, resourceName);
+
             using (source)
-            using (var dest = new FileStream(Path.Combine(Location, resourceName), FileMode.Create, FileAccess.ReadWrite))
+            using (var dest = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
             {
                 source.CopyTo(dest);
             }
+
+            return fileName;
         }
 
         public void Dispose()

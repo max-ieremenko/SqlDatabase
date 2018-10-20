@@ -11,7 +11,7 @@ create new database *MyDatabase* on Sql Server *MyServer* based on scripts from 
 |Switch|Description|
 |:--|:----------|
 |-database|set connection string to target database|
-|-from|path to a folder or .zip file with scripts|
+|-from|path to a folder or .zip file with scripts. Repeat to setup several sources.|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 

@@ -58,7 +58,7 @@ namespace SqlDatabase.Configuration
 
         public CommandLineBuilder SetScripts(string value)
         {
-            Line.Scripts = value;
+            Line.Scripts.Add(value);
 
             return this;
         }
@@ -124,7 +124,7 @@ namespace SqlDatabase.Configuration
                 throw new InvalidCommandException("Argument {0} is not specified.".FormatWith(ArgDatabase));
             }
 
-            if (string.IsNullOrEmpty(Line.Scripts))
+            if (Line.Scripts.Count == 0)
             {
                 throw new InvalidCommandException("Argument {0} is not specified.".FormatWith(ArgScripts));
             }
@@ -144,9 +144,13 @@ namespace SqlDatabase.Configuration
             var result = new List<string>
             {
                 cmd.Command.ToString(),
-                "{0}={1}".FormatWith(ArgDatabase, cmd.Connection),
-                "{0}={1}".FormatWith(ArgScripts, cmd.Scripts)
+                "{0}={1}".FormatWith(ArgDatabase, cmd.Connection)
             };
+
+            foreach (var script in cmd.Scripts)
+            {
+                result.Add("{0}={1}".FormatWith(ArgScripts, script));
+            }
 
             if (cmd.Transaction == default(TransactionMode))
             {

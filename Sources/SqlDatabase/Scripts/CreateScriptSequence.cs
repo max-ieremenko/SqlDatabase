@@ -6,14 +6,25 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class CreateScriptSequence : ICreateScriptSequence
     {
-        public IFolder Root { get; set; }
+        public IList<IFileSystemInfo> Sources { get; } = new List<IFileSystemInfo>();
 
         public IScriptFactory ScriptFactory { get; set; }
 
         public IList<IScript> BuildSequence()
         {
             var result = new List<IScript>();
-            Build(Root, ScriptFactory, result);
+
+            foreach (var source in Sources)
+            {
+                if (source is IFolder folder)
+                {
+                    Build(folder, ScriptFactory, result);
+                }
+                else
+                {
+                    result.Add(ScriptFactory.FromFile((IFile)source));
+                }
+            }
 
             return result;
         }

@@ -2,10 +2,8 @@
 
 namespace SqlDatabase.IO
 {
-    public interface IFolder
+    public interface IFolder : IFileSystemInfo
     {
-        string Name { get; }
-
         IEnumerable<IFolder> GetFolders();
 
         IEnumerable<IFile> GetFiles();

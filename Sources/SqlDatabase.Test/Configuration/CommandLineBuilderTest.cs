@@ -38,7 +38,7 @@ namespace SqlDatabase.Configuration
         public void CreateDoesNotSupportTransaction()
         {
             _sut.Line.Connection = new SqlConnectionStringBuilder();
-            _sut.Line.Scripts = "does not matter";
+            _sut.Line.Scripts.Add("does not matter");
 
             _sut
                 .SetCommand(Command.Create)
@@ -60,7 +60,7 @@ namespace SqlDatabase.Configuration
                 "-varY=value");
 
             Assert.AreEqual(Command.Create, actual.Command);
-            StringAssert.AreEqualIgnoringCase(@"c:\folder", actual.Scripts);
+            StringAssert.AreEqualIgnoringCase(@"c:\folder", actual.Scripts[0]);
 
             Assert.IsNotNull(actual.Connection);
             StringAssert.AreEqualIgnoringCase("test", actual.Connection.InitialCatalog);
@@ -85,7 +85,7 @@ namespace SqlDatabase.Configuration
                 "-varY=value");
 
             Assert.AreEqual(Command.Upgrade, actual.Command);
-            StringAssert.AreEqualIgnoringCase(@"c:\folder", actual.Scripts);
+            StringAssert.AreEqualIgnoringCase(@"c:\folder", actual.Scripts[0]);
 
             Assert.IsNotNull(actual.Connection);
             StringAssert.AreEqualIgnoringCase("test", actual.Connection.InitialCatalog);
@@ -110,7 +110,7 @@ namespace SqlDatabase.Configuration
                 "-varY=value");
 
             Assert.AreEqual(Command.Execute, actual.Command);
-            StringAssert.AreEqualIgnoringCase(@"c:\folder\11.sql", actual.Scripts);
+            StringAssert.AreEqualIgnoringCase(@"c:\folder\11.sql", actual.Scripts[0]);
 
             Assert.IsNotNull(actual.Connection);
             StringAssert.AreEqualIgnoringCase("test", actual.Connection.InitialCatalog);
@@ -121,6 +121,23 @@ namespace SqlDatabase.Configuration
             CollectionAssert.AreEquivalent(new[] { "X", "Y" }, actual.Variables.Keys);
             Assert.AreEqual("1 2 3", actual.Variables["x"]);
             Assert.AreEqual("value", actual.Variables["y"]);
+        }
+
+        [Test]
+        public void SeveralFromArguments()
+        {
+            var actual = CommandLineBuilder.FromArguments(
+                "execute",
+                "-database=Data Source=SQL2016DEV;Initial Catalog=test",
+                @"-from=c:\folder\11.sql",
+                @"-from=c:\folder\subFolder",
+                @"-from=c:\folder\11.zip");
+
+            Assert.AreEqual(3, actual.Scripts.Count);
+
+            StringAssert.AreEqualIgnoringCase(@"c:\folder\11.sql", actual.Scripts[0]);
+            StringAssert.AreEqualIgnoringCase(@"c:\folder\subFolder", actual.Scripts[1]);
+            StringAssert.AreEqualIgnoringCase(@"c:\folder\11.zip", actual.Scripts[2]);
         }
 
         [Test]

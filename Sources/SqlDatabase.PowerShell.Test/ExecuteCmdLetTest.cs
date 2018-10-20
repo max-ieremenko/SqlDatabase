@@ -76,7 +76,8 @@ namespace SqlDatabase.PowerShell
 
             Assert.IsNotNull(commandLine);
             Assert.AreEqual(dataBase, commandLine.Connection.ToString());
-            Assert.AreEqual(from, commandLine.Scripts);
+            Assert.AreEqual(1, commandLine.Scripts.Count);
+            Assert.AreEqual(from, commandLine.Scripts[0]);
             Assert.AreEqual(TransactionMode.PerStep, commandLine.Transaction);
 
             CollectionAssert.AreEquivalent(new[] { "x", "y" }, commandLine.Variables.Keys);
@@ -102,10 +103,12 @@ namespace SqlDatabase.PowerShell
             Assert.AreEqual(2, _commandLines.Count);
 
             Assert.AreEqual(dataBase.ToString(), _commandLines[0].Connection.ToString());
-            Assert.AreEqual(from1, _commandLines[0].Scripts);
+            Assert.AreEqual(1, _commandLines[0].Scripts.Count);
+            Assert.AreEqual(from1, _commandLines[0].Scripts[0]);
 
             Assert.AreEqual(dataBase.ToString(), _commandLines[1].Connection.ToString());
-            Assert.AreEqual(from2, _commandLines[1].Scripts);
+            Assert.AreEqual(1, _commandLines[1].Scripts.Count);
+            Assert.AreEqual(from2, _commandLines[1].Scripts[0]);
         }
     }
 }

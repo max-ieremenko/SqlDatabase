@@ -6,14 +6,14 @@ using SqlDatabase.TestApi;
 namespace SqlDatabase.IO
 {
     [TestFixture]
-    public class FileSytemFactoryTest
+    public class FileSystemFactoryTest
     {
         [Test]
         public void NewFileSystemFolder()
         {
             using (var dir = new TempDirectory("Content.zip"))
             {
-                var folder = FileSytemFactory.FolderFromPath(dir.Location);
+                var folder = FileSystemFactory.FileSystemInfoFromPath(dir.Location);
                 Assert.IsInstanceOf<FileSystemFolder>(folder);
             }
         }
@@ -28,10 +28,10 @@ namespace SqlDatabase.IO
             {
                 dir.CopyFileFromResources("Content.zip");
 
-                var folder = FileSytemFactory.FolderFromPath(Path.Combine(dir.Location, path));
+                var folder = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, path));
                 Assert.IsInstanceOf<ZipFolder>(folder);
 
-                var files = folder.GetFiles().ToList();
+                var files = ((IFolder)folder).GetFiles().ToList();
                 if (fileName != null)
                 {
                     Assert.AreEqual(1, files.Count);
@@ -44,23 +44,24 @@ namespace SqlDatabase.IO
         [TestCase(@"{0E4E24C7-E12A-483A-BC8F-E90BC49FD798}")]
         [TestCase(@"c:\{0E4E24C7-E12A-483A-BC8F-E90BC49FD798}")]
         [TestCase(@"c:\{0E4E24C7-E12A-483A-BC8F-E90BC49FD798}\11")]
-        public void DirectoryNotFound(string path)
+        public void NotFound(string path)
         {
-            Assert.Throws<DirectoryNotFoundException>(() => FileSytemFactory.FolderFromPath(path));
+            Assert.Throws<IOException>(() => FileSystemFactory.FileSystemInfoFromPath(path));
         }
 
         [Test]
         [TestCase(@"Content.zip\xxx")]
-        [TestCase(@"Content.zip\2\22.txt")]
+        [TestCase(@"Content.zip\2\xxx")]
+        [TestCase(@"Content.zip\2\33.txt")]
         [TestCase(@"Content.zip\inner.zip\xxx")]
-        public void ZipDirectoryNotFound(string path)
+        public void ZipNotFound(string path)
         {
             using (var dir = new TempDirectory())
             {
                 dir.CopyFileFromResources("Content.zip");
 
                 var fullPath = Path.Combine(dir.Location, path);
-                Assert.Throws<DirectoryNotFoundException>(() => FileSytemFactory.FolderFromPath(fullPath));
+                Assert.Throws<IOException>(() => FileSystemFactory.FileSystemInfoFromPath(fullPath));
             }
         }
 
@@ -72,7 +73,7 @@ namespace SqlDatabase.IO
                 var fileName = Path.Combine(dir.Location, "11.txt");
                 File.WriteAllBytes(fileName, new byte[] { 1 });
 
-                var file = FileSytemFactory.FileFromPath(fileName);
+                var file = FileSystemFactory.FileSystemInfoFromPath(fileName);
                 Assert.IsInstanceOf<FileSystemFile>(file);
             }
         }
@@ -87,37 +88,10 @@ namespace SqlDatabase.IO
             {
                 dir.CopyFileFromResources("Content.zip");
 
-                var file = FileSytemFactory.FileFromPath(Path.Combine(dir.Location, fileName));
+                var file = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, fileName));
                 Assert.IsInstanceOf<ZipFolderFile>(file);
 
-                file.OpenRead().Dispose();
-            }
-        }
-
-        [Test]
-        [TestCase(@"{0E4E24C7-E12A-483A-BC8F-E90BC49FD798}")]
-        [TestCase(@"c:\{0E4E24C7-E12A-483A-BC8F-E90BC49FD798}")]
-        [TestCase(@"c:\{0E4E24C7-E12A-483A-BC8F-E90BC49FD798}\11")]
-        public void FileNotFound(string path)
-        {
-            var ex = Assert.Throws<FileNotFoundException>(() => FileSytemFactory.FileFromPath(path));
-            StringAssert.Contains(path, ex.Message);
-        }
-
-        [Test]
-        [TestCase(@"Content.zip\xxx")]
-        [TestCase(@"Content.zip\2")]
-        [TestCase(@"Content.zip\2\33.txt")]
-        [TestCase(@"Content.zip\inner.zip")]
-        [TestCase(@"Content.zip\inner.zip\xxx")]
-        public void ZipFileNotFound(string path)
-        {
-            using (var dir = new TempDirectory())
-            {
-                dir.CopyFileFromResources("Content.zip");
-
-                var fullPath = Path.Combine(dir.Location, path);
-                Assert.Throws<FileNotFoundException>(() => FileSytemFactory.FileFromPath(fullPath));
+                ((IFile)file).OpenRead().Dispose();
             }
         }
     }

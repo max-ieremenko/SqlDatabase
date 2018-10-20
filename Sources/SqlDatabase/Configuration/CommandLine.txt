@@ -7,7 +7,7 @@
 
 <switches>
   -database: connection string to target database
-  -from: folder or zip file with scripts or file name for execute command
+  -from: folder or zip file with scripts or file name for execute command. Repeat -from to setup several sources.
   -var: set a variable in format "=var[name of variable]=[value of variable]"
   -transaction: transaction mode. Possible values: none, perStep. Default is none.
 

@@ -5,11 +5,21 @@ using System.Linq;
 
 namespace SqlDatabase.IO
 {
-    internal static class FileSytemFactory
+    internal static class FileSystemFactory
     {
-        public static IFolder FolderFromPath(string path)
+        public static IFileSystemInfo FileSystemInfoFromPath(string path)
         {
             path = RootPath(path);
+
+            if (File.Exists(path))
+            {
+                return IsZip(path) ? (IFileSystemInfo)new ZipFolder(path) : new FileSystemFile(path);
+            }
+
+            if (Directory.Exists(path))
+            {
+                return new FileSystemFolder(path);
+            }
 
             IFolder entryPoint = null;
             var items = new List<string>();
@@ -28,10 +38,10 @@ namespace SqlDatabase.IO
 
             if (entryPoint == null)
             {
-                throw new DirectoryNotFoundException("Directory {0} not found.".FormatWith(path));
+                throw new IOException("Directory {0} not found.".FormatWith(path));
             }
 
-            for (var i = 0; i < items.Count; i++)
+            for (var i = 0; i < items.Count - 1; i++)
             {
                 var name = items[i];
                 path = Path.Combine(path, name);
@@ -39,39 +49,26 @@ namespace SqlDatabase.IO
                 entryPoint = entryPoint.GetFolders().FirstOrDefault(f => name.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
                 if (entryPoint == null)
                 {
-                    throw new DirectoryNotFoundException("Directory {0} not found.".FormatWith(path));
+                    throw new IOException("Directory {0} not found.".FormatWith(path));
                 }
             }
 
-            return entryPoint;
-        }
+            var resultName = items.Last();
+            path = Path.Combine(path, resultName);
 
-        public static IFile FileFromPath(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName))
+            var file = entryPoint.GetFiles().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
+            if (file != null)
             {
-                throw new ArgumentNullException(nameof(fileName));
+                return file;
             }
 
-            IFolder folder;
-            try
+            var folder = entryPoint.GetFolders().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
+            if (folder == null)
             {
-                folder = FolderFromPath(Path.GetDirectoryName(fileName));
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                throw new FileNotFoundException("File {0} not found.".FormatWith(fileName), fileName, ex);
+                throw new IOException("File or folder {0} not found.".FormatWith(path));
             }
 
-            var name = Path.GetFileName(fileName);
-
-            var file = folder.GetFiles().FirstOrDefault(i => name.Equals(i.Name, StringComparison.OrdinalIgnoreCase));
-            if (file == null)
-            {
-                throw new FileNotFoundException("File {0} not found.".FormatWith(fileName), fileName);
-            }
-
-            return file;
+            return folder;
         }
 
         private static IFolder TryToResolveEntryPoint(string path)
@@ -108,6 +105,12 @@ namespace SqlDatabase.IO
             }
 
             return path;
+        }
+
+        private static bool IsZip(string path)
+        {
+            var ext = Path.GetExtension(path);
+            return ZipFolder.Extension.Equals(ext, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

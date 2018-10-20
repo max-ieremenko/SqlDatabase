@@ -35,7 +35,7 @@ namespace SqlDatabase.Scripts
 
             _sut = new UpgradeScriptSequence
             {
-                Root = _root.Object,
+                Sources = { _root.Object },
                 ScriptFactory = scriptFactory.Object
             };
         }
@@ -53,7 +53,7 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
-        public void IsUptodate()
+        public void IsUpToDate()
         {
             _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
             _root.Setup(r => r.GetFiles()).Returns(new[] { FileFactory.File("1.0_2.0.sql") });

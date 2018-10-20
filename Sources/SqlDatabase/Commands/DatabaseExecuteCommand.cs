@@ -4,16 +4,22 @@ namespace SqlDatabase.Commands
 {
     internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
     {
-        public IScript Script { get; set; }
+        public ICreateScriptSequence ScriptSequence { get; set; }
 
         protected override void Greet(string databaseLocation)
         {
-            Log.Info("Execute script [{0}] on {1}".FormatWith(Script.DisplayName, databaseLocation));
+            Log.Info("Execute script on {0}".FormatWith(databaseLocation));
         }
 
         protected override void ExecuteCore()
         {
-            Database.Execute(Script);
+            var sequences = ScriptSequence.BuildSequence();
+
+            foreach (var script in sequences)
+            {
+                Log.Info("execute {0}".FormatWith(script.DisplayName));
+                Database.Execute(script);
+            }
         }
     }
 }
