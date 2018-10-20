@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using SqlDatabase.Scripts;
 
-namespace SqlDatabase
+namespace SqlDatabase.Scripts
 {
     public interface ICreateScriptSequence
     {

@@ -3,19 +3,22 @@ using Moq;
 using NUnit.Framework;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase
+namespace SqlDatabase.Commands
 {
     [TestFixture]
-    public class SequentialUpgradeTest
+    public class DatabaseUpgradeCommandTest
     {
-        private SequentialUpgrade _sut;
-        private Mock<IUpgradeDatabase> _database;
+        private DatabaseUpgradeCommand _sut;
+        private Mock<IDatabase> _database;
         private Mock<IUpgradeScriptSequence> _scriptSequence;
 
         [SetUp]
         public void BeforeEachTest()
         {
-            _database = new Mock<IUpgradeDatabase>(MockBehavior.Strict);
+            _database = new Mock<IDatabase>(MockBehavior.Strict);
+            _database.SetupGet(d => d.ConnectionString).Returns(@"Data Source=unknownServer;Initial Catalog=unknownDatabase");
+            _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
+
             _scriptSequence = new Mock<IUpgradeScriptSequence>(MockBehavior.Strict);
 
             var log = new Mock<ILogger>(MockBehavior.Strict);
@@ -32,7 +35,7 @@ namespace SqlDatabase
                     Console.WriteLine("Info: {0}", m);
                 });
 
-            _sut = new SequentialUpgrade
+            _sut = new DatabaseUpgradeCommand
             {
                 Database = _database.Object,
                 Log = log.Object,
@@ -41,7 +44,7 @@ namespace SqlDatabase
         }
 
         [Test]
-        public void DatabaseIsUptodate()
+        public void DatabaseIsUpToDate()
         {
             var currentVersion = new Version("1.0");
 
@@ -68,7 +71,6 @@ namespace SqlDatabase
             var stepTo2 = new ScriptStep(currentVersion, new Version("2.0"), updateTo2.Object);
             var stepTo3 = new ScriptStep(new Version("2.0"), new Version("3.0"), updateTo3.Object);
 
-            _database.Setup(d => d.BeforeUpgrade());
             _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
             _database
                 .Setup(d => d.Execute(updateTo2.Object, stepTo2.From, stepTo2.To))
@@ -96,7 +98,6 @@ namespace SqlDatabase
             var stepTo2 = new ScriptStep(currentVersion, new Version("2.0"), updateTo2.Object);
             var stepTo3 = new ScriptStep(new Version("2.0"), new Version("3.0"), updateTo3.Object);
 
-            _database.Setup(d => d.BeforeUpgrade());
             _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
             _database.Setup(d => d.Execute(updateTo2.Object, stepTo2.From, stepTo2.To)).Throws<InvalidOperationException>();
 

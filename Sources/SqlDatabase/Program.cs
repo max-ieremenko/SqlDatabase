@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using SqlDatabase.Commands;
 using SqlDatabase.Configuration;
-using SqlDatabase.IO;
-using SqlDatabase.Scripts;
 
 namespace SqlDatabase
 {
@@ -38,15 +37,8 @@ namespace SqlDatabase
         {
             try
             {
-                switch (cmd.Command)
-                {
-                    case Command.Upgrade:
-                        return DoUpgrade(cmd);
-                    case Command.Create:
-                        return DoCreate(cmd);
-                    case Command.Execute:
-                        return DoExecute(cmd);
-                }
+                var factory = new CommandFactory { Log = Logger };
+                factory.Resolve(cmd).Execute();
             }
             catch (Exception ex)
             {
@@ -56,116 +48,6 @@ namespace SqlDatabase
             }
 
             throw new NotImplementedException();
-        }
-
-        private static bool DoCreate(CommandLine cmd)
-        {
-            Logger.Info("Create database [{0}] on [{1}]".FormatWith(
-                cmd.Connection.InitialCatalog,
-                cmd.Connection.DataSource));
-
-            var create = new SequentialCreate
-            {
-                Log = Logger,
-                Database = CreateDatabase(cmd),
-                ScriptSequence = new CreateScriptSequence
-                {
-                    Root = FileSytemFactory.FolderFromPath(cmd.Scripts),
-                    ScriptFactory = new ScriptFactory()
-                }
-            };
-
-            try
-            {
-                create.Execute();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message);
-                Logger.Info(ex.ToString());
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private static bool DoUpgrade(CommandLine cmd)
-        {
-            Logger.Info("Upgrade database [{0}] on [{1}]".FormatWith(
-                             cmd.Connection.InitialCatalog,
-                             cmd.Connection.DataSource));
-
-            var upgrade = new SequentialUpgrade
-            {
-                Log = Logger,
-                Database = CreateDatabase(cmd),
-                ScriptSequence = new UpgradeScriptSequence
-                {
-                    Root = FileSytemFactory.FolderFromPath(cmd.Scripts),
-                    ScriptFactory = new ScriptFactory()
-                }
-            };
-
-            try
-            {
-                upgrade.Execute();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message);
-                Logger.Info(ex.ToString());
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private static bool DoExecute(CommandLine cmd)
-        {
-            var file = FileSytemFactory.FileFromPath(cmd.Scripts);
-            var script = new ScriptFactory().FromFile(file);
-
-            Logger.Info("Execute script [{0}] on database [{1}] on [{2}]".FormatWith(
-                script.DisplayName,
-                cmd.Connection.InitialCatalog,
-                cmd.Connection.DataSource));
-
-            var database = CreateDatabase(cmd);
-
-            try
-            {
-                database.BeforeCreate();
-                database.Execute(script);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message);
-                Logger.Info(ex.ToString());
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private static Database CreateDatabase(CommandLine cmd)
-        {
-            var database = new Database
-            {
-                ConnectionString = cmd.Connection.ToString(),
-                Log = Logger,
-                Configuration = AppConfiguration.GetCurrent(),
-                Transaction = cmd.Transaction
-            };
-
-            foreach (var entry in cmd.Variables)
-            {
-                database.Variables.SetValue(entry.Key, entry.Value);
-            }
-
-            return database;
         }
 
         private static CommandLine ParseCommandLine(string[] args)

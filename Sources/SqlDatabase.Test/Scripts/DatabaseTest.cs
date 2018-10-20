@@ -189,12 +189,6 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
-        public void BeforeUpgrade()
-        {
-            _sut.BeforeUpgrade();
-        }
-
-        [Test]
         public void ExecuteSetTargetDatabase()
         {
             var currentDatabaseName = new SqlConnectionStringBuilder(_sut.ConnectionString).InitialCatalog;

@@ -2,17 +2,18 @@
 using System.Text;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase
+namespace SqlDatabase.Commands
 {
-    internal sealed class SequentialUpgrade
+    internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
     {
-        public IUpgradeDatabase Database { get; set; }
-
         public IUpgradeScriptSequence ScriptSequence { get; set; }
 
-        public ILogger Log { get; set; }
+        protected override void Greet(string databaseLocation)
+        {
+            Log.Info("Upgrade {0}".FormatWith(databaseLocation));
+        }
 
-        public void Execute()
+        protected override void ExecuteCore()
         {
             Log.Info("get database version");
             var version = Database.GetCurrentVersion();
@@ -26,8 +27,6 @@ namespace SqlDatabase
             }
 
             ShowMigrationSequence(sequences);
-
-            Database.BeforeUpgrade();
 
             foreach (var step in sequences)
             {

@@ -6,7 +6,7 @@ using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts
 {
-    internal sealed class Database : ICreateDatabase, IUpgradeDatabase
+    internal sealed class Database : IDatabase
     {
         public Database()
         {
@@ -47,7 +47,7 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        public void BeforeCreate()
+        public string GetServerVersion()
         {
             using (var connection = CreateConnection(true))
             using (var command = connection.CreateCommand())
@@ -55,19 +55,7 @@ namespace SqlDatabase.Scripts
                 command.CommandText = "select @@version";
 
                 connection.Open();
-                Log.Info(Convert.ToString(command.ExecuteScalar()));
-            }
-        }
-
-        public void BeforeUpgrade()
-        {
-            using (var connection = CreateConnection())
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "select @@version";
-
-                connection.Open();
-                Log.Info(Convert.ToString(command.ExecuteScalar()));
+                return Convert.ToString(command.ExecuteScalar());
             }
         }
 

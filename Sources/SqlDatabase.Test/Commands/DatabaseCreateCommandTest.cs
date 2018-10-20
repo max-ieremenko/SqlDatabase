@@ -1,43 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
 using Moq;
 using NUnit.Framework;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase
+namespace SqlDatabase.Commands
 {
     [TestFixture]
-    public class SequentialCreateTest
+    public class DatabaseCreateCommandTest
     {
-        private SequentialCreate _sut;
-        private Mock<ICreateDatabase> _database;
+        private DatabaseCreateCommand _sut;
+        private Mock<IDatabase> _database;
         private Mock<ICreateScriptSequence> _scriptSequence;
-        private IList<string> _logOutput;
 
         [SetUp]
         public void BeforeEachTest()
         {
-            _database = new Mock<ICreateDatabase>(MockBehavior.Strict);
+            _database = new Mock<IDatabase>(MockBehavior.Strict);
+            _database.SetupGet(d => d.ConnectionString).Returns(@"Data Source=unknownServer;Initial Catalog=unknownDatabase");
+            _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
+
             _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-            _logOutput = new List<string>();
             var log = new Mock<ILogger>(MockBehavior.Strict);
             log
                 .Setup(l => l.Error(It.IsAny<string>()))
                 .Callback<string>(m =>
                 {
                     Console.WriteLine("Error: {0}", m);
-                    _logOutput.Add(m);
                 });
             log
                 .Setup(l => l.Info(It.IsAny<string>()))
                 .Callback<string>(m =>
                 {
                     Console.WriteLine("Info: {0}", m);
-                    _logOutput.Add(m);
                 });
 
-            _sut = new SequentialCreate
+            _sut = new DatabaseCreateCommand
             {
                 Database = _database.Object,
                 Log = log.Object,
@@ -50,10 +49,9 @@ namespace SqlDatabase
         {
             _scriptSequence.Setup(s => s.BuildSequence()).Returns(new IScript[0]);
 
-            _sut.Execute();
+            Assert.Throws<ConfigurationErrorsException>(_sut.Execute);
 
             _scriptSequence.VerifyAll();
-            Assert.AreEqual(1, _logOutput.Count);
         }
 
         [Test]
@@ -65,7 +63,6 @@ namespace SqlDatabase
             var step2 = new Mock<IScript>(MockBehavior.Strict);
             step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-            _database.Setup(d => d.BeforeCreate());
             _database
                 .Setup(d => d.Execute(step1.Object))
                 .Callback(() => _database.Setup(d => d.Execute(step2.Object)));
@@ -87,7 +84,6 @@ namespace SqlDatabase
             var step2 = new Mock<IScript>(MockBehavior.Strict);
             step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-            _database.Setup(d => d.BeforeCreate());
             _database
                 .Setup(d => d.Execute(step1.Object))
                 .Throws<InvalidOperationException>();
