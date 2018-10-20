@@ -39,6 +39,7 @@ namespace SqlDatabase
             {
                 var factory = new CommandFactory { Log = Logger };
                 factory.Resolve(cmd).Execute();
+                return true;
             }
             catch (Exception ex)
             {
@@ -46,8 +47,6 @@ namespace SqlDatabase
                 Logger.Info(ex.ToString());
                 return false;
             }
-
-            throw new NotImplementedException();
         }
 
         private static CommandLine ParseCommandLine(string[] args)

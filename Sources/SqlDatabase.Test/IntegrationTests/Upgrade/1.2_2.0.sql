@@ -1,0 +1,2 @@
+ALTER TABLE demo.Person ADD SecondName NVARCHAR(250) NULL
+GO

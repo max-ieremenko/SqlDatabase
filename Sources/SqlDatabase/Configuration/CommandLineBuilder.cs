@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace SqlDatabase.Configuration
@@ -134,6 +135,30 @@ namespace SqlDatabase.Configuration
             }
 
             return Line;
+        }
+
+        public string[] BuildArray()
+        {
+            var cmd = Build();
+
+            var result = new List<string>
+            {
+                cmd.Command.ToString(),
+                "{0}={1}".FormatWith(ArgDatabase, cmd.Connection),
+                "{0}={1}".FormatWith(ArgScripts, cmd.Scripts)
+            };
+
+            if (cmd.Transaction == default(TransactionMode))
+            {
+                result.Add("{0}={1}".FormatWith(ArgTransaction, cmd.Transaction));
+            }
+
+            foreach (var entry in cmd.Variables)
+            {
+                result.Add("{0}{1}={2}".FormatWith(ArgVariable, entry.Key, entry.Value));
+            }
+
+            return result.ToArray();
         }
 
         private static bool SplitArg(string keyValue, out string key, out string value)
