@@ -59,5 +59,37 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             Assert.IsNull(_sut.Resolve(GetType().Assembly));
             CollectionAssert.IsNotEmpty(_logErrorOutput);
         }
+
+        [Test]
+        public void ResolveExecuteWithCommandOnly()
+        {
+            _sut.ExecutorClassName = nameof(DatabaseScriptWithOneParameter);
+            _sut.ExecutorMethodName = nameof(DatabaseScriptWithOneParameter.ExecuteCommand);
+
+            var actual = _sut.Resolve(GetType().Assembly);
+            CollectionAssert.IsEmpty(_logErrorOutput);
+            Assert.IsInstanceOf<DefaultEntryPoint>(actual);
+
+            var entryPoint = (DefaultEntryPoint)actual;
+            Assert.IsNotNull(entryPoint.Log);
+            Assert.IsInstanceOf<DatabaseScriptWithOneParameter>(entryPoint.ScriptInstance);
+            Assert.IsNotNull(entryPoint.Method);
+        }
+
+        [Test]
+        public void ResolveExecuteWithConnection()
+        {
+            _sut.ExecutorClassName = nameof(DatabaseScriptWithConnection);
+            _sut.ExecutorMethodName = nameof(DatabaseScriptWithConnection.Run);
+
+            var actual = _sut.Resolve(GetType().Assembly);
+            CollectionAssert.IsEmpty(_logErrorOutput);
+            Assert.IsInstanceOf<DefaultEntryPoint>(actual);
+
+            var entryPoint = (DefaultEntryPoint)actual;
+            Assert.IsNotNull(entryPoint.Log);
+            Assert.IsInstanceOf<DatabaseScriptWithConnection>(entryPoint.ScriptInstance);
+            Assert.IsNotNull(entryPoint.Method);
+        }
     }
 }

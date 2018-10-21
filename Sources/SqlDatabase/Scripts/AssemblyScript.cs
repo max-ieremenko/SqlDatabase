@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
 
 namespace SqlDatabase.Scripts
@@ -44,7 +45,10 @@ namespace SqlDatabase.Scripts
             IVariables variables,
             ILogger logger)
         {
-            if (!agent.ResolveScriptExecutor(logger))
+            var className = AppConfiguration.GetCurrent().AssemblyScript.ClassName;
+            var methodName = AppConfiguration.GetCurrent().AssemblyScript.MethodName;
+
+            if (!agent.ResolveScriptExecutor(logger, className, methodName))
             {
                 throw new InvalidOperationException("Fail to resolve script executor.");
             }

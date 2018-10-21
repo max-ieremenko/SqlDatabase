@@ -7,9 +7,6 @@ namespace SqlDatabase.Scripts.AssemblyInternal
 {
     internal sealed class DomainAgent : MarshalByRefObject
     {
-        public const string ExecutorClassName = "SqlDatabaseScript";
-        public const string ExecutorMethodName = "Execute";
-
         internal Assembly Assembly { get; set; }
 
         internal IEntryPoint EntryPoint { get; set; }
@@ -26,7 +23,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             Console.SetOut(new ConsoleListener(logger));
         }
 
-        public bool ResolveScriptExecutor(ILogger logger)
+        public bool ResolveScriptExecutor(ILogger logger, string className, string methodName)
         {
             // only for unit tests
             if (EntryPoint != null)
@@ -37,8 +34,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             var resolver = new EntryPointResolver
             {
                 Log = logger,
-                ExecutorClassName = ExecutorClassName,
-                ExecutorMethodName = ExecutorMethodName
+                ExecutorClassName = className,
+                ExecutorMethodName = methodName
             };
 
             EntryPoint = resolver.Resolve(Assembly);

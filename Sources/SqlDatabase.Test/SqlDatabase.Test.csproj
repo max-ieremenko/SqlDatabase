@@ -12,7 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Configuration\AppConfiguration.empty.xml" />
+    <None Remove="Resources\AppConfiguration.default.xml" />
+    <None Remove="Resources\AppConfiguration.full.xml" />
     <None Remove="Resources\Content.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AppConfiguration.default.xml" />
+    <EmbeddedResource Include="Resources\AppConfiguration.full.xml" />
+    <EmbeddedResource Include="Resources\AppConfiguration.empty.xml" />
   </ItemGroup>
 
   <ItemGroup>

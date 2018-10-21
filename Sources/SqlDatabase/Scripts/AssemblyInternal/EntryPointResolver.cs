@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -32,8 +30,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             }
 
             var message = new StringBuilder()
-                .AppendFormat("found {0}.{1}(", type.FullName, method.Name);
-            var args = method.GetParameters();
+                .AppendFormat("found {0}.{1}(", type.FullName, method.Method.Name);
+            var args = method.Method.GetParameters();
             for (var i = 0; i < args.Length; i++)
             {
                 if (i > 0)
@@ -62,16 +60,11 @@ namespace SqlDatabase.Scripts.AssemblyInternal
                 return null;
             }
 
-            var execute = (Action<IDbCommand, IReadOnlyDictionary<string, string>>)Delegate.CreateDelegate(
-                typeof(Action<IDbCommand, IReadOnlyDictionary<string, string>>),
-                scriptInstance,
-                method);
-
             return new DefaultEntryPoint
             {
                 Log = Log,
                 ScriptInstance = scriptInstance,
-                Method = execute
+                Method = method.Resolver.CreateDelegate(scriptInstance, method.Method)
             };
         }
 
@@ -98,27 +91,58 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             return candidates[0];
         }
 
-        private MethodInfo ResolveMethod(Type type)
+        private ExecuteMethodRef ResolveMethod(Type type)
         {
-            var method = type
+            var methodResolvers = new ExecuteMethodResolverBase[]
+            {
+                new ExecuteMethodResolverCommandDictionary(),
+                new ExecuteMethodResolverDictionaryCommand(),
+                new ExecuteMethodResolverCommand(),
+                new ExecuteMethodResolverDbConnection(),
+                new ExecuteMethodResolverSqlConnection()
+            };
+
+            var methods = type
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public)
                 .Where(i => i.ReturnType == typeof(void))
                 .Where(i => ExecutorMethodName.Equals(i.Name, StringComparison.OrdinalIgnoreCase))
-                .Where(i =>
+                .Select(i =>
                 {
-                    var p = i.GetParameters();
-                    return p.Length == 2
-                           && typeof(IDbCommand) == p[0].ParameterType
-                           && typeof(IReadOnlyDictionary<string, string>) == p[1].ParameterType;
-                })
-                .FirstOrDefault();
+                    for (var priority = 0; priority < methodResolvers.Length; priority++)
+                    {
+                        var resolver = methodResolvers[priority];
+                        if (resolver.IsMatch(i))
+                        {
+                            return new ExecuteMethodRef
+                            {
+                                Method = i,
+                                Resolver = resolver,
+                                Priority = priority
+                            };
+                        }
+                    }
 
-            if (method == null)
+                    return null;
+                })
+                .Where(i => i != null)
+                .OrderBy(i => i.Priority)
+                .ToList();
+
+            if (methods.Count == 0)
             {
                 Log.Error("public void {0}(IDbCommand command, IReadOnlyDictionary<string, string> variables) not found in {1}.".FormatWith(ExecutorMethodName, type));
             }
 
-            return method;
+            return methods[0];
+        }
+
+        private sealed class ExecuteMethodRef
+        {
+            public int Priority { get; set; }
+
+            public MethodInfo Method { get; set; }
+
+            public ExecuteMethodResolverBase Resolver { get; set; }
         }
     }
 }
