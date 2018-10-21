@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Data;
+using SqlDatabase.Scripts.AssemblyInternal;
 
 namespace SqlDatabase.Scripts
 {
-    internal sealed partial class AssemblyScript : IScript
+    internal sealed class AssemblyScript : IScript
     {
-        public const string ExecutorClassName = "SqlDatabaseScript";
-        public const string ExecutorMethodName = "Execute";
-
         public string DisplayName { get; set; }
 
         public Func<byte[]> ReadAssemblyContent { get; set; }
@@ -32,14 +30,28 @@ namespace SqlDatabase.Scripts
                 agent.RedirectConsoleOut(logProxy);
                 agent.LoadAssembly(assembly, logProxy);
 
-                if (agent.ResolveScriptExecutor(logProxy))
-                {
-                    agent.Execute(command, new VariablesProxy(variables));
-                }
+                Execute(agent, command, variables, logProxy);
             }
             finally
             {
                 AppDomain.Unload(domain);
+            }
+        }
+
+        internal static void Execute(
+            DomainAgent agent,
+            IDbCommand command,
+            IVariables variables,
+            ILogger logger)
+        {
+            if (!agent.ResolveScriptExecutor(logger))
+            {
+                throw new InvalidOperationException("Fail to resolve script executor.");
+            }
+
+            if (!agent.Execute(command, new VariablesProxy(variables)))
+            {
+                throw new InvalidOperationException("Errors during script execution.");
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.Scripts.AssemblyInternal;
 
 namespace SqlDatabase.Scripts
 {
@@ -30,6 +31,13 @@ namespace SqlDatabase.Scripts
                 .Callback<string>(m =>
                 {
                     Console.WriteLine("Info: {0}", m);
+                    _logOutput.Add(m);
+                });
+            _log
+                .Setup(l => l.Error(It.IsAny<string>()))
+                .Callback<string>(m =>
+                {
+                    Console.WriteLine("Error: {0}", m);
                     _logOutput.Add(m);
                 });
 
@@ -68,6 +76,33 @@ namespace SqlDatabase.Scripts
             Assert.IsTrue(_executedScripts.Contains("drop table dbo.DemoTable"));
 
             Assert.IsTrue(_logOutput.Contains("finish execution"));
+        }
+
+        [Test]
+        public void FailToResolveExecutor()
+        {
+            var agent = new DomainAgent
+            {
+                Assembly = GetType().Assembly
+            };
+
+            Assert.Throws<InvalidOperationException>(() => AssemblyScript.Execute(agent, _command.Object, _variables, _log.Object));
+        }
+
+        [Test]
+        public void FailOnExecute()
+        {
+            var entryPoint = new Mock<IEntryPoint>(MockBehavior.Strict);
+            entryPoint
+                .Setup(p => p.Execute(_command.Object, It.IsNotNull<IReadOnlyDictionary<string, string>>()))
+                .Returns(false);
+
+            var agent = new DomainAgent
+            {
+                EntryPoint = entryPoint.Object
+            };
+
+            Assert.Throws<InvalidOperationException>(() => AssemblyScript.Execute(agent, _command.Object, _variables, _log.Object));
         }
     }
 }
