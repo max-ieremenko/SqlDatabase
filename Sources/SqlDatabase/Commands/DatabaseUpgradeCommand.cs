@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using SqlDatabase.Scripts;
 
@@ -30,8 +31,15 @@ namespace SqlDatabase.Commands
 
             foreach (var step in sequences)
             {
-                Log.Info("execute {0}".FormatWith(step.Script.DisplayName));
-                Database.Execute(step.Script, step.From, step.To);
+                var timer = Stopwatch.StartNew();
+                Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
+
+                using (Log.Indent())
+                {
+                    Database.Execute(step.Script, step.From, step.To);
+                }
+
+                Log.Info("done in {0}".FormatWith(timer.Elapsed));
             }
         }
 

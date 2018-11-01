@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Diagnostics;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands
@@ -22,8 +23,15 @@ namespace SqlDatabase.Commands
 
             foreach (var script in sequences)
             {
-                Log.Info("execute {0}".FormatWith(script.DisplayName));
-                Database.Execute(script);
+                var timer = Stopwatch.StartNew();
+                Log.Info("execute {0} ...".FormatWith(script.DisplayName));
+
+                using (Log.Indent())
+                {
+                    Database.Execute(script);
+                }
+
+                Log.Info("done in {0}".FormatWith(timer.Elapsed));
             }
         }
     }

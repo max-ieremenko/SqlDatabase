@@ -20,5 +20,25 @@ namespace SqlDatabase.Scripts.AssemblyInternal
         {
             _log.Info(message);
         }
+
+        public IDisposable Indent()
+        {
+            return new RemoteDisposable(_log.Indent());
+        }
+
+        private sealed class RemoteDisposable : MarshalByRefObject, IDisposable
+        {
+            private readonly IDisposable _obj;
+
+            public RemoteDisposable(IDisposable obj)
+            {
+                _obj = obj;
+            }
+
+            public void Dispose()
+            {
+                _obj?.Dispose();
+            }
+        }
     }
 }

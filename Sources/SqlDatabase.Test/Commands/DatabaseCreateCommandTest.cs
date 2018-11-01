@@ -23,6 +23,7 @@ namespace SqlDatabase.Commands
             _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
             var log = new Mock<ILogger>(MockBehavior.Strict);
+            log.Setup(l => l.Indent()).Returns((IDisposable)null);
             log
                 .Setup(l => l.Error(It.IsAny<string>()))
                 .Callback<string>(m =>

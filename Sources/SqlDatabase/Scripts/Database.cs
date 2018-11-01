@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts
@@ -81,11 +80,8 @@ namespace SqlDatabase.Scripts
                 {
                     command.Transaction = transaction;
 
-                    var timer = Stopwatch.StartNew();
                     script.Execute(command, Variables, Log);
-                    Log.Info("execution time {0}".FormatWith(timer.Elapsed));
 
-                    Log.Info("change version to {0}".FormatWith(targetVersion));
                     if (!Variables.DatabaseName.Equals(connection.Database, StringComparison.OrdinalIgnoreCase))
                     {
                         command.CommandText = "USE [{0}]".FormatWith(Variables.DatabaseName);
