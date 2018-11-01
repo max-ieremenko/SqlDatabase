@@ -25,7 +25,8 @@ namespace SqlDatabase.Scripts
                 .Returns<IFile>(file =>
                 {
                     var script = new Mock<IScript>(MockBehavior.Strict);
-                    script.SetupGet(s => s.DisplayName).Returns(file.Name);
+                    script.SetupProperty(s => s.DisplayName, file.Name);
+
                     return script.Object;
                 });
 
@@ -38,47 +39,63 @@ namespace SqlDatabase.Scripts
         [Test]
         public void BuildSequenceFromOneFolder()
         {
-            var folderX = new[] { FileFactory.File("a.sql"), FileFactory.File("x.sql"), FileFactory.File("ignore") };
-            var folderA = new[] { FileFactory.File("x.exe"), FileFactory.File("a.exe"), FileFactory.File("ignore") };
-            var folder = new[] { FileFactory.File("x.sql"), FileFactory.File("a.exe"), FileFactory.File("ignore") };
-
-            var sourceFolder = new Mock<IFolder>();
-            sourceFolder.Setup(r => r.GetFolders()).Returns(new[]
+            var folderX = new[]
             {
-                FileFactory.Folder("x", folderX),
-                FileFactory.Folder("a", folderA),
-            });
+                FileFactory.File("a.sql"),
+                FileFactory.File("x.sql"),
+                FileFactory.File("ignore")
+            };
 
-            sourceFolder.Setup(r => r.GetFiles()).Returns(folder);
+            var folderA = new[]
+            {
+                FileFactory.File("x.exe"),
+                FileFactory.File("a.exe"),
+                FileFactory.File("ignore")
+            };
 
-            _sut.Sources.Add(sourceFolder.Object);
+            var files = new[]
+            {
+                FileFactory.File("x.sql"),
+                FileFactory.File("a.exe"),
+                FileFactory.File("ignore")
+            };
+
+            var content = new IFileSystemInfo[]
+                {
+                    FileFactory.Folder("x", folderX),
+                    FileFactory.Folder("a", folderA)
+                }
+                .Concat(files)
+                .ToArray();
+
+            _sut.Sources.Add(FileFactory.Folder("root", content));
             var actual = _sut.BuildSequence();
 
             // sorted A-Z, first files then folders
             CollectionAssert.AreEqual(
-                new[] { folder[1].Name, folder[0].Name, folderA[1].Name, folderA[0].Name, folderX[0].Name, folderX[1].Name },
+                new[]
+                {
+                    @"root\" + files[1].Name,
+                    @"root\" + files[0].Name,
+                    @"root\a\" + folderA[1].Name,
+                    @"root\a\" + folderA[0].Name,
+                    @"root\x\" + folderX[0].Name,
+                    @"root\x\" + folderX[1].Name
+                },
                 actual.Select(i => i.DisplayName).ToArray());
         }
 
         [Test]
         public void BuildSequenceFromFolderAndFile()
         {
-            var sourceFolder = new Mock<IFolder>();
-            sourceFolder.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            sourceFolder.Setup(r => r.GetFiles()).Returns(new[]
-            {
-                FileFactory.File("20.sql"),
-                FileFactory.File("10.sql")
-            });
-
-            _sut.Sources.Add(sourceFolder.Object);
+            _sut.Sources.Add(FileFactory.Folder("root", FileFactory.File("20.sql"), FileFactory.File("10.sql")));
             _sut.Sources.Add(FileFactory.File("02.sql"));
             _sut.Sources.Add(FileFactory.File("01.sql"));
             var actual = _sut.BuildSequence();
 
             // sorted A-Z, first files then folders
             CollectionAssert.AreEqual(
-                new[] { "10.sql", "20.sql", "02.sql", "01.sql" },
+                new[] { @"root\10.sql", @"root\20.sql", "02.sql", "01.sql" },
                 actual.Select(i => i.DisplayName).ToArray());
         }
     }

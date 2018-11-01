@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using Moq;
 using SqlDatabase.IO;
 
@@ -20,13 +21,17 @@ namespace SqlDatabase.TestApi
             return file.Object;
         }
 
-        public static IFolder Folder(string name, params IFile[] files)
+        public static IFolder Folder(string name, params IFileSystemInfo[] content)
         {
             var folder = new Mock<IFolder>(MockBehavior.Strict);
 
             folder.SetupGet(f => f.Name).Returns(name);
+
+            var files = content.OfType<IFile>().ToArray();
             folder.Setup(f => f.GetFiles()).Returns(files);
-            folder.Setup(f => f.GetFolders()).Returns(new IFolder[0]);
+
+            var subFolders = content.OfType<IFolder>().ToArray();
+            folder.Setup(f => f.GetFolders()).Returns(subFolders);
 
             return folder.Object;
         }
