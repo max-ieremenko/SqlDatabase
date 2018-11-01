@@ -26,4 +26,10 @@
     <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SqlDatabase.PowerShell.psd1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
  </Project>

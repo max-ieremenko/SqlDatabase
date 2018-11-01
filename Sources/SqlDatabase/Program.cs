@@ -3,25 +3,26 @@ using System.Diagnostics;
 using System.IO;
 using SqlDatabase.Commands;
 using SqlDatabase.Configuration;
+using SqlDatabase.Log;
 
 namespace SqlDatabase
 {
     internal static class Program
     {
-        private static readonly ILogger Logger = new ConsoleLogger();
-
         public static int Main(string[] args)
         {
+            var logger = new ConsoleLogger();
+
             ExitCode exitCode;
-            var cmd = ParseCommandLine(args);
+            var cmd = ParseCommandLine(args, logger);
             if (cmd == null)
             {
-                Logger.Info(LoadHelpContent());
+                logger.Info(LoadHelpContent());
                 exitCode = ExitCode.InvalidCommandLine;
             }
             else
             {
-                exitCode = ExecuteCommand(cmd) ? ExitCode.Ok : ExitCode.ExecutionErrors;
+                exitCode = ExecuteCommand(cmd, logger) ? ExitCode.Ok : ExitCode.ExecutionErrors;
             }
 
             if (Debugger.IsAttached)
@@ -33,23 +34,23 @@ namespace SqlDatabase
             return (int)exitCode;
         }
 
-        internal static bool ExecuteCommand(CommandLine cmd)
+        internal static bool ExecuteCommand(CommandLine cmd, ILogger logger)
         {
             try
             {
-                var factory = new CommandFactory { Log = Logger };
+                var factory = new CommandFactory { Log = logger };
                 factory.Resolve(cmd).Execute();
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
-                Logger.Info(ex.ToString());
+                logger.Error(ex.Message);
+                logger.Info(ex.ToString());
                 return false;
             }
         }
 
-        private static CommandLine ParseCommandLine(string[] args)
+        private static CommandLine ParseCommandLine(string[] args, ILogger logger)
         {
             if (args == null || args.Length == 0)
             {
@@ -62,7 +63,7 @@ namespace SqlDatabase
             }
             catch (Exception e)
             {
-                Logger.Error("Invalid command line: {0}".FormatWith(e.Message));
+                logger.Error("Invalid command line: {0}".FormatWith(e.Message));
             }
 
             return null;

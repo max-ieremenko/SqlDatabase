@@ -1,7 +1,7 @@
 ## Installation
 
 ```bash
-$ Import-Module .\SqlDatabase.PowerShell.dll
+$ Import-Module .\SqlDatabase.PowerShell.dll -DisableNameChecking
 ```
 
 ## Execute script

@@ -1,24 +1,25 @@
-﻿using System;
-using System.Management.Automation;
+﻿using System.Management.Automation;
+using SqlDatabase.Log;
 
 namespace SqlDatabase.PowerShell
 {
-    internal sealed class CmdLetLogger : ILogger
+    internal sealed class CmdLetLogger : LoggerBase
     {
-        private readonly Cmdlet _owner;
+        private readonly PSCmdlet _owner;
 
-        public CmdLetLogger(Cmdlet owner)
+        public CmdLetLogger(PSCmdlet owner)
         {
             _owner = owner;
         }
 
-        public void Error(string message)
+        protected override void WriteError(string message)
         {
+            _owner.Host.UI.WriteErrorLine(message);
         }
 
-        public void Info(string message)
+        protected override void WriteInfo(string message)
         {
-            throw new NotImplementedException();
+            _owner.Host.UI.WriteLine(message);
         }
     }
 }

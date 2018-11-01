@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Management.Automation.Runspaces;
 using Moq;
 using NUnit.Framework;
@@ -9,7 +11,7 @@ using Command = System.Management.Automation.Runspaces.Command;
 namespace SqlDatabase.PowerShell
 {
     [TestFixture]
-    public class ExecuteCmdLetTest
+    public class SqlDatabaseCmdLetTest
     {
         private readonly IList<CommandLine> _commandLines = new List<CommandLine>();
         private Runspace _runSpace;
@@ -20,7 +22,7 @@ namespace SqlDatabase.PowerShell
         public void BeforeEachTest()
         {
             var sessionState = InitialSessionState.CreateDefault();
-            sessionState.Commands.Add(new SessionStateCmdletEntry("Invoke-SqlDatabase", typeof(ExecuteCmdLet), null));
+            sessionState.Commands.Add(new SessionStateCmdletEntry("Test-SqlDatabase", typeof(SomeSqlDatabaseCmdLet), null));
 
             _runSpace = RunspaceFactory.CreateRunspace(sessionState);
             _runSpace.Open();
@@ -28,26 +30,27 @@ namespace SqlDatabase.PowerShell
             _powerShell = System.Management.Automation.PowerShell.Create();
             _powerShell.Runspace = _runSpace;
 
-            _invokeSqlDatabase = new Command("Invoke-SqlDatabase");
+            _invokeSqlDatabase = new Command("Test-SqlDatabase");
             _powerShell.Commands.AddCommand(_invokeSqlDatabase);
 
             var program = new Mock<ISqlDatabaseProgram>(MockBehavior.Strict);
             program
                 .Setup(p => p.ExecuteCommand(It.IsNotNull<CommandLine>()))
-                .Callback<CommandLine>(cmd =>
-                {
-                    Assert.AreEqual(Configuration.Command.Execute, cmd.Command);
-                    _commandLines.Add(cmd);
-                });
+                .Callback<CommandLine>(cmd => _commandLines.Add(cmd));
 
             _commandLines.Clear();
-            ExecuteCmdLet.Program = program.Object;
+            SqlDatabaseCmdLet.Program = program.Object;
         }
 
         [TearDown]
         public void AfterEachTest()
         {
-            ExecuteCmdLet.Program = null;
+            SqlDatabaseCmdLet.Program = null;
+
+            foreach (var row in _powerShell.Streams.Information)
+            {
+                Console.WriteLine(row);
+            }
 
             _powerShell?.Dispose();
             _runSpace?.Dispose();
@@ -62,12 +65,13 @@ namespace SqlDatabase.PowerShell
                 InitialCatalog = "abc"
             }.ToString();
 
-            var from = GetType().Assembly.Location;
+            var from1 = GetType().Assembly.Location;
+            var from2 = Path.GetDirectoryName(from1);
 
-            _invokeSqlDatabase.Parameters.Add(nameof(ExecuteCmdLet.Database), dataBase);
-            _invokeSqlDatabase.Parameters.Add(nameof(ExecuteCmdLet.From), from);
-            _invokeSqlDatabase.Parameters.Add(nameof(ExecuteCmdLet.Transaction), TransactionMode.PerStep.ToString());
-            _invokeSqlDatabase.Parameters.Add(nameof(ExecuteCmdLet.Var), new[] { "x=1", "y=2" });
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Database), dataBase);
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.From), new[] { from1, from2 });
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Transaction), TransactionMode.PerStep.ToString());
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Var), new[] { "x=1", "y=2" });
 
             _powerShell.Invoke();
 
@@ -75,9 +79,11 @@ namespace SqlDatabase.PowerShell
             var commandLine = _commandLines[0];
 
             Assert.IsNotNull(commandLine);
+            Assert.AreEqual(Configuration.Command.Upgrade, commandLine.Command);
             Assert.AreEqual(dataBase, commandLine.Connection.ToString());
-            Assert.AreEqual(1, commandLine.Scripts.Count);
-            Assert.AreEqual(from, commandLine.Scripts[0]);
+            Assert.AreEqual(2, commandLine.Scripts.Count);
+            Assert.AreEqual(from1, commandLine.Scripts[0]);
+            Assert.AreEqual(from2, commandLine.Scripts[1]);
             Assert.AreEqual(TransactionMode.PerStep, commandLine.Transaction);
 
             CollectionAssert.AreEquivalent(new[] { "x", "y" }, commandLine.Variables.Keys);
@@ -95,9 +101,9 @@ namespace SqlDatabase.PowerShell
             }.ToString();
 
             var from1 = GetType().Assembly.Location;
-            var from2 = typeof(ExecuteCmdLet).Assembly.Location;
+            var from2 = typeof(SqlDatabaseCmdLet).Assembly.Location;
 
-            _invokeSqlDatabase.Parameters.Add(nameof(ExecuteCmdLet.Database), dataBase);
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Database), dataBase);
             _powerShell.Invoke(new[] { from1, from2 });
 
             Assert.AreEqual(2, _commandLines.Count);
@@ -109,6 +115,14 @@ namespace SqlDatabase.PowerShell
             Assert.AreEqual(dataBase.ToString(), _commandLines[1].Connection.ToString());
             Assert.AreEqual(1, _commandLines[1].Scripts.Count);
             Assert.AreEqual(from2, _commandLines[1].Scripts[0]);
+        }
+
+        private sealed class SomeSqlDatabaseCmdLet : SqlDatabaseCmdLet
+        {
+            public SomeSqlDatabaseCmdLet()
+                : base(Configuration.Command.Upgrade)
+            {
+            }
         }
     }
 }
