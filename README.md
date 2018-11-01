@@ -7,8 +7,17 @@ Command line and PowerShell tool for SQL Server to execute scripts and database 
 
 Microsoft [.NET Framework 4.5.2](https://www.microsoft.com/en-us/download/details.aspx?id=42642) or higher.
 
-#### PowerShell cmdlets
-See [details](https://github.com/max-ieremenko/SqlDatabase/tree/master/Sources/SqlDatabase.PowerShell/README.md).
+#### PowerShell
+```bash
+Install-Package SqlDatabase
+```
+to integrate cmdlets into visual studio package manager console.
+
+or
+```bash
+PS> Import-Module .\SqlDatabase.PowerShell.dll -DisableNameChecking
+```
+see [details](https://github.com/max-ieremenko/SqlDatabase/tree/master/Sources/SqlDatabase.PowerShell/README.md).
 
 #### CLI
 ```bash
@@ -17,6 +26,11 @@ $ SqlDatabase.exe create
       -from=Examples\CreateDatabaseFolder
       -varVariable1=value1
       -varVariable2=value2
+
+PS> Create-SqlDatabase
+      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
+      -from Examples\CreateDatabaseFolder
+      -var Variable1=value1,Variable2=value2
 ```
 create new database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\CreateDatabaseFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
 
@@ -27,6 +41,11 @@ $ SqlDatabase.exe upgrade
       -from=Examples\MigrationStepsFolder
       -varVariable1=value1
       -varVariable2=value2
+
+PS> Update-SqlDatabase
+      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
+      -from Examples\MigrationStepsFolder
+      -var Variable1=value1,Variable2=value2
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from [Examples\MigrationStepsFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder) with "Variable1=value1" and "Variable2=value2"
 
@@ -37,7 +56,7 @@ $ SqlDatabase.exe execute
       -varVariable1=value1
       -varVariable2=value2
      
-PS> Invoke-SqlDatabase
+PS> Execute-SqlDatabase
       -database "Data Source=server;Initial Catalog=database;Integrated Security=True"
       -from c:\Scripts\script.sql
       -var Variable1=value1,Variable2=value2
