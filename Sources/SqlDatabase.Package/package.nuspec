@@ -17,15 +17,21 @@
   </metadata>
 
   <files>
-    <file src="build.out\SqlDatabase.exe"
+    <file src="tools\**\*"
+          target="tools/"/>
+
+    <file src="$bin$\SqlDatabase.exe"
           target="tools" />
-    <file src="build.out\SqlDatabase.pdb"
+    <file src="$bin$\SqlDatabase.pdb"
           target="tools" />
-    <file src="build.out\SqlDatabase.exe.config"
+    <file src="$bin$\SqlDatabase.exe.config"
           target="tools" />
-    <file src="build.out\SqlDatabase.PowerShell.dll"
+
+    <file src="$bin$\SqlDatabase.PowerShell.dll"
           target="tools" />
-    <file src="build.out\SqlDatabase.PowerShell.pdb"
+    <file src="$bin$\SqlDatabase.PowerShell.pdb"
+          target="tools" />
+    <file src="$bin$\SqlDatabase.PowerShell.psd1"
           target="tools" />
   </files>
 </package>

@@ -18,7 +18,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMirationStep", "..\Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabase.PowerShell", "SqlDatabase.PowerShell\SqlDatabase.PowerShell.csproj", "{47A4BE25-2B58-484C-956D-F1DF53A9269D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.PowerShell.Test", "SqlDatabase.PowerShell.Test\SqlDatabase.PowerShell.Test.csproj", "{4F35E6D2-99FB-4B7B-90A5-3BFA936FB8CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabase.PowerShell.Test", "SqlDatabase.PowerShell.Test\SqlDatabase.PowerShell.Test.csproj", "{4F35E6D2-99FB-4B7B-90A5-3BFA936FB8CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Package", "SqlDatabase.Package\SqlDatabase.Package.csproj", "{F986789D-F9B3-42B4-AA4B-4C0A63011F5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{4F35E6D2-99FB-4B7B-90A5-3BFA936FB8CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F35E6D2-99FB-4B7B-90A5-3BFA936FB8CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F35E6D2-99FB-4B7B-90A5-3BFA936FB8CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F986789D-F9B3-42B4-AA4B-4C0A63011F5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F986789D-F9B3-42B4-AA4B-4C0A63011F5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F986789D-F9B3-42B4-AA4B-4C0A63011F5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F986789D-F9B3-42B4-AA4B-4C0A63011F5D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

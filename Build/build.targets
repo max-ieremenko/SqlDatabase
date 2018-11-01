@@ -9,9 +9,9 @@
       PackageVersion: version of the package, according to myget
       nuget: path to nuget.exe
     -->
-    
+
     <!-- working directory of msbuild is root\build -->
-    <BuildOut>..\build.out</BuildOut>
+    <BuildOut>$(MSBuildProjectDirectory)\..\build.out</BuildOut>
   </PropertyGroup>
 
   <Target Name="main">
@@ -19,6 +19,8 @@
     <MakeDir Directories="$(BuildOut)" />
 
     <CallTarget Targets="buildSources"
+                ContinueOnError="false" />
+    <CallTarget Targets="setPowerShellModuleVersion"
                 ContinueOnError="false" />
     <CallTarget Targets="buildPackage"
                 ContinueOnError="false" />
@@ -28,7 +30,7 @@
     <Exec Command="$(nuget) restore ..\Sources\SqlDatabase.sln" />
 
     <MSBuild Projects="..\Sources\SqlDatabase.sln"
-             Properties="Configuration=$(config);OutDir=..\$(BuildOut)"/>
+             Properties="Configuration=$(config);OutDir=$(BuildOut)"/>
 
     <!--https://stackoverflow.com/questions/443188/msbuild-task-to-read-version-of-dll-->
     <GetAssemblyIdentity AssemblyFiles="$(BuildOut)\SqlDatabase.exe">
@@ -43,7 +45,48 @@
     </CreateProperty>
   </Target>
 
-  <Target Name="buildPackage">
-    <Exec Command="$(nuget) pack ..\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut) -Version $(PackageVersion) -p Configuration=$(config))" />
+  <Target Name="setPowerShellModuleVersion">
+    <ReplaceTextInFile Filename="$(BuildOut)\SqlDatabase.PowerShell.psd1"
+                       MatchText="{{ModuleVersion}}"
+                       ReplacementText="$(PackageVersion)" />
   </Target>
+
+  <Target Name="buildPackage">
+    <Exec Command="$(nuget) pack ..\Sources\SqlDatabase.Package\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut) -Version $(PackageVersion) -p bin=$(BuildOut)" />
+  </Target>
+
+  <UsingTask TaskName="ReplaceTextInFile"
+             TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Filename ParameterType="System.String"
+                Required="true" />
+      <MatchText ParameterType="System.String"
+                 Required="true" />
+      <ReplacementText ParameterType="System.String"
+                       Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment"
+            Language="cs">
+        <![CDATA[
+            var text = new StringBuilder();
+            Encoding fileEncoding;
+
+            using (var reader = new StreamReader(Filename))
+            {
+                text.Append(reader.ReadToEnd());
+                fileEncoding = reader.CurrentEncoding;
+            }
+
+            text.Replace(MatchText, ReplacementText);
+            File.WriteAllText(Filename, text.ToString(), fileEncoding);
+          ]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>
