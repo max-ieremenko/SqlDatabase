@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
@@ -36,9 +37,6 @@ namespace SqlDatabase.Commands
             Assert.AreEqual(_log, actual.Log);
             Assert.IsInstanceOf<Database>(actual.Database);
 
-            var database = (Database)actual.Database;
-            Assert.IsNotNull(database.Configuration);
-
             var command = (DatabaseCreateCommand)actual;
             Assert.IsInstanceOf<CreateScriptSequence>(command.ScriptSequence);
         }
@@ -52,9 +50,6 @@ namespace SqlDatabase.Commands
             Assert.IsInstanceOf<DatabaseUpgradeCommand>(actual);
             Assert.AreEqual(_log, actual.Log);
             Assert.IsInstanceOf<Database>(actual.Database);
-
-            var database = (Database)actual.Database;
-            Assert.IsNotNull(database.Configuration);
 
             var command = (DatabaseUpgradeCommand)actual;
             Assert.IsInstanceOf<UpgradeScriptSequence>(command.ScriptSequence);
@@ -71,9 +66,6 @@ namespace SqlDatabase.Commands
             Assert.AreEqual(_log, actual.Log);
             Assert.IsInstanceOf<Database>(actual.Database);
 
-            var database = (Database)actual.Database;
-            Assert.IsNotNull(database.Configuration);
-
             var command = (DatabaseExecuteCommand)actual;
             Assert.IsInstanceOf<Database>(command.Database);
         }
@@ -84,6 +76,45 @@ namespace SqlDatabase.Commands
             _commandLine.Command = (Command)100;
 
             Assert.Throws<NotImplementedException>(() => _sut.Resolve(_commandLine));
+        }
+
+        [Test]
+        public void CreateDatabase()
+        {
+            var configuration = new AppConfiguration();
+
+            var configurationManager = new Mock<IConfigurationManager>(MockBehavior.Strict);
+            configurationManager
+                .SetupGet(c => c.SqlDatabase)
+                .Returns(configuration);
+
+            var actual = _sut.CreateDatabase(_commandLine, configurationManager.Object);
+
+            Assert.IsNotNull(actual.ConnectionString);
+            Assert.AreEqual(configuration, actual.Configuration);
+        }
+
+        [Test]
+        public void CreateDatabaseApplyVariables()
+        {
+            var configuration = new AppConfiguration();
+
+            var configurationManager = new Mock<IConfigurationManager>(MockBehavior.Strict);
+            configurationManager
+                .SetupGet(c => c.SqlDatabase)
+                .Returns(configuration);
+
+            _commandLine.Variables.Add("a", "1");
+            _commandLine.Variables.Add("b", "2");
+
+            configuration.Variables.Add(new NameValueConfigurationElement("b", "2.2"));
+            configuration.Variables.Add(new NameValueConfigurationElement("c", "3"));
+
+            var actual = _sut.CreateDatabase(_commandLine, configurationManager.Object);
+
+            Assert.AreEqual("1", actual.Variables.GetValue("a"));
+            Assert.AreEqual("2", actual.Variables.GetValue("b"));
+            Assert.AreEqual("3", actual.Variables.GetValue("c"));
         }
     }
 }

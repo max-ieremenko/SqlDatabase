@@ -32,7 +32,7 @@ Supported signatures of Execute method
 * void Execute(IDbConnection connection)
 
 ## Configuration
-name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/blob/master/Sources/SqlDatabase/App.config):
+name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile):
 ```xml
 <configuration>
   <configSections>

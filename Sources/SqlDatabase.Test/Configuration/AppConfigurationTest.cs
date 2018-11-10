@@ -50,6 +50,10 @@ namespace SqlDatabase.Configuration
             Assert.AreEqual("set-version", configuration.SetCurrentVersionScript);
             Assert.AreEqual("method-name", configuration.AssemblyScript.MethodName);
             Assert.AreEqual("class-name", configuration.AssemblyScript.ClassName);
+
+            CollectionAssert.AreEquivalent(
+                new[] { "x", "y" },
+                configuration.Variables.AllKeys);
         }
 
         private AppConfiguration LoadFromResource(string resourceName)

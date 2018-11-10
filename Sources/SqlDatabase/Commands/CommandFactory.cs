@@ -28,6 +28,30 @@ namespace SqlDatabase.Commands
             throw new NotImplementedException("Unexpected command type [{0}].".FormatWith(commandLine.Command));
         }
 
+        internal Database CreateDatabase(CommandLine cmd, IConfigurationManager configuration)
+        {
+            var database = new Database
+            {
+                ConnectionString = cmd.Connection.ToString(),
+                Log = Log,
+                Configuration = configuration.SqlDatabase,
+                Transaction = cmd.Transaction
+            };
+
+            var configurationVariables = configuration.SqlDatabase.Variables;
+            foreach (var name in configurationVariables.AllKeys)
+            {
+                database.Variables.SetValue(name, configurationVariables[name].Value);
+            }
+
+            foreach (var entry in cmd.Variables)
+            {
+                database.Variables.SetValue(entry.Key, entry.Value);
+            }
+
+            return database;
+        }
+
         private static void FillSources(IList<IFileSystemInfo> sources, IList<string> scripts)
         {
             foreach (var script in scripts)
@@ -90,24 +114,6 @@ namespace SqlDatabase.Commands
         private IScriptFactory CreateScriptFactory(IConfigurationManager configuration)
         {
             return new ScriptFactory { Configuration = configuration.SqlDatabase };
-        }
-
-        private Database CreateDatabase(CommandLine cmd, IConfigurationManager configuration)
-        {
-            var database = new Database
-            {
-                ConnectionString = cmd.Connection.ToString(),
-                Log = Log,
-                Configuration = configuration.SqlDatabase,
-                Transaction = cmd.Transaction
-            };
-
-            foreach (var entry in cmd.Variables)
-            {
-                database.Variables.SetValue(entry.Key, entry.Value);
-            }
-
-            return database;
         }
     }
 }

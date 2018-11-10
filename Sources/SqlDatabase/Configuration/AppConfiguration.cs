@@ -9,6 +9,7 @@ namespace SqlDatabase.Configuration
         private const string PropertyGetCurrentVersionScript = "getCurrentVersion";
         private const string PropertySetCurrentVersionScript = "setCurrentVersion";
         private const string PropertyAssemblyScript = "assemblyScript";
+        private const string PropertyVariables = "variables";
 
         [ConfigurationProperty(PropertyGetCurrentVersionScript, DefaultValue = "SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)")]
         public string GetCurrentVersionScript
@@ -26,5 +27,8 @@ namespace SqlDatabase.Configuration
 
         [ConfigurationProperty(PropertyAssemblyScript)]
         public AssemblyScriptConfiguration AssemblyScript => (AssemblyScriptConfiguration)this[PropertyAssemblyScript];
+
+        [ConfigurationProperty(PropertyVariables)]
+        public NameValueConfigurationCollection Variables => (NameValueConfigurationCollection)this[PropertyVariables];
     }
 }

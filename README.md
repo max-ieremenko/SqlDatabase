@@ -68,7 +68,7 @@ execute script from "c:\Scripts\script.sql" on "database" on "server" with "Vari
 |-database|set connection string to target database|
 |-from|path to a folder or .zip file with scripts or script file name. Repeat -from to setup several sources|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
-|-configuration|path to application configuration file. Default is current SqlDatabase.exe.config|
+|-configuration|path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 Exit codes
@@ -82,15 +82,17 @@ Exit codes
 
 #### Variables in .sql scripts
 Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
-Non defined value of a variable leads to and error and stops migration execution.
+Non defined value of a variable leads to an error and stops migration execution.
 
 The value is resolving in the following order:
-1. check command line
+1. check [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
+2. check command line
 2. check environment variable (Environment.GetEnvironmentVariable())
 
 #### .zip files support
-Parameter *-from* in the command line interprets .zip files in the path as folders, for example
+Parameters *-from* and *-configuration* in the command line interprets .zip files in the path as folders, for example
 *-from=c:\scripts.zip\archive\tables.zip\demo* or *-from=c:\scripts.zip\archive\tables.zip\table1.sql*
+*-configuration=c:\scripts.zip\app.config*
 
 #### [Example](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder/) of a folder or .zip file with migration steps
 |File|Description|
@@ -105,7 +107,7 @@ Parameter *-from* in the command line interprets .zip files in the path as folde
 #### [Example](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder/) of a folder or .zip file with creation scripts
 ```
 ├── 01_database
-│   ├── 01_DropExistsing.sql
+│   ├── 01_DropExisting.sql
 │   ├── 02_Create.sql
 │   └── 03_Version.sql
 ├── 02_schemas
