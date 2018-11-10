@@ -10,14 +10,16 @@ Use Console.WriteLine() to write something into migration log.
 
 ## Runtime
 At runtime the assembly will be loaded into private application domain with
-* ApplicationBase: location of SqlDatabase.exe
+* ApplicationBase: temporary directory
 * ConfigurationFile: SqlDatabase.exe.config
+* Location of assembly: ApplicationBase, temporary directory
 
 Instance of migration step will be resolved via reflection: Activator.CreateInstance(typeof(SqlDatabaseScript))
 
 After the migration step is finished or failed
 - instance of SqlDatabaseScript will be disposed (if IDisposable)
 - the domain will be unloaded
+- temporary directory will be deleted
 
 ## Reflection
 The assembly must contain only one "public class SqlDatabaseScript", namespace doesn't matter.

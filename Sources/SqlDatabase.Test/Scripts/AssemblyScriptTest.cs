@@ -5,6 +5,7 @@ using System.IO;
 using Moq;
 using NUnit.Framework;
 using SqlDatabase.Scripts.AssemblyInternal;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
 {
@@ -49,11 +50,7 @@ namespace SqlDatabase.Scripts
                 .Callback(() => _executedScripts.Add(_command.Object.CommandText))
                 .Returns(0);
 
-            _sut = new AssemblyScript
-            {
-                DisplayName = "2.1_2.2.dll",
-                ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"))
-            };
+            _sut = new AssemblyScript();
         }
 
         [Test]
@@ -63,6 +60,8 @@ namespace SqlDatabase.Scripts
             _variables.CurrentVersion = "1.0";
             _variables.TargetVersion = "2.0";
 
+            _sut.DisplayName = "2.1_2.2.dll";
+            _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
             _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
 
             Assert.IsTrue(_logOutput.Contains("start execution"));
@@ -79,14 +78,73 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
+        public void ValidateScriptDomainAppBase()
+        {
+            _sut.DisplayName = GetType().Assembly.Location;
+            _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
+
+            _sut.AssemblyClassName = typeof(StepWithSubDomain).Name;
+            _sut.AssemblyMethodName = nameof(StepWithSubDomain.ShowAppBase);
+
+            _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
+
+            Assert.AreEqual(2, _executedScripts.Count);
+
+            var assemblyFileName = _executedScripts[0];
+            FileAssert.DoesNotExist(assemblyFileName);
+            Assert.AreEqual(Path.GetFileName(assemblyFileName), Path.GetFileName(GetType().Assembly.Location));
+
+            var appBase = _executedScripts[1];
+            DirectoryAssert.DoesNotExist(appBase);
+            Assert.AreEqual(appBase, Path.GetDirectoryName(assemblyFileName));
+        }
+
+        [Test]
+        public void ValidateScriptDomainConfiguration()
+        {
+            _sut.DisplayName = "CreateSubDomain.dll";
+            _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
+
+            _sut.AssemblyClassName = typeof(StepWithSubDomain).Name;
+            _sut.AssemblyMethodName = nameof(StepWithSubDomain.ShowConfiguration);
+
+            _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
+
+            Assert.AreEqual(2, _executedScripts.Count);
+
+            var configurationFile = _executedScripts[0];
+            Assert.AreEqual(configurationFile, AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+
+            var connectionString = _executedScripts[1];
+            Assert.AreEqual(connectionString, Query.ConnectionString);
+        }
+
+        [Test]
+        public void ValidateScriptDomainCreateSubDomain()
+        {
+            _sut.DisplayName = GetType().Assembly.Location;
+            _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
+
+            _sut.AssemblyClassName = typeof(StepWithSubDomain).Name;
+            _sut.AssemblyMethodName = nameof(StepWithSubDomain.Execute);
+
+            _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
+
+            Assert.AreEqual(1, _executedScripts.Count);
+
+            Assert.AreEqual("hello", _executedScripts[0]);
+        }
+
+        [Test]
         public void FailToResolveExecutor()
         {
             var agent = new DomainAgent
             {
+                Logger = _log.Object,
                 Assembly = GetType().Assembly
             };
 
-            Assert.Throws<InvalidOperationException>(() => AssemblyScript.Execute(agent, _command.Object, _variables, _log.Object));
+            Assert.Throws<InvalidOperationException>(() => _sut.Execute(agent, _command.Object, _variables));
         }
 
         [Test]
@@ -99,10 +157,11 @@ namespace SqlDatabase.Scripts
 
             var agent = new DomainAgent
             {
+                Logger = _log.Object,
                 EntryPoint = entryPoint.Object
             };
 
-            Assert.Throws<InvalidOperationException>(() => AssemblyScript.Execute(agent, _command.Object, _variables, _log.Object));
+            Assert.Throws<InvalidOperationException>(() => _sut.Execute(agent, _command.Object, _variables));
         }
     }
 }

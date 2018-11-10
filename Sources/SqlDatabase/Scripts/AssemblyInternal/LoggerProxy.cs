@@ -1,44 +1,51 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SqlDatabase.Scripts.AssemblyInternal
 {
-    internal sealed class LoggerProxy : MarshalByRefObject, ILogger
+    internal sealed class LoggerProxy : TraceListener, ILogger
     {
-        private readonly ILogger _log;
+        private readonly TraceListener _output;
+        private readonly ILogger _input;
 
-        public LoggerProxy(ILogger log)
+        public LoggerProxy(ILogger input)
         {
-            _log = log;
+            _input = input;
         }
 
-        public void Error(string message)
+        public LoggerProxy(TraceListener output)
         {
-            _log.Error(message);
+            _output = output;
         }
 
-        public void Info(string message)
+        public override void Write(string message)
         {
-            _log.Info(message);
+            throw new NotSupportedException();
         }
 
-        public IDisposable Indent()
+        public override void WriteLine(string message)
         {
-            return new RemoteDisposable(_log.Indent());
+            _input.Info(message);
         }
 
-        private sealed class RemoteDisposable : MarshalByRefObject, IDisposable
+        public override void Fail(string message)
         {
-            private readonly IDisposable _obj;
+            _input.Error(message);
+        }
 
-            public RemoteDisposable(IDisposable obj)
-            {
-                _obj = obj;
-            }
+        void ILogger.Error(string message)
+        {
+            _output.Fail(message);
+        }
 
-            public void Dispose()
-            {
-                _obj?.Dispose();
-            }
+        void ILogger.Info(string message)
+        {
+            _output.WriteLine(message);
+        }
+
+        IDisposable ILogger.Indent()
+        {
+            throw new NotSupportedException();
         }
     }
 }

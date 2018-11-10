@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace SqlDatabase.Scripts.AssemblyInternal
@@ -11,19 +12,20 @@ namespace SqlDatabase.Scripts.AssemblyInternal
 
         internal IEntryPoint EntryPoint { get; set; }
 
-        public void LoadAssembly(byte[] content, ILogger logger)
-        {
-            logger.Info("load assembly");
+        internal ILogger Logger { get; set; }
 
-            Assembly = System.Reflection.Assembly.Load(content);
+        public void LoadAssembly(string fileName)
+        {
+            Assembly = Assembly.LoadFrom(fileName);
         }
 
-        public void RedirectConsoleOut(ILogger logger)
+        public void RedirectConsoleOut(TraceListener logger)
         {
-            Console.SetOut(new ConsoleListener(logger));
+            Logger = new LoggerProxy(logger);
+            Console.SetOut(new ConsoleListener(Logger));
         }
 
-        public bool ResolveScriptExecutor(ILogger logger, string className, string methodName)
+        public bool ResolveScriptExecutor(string className, string methodName)
         {
             // only for unit tests
             if (EntryPoint != null)
@@ -33,7 +35,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal
 
             var resolver = new EntryPointResolver
             {
-                Log = logger,
+                Log = Logger,
                 ExecutorClassName = className,
                 ExecutorMethodName = methodName
             };

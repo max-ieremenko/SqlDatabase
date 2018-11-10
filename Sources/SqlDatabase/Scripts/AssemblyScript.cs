@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
 
@@ -7,48 +8,58 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class AssemblyScript : IScript
     {
+        public AssemblyScript()
+        {
+            AssemblyClassName = AppConfiguration.GetCurrent().AssemblyScript.ClassName;
+            AssemblyMethodName = AppConfiguration.GetCurrent().AssemblyScript.MethodName;
+        }
+
         public string DisplayName { get; set; }
 
         public Func<byte[]> ReadAssemblyContent { get; set; }
 
+        internal string AssemblyClassName { get; set; }
+
+        internal string AssemblyMethodName { get; set; }
+
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
-            var assembly = ReadAssemblyContent();
-
-            var setup = new AppDomainSetup
-            {
-                ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
-                ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
-            };
-
             logger.Info("create domain for {0}".FormatWith(DisplayName));
-            var domain = AppDomain.CreateDomain(DisplayName, null, setup);
-            try
-            {
-                var agent = (DomainAgent)domain.CreateInstanceAndUnwrap(GetType().Assembly.FullName, typeof(DomainAgent).FullName);
-                var logProxy = new LoggerProxy(logger);
 
-                agent.RedirectConsoleOut(logProxy);
-                agent.LoadAssembly(assembly, logProxy);
-
-                Execute(agent, command, variables, logProxy);
-            }
-            finally
+            var appBaseName = Path.GetFileName(DisplayName);
+            using (var appBase = new DomainDirectory(logger))
             {
-                AppDomain.Unload(domain);
+                var entryAssembly = appBase.SaveFile(ReadAssemblyContent(), appBaseName);
+
+                var setup = new AppDomainSetup
+                {
+                    ApplicationBase = appBase.Location,
+                    ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
+                };
+
+                var domain = AppDomain.CreateDomain(appBaseName, null, setup);
+                try
+                {
+                    var agent = (DomainAgent)domain.CreateInstanceFromAndUnwrap(GetType().Assembly.Location, typeof(DomainAgent).FullName);
+
+                    agent.RedirectConsoleOut(new LoggerProxy(logger));
+                    agent.LoadAssembly(entryAssembly);
+
+                    Execute(agent, command, variables);
+                }
+                finally
+                {
+                    AppDomain.Unload(domain);
+                }
             }
         }
 
-        internal static void Execute(
+        internal void Execute(
             DomainAgent agent,
             IDbCommand command,
-            IVariables variables,
-            ILogger logger)
+            IVariables variables)
         {
-            var className = AppConfiguration.GetCurrent().AssemblyScript.ClassName;
-            var methodName = AppConfiguration.GetCurrent().AssemblyScript.MethodName;
-
-            if (!agent.ResolveScriptExecutor(logger, className, methodName))
+            if (!agent.ResolveScriptExecutor(AssemblyClassName, AssemblyMethodName))
             {
                 throw new InvalidOperationException("Fail to resolve script executor.");
             }
