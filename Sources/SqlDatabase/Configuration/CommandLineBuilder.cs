@@ -10,6 +10,7 @@ namespace SqlDatabase.Configuration
         private const string ArgScripts = "-from";
         private const string ArgTransaction = "-transaction";
         private const string ArgVariable = "-var";
+        private const string ArgConfiguration = "-configuration";
 
         internal CommandLine Line { get; } = new CommandLine();
 
@@ -117,6 +118,12 @@ namespace SqlDatabase.Configuration
             return SetVariable(key, value);
         }
 
+        public CommandLineBuilder SetConfigurationFile(string configurationFile)
+        {
+            Line.ConfigurationFile = configurationFile;
+            return this;
+        }
+
         public CommandLine Build()
         {
             if (Line.Connection == null)
@@ -155,6 +162,11 @@ namespace SqlDatabase.Configuration
             if (cmd.Transaction == default(TransactionMode))
             {
                 result.Add("{0}={1}".FormatWith(ArgTransaction, cmd.Transaction));
+            }
+
+            if (!string.IsNullOrEmpty(cmd.ConfigurationFile))
+            {
+                result.Add("{0}={1}".FormatWith(ArgConfiguration, cmd.ConfigurationFile));
             }
 
             foreach (var entry in cmd.Variables)
@@ -210,6 +222,12 @@ namespace SqlDatabase.Configuration
             if (key.StartsWith(ArgVariable, StringComparison.OrdinalIgnoreCase))
             {
                 SetVariable(key.Substring(ArgVariable.Length), value);
+                return true;
+            }
+
+            if (ArgConfiguration.Equals(key, StringComparison.OrdinalIgnoreCase))
+            {
+                SetConfigurationFile(value);
                 return true;
             }
 

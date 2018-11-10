@@ -26,10 +26,5 @@ namespace SqlDatabase.Configuration
 
         [ConfigurationProperty(PropertyAssemblyScript)]
         public AssemblyScriptConfiguration AssemblyScript => (AssemblyScriptConfiguration)this[PropertyAssemblyScript];
-
-        public static AppConfiguration GetCurrent()
-        {
-            return (AppConfiguration)ConfigurationManager.GetSection(SectionName) ?? new AppConfiguration();
-        }
     }
 }

@@ -57,7 +57,8 @@ namespace SqlDatabase.Configuration
                 "-database=Data Source=SQL2016DEV;Initial Catalog=test",
                 @"-from=c:\folder",
                 "-varX=1 2 3",
-                "-varY=value");
+                "-varY=value",
+                "-configuration=app.config");
 
             Assert.AreEqual(Command.Create, actual.Command);
             StringAssert.AreEqualIgnoringCase(@"c:\folder", actual.Scripts[0]);
@@ -71,6 +72,8 @@ namespace SqlDatabase.Configuration
             CollectionAssert.AreEquivalent(new[] { "X", "Y" }, actual.Variables.Keys);
             Assert.AreEqual("1 2 3", actual.Variables["x"]);
             Assert.AreEqual("value", actual.Variables["y"]);
+
+            Assert.AreEqual("app.config", actual.ConfigurationFile);
         }
 
         [Test]
@@ -96,6 +99,8 @@ namespace SqlDatabase.Configuration
             CollectionAssert.AreEquivalent(new[] { "X", "Y" }, actual.Variables.Keys);
             Assert.AreEqual("1 2 3", actual.Variables["x"]);
             Assert.AreEqual("value", actual.Variables["y"]);
+
+            Assert.IsNull(actual.ConfigurationFile);
         }
 
         [Test]
@@ -121,6 +126,8 @@ namespace SqlDatabase.Configuration
             CollectionAssert.AreEquivalent(new[] { "X", "Y" }, actual.Variables.Keys);
             Assert.AreEqual("1 2 3", actual.Variables["x"]);
             Assert.AreEqual("value", actual.Variables["y"]);
+
+            Assert.IsNull(actual.ConfigurationFile);
         }
 
         [Test]

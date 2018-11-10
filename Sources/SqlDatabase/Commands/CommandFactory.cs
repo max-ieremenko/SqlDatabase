@@ -12,14 +12,17 @@ namespace SqlDatabase.Commands
 
         public DatabaseCommandBase Resolve(CommandLine commandLine)
         {
+            var configuration = new ConfigurationManager();
+            configuration.LoadFrom(commandLine.ConfigurationFile);
+
             switch (commandLine.Command)
             {
                 case Command.Upgrade:
-                    return ResolveUpgradeCommand(commandLine);
+                    return ResolveUpgradeCommand(commandLine, configuration);
                 case Command.Create:
-                    return ResolveCreateCommand(commandLine);
+                    return ResolveCreateCommand(commandLine, configuration);
                 case Command.Execute:
-                    return ResolveExecuteCommand(commandLine);
+                    return ResolveExecuteCommand(commandLine, configuration);
             }
 
             throw new NotImplementedException("Unexpected command type [{0}].".FormatWith(commandLine.Command));
@@ -33,11 +36,11 @@ namespace SqlDatabase.Commands
             }
         }
 
-        private DatabaseExecuteCommand ResolveExecuteCommand(CommandLine commandLine)
+        private DatabaseExecuteCommand ResolveExecuteCommand(CommandLine commandLine, IConfigurationManager configuration)
         {
             var sequence = new CreateScriptSequence
             {
-                ScriptFactory = new ScriptFactory()
+                ScriptFactory = CreateScriptFactory(configuration)
             };
 
             FillSources(sequence.Sources, commandLine.Scripts);
@@ -45,16 +48,16 @@ namespace SqlDatabase.Commands
             return new DatabaseExecuteCommand
             {
                 Log = Log,
-                Database = CreateDatabase(commandLine),
+                Database = CreateDatabase(commandLine, configuration),
                 ScriptSequence = sequence
             };
         }
 
-        private DatabaseUpgradeCommand ResolveUpgradeCommand(CommandLine commandLine)
+        private DatabaseUpgradeCommand ResolveUpgradeCommand(CommandLine commandLine, IConfigurationManager configuration)
         {
             var sequence = new UpgradeScriptSequence
             {
-                ScriptFactory = new ScriptFactory()
+                ScriptFactory = CreateScriptFactory(configuration)
             };
 
             FillSources(sequence.Sources, commandLine.Scripts);
@@ -62,16 +65,16 @@ namespace SqlDatabase.Commands
             return new DatabaseUpgradeCommand
             {
                 Log = Log,
-                Database = CreateDatabase(commandLine),
+                Database = CreateDatabase(commandLine, configuration),
                 ScriptSequence = sequence
             };
         }
 
-        private DatabaseCreateCommand ResolveCreateCommand(CommandLine commandLine)
+        private DatabaseCreateCommand ResolveCreateCommand(CommandLine commandLine, IConfigurationManager configuration)
         {
             var sequence = new CreateScriptSequence
             {
-                ScriptFactory = new ScriptFactory()
+                ScriptFactory = CreateScriptFactory(configuration)
             };
 
             FillSources(sequence.Sources, commandLine.Scripts);
@@ -79,18 +82,23 @@ namespace SqlDatabase.Commands
             return new DatabaseCreateCommand
             {
                 Log = Log,
-                Database = CreateDatabase(commandLine),
+                Database = CreateDatabase(commandLine, configuration),
                 ScriptSequence = sequence
             };
         }
 
-        private Database CreateDatabase(CommandLine cmd)
+        private IScriptFactory CreateScriptFactory(IConfigurationManager configuration)
+        {
+            return new ScriptFactory { Configuration = configuration.SqlDatabase };
+        }
+
+        private Database CreateDatabase(CommandLine cmd, IConfigurationManager configuration)
         {
             var database = new Database
             {
                 ConnectionString = cmd.Connection.ToString(),
                 Log = Log,
-                Configuration = AppConfiguration.GetCurrent(),
+                Configuration = configuration.SqlDatabase,
                 Transaction = cmd.Transaction
             };
 

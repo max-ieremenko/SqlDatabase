@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
 using SqlDatabase.TestApi;
 
@@ -51,6 +52,7 @@ namespace SqlDatabase.Scripts
                 .Returns(0);
 
             _sut = new AssemblyScript();
+            _sut.Configuration = new AssemblyScriptConfiguration();
         }
 
         [Test]
@@ -62,6 +64,7 @@ namespace SqlDatabase.Scripts
 
             _sut.DisplayName = "2.1_2.2.dll";
             _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
+
             _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
 
             Assert.IsTrue(_logOutput.Contains("start execution"));
@@ -82,9 +85,7 @@ namespace SqlDatabase.Scripts
         {
             _sut.DisplayName = GetType().Assembly.Location;
             _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
-
-            _sut.AssemblyClassName = typeof(StepWithSubDomain).Name;
-            _sut.AssemblyMethodName = nameof(StepWithSubDomain.ShowAppBase);
+            _sut.Configuration = new AssemblyScriptConfiguration(typeof(StepWithSubDomain).Name, nameof(StepWithSubDomain.ShowAppBase));
 
             _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
 
@@ -104,9 +105,7 @@ namespace SqlDatabase.Scripts
         {
             _sut.DisplayName = "CreateSubDomain.dll";
             _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
-
-            _sut.AssemblyClassName = typeof(StepWithSubDomain).Name;
-            _sut.AssemblyMethodName = nameof(StepWithSubDomain.ShowConfiguration);
+            _sut.Configuration = new AssemblyScriptConfiguration(typeof(StepWithSubDomain).Name, nameof(StepWithSubDomain.ShowConfiguration));
 
             _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
 
@@ -124,9 +123,7 @@ namespace SqlDatabase.Scripts
         {
             _sut.DisplayName = GetType().Assembly.Location;
             _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
-
-            _sut.AssemblyClassName = typeof(StepWithSubDomain).Name;
-            _sut.AssemblyMethodName = nameof(StepWithSubDomain.Execute);
+            _sut.Configuration = new AssemblyScriptConfiguration(typeof(StepWithSubDomain).Name, nameof(StepWithSubDomain.Execute));
 
             _sut.Execute(new DbCommandProxy(_command.Object), _variables, _log.Object);
 

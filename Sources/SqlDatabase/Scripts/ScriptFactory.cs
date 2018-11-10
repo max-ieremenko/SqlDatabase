@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using SqlDatabase.Configuration;
 using SqlDatabase.IO;
 
 namespace SqlDatabase.Scripts
 {
     internal sealed class ScriptFactory : IScriptFactory
     {
+        public AppConfiguration Configuration { get; set; }
+
         public bool IsSupported(string fileName)
         {
             var ext = Path.GetExtension(fileName);
@@ -34,6 +37,7 @@ namespace SqlDatabase.Scripts
                 return new AssemblyScript
                 {
                     DisplayName = file.Name,
+                    Configuration = Configuration.AssemblyScript,
                     ReadAssemblyContent = CreateBinaryReader(file)
                 };
             }

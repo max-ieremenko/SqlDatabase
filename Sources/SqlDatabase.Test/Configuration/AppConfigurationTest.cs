@@ -55,7 +55,7 @@ namespace SqlDatabase.Configuration
         private AppConfiguration LoadFromResource(string resourceName)
         {
             var fileName = _temp.CopyFileFromResources(resourceName);
-            var configuration = ConfigurationManager.OpenMappedExeConfiguration(new ExeConfigurationFileMap { ExeConfigFilename = fileName }, ConfigurationUserLevel.None);
+            var configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(new ExeConfigurationFileMap { ExeConfigFilename = fileName }, ConfigurationUserLevel.None);
             return (AppConfiguration)configuration.GetSection(AppConfiguration.SectionName);
         }
     }

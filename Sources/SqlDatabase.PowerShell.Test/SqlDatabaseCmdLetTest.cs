@@ -71,6 +71,7 @@ namespace SqlDatabase.PowerShell
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Database), dataBase);
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.From), new[] { from1, from2 });
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Transaction), TransactionMode.PerStep.ToString());
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Configuration), "app.config");
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Var), new[] { "x=1", "y=2" });
 
             _powerShell.Invoke();
@@ -85,6 +86,7 @@ namespace SqlDatabase.PowerShell
             Assert.AreEqual(from1, commandLine.Scripts[0]);
             Assert.AreEqual(from2, commandLine.Scripts[1]);
             Assert.AreEqual(TransactionMode.PerStep, commandLine.Transaction);
+            Assert.AreEqual("app.config", commandLine.ConfigurationFile);
 
             CollectionAssert.AreEquivalent(new[] { "x", "y" }, commandLine.Variables.Keys);
             Assert.AreEqual("1", commandLine.Variables["x"]);
@@ -120,7 +122,7 @@ namespace SqlDatabase.PowerShell
         private sealed class SomeSqlDatabaseCmdLet : SqlDatabaseCmdLet
         {
             public SomeSqlDatabaseCmdLet()
-                : base(Configuration.Command.Upgrade)
+                : base(SqlDatabase.Configuration.Command.Upgrade)
             {
             }
         }

@@ -30,7 +30,7 @@ namespace SqlDatabase.Scripts
             using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = 0;
-                command.CommandText = (Configuration ?? AppConfiguration.GetCurrent()).GetCurrentVersionScript;
+                command.CommandText = Configuration.GetCurrentVersionScript;
 
                 connection.Open();
                 version = Convert.ToString(command.ExecuteScalar());
@@ -65,7 +65,7 @@ namespace SqlDatabase.Scripts
             Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 
             var updateVersion = TextScript.ApplyVariables(
-                (Configuration ?? AppConfiguration.GetCurrent()).SetCurrentVersionScript,
+                Configuration.SetCurrentVersionScript,
                 Variables);
 
             using (var connection = new SqlConnection(ConnectionString))

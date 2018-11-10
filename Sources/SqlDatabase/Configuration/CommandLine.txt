@@ -10,6 +10,7 @@
   -from: folder or zip file with scripts or file name for execute command. Repeat -from to setup several sources.
   -var: set a variable in format "=var[name of variable]=[value of variable]"
   -transaction: transaction mode. Possible values: none, perStep. Default is none.
+  -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
 
 exit codes:
   0 - OK

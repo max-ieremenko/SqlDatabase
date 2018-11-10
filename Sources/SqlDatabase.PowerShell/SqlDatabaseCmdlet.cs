@@ -24,6 +24,10 @@ namespace SqlDatabase.PowerShell
         [Alias("t")]
         public TransactionMode Transaction { get; set; }
 
+        [Parameter(Position = 4, HelpMessage = "Path to application configuration file. Default is current SqlDatabase.exe.config.")]
+        [Alias("c")]
+        public string Configuration { get; set; }
+
         [Parameter(ValueFromRemainingArguments = true, HelpMessage = "set a variable in format \"[name of variable]=[value of variable]\".")]
         [Alias("v")]
         public string[] Var { get; set; }
@@ -36,7 +40,8 @@ namespace SqlDatabase.PowerShell
             var cmd = new CommandLineBuilder()
                 .SetCommand(_command)
                 .SetConnection(Database)
-                .SetTransaction(Transaction);
+                .SetTransaction(Transaction)
+                .SetConfigurationFile(Configuration);
 
             foreach (var from in From)
             {

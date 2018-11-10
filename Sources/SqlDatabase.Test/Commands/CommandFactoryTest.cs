@@ -36,6 +36,9 @@ namespace SqlDatabase.Commands
             Assert.AreEqual(_log, actual.Log);
             Assert.IsInstanceOf<Database>(actual.Database);
 
+            var database = (Database)actual.Database;
+            Assert.IsNotNull(database.Configuration);
+
             var command = (DatabaseCreateCommand)actual;
             Assert.IsInstanceOf<CreateScriptSequence>(command.ScriptSequence);
         }
@@ -49,6 +52,9 @@ namespace SqlDatabase.Commands
             Assert.IsInstanceOf<DatabaseUpgradeCommand>(actual);
             Assert.AreEqual(_log, actual.Log);
             Assert.IsInstanceOf<Database>(actual.Database);
+
+            var database = (Database)actual.Database;
+            Assert.IsNotNull(database.Configuration);
 
             var command = (DatabaseUpgradeCommand)actual;
             Assert.IsInstanceOf<UpgradeScriptSequence>(command.ScriptSequence);
@@ -64,6 +70,9 @@ namespace SqlDatabase.Commands
             Assert.IsInstanceOf<DatabaseExecuteCommand>(actual);
             Assert.AreEqual(_log, actual.Log);
             Assert.IsInstanceOf<Database>(actual.Database);
+
+            var database = (Database)actual.Database;
+            Assert.IsNotNull(database.Configuration);
 
             var command = (DatabaseExecuteCommand)actual;
             Assert.IsInstanceOf<Database>(command.Database);

@@ -9,6 +9,7 @@ using NUnit.Framework;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
 using SqlDatabase.TestApi;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace SqlDatabase.IntegrationTests
 {
@@ -19,6 +20,7 @@ namespace SqlDatabase.IntegrationTests
 
         private Mock<ILogger> _log;
         private string _scriptsLocation;
+        private AppConfiguration _configuration;
 
         [SetUp]
         public void BeforeEachTest()
@@ -28,6 +30,8 @@ namespace SqlDatabase.IntegrationTests
             {
                 _scriptsLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsLocation);
             }
+
+            _configuration = new AppConfiguration();
 
             _log = new Mock<ILogger>(MockBehavior.Strict);
             _log
@@ -65,7 +69,11 @@ FROM demo.Person Person
      INNER JOIN demo.PersonAddress PersonAddress ON (PersonAddress.PersonId = Person.Id)
 ORDER BY Person.Id";
 
-            var db = new Database { ConnectionString = _connectionString };
+            var db = new Database
+            {
+                ConnectionString = _connectionString,
+                Configuration = _configuration
+            };
             Assert.AreEqual(new Version("1.2"), db.GetCurrentVersion());
 
             using (var c = new SqlConnection(_connectionString))
@@ -103,7 +111,11 @@ SELECT Person.Id, Person.SecondName
 FROM demo.Person Person
 ORDER BY Person.Id";
 
-            var db = new Database { ConnectionString = _connectionString };
+            var db = new Database
+            {
+                ConnectionString = _connectionString,
+                Configuration = _configuration
+            };
             Assert.AreEqual(new Version("2.1"), db.GetCurrentVersion());
 
             using (var c = new SqlConnection(_connectionString))

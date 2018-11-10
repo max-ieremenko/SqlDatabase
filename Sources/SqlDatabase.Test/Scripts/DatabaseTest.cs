@@ -40,7 +40,8 @@ namespace SqlDatabase.Scripts
             _sut = new Database
             {
                 ConnectionString = Query.ConnectionString,
-                Log = log.Object
+                Log = log.Object,
+                Configuration = new AppConfiguration()
             };
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Text;
 using Moq;
 using SqlDatabase.IO;
 
@@ -19,6 +20,13 @@ namespace SqlDatabase.TestApi
             }
 
             return file.Object;
+        }
+
+        public static IFile File(string name, string content)
+        {
+            return File(
+                name,
+                string.IsNullOrEmpty(content) ? new byte[0] : Encoding.UTF8.GetBytes(content));
         }
 
         public static IFolder Folder(string name, params IFileSystemInfo[] content)

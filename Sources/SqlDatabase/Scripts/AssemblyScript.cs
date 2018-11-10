@@ -8,19 +8,11 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class AssemblyScript : IScript
     {
-        public AssemblyScript()
-        {
-            AssemblyClassName = AppConfiguration.GetCurrent().AssemblyScript.ClassName;
-            AssemblyMethodName = AppConfiguration.GetCurrent().AssemblyScript.MethodName;
-        }
-
         public string DisplayName { get; set; }
 
         public Func<byte[]> ReadAssemblyContent { get; set; }
 
-        internal string AssemblyClassName { get; set; }
-
-        internal string AssemblyMethodName { get; set; }
+        public AssemblyScriptConfiguration Configuration { get; set; }
 
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
@@ -59,7 +51,7 @@ namespace SqlDatabase.Scripts
             IDbCommand command,
             IVariables variables)
         {
-            if (!agent.ResolveScriptExecutor(AssemblyClassName, AssemblyMethodName))
+            if (!agent.ResolveScriptExecutor(Configuration.ClassName, Configuration.MethodName))
             {
                 throw new InvalidOperationException("Fail to resolve script executor.");
             }

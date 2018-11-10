@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using NUnit.Framework;
+using SqlDatabase.Configuration;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
@@ -9,11 +10,13 @@ namespace SqlDatabase.Scripts
     public class ScriptFactoryTest
     {
         private ScriptFactory _sut;
+        private AppConfiguration _configuration;
 
         [SetUp]
         public void BeforeEachTest()
         {
-            _sut = new ScriptFactory();
+            _configuration = new AppConfiguration();
+            _sut = new ScriptFactory { Configuration = _configuration };
         }
 
         [Test]

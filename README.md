@@ -68,6 +68,7 @@ execute script from "c:\Scripts\script.sql" on "database" on "server" with "Vari
 |-database|set connection string to target database|
 |-from|path to a folder or .zip file with scripts or script file name. Repeat -from to setup several sources|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
+|-configuration|path to application configuration file. Default is current SqlDatabase.exe.config|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 Exit codes

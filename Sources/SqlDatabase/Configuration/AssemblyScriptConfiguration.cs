@@ -7,6 +7,16 @@ namespace SqlDatabase.Configuration
         private const string PropertyClassName = "className";
         private const string PropertyMethodName = "methodName";
 
+        public AssemblyScriptConfiguration()
+        {
+        }
+
+        public AssemblyScriptConfiguration(string className, string methodName)
+        {
+            ClassName = className;
+            MethodName = methodName;
+        }
+
         [ConfigurationProperty(PropertyClassName, DefaultValue = "SqlDatabaseScript")]
         public string ClassName
         {

@@ -15,5 +15,7 @@ namespace SqlDatabase.Configuration
         public IList<string> Scripts { get; } = new List<string>();
 
         public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        public string ConfigurationFile { get; set; }
     }
 }
