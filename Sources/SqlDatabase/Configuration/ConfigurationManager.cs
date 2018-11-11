@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using SqlDatabase.IO;
 using Manager = System.Configuration.ConfigurationManager;
 
@@ -26,7 +27,25 @@ namespace SqlDatabase.Configuration
 
         internal void LoadFrom(IFileSystemInfo info)
         {
-            var section = info == null ? LoadCurrent() : Load(info);
+            AppConfiguration section;
+            if (info == null)
+            {
+                section = LoadCurrent();
+            }
+            else
+            {
+                // in a PowerShell context resolving SqlDatabase does not work
+                AppDomain.CurrentDomain.AssemblyResolve += ResolveSqlDatabaseAssembly;
+                try
+                {
+                    section = Load(info);
+                }
+                finally
+                {
+                    AppDomain.CurrentDomain.AssemblyResolve -= ResolveSqlDatabaseAssembly;
+                }
+            }
+
             SqlDatabase = section ?? new AppConfiguration();
         }
 
@@ -81,6 +100,17 @@ namespace SqlDatabase.Configuration
             }
 
             return file;
+        }
+
+        private static Assembly ResolveSqlDatabaseAssembly(object sender, ResolveEventArgs args)
+        {
+            var assembly = typeof(ConfigurationManager).Assembly;
+            if (string.Equals(assembly.GetName().Name, args.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return assembly;
+            }
+
+            return null;
         }
     }
 }
