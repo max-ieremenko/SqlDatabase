@@ -5,51 +5,80 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class Variables : IVariables
     {
-        private readonly IDictionary<string, string> _valueByName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly IDictionary<string, VariableValue> _valueByName = new Dictionary<string, VariableValue>(StringComparer.OrdinalIgnoreCase);
 
         public string DatabaseName
         {
             get => GetValue(nameof(DatabaseName));
             set
             {
-                SetValue(nameof(DatabaseName), value);
-                SetValue("DbName", value);
+                SetValue(VariableSource.Runtime, nameof(DatabaseName), value);
+                SetValue(VariableSource.Runtime, "DbName", value);
             }
         }
 
         public string CurrentVersion
         {
             get => GetValue(nameof(CurrentVersion));
-            set => SetValue(nameof(CurrentVersion), value);
+            set => SetValue(VariableSource.Runtime, nameof(CurrentVersion), value);
         }
 
         public string TargetVersion
         {
             get => GetValue(nameof(TargetVersion));
-            set => SetValue(nameof(TargetVersion), value);
+            set => SetValue(VariableSource.Runtime, nameof(TargetVersion), value);
         }
 
         public string GetValue(string name)
         {
-            _valueByName.TryGetValue(name, out var value);
-            if (value != null)
+            if (_valueByName.TryGetValue(name, out var value))
             {
-                return value;
+                if (value.Source != VariableSource.ConfigurationFile)
+                {
+                    return value.Value;
+                }
             }
 
-            value = Environment.GetEnvironmentVariable(name);
-            return string.IsNullOrEmpty(value) ? null : value;
+            var environmentValue = Environment.GetEnvironmentVariable(name);
+            return string.IsNullOrEmpty(environmentValue) ? value.Value : environmentValue;
         }
 
-        internal void SetValue(string name, string value)
+        internal void SetValue(VariableSource source, string name, string value)
         {
-            if (value == null)
+            if (!_valueByName.TryGetValue(name, out var oldValue)
+                || source <= oldValue.Source)
             {
-                _valueByName.Remove(name);
+                if (value == null)
+                {
+                    _valueByName.Remove(name);
+                }
+                else
+                {
+                    _valueByName[name] = new VariableValue(source, value);
+                }
             }
-            else
+        }
+
+        private struct VariableValue
+        {
+            public VariableValue(VariableSource source, string value)
             {
-                _valueByName[name] = value;
+                Source = source;
+                Value = value;
+            }
+
+            public VariableSource Source { get; }
+
+            public string Value { get; }
+
+            public override bool Equals(object obj)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override int GetHashCode()
+            {
+                throw new NotSupportedException();
             }
         }
     }

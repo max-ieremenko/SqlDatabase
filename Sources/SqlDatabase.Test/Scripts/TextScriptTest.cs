@@ -48,7 +48,7 @@ namespace SqlDatabase.Scripts
             {
                 ReadSqlContent = () => "{{var1}} {{var1}}"
             };
-            _variables.SetValue("var1", "[some value]");
+            _variables.SetValue(VariableSource.CommandLine, "var1", "[some value]");
 
             sut.Execute(_command.Object, _variables, _logger.Object);
 
@@ -70,7 +70,7 @@ go
 text2
 go"
             };
-            _variables.SetValue("var1", "text1");
+            _variables.SetValue(VariableSource.CommandLine, "var1", "text1");
 
             sut.Execute(_command.Object, _variables, _logger.Object);
 

@@ -85,9 +85,9 @@ Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variabl
 Non defined value of a variable leads to an error and stops migration execution.
 
 The value is resolving in the following order:
-1. check [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
-2. check command line
+1. check command line
 2. check environment variable (Environment.GetEnvironmentVariable())
+3. check [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
 
 #### .zip files support
 Parameters *-from* and *-configuration* in the command line interprets .zip files in the path as folders, for example

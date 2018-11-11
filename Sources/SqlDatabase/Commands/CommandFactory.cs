@@ -41,12 +41,12 @@ namespace SqlDatabase.Commands
             var configurationVariables = configuration.SqlDatabase.Variables;
             foreach (var name in configurationVariables.AllKeys)
             {
-                database.Variables.SetValue(name, configurationVariables[name].Value);
+                database.Variables.SetValue(VariableSource.ConfigurationFile, name, configurationVariables[name].Value);
             }
 
             foreach (var entry in cmd.Variables)
             {
-                database.Variables.SetValue(entry.Key, entry.Value);
+                database.Variables.SetValue(VariableSource.CommandLine, entry.Key, entry.Value);
             }
 
             return database;
