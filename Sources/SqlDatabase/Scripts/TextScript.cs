@@ -66,7 +66,7 @@ namespace SqlDatabase.Scripts
                 var value = variables.GetValue(name);
                 if (value == null)
                 {
-                    throw new InvalidOperationException("Variable [{0}] is not defined.".FormatWith(name));
+                    throw new InvalidOperationException("Variable [{0}] not defined.".FormatWith(name));
                 }
 
                 onReplace?.Invoke(name, value);
