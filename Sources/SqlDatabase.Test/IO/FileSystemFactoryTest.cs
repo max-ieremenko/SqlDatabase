@@ -29,7 +29,7 @@ namespace SqlDatabase.IO
                 dir.CopyFileFromResources("Content.zip");
 
                 var folder = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, path));
-                Assert.IsInstanceOf<ZipFolder>(folder);
+                Assert.IsNotNull(folder);
 
                 var files = ((IFolder)folder).GetFiles().ToList();
                 if (fileName != null)

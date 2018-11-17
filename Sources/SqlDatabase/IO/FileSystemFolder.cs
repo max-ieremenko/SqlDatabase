@@ -24,7 +24,7 @@ namespace SqlDatabase.IO
                 .Select(i => new FileSystemFolder(i))
                 .Cast<IFolder>();
 
-            var files = Directory.GetFiles(Location, "*" + ZipFolder.Extension).Select(i => new ZipFolder(i));
+            var files = Directory.GetFiles(Location, "*" + FileTools.ZipExtension).Select(i => new ZipFolder(i));
 
             return folders.Concat(files);
         }
@@ -33,7 +33,7 @@ namespace SqlDatabase.IO
         {
             return Directory
                 .GetFiles(Location)
-                .Where(i => !ZipFolder.Extension.Equals(Path.GetExtension(i), StringComparison.OrdinalIgnoreCase))
+                .Where(i => !FileTools.IsZip(i))
                 .Select(i => new FileSystemFile(i));
         }
     }

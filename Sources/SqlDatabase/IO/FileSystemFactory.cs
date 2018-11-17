@@ -9,11 +9,11 @@ namespace SqlDatabase.IO
     {
         public static IFileSystemInfo FileSystemInfoFromPath(string path)
         {
-            path = RootPath(path);
+            path = FileTools.RootPath(path);
 
             if (File.Exists(path))
             {
-                return IsZip(path) ? (IFileSystemInfo)new ZipFolder(path) : new FileSystemFile(path);
+                return FileTools.IsZip(path) ? (IFileSystemInfo)new ZipFolder(path) : new FileSystemFile(path);
             }
 
             if (Directory.Exists(path))
@@ -80,37 +80,15 @@ namespace SqlDatabase.IO
 
             if (File.Exists(path))
             {
-                var ext = Path.GetExtension(path);
-                if (!ZipFolder.Extension.Equals(ext, StringComparison.OrdinalIgnoreCase))
+                if (!FileTools.IsZip(path))
                 {
-                    throw new NotSupportedException("File format [{0}] is not supported as .zip container.".FormatWith(ext));
+                    throw new NotSupportedException("File format [{0}] is not supported as .zip container.".FormatWith(Path.GetExtension(path)));
                 }
 
                 return new ZipFolder(path);
             }
 
             return null;
-        }
-
-        private static string RootPath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return AppDomain.CurrentDomain.BaseDirectory;
-            }
-
-            if (!Path.IsPathRooted(path))
-            {
-                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
-            }
-
-            return path;
-        }
-
-        private static bool IsZip(string path)
-        {
-            var ext = Path.GetExtension(path);
-            return ZipFolder.Extension.Equals(ext, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

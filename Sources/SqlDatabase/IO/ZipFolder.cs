@@ -3,104 +3,36 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace SqlDatabase.IO
 {
     [DebuggerDisplay("{Name}")]
     internal sealed class ZipFolder : IFolder
     {
-        public const string Extension = ".zip";
-
         private readonly ZipFolder _parent;
+        private IFolder _tree;
 
         public ZipFolder(string fileName)
             : this(null, fileName, Path.GetFileName(fileName))
         {
         }
 
-        public ZipFolder(ZipFolder parent, string entryName, string name)
+        public ZipFolder(ZipFolder parent, string zipEntryFullName, string name)
         {
             _parent = parent;
 
             Name = name;
-            FileName = entryName;
+            FileName = zipEntryFullName;
         }
 
         public string Name { get; }
 
         public string FileName { get; }
 
-        public IEnumerable<IFolder> GetFolders()
-        {
-            var myLocalName = GetMyLocalName();
-            using (var zip = OpenRead())
-            {
-                foreach (var entry in zip.Entries)
-                {
-                    var name = GetMyEntryName(entry.FullName, myLocalName);
-                    if (name != null &&
-                        (IsFolderName(entry.FullName) || IsFolderName(name)))
-                    {
-                        yield return new ZipFolder(this, entry.FullName, name);
-                    }
-                }
-            }
-        }
+        public IEnumerable<IFolder> GetFolders() => BuildOrGetTree().GetFolders();
 
-        public IEnumerable<IFile> GetFiles()
-        {
-            var myLocalName = GetMyLocalName();
-            using (var zip = OpenRead())
-            {
-                foreach (var entry in zip.Entries)
-                {
-                    var name = GetMyEntryName(entry.FullName, myLocalName);
-                    if (name != null
-                        && !IsFolderName(entry.FullName)
-                        && !IsFolderName(name))
-                    {
-                        yield return new ZipFolderFile(this, entry.FullName);
-                    }
-                }
-            }
-        }
-
-        internal static string GetMyEntryName(string entryFullName, string myLocalName)
-        {
-            // 11/
-            // 11/11.txt
-            // 11/22/
-            // 11/22/22.zip
-            // 11/22/22.zip/33.txt
-            if (myLocalName != null)
-            {
-                if (!entryFullName.StartsWith(myLocalName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return null;
-                }
-
-                // 11/11.txt => 11.txt
-                entryFullName = entryFullName.Substring(myLocalName.Length);
-            }
-
-            if (entryFullName.Length == 0)
-            {
-                return null;
-            }
-
-            var index = entryFullName.IndexOf("/", StringComparison.CurrentCulture);
-            if (index == entryFullName.Length - 1)
-            {
-                return entryFullName.Substring(0, entryFullName.Length - 1);
-            }
-
-            if (index < 0)
-            {
-                return entryFullName;
-            }
-
-            return null;
-        }
+        public IEnumerable<IFile> GetFiles() => BuildOrGetTree().GetFiles();
 
         internal ZipArchive OpenRead()
         {
@@ -109,24 +41,72 @@ namespace SqlDatabase.IO
                 return ZipFile.OpenRead(FileName);
             }
 
-            if (!Name.EndsWith(Extension, StringComparison.OrdinalIgnoreCase))
-            {
-                return _parent.OpenRead();
-            }
-
             var file = new ZipFolderFile(_parent, FileName);
             return new ZipArchive(file.OpenRead(), ZipArchiveMode.Read, false);
         }
 
-        private static bool IsFolderName(string name)
+        private IFolder BuildOrGetTree()
         {
-            return name.EndsWith("/", StringComparison.OrdinalIgnoreCase)
-                   || name.EndsWith(Extension, StringComparison.OrdinalIgnoreCase);
+            if (_tree == null)
+            {
+                using (var zip = OpenRead())
+                {
+                    _tree = BuildTree(zip.Entries);
+                }
+            }
+
+            return _tree;
         }
 
-        private string GetMyLocalName()
+        private IFolder BuildTree(IEnumerable<ZipArchiveEntry> entries)
         {
-            return _parent == null || FileName.EndsWith(Extension, StringComparison.OrdinalIgnoreCase) ? null : FileName;
+            /*
+                1/
+                1/11.txt
+                2/
+                2/2.txt
+                2/2.2/2.2.txt
+                inner.zip
+             */
+
+            var tree = new ZipEntryFolder(new[] { string.Empty });
+
+            foreach (var entry in entries)
+            {
+                var owner = tree;
+                var path = entry.FullName.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (var i = 0; i < path.Length - 1; i++)
+                {
+                    var pathItem = path[i];
+                    if (!owner.FolderByName.TryGetValue(pathItem, out var next))
+                    {
+                        next = new ZipEntryFolder(path.Take(i + 1));
+                        owner.FolderByName.Add(pathItem, next);
+                    }
+
+                    owner = (ZipEntryFolder)next;
+                }
+
+                var entryName = path.Last();
+                if (entry.FullName.EndsWith("/"))
+                {
+                    if (!owner.FolderByName.ContainsKey(entryName))
+                    {
+                        owner.FolderByName.Add(entryName, new ZipEntryFolder(path));
+                    }
+                }
+                else if (FileTools.IsZip(entry.FullName))
+                {
+                    owner.FolderByName.Add(entryName, new ZipFolder(this, entry.FullName, Path.Combine(owner.Name, entryName)));
+                }
+                else
+                {
+                    owner.Files.Add(new ZipFolderFile(this, entry.FullName));
+                }
+            }
+
+            return tree;
         }
     }
 }

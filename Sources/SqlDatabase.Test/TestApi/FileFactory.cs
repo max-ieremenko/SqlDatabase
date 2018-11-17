@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Moq;
+using NUnit.Framework;
 using SqlDatabase.IO;
 
 namespace SqlDatabase.TestApi
@@ -42,6 +43,17 @@ namespace SqlDatabase.TestApi
             folder.Setup(f => f.GetFolders()).Returns(subFolders);
 
             return folder.Object;
+        }
+
+        public static string ReadAllText(this IFile file)
+        {
+            Assert.IsNotNull(file);
+
+            using (var stream = file.OpenRead())
+            using (var reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
         }
     }
 }

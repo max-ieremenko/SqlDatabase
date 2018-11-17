@@ -8,22 +8,22 @@ namespace SqlDatabase.IO
     {
         private readonly ZipFolder _parent;
 
-        public ZipFolderFile(ZipFolder parent, string entryName)
+        public ZipFolderFile(ZipFolder parent, string entryFullName)
         {
             _parent = parent;
 
-            EntryName = entryName;
-            Name = Path.GetFileName(entryName);
+            EntryFullName = entryFullName;
+            Name = Path.GetFileName(entryFullName);
         }
 
         public string Name { get; }
 
-        public string EntryName { get; }
+        public string EntryFullName { get; }
 
         public Stream OpenRead()
         {
             var content = _parent.OpenRead();
-            var entry = content.GetEntry(EntryName);
+            var entry = content.GetEntry(EntryFullName);
 
             return new EntryStream(content, entry.Open());
         }
