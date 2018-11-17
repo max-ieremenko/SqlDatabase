@@ -21,12 +21,37 @@ namespace SqlDatabase.IO
         [Test]
         [TestCase("Content.zip", null)]
         [TestCase(@"Content.zip\2", "22.txt")]
-        [TestCase(@"Content.zip\inner.zip", "inner.txt")]
+        [TestCase(@"Content.zip\2\2.2", "2.2.txt")]
+        [TestCase(@"Content.zip\inner.zip", "11.txt")]
+        [TestCase(@"Content.zip\inner.zip\2", "22.txt")]
         public void NewZipFolder(string path, string fileName)
         {
             using (var dir = new TempDirectory())
             {
                 dir.CopyFileFromResources("Content.zip");
+
+                var folder = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, path));
+                Assert.IsNotNull(folder);
+
+                var files = ((IFolder)folder).GetFiles().ToList();
+                if (fileName != null)
+                {
+                    Assert.AreEqual(1, files.Count);
+                    Assert.AreEqual(fileName, files[0].Name);
+                }
+            }
+        }
+
+        [Test]
+        [TestCase("Content.nupkg", null)]
+        [TestCase(@"Content.nupkg\2", "22.txt")]
+        [TestCase(@"Content.nupkg\inner.zip", "11.txt")]
+        public void NewNuGetFolder(string path, string fileName)
+        {
+            using (var dir = new TempDirectory())
+            {
+                dir.CopyFileFromResources("Content.zip");
+                File.Move(Path.Combine(dir.Location, "Content.zip"), Path.Combine(dir.Location, "Content.nupkg"));
 
                 var folder = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, path));
                 Assert.IsNotNull(folder);
@@ -81,7 +106,7 @@ namespace SqlDatabase.IO
         [Test]
         [TestCase(@"Content.zip\11.txt")]
         [TestCase(@"Content.zip\2\22.txt")]
-        [TestCase(@"Content.zip\inner.zip\inner.txt")]
+        [TestCase(@"Content.zip\inner.zip\11.txt")]
         public void NewZipFile(string fileName)
         {
             using (var dir = new TempDirectory())

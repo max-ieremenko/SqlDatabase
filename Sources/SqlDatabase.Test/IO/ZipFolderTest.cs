@@ -65,7 +65,7 @@ namespace SqlDatabase.IO
             Assert.AreEqual(0, subFolders[0].GetFiles().Count());
 
             // 2
-            Assert.AreEqual(0, subFolders[1].GetFolders().Count());
+            Assert.AreEqual(1, subFolders[1].GetFolders().Count());
 
             var files = subFolders[1].GetFiles().ToArray();
             CollectionAssert.AreEqual(new[] { "22.txt" }, files.Select(i => i.Name).ToArray());
@@ -82,15 +82,15 @@ namespace SqlDatabase.IO
         {
             var innerZip = _sut.GetFolders().OrderBy(i => i.Name).Last();
 
-            Assert.AreEqual(0, innerZip.GetFolders().Count());
+            Assert.AreEqual(2, innerZip.GetFolders().Count());
 
             var files = innerZip.GetFiles().ToArray();
-            CollectionAssert.AreEqual(new[] { "inner.txt" }, files.Select(i => i.Name).ToArray());
+            CollectionAssert.AreEqual(new[] { "11.txt" }, files.Select(i => i.Name).ToArray());
 
             using (var stream = files[0].OpenRead())
             using (var reader = new StreamReader(stream))
             {
-                Assert.AreEqual("inner text", reader.ReadToEnd());
+                Assert.AreEqual("11", reader.ReadToEnd());
             }
         }
     }

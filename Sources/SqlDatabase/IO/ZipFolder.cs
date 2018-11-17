@@ -14,15 +14,15 @@ namespace SqlDatabase.IO
         private IFolder _tree;
 
         public ZipFolder(string fileName)
-            : this(null, fileName, Path.GetFileName(fileName))
+            : this(null, fileName)
         {
         }
 
-        public ZipFolder(ZipFolder parent, string zipEntryFullName, string name)
+        public ZipFolder(ZipFolder parent, string zipEntryFullName)
         {
             _parent = parent;
 
-            Name = name;
+            Name = Path.GetFileName(zipEntryFullName);
             FileName = zipEntryFullName;
         }
 
@@ -69,7 +69,7 @@ namespace SqlDatabase.IO
                 inner.zip
              */
 
-            var tree = new ZipEntryFolder(new[] { string.Empty });
+            var tree = new ZipEntryFolder(Name);
 
             foreach (var entry in entries)
             {
@@ -81,7 +81,7 @@ namespace SqlDatabase.IO
                     var pathItem = path[i];
                     if (!owner.FolderByName.TryGetValue(pathItem, out var next))
                     {
-                        next = new ZipEntryFolder(path.Take(i + 1));
+                        next = new ZipEntryFolder(pathItem);
                         owner.FolderByName.Add(pathItem, next);
                     }
 
@@ -93,12 +93,12 @@ namespace SqlDatabase.IO
                 {
                     if (!owner.FolderByName.ContainsKey(entryName))
                     {
-                        owner.FolderByName.Add(entryName, new ZipEntryFolder(path));
+                        owner.FolderByName.Add(entryName, new ZipEntryFolder(entryName));
                     }
                 }
                 else if (FileTools.IsZip(entry.FullName))
                 {
-                    owner.FolderByName.Add(entryName, new ZipFolder(this, entry.FullName, Path.Combine(owner.Name, entryName)));
+                    owner.FolderByName.Add(entryName, new ZipFolder(this, entry.FullName));
                 }
                 else
                 {

@@ -7,9 +7,9 @@ namespace SqlDatabase.IO
     [DebuggerDisplay("{Name}")]
     internal sealed class ZipEntryFolder : IFolder
     {
-        public ZipEntryFolder(IEnumerable<string> names)
+        public ZipEntryFolder(string name)
         {
-            Name = string.Join("\\", names);
+            Name = name;
 
             FolderByName = new Dictionary<string, IFolder>(StringComparer.OrdinalIgnoreCase);
             Files = new List<ZipFolderFile>();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -24,7 +23,10 @@ namespace SqlDatabase.IO
                 .Select(i => new FileSystemFolder(i))
                 .Cast<IFolder>();
 
-            var files = Directory.GetFiles(Location, "*" + FileTools.ZipExtension).Select(i => new ZipFolder(i));
+            var files = FileTools
+                .GetZipExtensions()
+                .SelectMany(i => Directory.GetFiles(Location, "*" + i))
+                .Select(i => new ZipFolder(i));
 
             return folders.Concat(files);
         }

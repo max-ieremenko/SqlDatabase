@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SqlDatabase.IO
 {
     internal static class FileTools
     {
-        public const string ZipExtension = ".zip";
+        private const string ZipExtension = ".zip";
+        private const string NuGetExtension = ".nupkg";
 
         public static string RootPath(string path)
         {
@@ -22,10 +24,20 @@ namespace SqlDatabase.IO
             return path;
         }
 
+        public static IEnumerable<string> GetZipExtensions()
+        {
+            return new[]
+            {
+                ZipExtension,
+                NuGetExtension
+            };
+        }
+
         public static bool IsZip(string path)
         {
             var ext = Path.GetExtension(path);
-            return ZipExtension.Equals(ext, StringComparison.OrdinalIgnoreCase);
+            return ZipExtension.Equals(ext, StringComparison.OrdinalIgnoreCase)
+                || NuGetExtension.Equals(ext, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
