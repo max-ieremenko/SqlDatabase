@@ -12,16 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Configuration\AppConfiguration.empty.xml" />
-    <None Remove="Resources\AppConfiguration.default.xml" />
-    <None Remove="Resources\AppConfiguration.full.xml" />
-    <None Remove="Resources\Content.zip" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AppConfiguration.default.xml" />
-    <EmbeddedResource Include="Resources\AppConfiguration.full.xml" />
-    <EmbeddedResource Include="Resources\AppConfiguration.empty.xml" />
+    <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
+    <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
+    <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Content.zip" />
+    <EmbeddedResource Include="IO\Content.zip" />
   </ItemGroup>
 
   <ItemGroup>

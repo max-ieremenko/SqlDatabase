@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 
@@ -14,9 +15,14 @@ namespace SqlDatabase.TestApi
 
         public string Location { get; }
 
-        public string CopyFileFromResources(string resourceName)
+        public string CopyFileFromResources(string resourceName, Type resourceAnchor = null)
         {
-            var source = GetType().Assembly.GetManifestResourceStream("SqlDatabase.Resources." + resourceName);
+            if (resourceAnchor == null)
+            {
+                resourceAnchor = new StackTrace().GetFrame(1).GetMethod().DeclaringType;
+            }
+
+            var source = resourceAnchor.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
             Assert.IsNotNull(source, resourceName);
 
             var fileName = Path.Combine(Location, resourceName);
