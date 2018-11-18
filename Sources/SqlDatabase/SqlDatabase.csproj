@@ -30,6 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="TSQL.Parser" Version="1.2.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,17 @@
+CREATE PROCEDURE A
+AS BEGIN
+/*
+GO
+PRINT A
+*/
+END
+GO
+
+--------------
+CREATE PROCEDURE A
+AS BEGIN
+/*
+GO
+PRINT A
+*/
+END

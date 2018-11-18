@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Linq;
+using TSQL;
+using TSQL.Tokens;
 
 namespace SqlDatabase.Scripts
 {
@@ -9,49 +11,52 @@ namespace SqlDatabase.Scripts
     {
         public static IEnumerable<string> SplitByGo(Stream sql)
         {
-            var batch = new StringBuilder();
+            var script = Read(sql);
 
-            foreach (var line in ReadLines(sql))
+            var lastIndex = 0;
+            using (var reader = new TSQLStatementReader(script))
             {
-                if (IsGo(line))
+                var tokens = reader.SelectMany(i => i.Tokens).Where(IsGo);
+                foreach (var token in tokens)
                 {
-                    if (batch.Length > 0)
+                    var batch = Trim(script.Substring(lastIndex, token.BeginPosition - lastIndex));
+
+                    if (!string.IsNullOrEmpty(batch))
                     {
-                        yield return batch.ToString();
-                        batch.Clear();
-                    }
-                }
-                else if (batch.Length > 0 || line.Trim().Length > 0)
-                {
-                    if (batch.Length > 0)
-                    {
-                        batch.AppendLine();
+                        yield return batch;
                     }
 
-                    batch.Append(line);
+                    lastIndex = token.EndPosition + 1;
                 }
             }
 
-            if (batch.Length > 0)
+            if (lastIndex < script.Length - 1)
             {
-                yield return batch.ToString();
+                var batch = Trim(script.Substring(lastIndex));
+
+                if (!string.IsNullOrEmpty(batch))
+                {
+                    yield return batch;
+                }
             }
         }
 
-        internal static bool IsGo(string text)
+        private static bool IsGo(TSQLToken token)
         {
-            return Regex.IsMatch(text, "^(\\s*(go)+\\s*)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            return token.Type == TSQLTokenType.Keyword
+                   && "GO".Equals(token.Text, StringComparison.OrdinalIgnoreCase);
         }
 
-        private static IEnumerable<string> ReadLines(Stream sql)
+        private static string Trim(string sql)
+        {
+            return sql.Trim('\r', '\n', ' ');
+        }
+
+        private static string Read(Stream sql)
         {
             using (var reader = new StreamReader(sql))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    yield return line;
-                }
+                return reader.ReadToEnd();
             }
         }
     }

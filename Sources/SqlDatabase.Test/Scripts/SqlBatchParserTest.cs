@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using TSQL;
 
 namespace SqlDatabase.Scripts
 {
@@ -11,25 +12,31 @@ namespace SqlDatabase.Scripts
     public class SqlBatchParserTest
     {
         [Test]
+        [Explicit]
         [TestCaseSource(typeof(SqlBatchParserTest), nameof(GetSplitByGoTestCases))]
-        public void SplitByGo(Stream input, string[] expected)
+        public void SplitByGoDebug(Stream input, string[] expected)
         {
-            var actual = SqlBatchParser.SplitByGo(input);
-            CollectionAssert.AreEqual(expected, actual);
+            var statements = TSQLStatementReader.ParseStatements(new StreamReader(input).ReadToEnd());
+
+            for (var i = 0; i < statements.Count; i++)
+            {
+                var statement = statements[i];
+                Console.WriteLine("> statement {0}", i);
+
+                foreach (var token in statement.Tokens)
+                {
+                    Console.WriteLine("> token {0}: {1}-{2}", token.Type, token.BeginPosition, token.EndPosition);
+                    Console.WriteLine(token.Text);
+                }
+            }
         }
 
         [Test]
-        [TestCase("go", true)]
-        [TestCase("go go", true)]
-        [TestCase(" go ", true)]
-        [TestCase(" \tGO \t", true)]
-        [TestCase("go\tgo go", true)]
-        [TestCase("o", false)]
-        [TestCase("fo", false)]
-        [TestCase("go pro", false)]
-        public void IsGo(string line, bool expected)
+        [TestCaseSource(typeof(SqlBatchParserTest), nameof(GetSplitByGoTestCases))]
+        public void SplitByGo(Stream input, string[] expected)
         {
-            Assert.AreEqual(expected, SqlBatchParser.IsGo(line));
+            var actual = SqlBatchParser.SplitByGo(input).ToArray();
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         private static IEnumerable<object> GetSplitByGoTestCases()

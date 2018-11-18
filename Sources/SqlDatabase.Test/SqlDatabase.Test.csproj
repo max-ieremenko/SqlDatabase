@@ -23,10 +23,19 @@
 
   <ItemGroup>
     <EmbeddedResource Include="IO\Content.zip" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseText.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseNoScript.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseNoGo.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case02.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseMultiLineComment01.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseMultiLineComment02.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseMultiLineComment03.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseMultiLineComment04.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseMultiLineComment05.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseOneLineComment.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseStoredProcedure.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case01.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseStoredProcedureMultiLineComment.sql" />
   </ItemGroup>
 
   <ItemGroup>
