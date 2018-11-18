@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SqlDatabase.Scripts
@@ -12,7 +11,7 @@ namespace SqlDatabase.Scripts
     {
         public string DisplayName { get; set; }
 
-        public Func<string> ReadSqlContent { get; set; }
+        public Func<Stream> ReadSqlContent { get; set; }
 
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
@@ -25,14 +24,15 @@ namespace SqlDatabase.Scripts
                 }
             };
 
-            var sql = ReadSqlContent();
-
             var batches = new List<string>();
-            foreach (var batch in SplitByGo(sql))
+            using (var sql = ReadSqlContent())
             {
-                if (!string.IsNullOrEmpty(batch))
+                foreach (var batch in SqlBatchParser.SplitByGo(sql))
                 {
-                    batches.Add(ApplyVariables(batch, variables, onVariablesReplace));
+                    if (!string.IsNullOrEmpty(batch))
+                    {
+                        batches.Add(ApplyVariables(batch, variables, onVariablesReplace));
+                    }
                 }
             }
 
@@ -76,46 +76,6 @@ namespace SqlDatabase.Scripts
             var result = Regex.Replace(sql, @"\{\{(?'name'\w+)\}\}", evaluator, RegexOptions.Compiled);
 
             return Regex.Replace(result, @"\$\((?'name'\w+)\)", evaluator, RegexOptions.Compiled);
-        }
-
-        internal static IEnumerable<string> SplitByGo(string sql)
-        {
-            var batch = new StringBuilder();
-
-            using (var reader = new StringReader(sql))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (IsGo(line))
-                    {
-                        if (batch.Length > 0)
-                        {
-                            yield return batch.ToString();
-                            batch.Clear();
-                        }
-                    }
-                    else if (batch.Length > 0 || line.Trim().Length > 0)
-                    {
-                        if (batch.Length > 0)
-                        {
-                            batch.AppendLine();
-                        }
-
-                        batch.Append(line);
-                    }
-                }
-            }
-
-            if (batch.Length > 0)
-            {
-                yield return batch.ToString();
-            }
-        }
-
-        internal static bool IsGo(string text)
-        {
-            return Regex.IsMatch(text, "^(\\s*(go)+\\s*)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }
     }
 }

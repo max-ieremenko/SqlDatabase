@@ -27,7 +27,7 @@ namespace SqlDatabase.Scripts
                 return new TextScript
                 {
                     DisplayName = file.Name,
-                    ReadSqlContent = CreateTextReader(file)
+                    ReadSqlContent = file.OpenRead
                 };
             }
 
@@ -43,18 +43,6 @@ namespace SqlDatabase.Scripts
             }
 
             throw new NotSupportedException("File [{0}] cannot be used as script.".FormatWith(file.Name));
-        }
-
-        private static Func<string> CreateTextReader(IFile file)
-        {
-            return () =>
-            {
-                using (var stream = file.OpenRead())
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            };
         }
 
         private static Func<byte[]> CreateBinaryReader(IFile file)

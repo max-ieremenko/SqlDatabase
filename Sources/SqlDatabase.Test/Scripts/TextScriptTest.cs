@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Moq;
 using NUnit.Framework;
 
@@ -46,7 +48,7 @@ namespace SqlDatabase.Scripts
         {
             var sut = new TextScript
             {
-                ReadSqlContent = () => "{{var1}} {{var1}}"
+                ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("{{var1}} {{var1}}"))
             };
             _variables.SetValue(VariableSource.CommandLine, "var1", "[some value]");
 
@@ -64,11 +66,11 @@ namespace SqlDatabase.Scripts
         {
             var sut = new TextScript
             {
-                ReadSqlContent = () => @"
+                ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
 {{var1}}
 go
 text2
-go"
+go"))
             };
             _variables.SetValue(VariableSource.CommandLine, "var1", "text1");
 
@@ -164,49 +166,6 @@ go"
 
             var ex = Assert.Throws<InvalidOperationException>(() => TextScript.ApplyVariables("{{Value_1}}", variables.Object));
             StringAssert.Contains("Value_1", ex.Message);
-        }
-
-        [Test]
-        public void SplitByGo()
-        {
-            const string input = @"
-1
-go
-
-GO
-
-GO
-
-2
-GO
-3
-
-4
-
-go
-
-5";
-            var actual = TextScript.SplitByGo(input).ToArray();
-            Assert.AreEqual(4, actual.Length);
-
-            Assert.AreEqual("1", actual[0]);
-            Assert.AreEqual("2", actual[1]);
-            Assert.AreEqual("3\r\n\r\n4\r\n", actual[2]);
-            Assert.AreEqual("5", actual[3]);
-        }
-
-        [Test]
-        [TestCase("go", true)]
-        [TestCase("go go", true)]
-        [TestCase(" go ", true)]
-        [TestCase(" \tGO \t", true)]
-        [TestCase("go\tgo go", true)]
-        [TestCase("o", false)]
-        [TestCase("fo", false)]
-        [TestCase("go pro", false)]
-        public void IsGo(string line, bool expected)
-        {
-            Assert.AreEqual(expected, TextScript.IsGo(line));
         }
     }
 }

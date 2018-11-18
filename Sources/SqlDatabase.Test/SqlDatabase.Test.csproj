@@ -23,6 +23,10 @@
 
   <ItemGroup>
     <EmbeddedResource Include="IO\Content.zip" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case02.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseOneLineComment.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseStoredProcedure.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case01.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using NUnit.Framework;
 using SqlDatabase.Configuration;
@@ -31,7 +32,7 @@ namespace SqlDatabase.Scripts
 
             var textScript = (TextScript)script;
             Assert.AreEqual("11.sql", script.DisplayName);
-            Assert.AreEqual("some script", textScript.ReadSqlContent());
+            Assert.AreEqual("some script", new StreamReader(textScript.ReadSqlContent()).ReadToEnd());
         }
 
         [Test]
