@@ -1,5 +1,3 @@
-# https://hub.docker.com/r/microsoft/mssql-server-linux/
-# https://cardano.github.io/blog/2017/11/15/mssql-docker-container
 version: "3"
 services:
   database:
@@ -15,4 +13,4 @@ services:
     ports:
       - 1433:1433
     working_dir: /usr/src/app 
-    command: sh -c ' chmod +x ./entrypoint.sh; ./entrypoint.sh & /opt/mssql/bin/sqlservr;'
+    command: bash -c ' chmod +x ./entrypoint.sh; ./entrypoint.sh & /opt/mssql/bin/sqlservr;'
