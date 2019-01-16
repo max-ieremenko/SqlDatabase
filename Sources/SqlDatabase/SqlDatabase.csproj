@@ -4,6 +4,7 @@
     <TargetFramework>net452</TargetFramework>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <WarningsAsErrors />
     <CodeAnalysisRuleSet>..\StyleCope.ruleset</CodeAnalysisRuleSet>
     <ApplicationIcon />
@@ -11,6 +12,8 @@
     <StartupObject />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
