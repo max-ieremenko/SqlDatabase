@@ -27,7 +27,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             catch (Exception ex)
             {
                 _logger.Error("Fail to copy content of [{0}]: {1}".FormatWith(fileName, ex.Message));
-                Directory.Delete(location);
+                File.Delete(location);
                 throw;
             }
 
