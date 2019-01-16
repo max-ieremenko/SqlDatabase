@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SqlDatabase": {
-      "commandName": "Project",
-      "commandLineArgs": "create \"-database=Data Source=.;Initial Catalog=SqlDatabaseTest;User Id=sa;Password=P@ssw0rd\" -from=..\\..\\..\\..\\..\\Examples\\CreateDatabaseFolder -varVariable1=value1 -varVariable2=value2"
-    }
-  }
-}

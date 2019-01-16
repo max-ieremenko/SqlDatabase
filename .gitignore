@@ -3,3 +3,6 @@ bin/
 .vs/
 packages/
 build.out/
+
+launchSettings.json
+*.sln.DotSettings.user
