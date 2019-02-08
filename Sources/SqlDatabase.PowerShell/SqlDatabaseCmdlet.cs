@@ -35,7 +35,7 @@ namespace SqlDatabase.PowerShell
         // only for tests
         internal static ISqlDatabaseProgram Program { get; set; }
 
-        protected override void ProcessRecord()
+        protected sealed override void ProcessRecord()
         {
             var cmd = new CommandLineBuilder()
                 .SetCommand(_command)

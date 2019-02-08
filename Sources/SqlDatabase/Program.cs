@@ -11,7 +11,7 @@ namespace SqlDatabase
     {
         public static int Main(string[] args)
         {
-            var logger = new ConsoleLogger();
+            var logger = LoggerFactory.CreateDefault();
 
             ExitCode exitCode;
             var cmd = ParseCommandLine(args, logger);
@@ -34,7 +34,7 @@ namespace SqlDatabase
             return (int)exitCode;
         }
 
-        internal static bool ExecuteCommand(CommandLine cmd, ILogger logger)
+        private static bool ExecuteCommand(CommandLine cmd, ILogger logger)
         {
             try
             {

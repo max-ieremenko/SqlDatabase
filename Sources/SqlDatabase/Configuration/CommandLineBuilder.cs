@@ -12,7 +12,17 @@ namespace SqlDatabase.Configuration
         private const string ArgVariable = "-var";
         private const string ArgConfiguration = "-configuration";
 
-        internal CommandLine Line { get; } = new CommandLine();
+        public CommandLineBuilder()
+            : this(new CommandLine())
+        {
+        }
+
+        public CommandLineBuilder(CommandLine line)
+        {
+            Line = line;
+        }
+
+        internal CommandLine Line { get; }
 
         public static CommandLine FromArguments(params string[] args)
         {
