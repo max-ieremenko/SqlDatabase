@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -59,7 +58,7 @@ namespace SqlDatabase.IntegrationTests
                 .SetScripts(Path.Combine(_scriptsLocation, "new"))
                 .SetVariable("JohnCity", "London")
                 .SetVariable("MariaCity", "Paris")
-                .BuildArray();
+                .BuildArray(false);
 
             Assert.AreEqual(0, Program.Main(args));
 
@@ -102,7 +101,7 @@ ORDER BY Person.Id";
                 .SetScripts(Path.Combine(_scriptsLocation, "upgrade"))
                 .SetVariable("JohnSecondName", "Smitt")
                 .SetVariable("MariaSecondName", "X")
-                .BuildArray();
+                .BuildArray(false);
 
             Assert.AreEqual(0, Program.Main(args));
 
@@ -140,7 +139,7 @@ ORDER BY Person.Id";
                 .SetCommand(Command.Execute)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, "execute", "drop.database.sql"))
-                .BuildArray();
+                .BuildArray(false);
 
             Assert.AreEqual(0, Program.Main(args));
 

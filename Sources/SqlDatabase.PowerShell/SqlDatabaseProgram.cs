@@ -10,11 +10,11 @@ namespace SqlDatabase.PowerShell
 {
     internal sealed class SqlDatabaseProgram : ISqlDatabaseProgram
     {
-        private readonly PSCmdlet _owner;
+        private readonly ICmdlet _owner;
         private readonly ILogger _logger;
         private readonly OutputReader _reader;
 
-        public SqlDatabaseProgram(PSCmdlet owner)
+        public SqlDatabaseProgram(ICmdlet owner)
         {
             _owner = owner;
             _logger = new CmdLetLogger(owner);
@@ -23,6 +23,8 @@ namespace SqlDatabase.PowerShell
 
         public void ExecuteCommand(CommandLine command)
         {
+            command.PreFormatOutputLogs = true;
+
             int exitCode;
             using (var process = CreateProcess(command))
             {
@@ -39,7 +41,7 @@ namespace SqlDatabase.PowerShell
 
             if (exitCode != 0)
             {
-                _owner.ThrowTerminatingError(new ErrorRecord(new InvalidOperationException("Execution failed."), null, ErrorCategory.NotSpecified, null));
+                _owner.ThrowTerminatingError(ErrorCategory.NotSpecified, "Execution failed.");
             }
         }
 
@@ -50,9 +52,9 @@ namespace SqlDatabase.PowerShell
             var startInfo = new ProcessStartInfo
             {
                 WorkingDirectory = Path.GetDirectoryName(sqlDatabase),
-                FileName = Path.GetFileName(sqlDatabase),
+                FileName = sqlDatabase,
                 UseShellExecute = false,
-                Arguments = string.Join(" ", new CommandLineBuilder(command).BuildArray().Select(i => "\"" + i + "\"")),
+                Arguments = string.Join(" ", new CommandLineBuilder(command).BuildArray(true).Select(i => "\"" + i + "\"")),
                 RedirectStandardOutput = true,
                 CreateNoWindow = true
             };

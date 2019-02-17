@@ -1,5 +1,7 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Configuration
 {
@@ -152,6 +154,44 @@ namespace SqlDatabase.Configuration
         {
             var ex = Assert.Throws<InvalidCommandException>(() => _sut.SetConnection("-database=xxx"));
             Assert.AreEqual("-database", ex.Argument);
+        }
+
+        [Test]
+        public void EscapedCommandLine()
+        {
+            var escapedArgs = _sut
+                .SetCommand(Command.Execute)
+                .SetConnection("Data Source=.;Initial Catalog=SqlDatabaseTest")
+                .SetScripts("file1")
+                .SetScripts("file2")
+                .SetConfigurationFile("configuration file")
+                .SetTransaction(TransactionMode.PerStep)
+                .SetVariable("var1", "value 1")
+                .SetPreFormatOutputLogs(true)
+                .BuildArray(true);
+
+            foreach (var arg in escapedArgs)
+            {
+                Console.WriteLine(arg);
+            }
+
+            CommandLineBuilder.PreFormatOutputLogs(escapedArgs).ShouldBeTrue();
+            var actual = CommandLineBuilder.FromArguments(escapedArgs);
+
+            actual.Command.ShouldBe(Command.Execute);
+            actual.Connection.DataSource.ShouldBe(".");
+            actual.Connection.InitialCatalog.ShouldBe("SqlDatabaseTest");
+            actual.Scripts.ShouldBe(new[] { "file1", "file2" });
+            actual.ConfigurationFile.ShouldBe("configuration file");
+            actual.Variables.Keys.ShouldBe(new[] { "var1" });
+            actual.Variables["var1"].ShouldBe("value 1");
+        }
+
+        [Test]
+        public void FromInvalidEscapedArguments()
+        {
+            var ex = Assert.Throws<InvalidCommandException>(() => CommandLineBuilder.FromArguments("execute", "+-database=ab"));
+            ex.Message.ShouldContain("Unknown argument");
         }
     }
 }
