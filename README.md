@@ -85,6 +85,7 @@ Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variabl
 The variable name is
 - a word from characters a-z, A-Z, 0-9, including the _ (underscore) character
 - case insensitive
+
 A non defined variable`s value leads to an error and stops execution process.
 
 The value is resolving in the following order:
