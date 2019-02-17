@@ -81,8 +81,11 @@ Exit codes
 - *.dll* or *.exe* an .NET assembly with a script implementation, see [an example](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
 
 #### Variables in .sql scripts
-Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with active value before script execution. The name is case insensitive.
-Non defined value of a variable leads to an error and stops migration execution.
+Any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with active value before script execution.
+The variable name is
+- a word from characters a-z, A-Z, 0-9, including the _ (underscore) character
+- case insensitive
+A non defined variable`s value leads to an error and stops execution process.
 
 The value is resolving in the following order:
 1. check command line

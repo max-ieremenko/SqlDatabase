@@ -64,9 +64,7 @@ namespace SqlDatabase.Scripts
             Variables.TargetVersion = targetVersion.ToString();
             Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 
-            var updateVersion = TextScript.ApplyVariables(
-                Configuration.SetCurrentVersionScript,
-                Variables);
+            var updateVersion = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
 
             using (var connection = new SqlConnection(ConnectionString))
             using (var command = connection.CreateCommand())

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SqlDatabase.Configuration;
 using SqlDatabase.IO;
 using SqlDatabase.Scripts;
@@ -47,6 +48,23 @@ namespace SqlDatabase.Commands
             foreach (var entry in cmd.Variables)
             {
                 database.Variables.SetValue(VariableSource.CommandLine, entry.Key, entry.Value);
+            }
+
+            var invalidNames = database
+                .Variables
+                .GetNames()
+                .OrderBy(i => i)
+                .Where(i => !SqlScriptVariableParser.IsValidVariableName(i))
+                .Select(i => "[{0}]".FormatWith(i))
+                .ToList();
+
+            if (invalidNames.Count == 1)
+            {
+                throw new InvalidOperationException("The variable name {0} is invalid.".FormatWith(invalidNames[0]));
+            }
+            else if (invalidNames.Count > 1)
+            {
+                throw new InvalidOperationException("The following variable names are invalid: {0}.".FormatWith(string.Join(", ", invalidNames)));
             }
 
             return database;

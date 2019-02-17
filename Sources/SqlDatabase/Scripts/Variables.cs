@@ -29,6 +29,11 @@ namespace SqlDatabase.Scripts
             set => SetValue(VariableSource.Runtime, nameof(TargetVersion), value);
         }
 
+        public IEnumerable<string> GetNames()
+        {
+            return _valueByName.Keys;
+        }
+
         public string GetValue(string name)
         {
             if (_valueByName.TryGetValue(name, out var value))
