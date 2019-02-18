@@ -17,5 +17,7 @@ namespace SqlDatabase.Configuration
         public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public string ConfigurationFile { get; set; }
+
+        public bool PreFormatOutputLogs { get; set; }
     }
 }

@@ -11,7 +11,9 @@ namespace SqlDatabase
     {
         public static int Main(string[] args)
         {
-            var logger = LoggerFactory.CreateDefault();
+            var logger = CommandLineBuilder.PreFormatOutputLogs(args) ?
+                LoggerFactory.CreatePreFormatted() :
+                LoggerFactory.CreateDefault();
 
             ExitCode exitCode;
             var cmd = ParseCommandLine(args, logger);
@@ -19,6 +21,15 @@ namespace SqlDatabase
             {
                 logger.Info(LoadHelpContent());
                 exitCode = ExitCode.InvalidCommandLine;
+            }
+            else if (cmd.Command == Command.Echo)
+            {
+                foreach (var arg in args)
+                {
+                    logger.Info(arg);
+                }
+
+                exitCode = ExitCode.Ok;
             }
             else
             {

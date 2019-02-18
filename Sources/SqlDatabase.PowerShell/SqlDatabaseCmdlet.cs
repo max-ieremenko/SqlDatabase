@@ -61,7 +61,7 @@ namespace SqlDatabase.PowerShell
 
         private ISqlDatabaseProgram ResolveProgram()
         {
-            return Program ?? new SqlDatabaseProgram(this);
+            return Program ?? new SqlDatabaseProgram(new PowerShellCmdlet(this));
         }
     }
 }

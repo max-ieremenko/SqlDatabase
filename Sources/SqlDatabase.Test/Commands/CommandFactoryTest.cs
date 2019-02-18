@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
 
@@ -115,6 +116,26 @@ namespace SqlDatabase.Commands
             Assert.AreEqual("1", actual.Variables.GetValue("a"));
             Assert.AreEqual("2", actual.Variables.GetValue("b"));
             Assert.AreEqual("3", actual.Variables.GetValue("c"));
+        }
+
+        [Test]
+        public void CreateDatabaseValidateVariables()
+        {
+            var configuration = new AppConfiguration();
+
+            var configurationManager = new Mock<IConfigurationManager>(MockBehavior.Strict);
+            configurationManager
+                .SetupGet(c => c.SqlDatabase)
+                .Returns(configuration);
+
+            _commandLine.Variables.Add("a b", "1");
+
+            configuration.Variables.Add(new NameValueConfigurationElement("c d", "1"));
+
+            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateDatabase(_commandLine, configurationManager.Object));
+
+            ex.Message.ShouldContain("a b");
+            ex.Message.ShouldContain("c d");
         }
     }
 }

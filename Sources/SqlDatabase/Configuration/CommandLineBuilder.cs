@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace SqlDatabase.Configuration
 {
     internal sealed class CommandLineBuilder
     {
-        private const string ArgDatabase = "-database";
-        private const string ArgScripts = "-from";
-        private const string ArgTransaction = "-transaction";
-        private const string ArgVariable = "-var";
-        private const string ArgConfiguration = "-configuration";
+        private const string Base64Sign = "+";
+        private const string ArgSign = "-";
+        private const string ArgDatabase = ArgSign + "database";
+        private const string ArgScripts = ArgSign + "from";
+        private const string ArgTransaction = ArgSign + "transaction";
+        private const string ArgVariable = ArgSign + "var";
+        private const string ArgConfiguration = ArgSign + "configuration";
+        private const string ArgPreFormatOutputLogs = ArgSign + "preFormatOutputLogs";
 
         public CommandLineBuilder()
             : this(new CommandLine())
@@ -35,6 +39,21 @@ namespace SqlDatabase.Configuration
             }
 
             return builder.Build();
+        }
+
+        public static bool PreFormatOutputLogs(string[] args)
+        {
+            foreach (var arg in args)
+            {
+                if (SplitArg(arg, out var key, out var value)
+                    && ArgPreFormatOutputLogs.Equals(key, StringComparison.OrdinalIgnoreCase)
+                    && bool.Parse(value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public CommandLineBuilder SetCommand(string commandName)
@@ -134,6 +153,12 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
+        public CommandLineBuilder SetPreFormatOutputLogs(bool value)
+        {
+            Line.PreFormatOutputLogs = value;
+            return this;
+        }
+
         public CommandLine Build()
         {
             if (Line.Connection == null)
@@ -154,34 +179,39 @@ namespace SqlDatabase.Configuration
             return Line;
         }
 
-        public string[] BuildArray()
+        public string[] BuildArray(bool escaped)
         {
             var cmd = Build();
 
             var result = new List<string>
             {
                 cmd.Command.ToString(),
-                "{0}={1}".FormatWith(ArgDatabase, cmd.Connection)
+                CombineArg(ArgDatabase, cmd.Connection.ToString(), escaped)
             };
 
             foreach (var script in cmd.Scripts)
             {
-                result.Add("{0}={1}".FormatWith(ArgScripts, script));
+                result.Add(CombineArg(ArgScripts, script, escaped));
             }
 
             if (cmd.Transaction == default(TransactionMode))
             {
-                result.Add("{0}={1}".FormatWith(ArgTransaction, cmd.Transaction));
+                result.Add(CombineArg(ArgTransaction, cmd.Transaction.ToString(), escaped));
             }
 
             if (!string.IsNullOrEmpty(cmd.ConfigurationFile))
             {
-                result.Add("{0}={1}".FormatWith(ArgConfiguration, cmd.ConfigurationFile));
+                result.Add(CombineArg(ArgConfiguration, cmd.ConfigurationFile, escaped));
             }
 
             foreach (var entry in cmd.Variables)
             {
-                result.Add("{0}{1}={2}".FormatWith(ArgVariable, entry.Key, entry.Value));
+                result.Add(CombineArg(ArgVariable + entry.Key, entry.Value, escaped));
+            }
+
+            if (cmd.PreFormatOutputLogs)
+            {
+                result.Add(CombineArg(ArgPreFormatOutputLogs, cmd.PreFormatOutputLogs.ToString(), false));
             }
 
             return result.ToArray();
@@ -192,6 +222,11 @@ namespace SqlDatabase.Configuration
             key = null;
             value = null;
 
+            if (keyValue == null || keyValue.Length < 3)
+            {
+                return false;
+            }
+
             var index = keyValue.IndexOf("=", StringComparison.OrdinalIgnoreCase);
             if (index <= 0 || index == keyValue.Length - 1)
             {
@@ -201,7 +236,39 @@ namespace SqlDatabase.Configuration
             key = keyValue.Substring(0, index).Trim();
             value = keyValue.Substring(index + 1).Trim();
 
-            return true;
+            if (!key.StartsWith(Base64Sign + ArgSign, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            key = key.Substring(1);
+
+            try
+            {
+                value = Encoding.UTF8.GetString(Convert.FromBase64String(value));
+                return true;
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (FormatException)
+            {
+            }
+
+            return false;
+        }
+
+        private static string CombineArg(string key, string value, bool escaped)
+        {
+            if (escaped && !string.IsNullOrEmpty(value))
+            {
+                return "{0}{1}={2}".FormatWith(
+                    Base64Sign,
+                    key,
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes(value)));
+            }
+
+            return "{0}={1}".FormatWith(key, value);
         }
 
         private bool ApplyArg(string arg)
@@ -238,6 +305,12 @@ namespace SqlDatabase.Configuration
             if (ArgConfiguration.Equals(key, StringComparison.OrdinalIgnoreCase))
             {
                 SetConfigurationFile(value);
+                return true;
+            }
+
+            if (ArgPreFormatOutputLogs.Equals(key, StringComparison.OrdinalIgnoreCase))
+            {
+                SetPreFormatOutputLogs(bool.Parse(value));
                 return true;
             }
 
