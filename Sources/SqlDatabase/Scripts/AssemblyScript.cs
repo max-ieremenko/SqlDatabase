@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.IO;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
 
@@ -16,50 +15,50 @@ namespace SqlDatabase.Scripts
 
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
-            logger.Info("create domain for {0}".FormatWith(DisplayName));
+            var domain = CreateSubDomain();
 
-            var appBaseName = Path.GetFileName(DisplayName);
-            using (var appBase = new DomainDirectory(logger))
+            using (domain)
             {
-                var entryAssembly = appBase.SaveFile(ReadAssemblyContent(), appBaseName);
+                domain.Logger = logger;
+                domain.AssemblyFileName = DisplayName;
+                domain.ReadAssemblyContent = ReadAssemblyContent;
 
-                var setup = new AppDomainSetup
-                {
-                    ApplicationBase = appBase.Location,
-                    ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
-                };
-
-                var domain = AppDomain.CreateDomain(appBaseName, null, setup);
                 try
                 {
-                    var agent = (DomainAgent)domain.CreateInstanceFromAndUnwrap(GetType().Assembly.Location, typeof(DomainAgent).FullName);
-
-                    agent.RedirectConsoleOut(new LoggerProxy(logger));
-                    agent.LoadAssembly(entryAssembly);
-
-                    Execute(agent, command, variables);
+                    domain.Initialize();
+                    ResolveScriptExecutor(domain);
+                    Execute(domain, command, variables);
                 }
                 finally
                 {
-                    AppDomain.Unload(domain);
+                    domain.Unload();
                 }
             }
         }
 
-        internal void Execute(
-            DomainAgent agent,
-            IDbCommand command,
-            IVariables variables)
+        internal void ResolveScriptExecutor(ISubDomain domain)
         {
-            if (!agent.ResolveScriptExecutor(Configuration.ClassName, Configuration.MethodName))
+            if (!domain.ResolveScriptExecutor(Configuration.ClassName, Configuration.MethodName))
             {
                 throw new InvalidOperationException("Fail to resolve script executor.");
             }
+        }
 
-            if (!agent.Execute(command, new VariablesProxy(variables)))
+        internal void Execute(ISubDomain domain, IDbCommand command, IVariables variables)
+        {
+            if (!domain.Execute(command, variables))
             {
                 throw new InvalidOperationException("Errors during script execution.");
             }
+        }
+
+        private ISubDomain CreateSubDomain()
+        {
+#if NET452
+            return new AssemblyInternal.Net452.Net452SubDomain();
+#else
+            return new AssemblyInternal.NetCore.NetCoreSubDomain();
+#endif
         }
     }
 }

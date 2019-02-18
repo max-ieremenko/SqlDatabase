@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration
@@ -34,7 +35,9 @@ namespace SqlDatabase.Configuration
         {
             _sut.LoadFrom((string)null);
 
-            Assert.IsNotNull(_sut.SqlDatabase);
+            _sut.SqlDatabase.ShouldNotBeNull();
+            _sut.SqlDatabase.AssemblyScript.ClassName.ShouldBe("TestClassName");
+            _sut.SqlDatabase.AssemblyScript.MethodName.ShouldBe("TestMethodName");
         }
 
         [Test]
@@ -62,7 +65,9 @@ namespace SqlDatabase.Configuration
         [Test]
         public void LoadFromDirectory()
         {
-            var file = FileFactory.File("SqlDatabase.exe.config", SomeConfiguration);
+            // SqlDatabase.exe.config or SqlDatabase.dll.config
+            var fileName = Path.GetFileName(_sut.GetType().Assembly.Location) + ".config";
+            var file = FileFactory.File(fileName, SomeConfiguration);
             var folder = FileFactory.Folder("some folder", file);
 
             _sut.LoadFrom(folder);

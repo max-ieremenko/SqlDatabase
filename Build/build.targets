@@ -12,6 +12,8 @@
 
     <!-- working directory of msbuild is root\build -->
     <BuildOut>$(MSBuildProjectDirectory)\..\build.out</BuildOut>
+    <BuildOut452>$(BuildOut)\net452</BuildOut452>
+    <BuildOutCore>$(BuildOut)\netCore</BuildOutCore>
   </PropertyGroup>
 
   <Target Name="main">
@@ -29,11 +31,14 @@
   <Target Name="buildSources">
     <Exec Command="$(nuget) restore ..\Sources\SqlDatabase.sln" />
 
-    <MSBuild Projects="..\Sources\SqlDatabase.sln"
-             Properties="Configuration=$(config);OutDir=$(BuildOut)"/>
+    <MSBuild Projects="..\Sources\SqlDatabase.PowerShell\SqlDatabase.PowerShell.csproj"
+             Properties="Configuration=$(config);OutDir=$(BuildOut452);TargetFramework=net452"/>
+
+    <MSBuild Projects="..\Sources\SqlDatabase\SqlDatabase.csproj"
+             Properties="Configuration=$(config);OutDir=$(BuildOutCore);TargetFramework=netcoreapp2.2"/>
 
     <!--https://stackoverflow.com/questions/443188/msbuild-task-to-read-version-of-dll-->
-    <GetAssemblyIdentity AssemblyFiles="$(BuildOut)\SqlDatabase.exe">
+    <GetAssemblyIdentity AssemblyFiles="$(BuildOut452)\SqlDatabase.exe">
       <Output TaskParameter="Assemblies"
               ItemName="AssemblyIdentities"/>
     </GetAssemblyIdentity>
@@ -46,13 +51,13 @@
   </Target>
 
   <Target Name="setPowerShellModuleVersion">
-    <ReplaceTextInFile Filename="$(BuildOut)\SqlDatabase.PowerShell.psd1"
+    <ReplaceTextInFile Filename="$(BuildOut452)\SqlDatabase.PowerShell.psd1"
                        MatchText="{{ModuleVersion}}"
                        ReplacementText="$(PackageVersion)" />
   </Target>
 
   <Target Name="buildPackage">
-    <Exec Command="$(nuget) pack ..\Sources\SqlDatabase.Package\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut) -Version $(PackageVersion) -p bin=$(BuildOut)" />
+    <Exec Command="$(nuget) pack ..\Sources\SqlDatabase.Package\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut452) -Version $(PackageVersion) -p bin=$(BuildOut452)" />
   </Target>
 
   <UsingTask TaskName="ReplaceTextInFile"

@@ -1,11 +1,12 @@
-﻿using System;
+﻿#if NET452
+using System;
 using System.Data;
 using System.IO;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts
+namespace SqlDatabase.Scripts.AssemblyInternal.Net452
 {
-    public partial class AssemblyScriptTest
+    public partial class Net452SubDomainTest
     {
         public sealed class StepWithSubDomain
         {
@@ -63,3 +64,4 @@ namespace SqlDatabase.Scripts
         }
     }
 }
+#endif

@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using SqlDatabase.IO;
 using Manager = System.Configuration.ConfigurationManager;
 
@@ -34,16 +33,7 @@ namespace SqlDatabase.Configuration
             }
             else
             {
-                // in a PowerShell context resolving SqlDatabase does not work
-                AppDomain.CurrentDomain.AssemblyResolve += ResolveSqlDatabaseAssembly;
-                try
-                {
-                    section = Load(info);
-                }
-                finally
-                {
-                    AppDomain.CurrentDomain.AssemblyResolve -= ResolveSqlDatabaseAssembly;
-                }
+                section = Load(info);
             }
 
             SqlDatabase = section ?? new AppConfiguration();
@@ -84,10 +74,15 @@ namespace SqlDatabase.Configuration
             IFile file;
             if (info is IFolder folder)
             {
+                const string Name1 = "SqlDatabase.exe.config";
+                const string Name2 = "SqlDatabase.dll.config";
+
                 var fileName = Path.GetFileName(typeof(ConfigurationManager).Assembly.Location) + ".config";
                 file = folder
                     .GetFiles()
-                    .FirstOrDefault(i => fileName.Equals(i.Name, StringComparison.OrdinalIgnoreCase));
+                    .Where(i => Name1.Equals(i.Name, StringComparison.OrdinalIgnoreCase) || Name2.Equals(i.Name, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(i => i.Name, StringComparer.OrdinalIgnoreCase)
+                    .FirstOrDefault();
 
                 if (file == null)
                 {
@@ -100,17 +95,6 @@ namespace SqlDatabase.Configuration
             }
 
             return file;
-        }
-
-        private static Assembly ResolveSqlDatabaseAssembly(object sender, ResolveEventArgs args)
-        {
-            var assembly = typeof(ConfigurationManager).Assembly;
-            if (string.Equals(assembly.GetName().Name, args.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                return assembly;
-            }
-
-            return null;
         }
     }
 }
