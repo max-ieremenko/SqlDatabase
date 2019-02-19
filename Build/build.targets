@@ -20,22 +20,10 @@
     <RemoveDir Directories="$(BuildOut)" />
     <MakeDir Directories="$(BuildOut)" />
 
-    <CallTarget Targets="buildSources"
-                ContinueOnError="false" />
-    <CallTarget Targets="setPowerShellModuleVersion"
-                ContinueOnError="false" />
-    <CallTarget Targets="buildPackage"
-                ContinueOnError="false" />
-  </Target>
-
-  <Target Name="buildSources">
-    <Exec Command="$(nuget) restore ..\Sources\SqlDatabase.sln" />
+    <Exec Command="dotnet restore ..\Sources\SqlDatabase.sln" />
 
     <MSBuild Projects="..\Sources\SqlDatabase.PowerShell\SqlDatabase.PowerShell.csproj"
              Properties="Configuration=$(config);OutDir=$(BuildOut452);TargetFramework=net452"/>
-
-    <MSBuild Projects="..\Sources\SqlDatabase\SqlDatabase.csproj"
-             Properties="Configuration=$(config);OutDir=$(BuildOutCore);TargetFramework=netcoreapp2.2"/>
 
     <!--https://stackoverflow.com/questions/443188/msbuild-task-to-read-version-of-dll-->
     <GetAssemblyIdentity AssemblyFiles="$(BuildOut452)\SqlDatabase.exe">
@@ -48,16 +36,14 @@
       <Output TaskParameter="Value"
               PropertyName="PackageVersion"/>
     </CreateProperty>
-  </Target>
 
-  <Target Name="setPowerShellModuleVersion">
     <ReplaceTextInFile Filename="$(BuildOut452)\SqlDatabase.PowerShell.psd1"
                        MatchText="{{ModuleVersion}}"
                        ReplacementText="$(PackageVersion)" />
-  </Target>
 
-  <Target Name="buildPackage">
     <Exec Command="$(nuget) pack ..\Sources\SqlDatabase.Package\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut452) -Version $(PackageVersion) -p bin=$(BuildOut452)" />
+
+    <Exec Command="dotnet pack ..\Sources\SqlDatabase\SqlDatabase.csproj -c Release -p:PackAsTool=true -p:TargetFrameworks=netcoreapp2.2 -p:PackageVersion=$(PackageVersion) -o $(BuildOutCore)" />
   </Target>
 
   <UsingTask TaskName="ReplaceTextInFile"

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SqlDatabase")]
-[assembly: AssemblyCopyright("Copyright © 2018-2019 Maksym Ieremenko")]
+[assembly: AssemblyCopyright("Copyright © 2018-2019 Max Ieremenko")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

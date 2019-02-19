@@ -1,6 +1,6 @@
 ﻿Usage: SqlDatabase <command> <switches>...
 
-<commands>
+<command>
   create: create new database
   upgrade: upgrade existing database
   execute: execute one script file

@@ -12,8 +12,31 @@
     <StartupObject />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
+	<!-- NU5125: The 'licenseUrl' element will be deprecated. Consider using the 'license' element instead -->
+    <NoWarn>1701;1702;NU5125</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- dotnet pack properties
+	     <PackAsTool>true</PackAsTool> is in the build
+	-->
+    <ToolCommandName>SqlDatabase</ToolCommandName>
+	<PackageId>SqlDatabase.GlobalTool</PackageId>
+
+    <Authors>Max Ieremenko</Authors>
+    <Company></Company>
+    <Product>A command line and PowerShell tool for SQL Server.</Product>
+    <Description>SqlDatabase is a tool for SQL Server, allows executing scripts and database migrations.</Description>
+    <PackageReleaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/max-ieremenko/SqlDatabase</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/max-ieremenko/SqlDatabase</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>(C) 2018-2019 Max Ieremenko.</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations</PackageTags>
+  </PropertyGroup>
+  
   <ItemGroup>
     <None Remove="Configuration\CommandLine.txt" />
   </ItemGroup>
