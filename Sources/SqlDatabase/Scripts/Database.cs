@@ -113,14 +113,20 @@ namespace SqlDatabase.Scripts
             }
 
             using (var connection = CreateConnection(useMaster))
-            using (var command = connection.CreateCommand())
             {
                 connection.InfoMessage += OnConnectionInfoMessage;
-
-                command.CommandTimeout = 0;
                 connection.Open();
 
-                script.Execute(command, Variables, Log);
+                using (var transaction = Transaction == TransactionMode.PerStep ? connection.BeginTransaction(IsolationLevel.ReadCommitted) : null)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandTimeout = 0;
+                        script.Execute(command, Variables, Log);
+                    }
+
+                    transaction?.Commit();
+                }
             }
         }
 
