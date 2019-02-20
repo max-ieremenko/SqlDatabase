@@ -36,8 +36,8 @@ namespace SqlDatabase.Configuration
             _sut.LoadFrom((string)null);
 
             _sut.SqlDatabase.ShouldNotBeNull();
-            _sut.SqlDatabase.AssemblyScript.ClassName.ShouldBe("TestClassName");
-            _sut.SqlDatabase.AssemblyScript.MethodName.ShouldBe("TestMethodName");
+            _sut.SqlDatabase.Variables.AllKeys.ShouldBe(new[] { nameof(ConfigurationManagerTest) });
+            _sut.SqlDatabase.Variables[nameof(ConfigurationManagerTest)].Value.ShouldBe(nameof(LoadFromCurrentConfiguration));
         }
 
         [Test]

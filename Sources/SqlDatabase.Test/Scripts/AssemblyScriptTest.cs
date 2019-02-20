@@ -54,7 +54,12 @@ namespace SqlDatabase.Scripts
             _sut.DisplayName = "2.1_2.2.dll";
             _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
-            _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
+#if !NET452
+            using (new ConsoleListener(_log.Object))
+#endif
+            {
+                _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
+            }
 
             _logOutput.ShouldContain("start execution");
 

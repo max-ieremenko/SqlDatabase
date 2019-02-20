@@ -7,7 +7,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal.NetCore
     internal sealed class NetCoreSubDomain : ISubDomain
     {
         private readonly AssemblyContext _assemblyContext = new AssemblyContext();
-        private ConsoleListener _consoleRedirect;
+        ////private ConsoleListener _consoleRedirect;
 
         public ILogger Logger { get; set; }
 
@@ -21,12 +21,12 @@ namespace SqlDatabase.Scripts.AssemblyInternal.NetCore
         {
             _assemblyContext.LoadScriptAssembly(ReadAssemblyContent());
 
-            _consoleRedirect = new ConsoleListener(Logger);
+            ////_consoleRedirect = new ConsoleListener(Logger);
         }
 
         public void Unload()
         {
-            _consoleRedirect?.Dispose();
+            ////_consoleRedirect?.Dispose();
 
             _assemblyContext.UnloadAll();
         }
