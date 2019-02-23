@@ -1,15 +1,22 @@
 param($installPath, $toolsPath, $package, $project)
 
-$activeModule = Get-Module "SqlDatabase.PowerShell"
-$thisModule = Join-Path $PSScriptRoot "SqlDatabase.PowerShell.dll"
+$obsoleteModule = Get-Module "SqlDatabase.PowerShell"
+if ($obsoleteModule)
+{
+	Remove-Module "SqlDatabase.PowerShell"
+}
+
+$activeModule = Get-Module "SqlDatabase"
+$thisModule = Join-Path $PSScriptRoot "SqlDatabase.psd1"
 
 $import = $true
 if ($activeModule)
 {
-	$thisModuleVersion = New-Object -TypeName System.Version (Get-Item $thisModule).VersionInfo.FileVersion
+	$thisModuleFile = Join-Path $PSScriptRoot "SqlDatabase.PowerShell.dll"
+	$thisModuleVersion = New-Object -TypeName System.Version (Get-Item $thisModuleFile).VersionInfo.FileVersion
     if ($activeModule.Version -le $thisModuleVersion)
     {
-        Remove-Module "SqlDatabase.PowerShell"
+        Remove-Module "SqlDatabase"
     }
     else
     {

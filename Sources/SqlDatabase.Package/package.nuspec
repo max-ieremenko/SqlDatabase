@@ -31,7 +31,9 @@
           target="tools" />
     <file src="$bin$\SqlDatabase.PowerShell.pdb"
           target="tools" />
-    <file src="$bin$\SqlDatabase.PowerShell.psd1"
+    <file src="$bin$\SqlDatabase.psd1"
+          target="tools" />
+    <file src="$bin$\SqlDatabase.psm1"
           target="tools" />
   </files>
 </package>

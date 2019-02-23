@@ -3,7 +3,8 @@ using SqlDatabase.Configuration;
 
 namespace SqlDatabase.PowerShell
 {
-    [Cmdlet(nameof(Command.Execute), "SqlDatabase")]
+    [Cmdlet(VerbsLifecycle.Invoke, "SqlDatabase")]
+    [Alias(nameof(Command.Execute) + "-SqlDatabase")]
     public sealed class ExecuteCmdLet : SqlDatabaseCmdLet
     {
         public ExecuteCmdLet()

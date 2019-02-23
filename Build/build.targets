@@ -31,13 +31,14 @@
               ItemName="AssemblyIdentities"/>
     </GetAssemblyIdentity>
 
-    <!-- override PackageVersion by value from .exe -->
-    <CreateProperty Value="%(AssemblyIdentities.Version)">
-      <Output TaskParameter="Value"
-              PropertyName="PackageVersion"/>
-    </CreateProperty>
+    <TrimVersion Value="%(AssemblyIdentities.Version)">
+      <Output TaskParameter="Version"
+              PropertyName="PackageVersion" />
+    </TrimVersion>
 
-    <ReplaceTextInFile Filename="$(BuildOut452)\SqlDatabase.PowerShell.psd1"
+    <Warning Text="PackageVersion: $(PackageVersion)" />
+
+    <ReplaceTextInFile Filename="$(BuildOut452)\SqlDatabase.psd1"
                        MatchText="{{ModuleVersion}}"
                        ReplacementText="$(PackageVersion)" />
 
@@ -45,6 +46,30 @@
 
     <Exec Command="dotnet pack ..\Sources\SqlDatabase\SqlDatabase.csproj -c Release -p:PackAsTool=true -p:TargetFrameworks=netcoreapp2.2 -p:PackageVersion=$(PackageVersion) -o $(BuildOutCore)" />
   </Target>
+
+  <UsingTask TaskName="TrimVersion"
+             TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Value ParameterType="System.String"
+             Required="true" />
+      <Version ParameterType="System.String"
+               Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Code Type="Fragment"
+            Language="cs">
+        <![CDATA[  
+            Version = new Version(Value).ToString();
+            if (Version.EndsWith(".0"))
+            {
+                Version = Version.Substring(0, Version.Length - 2);
+            }
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
 
   <UsingTask TaskName="ReplaceTextInFile"
              TaskFactory="CodeTaskFactory"
