@@ -1,10 +1,17 @@
-#### CLI
+Upgrade an existing database
+===========================
+
 ```bash
-$ SqlDatabase.exe upgrade
-      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
-      -from=Examples\MigrationStepsFolder
-      -varVariable1=value1
+$ SqlDatabase upgrade ^
+      "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" ^
+      -from=Examples\MigrationStepsFolder ^
+      -varVariable1=value1 ^
       -varVariable2=value2
+
+PS> Upgrade-SqlDatabase `
+      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
+      -from Examples\MigrationStepsFolder `
+      -var Variable1=value1,Variable2=value2
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2"
 
@@ -16,25 +23,78 @@ upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 
-#### Example of .sql miration step, 1.3_2.0.sql
+Execution order
+===============
+
+1. Resolve the current database version
+2. Build migration steps sequence
+3. Execute migration steps one by one and update current database version
+
+### Example
+The following script is used by SqlDatabase to resolve the current database version, details are in [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
+
 ```sql
-PRINT 'create schema demo'
-CREATE SCHEMA [{{schemaName}}]
+-- select current version
+SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)
+
+-- output
+-- 1.2
+```
+
+The current version is *1.2*, so we have the following migration steps sequence:
+1. 1.0_1.3.zip\1.2_1.3.sql
+2. 1.3_2.0.sql
+3. 2.0_2.1.sql
+4. 2.1_2.2.sql
+5. 2.2_3.0.sql
+6. 3.0_3.1.sql
+7. 3.0_4.0.sql
+
+Each step will be executed one by one:
+```sql
+/* 1.0_1.3.zip\1.2_1.3.sql */
+run 1.0_1.3.zip\1.2_1.3.sql
+-- update current version
+EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'1.3'
+
+/* 1.3_2.0.sql */
+run 1.3_2.0.sql
+-- update current version
+EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'2.0'
+
+-- ....
+```
+
+Predefined variables
+====================
+
+|Name|Description|
+|:--|:----------|
+|DatabaseName|the target database name|
+|CurrentVersion|the database version before execution of a migration step|
+|TargetVersion|the database version after execution of a migration step|
+
+
+Migration .sql script example
+=============================
+```sql
+-- 2.0_2.1.sql
+PRINT 'create table Demo'
 GO
 
-PRINT 'create table demo.Table1'
-CREATE TABLE [{{schemaName}}].[Table1]
+CREATE TABLE dbo.Demo
 (
-  ID INT
+	Id INT NOT NULL
 )
 GO
 
--- etc.
+ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
+GO
 ```
 
+Assembly script example
+=======================
 
-#### Example of .dll or .exe miration step, 2.1_2.2.dll or 2.2_2.3.exe
-The file must be an .NET assembly with following migration step implementation:
 ```C#
 namespace <any namespace name>
 {
@@ -59,11 +119,4 @@ namespace <any namespace name>
     }
 }
 ```
-see [example](../CSharpMirationStep/)
-
-#### Predefined variables
-|Name|Description|
-|:--|:----------|
-|DatabaseName|the target database name|
-|CurrentVersion|the database version before execution of a migration step|
-|TargetVersion|the database version after execution of a migration step|
+more details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)

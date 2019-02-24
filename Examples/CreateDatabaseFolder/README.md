@@ -1,11 +1,19 @@
-﻿#### CLI
+﻿Create a database
+=================
+
 ```bash
-$ SqlDatabase.exe create
-      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True"
-      -from=Examples\MigrationStepsFolder
-      -varVariable1=value1
+$ SqlDatabase create ^
+      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" ^
+      -from=Examples\CreateDatabaseFolder ^
+      -varVariable1=value1 ^
       -varVariable2=value2
+
+PS> Create-SqlDatabase `
+      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
+      -from Examples\CreateDatabaseFolder `
+      -var Variable1=value1,Variable2=value2
 ```
+
 create new database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\CreateDatabaseFolder* with "Variable1=value1" and "Variable2=value2"
 
 |Switch|Description|
@@ -14,26 +22,71 @@ create new database *MyDatabase* on Sql Server *MyServer* based on scripts from 
 |-from|path to a folder or .zip file with scripts. Repeat to setup several sources.|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
+Script`s execution order
+========================
 
-#### Example of .sql script
+1. run all script`s files in the root folder, sorted alphabetically
+2. run all script`s in each sub-folder, sorted alphabetically
+
+|File|Execution order|
+|:--|:----------|
+|01_database|1|
+|├── 01_DropExisting.sql|1.1|
+|├── 02_Create.sql|1.2|
+|└── 03_Version.sql|1.3|
+|02_schemas|2|
+|└── 01_demo.sql|2.1|
+|03_tables|3|
+|├── 01_demo.Department.sql|3.1|
+|└── 02_demo.Employee.sql|3.2|
+|05_data|4|
+|└── 01_staff.sql|4.1|
+
+
+Predefined variables
+========================
+
+|Name|Description|
+|:--|:----------|
+|DatabaseName|the target database name|
+
+
+Sql script example
+==================
+
 ```sql
-PRINT 'create schema demo'
-CREATE SCHEMA [{{schemaName}}]
+-- 01_database/02_Create.sql
+USE master
 GO
 
-PRINT 'create table demo.Table1'
-CREATE TABLE [{{schemaName}}].[Table1]
-(
-  ID INT
-)
+CREATE DATABASE [{{DatabaseName}}]
 GO
 
--- etc.
+ALTER DATABASE [{{DatabaseName}}] SET RECOVERY SIMPLE WITH NO_WAIT
+GO
+
+ALTER DATABASE [{{DatabaseName}}] SET ALLOW_SNAPSHOT_ISOLATION ON
+GO
 ```
 
+```sql
+-- at runtime
+USE master
+GO
 
-#### Example of .dll or .exe script
-The file must be an .NET assembly with following migration step implementation:
+CREATE DATABASE [MyDatabase]
+GO
+
+ALTER DATABASE [MyDatabase] SET RECOVERY SIMPLE WITH NO_WAIT
+GO
+
+ALTER DATABASE [MyDatabase] SET ALLOW_SNAPSHOT_ISOLATION ON
+GO
+```
+
+Assembly script example
+=======================
+
 ```C#
 namespace <any namespace name>
 {
@@ -58,27 +111,5 @@ namespace <any namespace name>
     }
 }
 ```
-see [example](../CSharpMirationStep/)
+more details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
 
-#### Script`s execution order
-1. run all script`s files in the root folder, sorted alphabetically
-2. run all script`s in each sub-folder, sorted alphabetically
-
-|File|Execution order|
-|:--|:----------|
-|01_folder||
-|├── 01_script.sql|3|
-|├── 02_script.exe|4|
-|└── 03_script.sql|5|
-|02_folder||
-|├── 02_folder||
-|│   └── 01_script.sql|7|
-|└── 01_script.sql|6|
-|01_script.sql|2|
-|02_script.sql|1|
-
-
-#### Predefined variables
-|Name|Description|
-|:--|:----------|
-|DatabaseName|the target database name|

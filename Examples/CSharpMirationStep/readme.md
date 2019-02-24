@@ -1,19 +1,71 @@
-﻿# .NET assembly with a script implementation
-The project contains an example of database migration step implementation.
+﻿.NET assembly with a script implementation
+==========================================
 
-Build output is 2.1_2.2.dll with target framework 4.5.2
+Any assembly script is
+- .exe or .dll .NET assembly
+- target framework is 4.5.2 or .net core 2.2
+- has exactly on class with script implementation
 
-Method [SqlDatabaseScript.Execute](https://github.com/max-ieremenko/SqlDatabase/blob/master/Examples/CSharpMirationStep/SqlDatabaseScript.cs) implements the logic of your migration step.
+This project is an example of script implementation.
+The build output is 2.1_2.2.dll with target framework 4.5.2.
+Due to the current dependencies, 2.1_2.2.dll works well on .net core 2.2.
 
-Use parameter "IDbCommand command" to affect database.
-Use Console.WriteLine() to write something into migration log.
+## Script source
+Method [SqlDatabaseScript.Execute](https://github.com/max-ieremenko/SqlDatabase/blob/master/Examples/CSharpMirationStep/SqlDatabaseScript.cs) implements a logic of script
+```C#
+namespace SqlDatabaseCustomScript
+{
+    public /*sealed*/ class SqlDatabaseScript /*: IDisposable*/
+    {
+        public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+        {
+            Console.WriteLine("start execution");
 
-## Runtime
+            command.CommandText = string.Format("print 'current database name is {0}'", variables["DatabaseName"]);
+            command.ExecuteNonQuery();
+
+            command.CommandText = string.Format("print 'version from {0}'", variables["CurrentVersion"]);
+            command.ExecuteNonQuery();
+
+            command.CommandText = string.Format("print 'version to {0}'", variables["TargetVersion"]);
+            command.ExecuteNonQuery();
+
+            command.CommandText = "create table dbo.DemoTable (Id INT)";
+            command.ExecuteNonQuery();
+
+            command.CommandText = "print 'drop table DemoTable'";
+            command.ExecuteNonQuery();
+
+            command.CommandText = "drop table dbo.DemoTable";
+            command.ExecuteNonQuery();
+
+            Console.WriteLine("finish execution");
+        }
+    }
+}
+```
+
+Use
+* method`s parameter "IDbCommand command" to affect database
+* Console.WriteLine() to write something into output/log
+
+## Runtime .NET desktop
 At runtime the assembly will be loaded into private application domain with
 * ApplicationBase: temporary directory
 * ConfigurationFile: SqlDatabase.exe.config
 * Location of assembly: ApplicationBase, temporary directory
+```C#
+    public class SqlDatabaseScript
+    {
+        public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+        {
+            var assemblyLocation = GetType().Assembly.Location;
 
+            // temporary directory
+            Console.WriteLine(assemblyLocation);
+        }
+    }
+```
 Instance of migration step will be resolved via reflection: Activator.CreateInstance(typeof(SqlDatabaseScript))
 
 After the migration step is finished or failed
@@ -21,9 +73,31 @@ After the migration step is finished or failed
 - the domain will be unloaded
 - temporary directory will be deleted
 
-## Reflection
-The assembly must contain only one "public class SqlDatabaseScript", namespace doesn't matter.
-Class SqlDatabaseScript must contain method "public void Execute(...)".
+## Runtime .NET Core
+At runtime the assembly will be loaded into the current application domain.
+* ApplicationBase: is a directory of SqlDatabase
+* ConfigurationFile: SqlDatabase.exe.config
+* Script assembly has no location:
+```C#
+    public class SqlDatabaseScript
+    {
+        public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+        {
+            var assemblyLocation = GetType().Assembly.Location;
+
+            // output is empty
+            Console.WriteLine(assemblyLocation);
+        }
+    }
+```
+Instance of migration step will be resolved via reflection: Activator.CreateInstance(typeof(SqlDatabaseScript))
+
+After the migration step is finished or failed
+- instance of SqlDatabaseScript will be disposed (if IDisposable)
+
+## Resolving SqlDatabaseScript.Execute
+The assembly must contain exactly one "public class SqlDatabaseScript", namespace doesn't matter.
+Class SqlDatabaseScript must contain instance method "public void Execute(...)".
 
 Supported signatures of Execute method
 * void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
