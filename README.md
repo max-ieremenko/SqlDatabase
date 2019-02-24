@@ -89,7 +89,7 @@ PS> Upgrade-SqlDatabase `
 Execute script
 ==============
 
-### execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
+execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase execute ^

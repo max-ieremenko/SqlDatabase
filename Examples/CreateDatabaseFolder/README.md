@@ -20,6 +20,7 @@ create new database *MyDatabase* on Sql Server *MyServer* based on scripts from 
 |:--|:----------|
 |-database|set connection string to target database|
 |-from|path to a folder or .zip file with scripts. Repeat to setup several sources.|
+|-configuration|path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 Script`s execution order

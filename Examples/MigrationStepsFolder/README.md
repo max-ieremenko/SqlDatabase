@@ -20,6 +20,7 @@ upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts
 |-database|set connection string to target database|
 |-from|path to a folder or .zip file with migration steps. Repeat to setup several sources.|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
+|-configuration|path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 

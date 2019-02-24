@@ -4,7 +4,7 @@
 Any assembly script is
 - .exe or .dll .NET assembly
 - target framework is 4.5.2 or .net core 2.2
-- has exactly on class with script implementation
+- has exactly one class with script implementation
 
 This project is an example of script implementation.
 The build output is 2.1_2.2.dll with target framework 4.5.2.
@@ -52,7 +52,7 @@ Use
 ## Runtime .NET desktop
 At runtime the assembly will be loaded into private application domain with
 * ApplicationBase: temporary directory
-* ConfigurationFile: SqlDatabase.exe.config
+* ConfigurationFile: current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
 * Location of assembly: ApplicationBase, temporary directory
 ```C#
     public class SqlDatabaseScript
@@ -76,7 +76,7 @@ After the migration step is finished or failed
 ## Runtime .NET Core
 At runtime the assembly will be loaded into the current application domain.
 * ApplicationBase: is a directory of SqlDatabase
-* ConfigurationFile: SqlDatabase.exe.config
+* ConfigurationFile: current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
 * Script assembly has no location:
 ```C#
     public class SqlDatabaseScript
@@ -104,6 +104,8 @@ Supported signatures of Execute method
 * void Execute(IReadOnlyDictionary<string, string> variables, IDbCommand command)
 * void Execute(IDbCommand command)
 * void Execute(IDbConnection connection)
+
+Names *SqlDatabaseScript* and *Execute* are configurable.
 
 ## Configuration
 name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile):

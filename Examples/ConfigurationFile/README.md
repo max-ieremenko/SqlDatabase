@@ -1,6 +1,12 @@
 Configuration file
 ==================
 
+By default the current configuration file is "SqlDatabase.exe.config". It can be changed in a CLI
+```bash
+$ SqlDatabase ... -configuration=path\to\sql-database.config
+```
+
+
 <!-- toc -->
 - [getCurrentVersion](#getCurrentVersion)
 - [setCurrentVersion](#setCurrentVersion)
@@ -35,21 +41,21 @@ Configuration file
 ```
 
 ## getCurrentVersion
-An sql script to determine the current version of database. Used by [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
+An sql script to determine the current version of database, see [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
 Default value:
 ```sql
 SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)
 ```
 
 ## setCurrentVersion
-An sql script to update the current version of database. Used by [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
+An sql script to update the current version of database, see [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
 Default value:
 ```sql
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}''
 ```
 
 ## Example (get/set)CurrentVersion
-The example shows an alternative how to store database version.
+The example shows an alternative how to store database version:
 ```sql
 CREATE TABLE dbo.Version
 (
@@ -60,8 +66,8 @@ GO
 ```
 
 ```xml
-  <sqlDatabase getCurrentVersion="SELECT Version FROM dbo.Version WHERE Name = 'database'"
-               setCurrentVersion="UPDATE dbo.Version SET Version = N'{{TargetVersion}}'' WHERE Name = 'database'" />
+<sqlDatabase getCurrentVersion="SELECT Version FROM dbo.Version WHERE Name = 'database'"
+              setCurrentVersion="UPDATE dbo.Version SET Version = N'{{TargetVersion}}'' WHERE Name = 'database'" />
 ```
 
 ## assemblyScript
@@ -85,10 +91,10 @@ namespace <any namespace>
 }
 ```
 ```xml
-  <sqlDatabase>
-    <assemblyScript className="MyScript"
-                    methodName="MyEntryPoint" />
-  </sqlDatabase>
+<sqlDatabase>
+  <assemblyScript className="MyScript"
+                  methodName="MyEntryPoint" />
+</sqlDatabase>
 ```
 
 ## variables
@@ -102,14 +108,14 @@ by default the list is empty.
 
 example
 ```xml
-  <sqlDatabase>
-    <variables>
-      <add name="SchemaName"
-           value="demo" />
-      <add name="TableName"
-           value="Table1" />
-    </variables>
-  </sqlDatabase>
+<sqlDatabase>
+  <variables>
+    <add name="SchemaName"
+          value="demo" />
+    <add name="TableName"
+          value="Table1" />
+  </variables>
+</sqlDatabase>
 ```
 ```sql
 -- script file *.sql
