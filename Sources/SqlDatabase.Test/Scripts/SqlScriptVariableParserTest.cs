@@ -115,5 +115,21 @@ namespace SqlDatabase.Scripts
         {
             SqlScriptVariableParser.IsValidVariableName(variableName).ShouldBe(isValid);
         }
+
+        [Test]
+        [TestCase("var", "value", "value")]
+        [TestCase("_var", "value", SqlScriptVariableParser.ValueIsHidden)]
+        public void NoLogVariableName(string variableName, string value, string expectedLogValue)
+        {
+            var sql = "{{" + variableName + "}}";
+
+            _variables
+                .Setup(v => v.GetValue(variableName))
+                .Returns(value);
+
+            _sut.ApplyVariables(sql);
+
+            _sut.ValueByName[variableName].ShouldBe(expectedLogValue);
+        }
     }
 }

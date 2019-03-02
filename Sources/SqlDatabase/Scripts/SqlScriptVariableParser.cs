@@ -6,6 +6,8 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class SqlScriptVariableParser
     {
+        internal const string ValueIsHidden = "[value is hidden]";
+
         // {{var}}
         private const string Pattern1 = @"\{\{(?'name'\w+)\}\}";
 
@@ -45,6 +47,11 @@ namespace SqlDatabase.Scripts
             return Regex.Replace(result, Pattern2, Evaluator, RegexOptions.Compiled);
         }
 
+        private static bool HideValueFromOutput(string name)
+        {
+            return name[0] == '_';
+        }
+
         private string Evaluator(Match match)
         {
             var name = match.Groups["name"].Value;
@@ -63,7 +70,7 @@ namespace SqlDatabase.Scripts
         {
             if (!ValueByName.ContainsKey(name))
             {
-                ValueByName.Add(name, value);
+                ValueByName.Add(name, HideValueFromOutput(name) ? ValueIsHidden : value);
             }
         }
     }
