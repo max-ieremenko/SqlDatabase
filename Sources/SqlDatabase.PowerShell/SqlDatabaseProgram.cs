@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.PowerShell
@@ -25,23 +22,17 @@ namespace SqlDatabase.PowerShell
         {
             command.PreFormatOutputLogs = true;
 
-            int exitCode;
+            bool hasErrors;
             using (var process = CreateProcess(command))
             {
-                process.OutputDataReceived += ProcessOutputDataReceived;
-
                 process.Start();
-                process.BeginOutputReadLine();
 
-                process.WaitForExit();
-                process.OutputDataReceived -= ProcessOutputDataReceived;
-
-                exitCode = process.ExitCode;
+                hasErrors = WaitForExit(process);
             }
 
-            if (exitCode != 0)
+            if (hasErrors)
             {
-                _owner.ThrowTerminatingError(ErrorCategory.NotSpecified, "Execution failed.");
+                _owner.WriteErrorLine("Execution failed.");
             }
         }
 
@@ -59,53 +50,48 @@ namespace SqlDatabase.PowerShell
                 CreateNoWindow = true
             };
 
-            return new Process
-            {
-                StartInfo = startInfo,
-                SynchronizingObject = new Synchronizer()
-            };
+            return new Process { StartInfo = startInfo };
         }
 
-        private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
+        private bool WaitForExit(Process process)
         {
-            if (e.Data != null)
-            {
-                var line = _reader.NextLine(e.Data);
+            var hasErrors = false;
 
-                if (line.Value)
+            string line;
+            while ((line = process.StandardOutput.ReadLine()) != null)
+            {
+                var record = _reader.NextLine(line);
+                if (record.HasValue)
                 {
-                    _logger.Error(line.Key);
+                    if (record.Value.IsError)
+                    {
+                        hasErrors = true;
+                        _logger.Error(record.Value.Text);
+                    }
+                    else
+                    {
+                        _logger.Info(record.Value.Text);
+                    }
+                }
+            }
+
+            process.WaitForExit();
+
+            var buffered = _reader.Flush();
+            if (buffered.HasValue)
+            {
+                if (buffered.Value.IsError)
+                {
+                    hasErrors = true;
+                    _logger.Error(buffered.Value.Text);
                 }
                 else
                 {
-                    _logger.Info(line.Key);
+                    _logger.Info(buffered.Value.Text);
                 }
             }
-        }
 
-        private sealed class Synchronizer : ISynchronizeInvoke
-        {
-            private readonly object _syncRoot = new object();
-
-            public bool InvokeRequired => true;
-
-            public IAsyncResult BeginInvoke(Delegate method, object[] args)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object EndInvoke(IAsyncResult result)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Invoke(Delegate method, object[] args)
-            {
-                lock (_syncRoot)
-                {
-                    return method.DynamicInvoke(args);
-                }
-            }
+            return process.ExitCode != 0 && !hasErrors;
         }
     }
 }

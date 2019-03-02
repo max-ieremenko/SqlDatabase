@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Management.Automation;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -61,17 +60,13 @@ namespace SqlDatabase.PowerShell
         }
 
         [Test]
-        public void ValidateExitCode()
+        public void ValidateErrors()
         {
             var command = new CommandLineBuilder()
                 .SetCommand(Command.Unknown)
                 .SetConnection("Data Source=.;Initial Catalog=SqlDatabaseTest")
                 .SetScripts("script 1")
                 .Build();
-
-            _owner
-                .Setup(o => o.ThrowTerminatingError(ErrorCategory.NotSpecified, It.IsAny<string>()))
-                .Verifiable();
 
             _sut.ExecuteCommand(command);
 

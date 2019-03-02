@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
 
 namespace SqlDatabase.PowerShell
@@ -20,8 +19,9 @@ namespace SqlDatabase.PowerShell
         {
             var line = NextLine("some text");
 
-            line.Key.ShouldBe("some text");
-            line.Value.ShouldBe(false);
+            line.HasValue.ShouldBeTrue();
+            line.Value.Text.ShouldBe("some text");
+            line.Value.IsError.ShouldBeFalse();
         }
 
         [Test]
@@ -29,8 +29,9 @@ namespace SqlDatabase.PowerShell
         {
             var line = NextLine(string.Empty);
 
-            line.Key.ShouldBe(string.Empty);
-            line.Value.ShouldBe(false);
+            line.HasValue.ShouldBeTrue();
+            line.Value.Text.ShouldBe(string.Empty);
+            line.Value.IsError.ShouldBeFalse();
         }
 
         [Test]
@@ -38,8 +39,9 @@ namespace SqlDatabase.PowerShell
         {
             var line = NextLine(OutputReader.SetForegroundColorToRed, "some error", OutputReader.SetForegroundColorToDefault);
 
-            line.Key.ShouldBe("some error");
-            line.Value.ShouldBe(true);
+            line.HasValue.ShouldBeTrue();
+            line.Value.Text.ShouldBe("some error");
+            line.Value.IsError.ShouldBeTrue();
         }
 
         [Test]
@@ -47,8 +49,9 @@ namespace SqlDatabase.PowerShell
         {
             var line = NextLine(OutputReader.SetForegroundColorToRed, string.Empty, OutputReader.SetForegroundColorToDefault);
 
-            line.Key.ShouldBe(string.Empty);
-            line.Value.ShouldBe(true);
+            line.HasValue.ShouldBeTrue();
+            line.Value.Text.ShouldBe(string.Empty);
+            line.Value.IsError.ShouldBeTrue();
         }
 
         [Test]
@@ -56,21 +59,73 @@ namespace SqlDatabase.PowerShell
         {
             var line = NextLine(OutputReader.SetForegroundColorToRed, "error 1");
 
-            line.Key.ShouldBe("error 1");
-            line.Value.ShouldBe(true);
+            line.HasValue.ShouldBeFalse();
 
             line = NextLine("error 2", OutputReader.SetForegroundColorToDefault);
 
-            line.Key.ShouldBe("error 2");
-            line.Value.ShouldBe(true);
+            line.HasValue.ShouldBeTrue();
+            line.Value.Text.ShouldBe("error 1\r\nerror 2");
+            line.Value.IsError.ShouldBeTrue();
 
             line = NextLine("message");
 
-            line.Key.ShouldBe("message");
-            line.Value.ShouldBe(false);
+            line.HasValue.ShouldBeTrue();
+            line.Value.Text.ShouldBe("message");
+            line.Value.IsError.ShouldBeFalse();
         }
 
-        private KeyValuePair<string, bool> NextLine(params string[] values)
+        [Test]
+        public void BufferError()
+        {
+            var line = NextLine(OutputReader.SetForegroundColorToRed, "line 1");
+            line.HasValue.ShouldBeFalse();
+
+            line = NextLine("line 2");
+            line.HasValue.ShouldBeFalse();
+
+            line = NextLine("line 3", OutputReader.SetForegroundColorToDefault);
+
+            line.HasValue.ShouldBeTrue();
+            line.Value.IsError.ShouldBeTrue();
+            line.Value.Text.ShouldBe(@"line 1
+line 2
+line 3");
+        }
+
+        [Test]
+        public void FlushAfterInfo()
+        {
+            NextLine("some text");
+
+            _sut.Flush().HasValue.ShouldBeFalse();
+        }
+
+        [Test]
+        public void FlushAfterError()
+        {
+            var line = NextLine(OutputReader.SetForegroundColorToRed, "some text", OutputReader.SetForegroundColorToDefault);
+
+            line.HasValue.ShouldBeTrue();
+            line.Value.IsError.ShouldBeTrue();
+
+            _sut.Flush().HasValue.ShouldBeFalse();
+        }
+
+        [Test]
+        public void FlushBufferedError()
+        {
+            var line = NextLine(OutputReader.SetForegroundColorToRed, "some text");
+
+            line.HasValue.ShouldBeFalse();
+
+            line = _sut.Flush();
+
+            line.HasValue.ShouldBeTrue();
+            line.Value.IsError.ShouldBeTrue();
+            line.Value.Text.ShouldBe("some text");
+        }
+
+        private OutputReader.Record? NextLine(params string[] values)
         {
             var line = string.Join(string.Empty, values);
             return _sut.NextLine(line);

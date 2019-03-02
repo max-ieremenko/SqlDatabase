@@ -9,22 +9,25 @@ namespace SqlDatabase.PowerShell
 
         public PowerShellCmdlet(PSCmdlet cmdlet)
         {
+            ////var errorActionPreference = cmdlet.SessionState.PSVariable.GetValue("ErrorActionPreference");
+            ////var informationPreference = cmdlet.SessionState.PSVariable.GetValue("InformationPreference");
+            ////var warningPreference = cmdlet.SessionState.PSVariable.GetValue("WarningPreference");
+
             _cmdlet = cmdlet;
         }
 
         public void WriteErrorLine(string value)
         {
-            _cmdlet.Host.UI.WriteErrorLine(value);
+            _cmdlet.WriteError(new ErrorRecord(
+                new InvalidOperationException(value),
+                null,
+                ErrorCategory.NotSpecified,
+                null));
         }
 
         public void WriteLine(string value)
         {
-            _cmdlet.Host.UI.WriteLine(value);
-        }
-
-        public void ThrowTerminatingError(ErrorCategory category, string message)
-        {
-            _cmdlet.ThrowTerminatingError(new ErrorRecord(new InvalidOperationException(message), null, category, null));
+            _cmdlet.WriteInformation(new InformationRecord(value, null));
         }
     }
 }

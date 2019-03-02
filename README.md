@@ -61,7 +61,8 @@ $ SqlDatabase create ^
 PS> Create-SqlDatabase `
       -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
       -from Examples\CreateDatabaseFolder `
-      -var Variable1=value1,Variable2=value2
+      -var Variable1=value1,Variable2=value2 `
+      -InformationAction Continue
 ```
 
 [Back to ToC](#table-of-contents)
@@ -81,7 +82,8 @@ $ SqlDatabase upgrade ^
 PS> Upgrade-SqlDatabase `
       -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
       -from Examples\MigrationStepsFolder `
-      -var Variable1=value1,Variable2=value2
+      -var Variable1=value1,Variable2=value2 `
+      -InformationAction Continue
 ```
 
 [Back to ToC](#table-of-contents)
@@ -101,7 +103,8 @@ $ SqlDatabase execute ^
 PS> Execute-SqlDatabase `
       -database "Data Source=server;Initial Catalog=database;Integrated Security=True" `
       -from c:\Scripts\script.sql `
-      -var Variable1=value1,Variable2=value2
+      -var Variable1=value1,Variable2=value2 `
+      -InformationAction Continue
 ```
 
 [Back to ToC](#table-of-contents)
