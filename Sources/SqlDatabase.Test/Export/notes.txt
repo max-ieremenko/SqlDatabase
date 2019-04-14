@@ -1,0 +1,60 @@
+ColumnName: Id
+ColumnOrdinal: 0
+DataTypeName: int
+DataType: int32
+AllowDBNull: false
+ColumnSize: 4
+
+		Key	"DataTypeName"	string
+
+		[0]	"ColumnName"	string
+		[1]	"ColumnOrdinal"	string
+		[2]	"ColumnSize"	string
+		[3]	"NumericPrecision"	string
+		[4]	"NumericScale"	string
+		[5]	"IsUnique"	string
+		[6]	"IsKey"	string
+		[7]	"BaseServerName"	string
+		[8]	"BaseCatalogName"	string
+		[9]	"BaseColumnName"	string
+		[10]	"BaseSchemaName"	string
+		[11]	"BaseTableName"	string
+		[12]	"DataType"	string
+		[13]	"AllowDBNull"	string
+		[14]	"ProviderType"	string
+		[15]	"IsAliased"	string
+		[16]	"IsExpression"	string
+		[17]	"IsIdentity"	string
+		[18]	"IsAutoIncrement"	string
+		[19]	"IsRowVersion"	string
+		[20]	"IsHidden"	string
+		[21]	"IsLong"	string
+		[22]	"IsReadOnly"	string
+		[23]	"ProviderSpecificDataType"	string
+		[24]	"DataTypeName"	string
+		[25]	"XmlSchemaCollectionDatabase"	string
+		[26]	"XmlSchemaCollectionOwningSchema"	string
+		[27]	"XmlSchemaCollectionName"	string
+		[28]	"UdtAssemblyQualifiedName"	string
+		[29]	"NonVersionedProviderType"	string
+		[30]	"IsColumnSet"	string
+
+-----------------------------------
+
+ScriptFactory
+	SqlStringFile : IFileSystemInfo
+	File : IFileSystemInfo
+	ZipFile : IFileSystemInfo
+
+CommandFactory
+	string => ISystemInfo
+	sql string => SqlStringFile
+
+Database.Execute
+	IScript.Execute(command)
+	
+Create/Update/Execute
+	IScript.Execute(command)
+
+Export
+	IScript.Export(command, TextWriter output)
