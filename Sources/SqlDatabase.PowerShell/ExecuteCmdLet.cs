@@ -4,11 +4,11 @@ using SqlDatabase.Configuration;
 namespace SqlDatabase.PowerShell
 {
     [Cmdlet(VerbsLifecycle.Invoke, "SqlDatabase")]
-    [Alias(nameof(Command.Execute) + "-SqlDatabase")]
+    [Alias(CommandLineFactory.CommandExecute + "-SqlDatabase")]
     public sealed class ExecuteCmdLet : SqlDatabaseCmdLet
     {
         public ExecuteCmdLet()
-            : base(Command.Execute)
+            : base(CommandLineFactory.CommandExecute)
         {
         }
     }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Management.Automation.Runspaces;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.Configuration;
 using Command = System.Management.Automation.Runspaces.Command;
 
@@ -13,7 +14,9 @@ namespace SqlDatabase.PowerShell
     [TestFixture]
     public class SqlDatabaseCmdLetTest
     {
-        private readonly IList<CommandLine> _commandLines = new List<CommandLine>();
+        private const string Command = "Some Command";
+
+        private readonly IList<GenericCommandLine> _commandLines = new List<GenericCommandLine>();
         private Runspace _runSpace;
         private System.Management.Automation.PowerShell _powerShell;
         private Command _invokeSqlDatabase;
@@ -35,8 +38,8 @@ namespace SqlDatabase.PowerShell
 
             var program = new Mock<ISqlDatabaseProgram>(MockBehavior.Strict);
             program
-                .Setup(p => p.ExecuteCommand(It.IsNotNull<CommandLine>()))
-                .Callback<CommandLine>(cmd => _commandLines.Add(cmd));
+                .Setup(p => p.ExecuteCommand(It.IsNotNull<GenericCommandLine>()))
+                .Callback<GenericCommandLine>(cmd => _commandLines.Add(cmd));
 
             _commandLines.Clear();
             SqlDatabaseCmdLet.Program = program.Object;
@@ -76,21 +79,22 @@ namespace SqlDatabase.PowerShell
 
             _powerShell.Invoke();
 
-            Assert.AreEqual(1, _commandLines.Count);
+            _commandLines.Count.ShouldBe(1);
+
             var commandLine = _commandLines[0];
 
-            Assert.IsNotNull(commandLine);
-            Assert.AreEqual(Configuration.Command.Upgrade, commandLine.Command);
-            Assert.AreEqual(dataBase, commandLine.Connection.ToString());
-            Assert.AreEqual(2, commandLine.Scripts.Count);
-            Assert.AreEqual(from1, commandLine.Scripts[0]);
-            Assert.AreEqual(from2, commandLine.Scripts[1]);
-            Assert.AreEqual(TransactionMode.PerStep, commandLine.Transaction);
-            Assert.AreEqual("app.config", commandLine.ConfigurationFile);
+            commandLine.ShouldNotBeNull();
+            commandLine.Command.ShouldBe(Command);
+            commandLine.Connection.ToString().ShouldBe(dataBase);
+            commandLine.Scripts.Count.ShouldBe(2);
+            commandLine.Scripts[0].ShouldBe(from1);
+            commandLine.Scripts[1].ShouldBe(from2);
+            commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
+            commandLine.ConfigurationFile.ShouldBe("app.config");
 
-            CollectionAssert.AreEquivalent(new[] { "x", "y" }, commandLine.Variables.Keys);
-            Assert.AreEqual("1", commandLine.Variables["x"]);
-            Assert.AreEqual("2", commandLine.Variables["y"]);
+            commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
+            commandLine.Variables["x"].ShouldBe("1");
+            commandLine.Variables["y"].ShouldBe("2");
         }
 
         [Test]
@@ -108,21 +112,21 @@ namespace SqlDatabase.PowerShell
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Database), dataBase);
             _powerShell.Invoke(new[] { from1, from2 });
 
-            Assert.AreEqual(2, _commandLines.Count);
+            _commandLines.Count.ShouldBe(2);
 
-            Assert.AreEqual(dataBase.ToString(), _commandLines[0].Connection.ToString());
-            Assert.AreEqual(1, _commandLines[0].Scripts.Count);
-            Assert.AreEqual(from1, _commandLines[0].Scripts[0]);
+            _commandLines[0].Connection.ToString().ShouldBe(dataBase);
+            _commandLines[0].Scripts.Count.ShouldBe(1);
+            _commandLines[0].Scripts[0].ShouldBe(from1);
 
-            Assert.AreEqual(dataBase.ToString(), _commandLines[1].Connection.ToString());
-            Assert.AreEqual(1, _commandLines[1].Scripts.Count);
-            Assert.AreEqual(from2, _commandLines[1].Scripts[0]);
+            _commandLines[1].Connection.ToString().ShouldBe(dataBase);
+            _commandLines[1].Scripts.Count.ShouldBe(1);
+            _commandLines[1].Scripts[0].ShouldBe(from2);
         }
 
         private sealed class SomeSqlDatabaseCmdLet : SqlDatabaseCmdLet
         {
             public SomeSqlDatabaseCmdLet()
-                : base(SqlDatabase.Configuration.Command.Upgrade)
+                : base(Command)
             {
             }
         }

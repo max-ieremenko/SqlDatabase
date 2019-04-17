@@ -4,35 +4,35 @@ using System.Runtime.Serialization;
 namespace SqlDatabase.Configuration
 {
     [Serializable]
-    public class InvalidCommandException : SystemException
+    public class InvalidCommandLineException : SystemException
     {
-        public InvalidCommandException()
+        public InvalidCommandLineException()
         {
         }
 
-        public InvalidCommandException(string message)
+        public InvalidCommandLineException(string message)
             : base(message)
         {
         }
 
-        public InvalidCommandException(string message, Exception inner)
+        public InvalidCommandLineException(string message, Exception inner)
             : base(message, inner)
         {
         }
 
-        public InvalidCommandException(string argument, string message)
+        public InvalidCommandLineException(string argument, string message)
             : base(message)
         {
             Argument = argument;
         }
 
-        public InvalidCommandException(string argument, string message, Exception inner)
+        public InvalidCommandLineException(string argument, string message, Exception inner)
             : base(message, inner)
         {
             Argument = argument;
         }
 
-        protected InvalidCommandException(SerializationInfo info, StreamingContext context)
+        protected InvalidCommandLineException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             Argument = info.GetString(nameof(Argument));

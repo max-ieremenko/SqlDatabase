@@ -18,7 +18,7 @@ namespace SqlDatabase.PowerShell
             _reader = new OutputReader();
         }
 
-        public void ExecuteCommand(CommandLine command)
+        public void ExecuteCommand(GenericCommandLine command)
         {
             command.PreFormatOutputLogs = true;
 
@@ -36,7 +36,7 @@ namespace SqlDatabase.PowerShell
             }
         }
 
-        private static Process CreateProcess(CommandLine command)
+        private static Process CreateProcess(GenericCommandLine command)
         {
             var sqlDatabase = typeof(Program).Assembly.Location;
 
@@ -45,7 +45,7 @@ namespace SqlDatabase.PowerShell
                 WorkingDirectory = Path.GetDirectoryName(sqlDatabase),
                 FileName = sqlDatabase,
                 UseShellExecute = false,
-                Arguments = string.Join(" ", new CommandLineBuilder(command).BuildArray(true).Select(i => "\"" + i + "\"")),
+                Arguments = string.Join(" ", new GenericCommandLineBuilder(command).BuildArray(true).Select(i => "\"" + i + "\"")),
                 RedirectStandardOutput = true,
                 CreateNoWindow = true
             };

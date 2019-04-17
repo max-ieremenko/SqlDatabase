@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
@@ -35,35 +36,47 @@ namespace SqlDatabase.PowerShell
         [Test]
         public void EchoCommandLine()
         {
-            var command = new CommandLineBuilder()
-                .SetCommand(Command.Echo)
+            var command = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandEcho)
                 .SetConfigurationFile("config file")
-                .SetConnection("Data Source=.;Initial Catalog=SqlDatabaseTest")
+                .SetConnection("connection")
                 .SetScripts("script 1")
                 .SetVariable("var1", "value 1\\")
                 .Build();
 
             _sut.ExecuteCommand(command);
 
-            _output.Count.ShouldBe(7);
+            foreach (var i in _output)
+            {
+                Console.WriteLine(i);
+            }
 
-            var actual = CommandLineBuilder.FromArguments(_output.ToArray());
+            _output.Count.ShouldBe(6);
 
-            actual.Command.ShouldBe(Command.Echo);
-            actual.ConfigurationFile.ShouldBe("config file");
-            actual.Connection.DataSource.ShouldBe(".");
-            actual.Connection.InitialCatalog.ShouldBe("SqlDatabaseTest");
-            actual.Scripts.ShouldBe(new[] { "script 1" });
-            actual.Variables.Count.ShouldBe(1);
-            actual.Variables["var1"].ShouldBe("value 1\\");
-            actual.PreFormatOutputLogs.ShouldBe(true);
+            CommandLineParser.PreFormatOutputLogs(_output).ShouldBeTrue();
+            var actual = new CommandLineParser().Parse(_output.ToArray());
+
+            actual.Args[0].IsPair.ShouldBe(false);
+            actual.Args[0].Value.ShouldBe(CommandLineFactory.CommandEcho);
+
+            actual.Args[1].Key.ShouldBe("database");
+            actual.Args[1].Value.ShouldBe("connection");
+
+            actual.Args[2].Key.ShouldBe("from");
+            actual.Args[2].Value.ShouldBe("script 1");
+
+            actual.Args[3].Key.ShouldBe("configuration");
+            actual.Args[3].Value.ShouldBe("config file");
+
+            actual.Args[4].Key.ShouldBe("varvar1");
+            actual.Args[4].Value.ShouldBe("value 1\\");
         }
 
         [Test]
         public void ValidateErrors()
         {
-            var command = new CommandLineBuilder()
-                .SetCommand(Command.Unknown)
+            var command = new GenericCommandLineBuilder()
+                .SetCommand("Unknown")
                 .SetConnection("Data Source=.;Initial Catalog=SqlDatabaseTest")
                 .SetScripts("script 1")
                 .Build();

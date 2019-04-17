@@ -52,8 +52,8 @@ namespace SqlDatabase.IntegrationTests
 
         public void CreateDatabase()
         {
-            var args = new CommandLineBuilder()
-                .SetCommand(Command.Create)
+            var args = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandCreate)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, "new"))
                 .SetVariable("JohnCity", "London")
@@ -95,8 +95,8 @@ ORDER BY Person.Id";
         [Order(2)]
         public void UpgradeDatabase()
         {
-            var args = new CommandLineBuilder()
-                .SetCommand(Command.Upgrade)
+            var args = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandUpgrade)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, "upgrade"))
                 .SetVariable("JohnSecondName", "Smitt")
@@ -135,8 +135,8 @@ ORDER BY Person.Id";
         [Order(3)]
         public void ExecuteScript()
         {
-            var args = new CommandLineBuilder()
-                .SetCommand(Command.Execute)
+            var args = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandExecute)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, "execute", "drop.database.sql"))
                 .BuildArray(false);

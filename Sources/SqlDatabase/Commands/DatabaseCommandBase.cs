@@ -3,7 +3,7 @@ using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands
 {
-    internal abstract class DatabaseCommandBase
+    internal abstract class DatabaseCommandBase : ICommand
     {
         public ILogger Log { get; set; }
 

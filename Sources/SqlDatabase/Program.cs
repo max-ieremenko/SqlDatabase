@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using SqlDatabase.Commands;
 using SqlDatabase.Configuration;
 using SqlDatabase.Log;
 
@@ -11,9 +10,7 @@ namespace SqlDatabase
     {
         public static int Main(string[] args)
         {
-            var logger = CommandLineBuilder.PreFormatOutputLogs(args) ?
-                LoggerFactory.CreatePreFormatted() :
-                LoggerFactory.CreateDefault();
+            var logger = CreateLogger(args);
 
             ExitCode exitCode;
             var cmd = ParseCommandLine(args, logger);
@@ -21,15 +18,6 @@ namespace SqlDatabase
             {
                 logger.Info(LoadHelpContent());
                 exitCode = ExitCode.InvalidCommandLine;
-            }
-            else if (cmd.Command == Command.Echo)
-            {
-                foreach (var arg in args)
-                {
-                    logger.Info(arg);
-                }
-
-                exitCode = ExitCode.Ok;
             }
             else
             {
@@ -45,12 +33,11 @@ namespace SqlDatabase
             return (int)exitCode;
         }
 
-        private static bool ExecuteCommand(CommandLine cmd, ILogger logger)
+        private static bool ExecuteCommand(ICommandLine cmd, ILogger logger)
         {
             try
             {
-                var factory = new CommandFactory { Log = logger };
-                factory.Resolve(cmd).Execute();
+                cmd.CreateCommand(logger).Execute();
                 return true;
             }
             catch (Exception ex)
@@ -61,16 +48,17 @@ namespace SqlDatabase
             }
         }
 
-        private static CommandLine ParseCommandLine(string[] args, ILogger logger)
+        private static ICommandLine ParseCommandLine(string[] args, ILogger logger)
         {
-            if (args == null || args.Length == 0)
-            {
-                return null;
-            }
-
             try
             {
-                return CommandLineBuilder.FromArguments(args);
+                var command = new CommandLineParser().Parse(args);
+                if (command.Args.Count == 0)
+                {
+                    return null;
+                }
+
+                return new CommandLineFactory().Resolve(command);
             }
             catch (Exception e)
             {
@@ -80,9 +68,16 @@ namespace SqlDatabase
             return null;
         }
 
+        private static ILogger CreateLogger(string[] args)
+        {
+            return CommandLineParser.PreFormatOutputLogs(args) ?
+                LoggerFactory.CreatePreFormatted() :
+                LoggerFactory.CreateDefault();
+        }
+
         private static string LoadHelpContent()
         {
-            var scope = typeof(CommandLine);
+            var scope = typeof(ICommandLine);
             using (var stream = scope.Assembly.GetManifestResourceStream(scope, "CommandLine.txt"))
             using (var reader = new StreamReader(stream))
             {

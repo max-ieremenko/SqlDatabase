@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System.Collections.Generic;
 
 namespace SqlDatabase.Configuration
 {
-    public sealed class CommandLine
+    internal struct CommandLine
     {
-        public Command Command { get; set; }
+        public CommandLine(IList<Arg> args, string[] original)
+        {
+            Args = args;
+            Original = original;
+        }
 
-        public SqlConnectionStringBuilder Connection { get; set; }
+        public CommandLine(params Arg[] args)
+        {
+            Args = args;
+            Original = null;
+        }
 
-        public TransactionMode Transaction { get; set; }
+        public IList<Arg> Args { get; }
 
-        public IList<string> Scripts { get; } = new List<string>();
-
-        public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        public string ConfigurationFile { get; set; }
-
-        public bool PreFormatOutputLogs { get; set; }
+        public string[] Original { get; }
     }
 }

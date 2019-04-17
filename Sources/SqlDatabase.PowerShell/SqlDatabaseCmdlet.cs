@@ -5,9 +5,9 @@ namespace SqlDatabase.PowerShell
 {
     public abstract class SqlDatabaseCmdLet : PSCmdlet
     {
-        private readonly Command _command;
+        private readonly string _command;
 
-        protected SqlDatabaseCmdLet(Command command)
+        protected SqlDatabaseCmdLet(string command)
         {
             _command = command;
         }
@@ -37,7 +37,7 @@ namespace SqlDatabase.PowerShell
 
         protected sealed override void ProcessRecord()
         {
-            var cmd = new CommandLineBuilder()
+            var cmd = new GenericCommandLineBuilder()
                 .SetCommand(_command)
                 .SetConnection(Database)
                 .SetTransaction(Transaction)

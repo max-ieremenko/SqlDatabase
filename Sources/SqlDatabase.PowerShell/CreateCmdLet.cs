@@ -4,11 +4,11 @@ using SqlDatabase.Configuration;
 namespace SqlDatabase.PowerShell
 {
     [Cmdlet(VerbsCommon.New, "SqlDatabase")]
-    [Alias(nameof(Command.Create) + "-SqlDatabase")]
+    [Alias(CommandLineFactory.CommandCreate + "-SqlDatabase")]
     public sealed class CreateCmdLet : SqlDatabaseCmdLet
     {
         public CreateCmdLet()
-            : base(Command.Create)
+            : base(CommandLineFactory.CommandCreate)
         {
         }
     }

@@ -66,7 +66,7 @@ namespace SqlDatabase.Scripts
 
             var updateVersion = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
 
-            using (var connection = new SqlConnection(ConnectionString))
+            using (var connection = CreateConnection())
             using (var command = connection.CreateCommand())
             {
                 connection.InfoMessage += OnConnectionInfoMessage;
