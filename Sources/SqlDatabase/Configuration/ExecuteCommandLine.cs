@@ -1,5 +1,5 @@
-﻿using SqlDatabase.Commands;
-using SqlDatabase.IO;
+﻿using System.Linq;
+using SqlDatabase.Commands;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration
@@ -13,13 +13,9 @@ namespace SqlDatabase.Configuration
 
             var sequence = new CreateScriptSequence
             {
-                ScriptFactory = new ScriptFactory { Configuration = configuration.SqlDatabase }
+                ScriptFactory = new ScriptFactory { Configuration = configuration.SqlDatabase },
+                Sources = Scripts.ToArray()
             };
-
-            foreach (var script in Scripts)
-            {
-                sequence.Sources.Add(FileSystemFactory.FileSystemInfoFromPath(script));
-            }
 
             return new DatabaseExecuteCommand
             {

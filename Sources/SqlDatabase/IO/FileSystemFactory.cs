@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SqlDatabase.IO
 {
-    internal static class FileSystemFactory
+    internal sealed class FileSystemFactory : IFileSystemFactory
     {
         public static IFileSystemInfo FileSystemInfoFromPath(string path)
         {
@@ -70,6 +70,8 @@ namespace SqlDatabase.IO
 
             return folder;
         }
+
+        IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string path) => FileSystemInfoFromPath(path);
 
         private static IFolder TryToResolveEntryPoint(string path)
         {

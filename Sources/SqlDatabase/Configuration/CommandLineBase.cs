@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using SqlDatabase.Commands;
+using SqlDatabase.IO;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration
@@ -13,21 +14,19 @@ namespace SqlDatabase.Configuration
 
         public TransactionMode Transaction { get; set; }
 
-        public IList<string> Scripts { get; } = new List<string>();
+        public IList<IFileSystemInfo> Scripts { get; } = new List<IFileSystemInfo>();
 
         public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public string ConfigurationFile { get; set; }
 
+        public IFileSystemFactory FileSystemFactory { get; set; } = new FileSystemFactory();
+
         public void Parse(CommandLine args)
         {
             foreach (var arg in args.Args)
             {
-                var isParsed = (arg.IsPair && TryParseKnownPair(arg)) || ParseArg(arg);
-                if (!isParsed)
-                {
-                    throw new InvalidCommandLineException("Unknown argument [{0}].".FormatWith(arg));
-                }
+                ApplyArg(arg);
             }
 
             if (Connection == null)
@@ -96,6 +95,28 @@ namespace SqlDatabase.Configuration
             return false;
         }
 
+        private void ApplyArg(Arg arg)
+        {
+            bool isParsed;
+            try
+            {
+                isParsed = (arg.IsPair && TryParseKnownPair(arg)) || ParseArg(arg);
+            }
+            catch (InvalidCommandLineException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidCommandLineException("Fail to parse argument [{0}].".FormatWith(arg), ex);
+            }
+
+            if (!isParsed)
+            {
+                throw new InvalidCommandLineException("Unknown argument [{0}].".FormatWith(arg));
+            }
+        }
+
         private bool TryParseKnownPair(Arg arg)
         {
             if (Arg.Database.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
@@ -145,7 +166,7 @@ namespace SqlDatabase.Configuration
 
         private void SetScripts(string value)
         {
-            Scripts.Add(value);
+            Scripts.Add(FileSystemFactory.FileSystemInfoFromPath(value));
         }
 
         private void SetTransaction(string modeName)

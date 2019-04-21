@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Commands;
+using SqlDatabase.IO;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration
@@ -11,19 +12,26 @@ namespace SqlDatabase.Configuration
     public class ExecuteCommandLineTest
     {
         private Mock<ILogger> _log;
+        private Mock<IFileSystemFactory> _fs;
         private ExecuteCommandLine _sut;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _log = new Mock<ILogger>(MockBehavior.Strict);
+            _fs = new Mock<IFileSystemFactory>(MockBehavior.Strict);
 
-            _sut = new ExecuteCommandLine();
+            _sut = new ExecuteCommandLine { FileSystemFactory = _fs.Object };
         }
 
         [Test]
         public void Parse()
         {
+            var folder = new Mock<IFileSystemInfo>(MockBehavior.Strict);
+            _fs
+                .Setup(f => f.FileSystemInfoFromPath(@"c:\folder"))
+                .Returns(folder.Object);
+
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
                 new Arg("from", @"c:\folder"),
@@ -32,7 +40,7 @@ namespace SqlDatabase.Configuration
                 new Arg("configuration", "app.config"),
                 new Arg("transaction", "perStep")));
 
-            _sut.Scripts.ShouldBe(new[] { @"c:\folder" });
+            _sut.Scripts.ShouldBe(new[] { folder.Object });
 
             _sut.Connection.ShouldNotBeNull();
             _sut.Connection.DataSource.ShouldBe(".");
@@ -51,7 +59,6 @@ namespace SqlDatabase.Configuration
         public void CreateCommand()
         {
             _sut.Connection = new SqlConnectionStringBuilder();
-            _sut.Scripts.Add(GetType().Assembly.Location);
 
             var actual = _sut
                 .CreateCommand(_log.Object)

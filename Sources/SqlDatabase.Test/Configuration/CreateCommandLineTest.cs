@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Commands;
+using SqlDatabase.IO;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration
@@ -12,19 +13,26 @@ namespace SqlDatabase.Configuration
     public class CreateCommandLineTest
     {
         private Mock<ILogger> _log;
+        private Mock<IFileSystemFactory> _fs;
         private CreateCommandLine _sut;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _log = new Mock<ILogger>(MockBehavior.Strict);
+            _fs = new Mock<IFileSystemFactory>(MockBehavior.Strict);
 
-            _sut = new CreateCommandLine();
+            _sut = new CreateCommandLine { FileSystemFactory = _fs.Object };
         }
 
         [Test]
         public void Parse()
         {
+            var folder = new Mock<IFileSystemInfo>(MockBehavior.Strict);
+            _fs
+                .Setup(f => f.FileSystemInfoFromPath(@"c:\folder"))
+                .Returns(folder.Object);
+
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
                 new Arg("from", @"c:\folder"),
@@ -32,7 +40,7 @@ namespace SqlDatabase.Configuration
                 new Arg("varY", "value"),
                 new Arg("configuration", "app.config")));
 
-            _sut.Scripts.ShouldBe(new[] { @"c:\folder" });
+            _sut.Scripts.ShouldBe(new[] { folder.Object });
 
             _sut.Connection.ShouldNotBeNull();
             _sut.Connection.DataSource.ShouldBe(".");

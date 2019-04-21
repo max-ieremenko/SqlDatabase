@@ -8,7 +8,7 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
     {
-        public IList<IFileSystemInfo> Sources { get; } = new List<IFileSystemInfo>();
+        public IList<IFileSystemInfo> Sources { get; set; } = new List<IFileSystemInfo>();
 
         public IScriptFactory ScriptFactory { get; set; }
 
