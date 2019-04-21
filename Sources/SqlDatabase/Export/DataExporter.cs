@@ -48,6 +48,37 @@ namespace SqlDatabase.Export
             Output.Go();
         }
 
+        internal ExportTable ReadSchemaTable(DataTable metadata, string tableName)
+        {
+            var result = new ExportTable { Name = tableName };
+
+            const string GeneratedName = "GeneratedName";
+            var generatedIndex = 0;
+
+            var rows = metadata.Rows.Cast<DataRow>().OrderBy(i => (int)i["ColumnOrdinal"]);
+            foreach (var row in rows)
+            {
+                var name = (string)row["ColumnName"];
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    generatedIndex++;
+                    name = GeneratedName + generatedIndex;
+                }
+
+                result.Columns.Add(new ExportTableColumn
+                {
+                    Name = name,
+                    SqlDataTypeName = (string)row["DataTypeName"],
+                    Size = (int)row["ColumnSize"],
+                    NumericPrecision = (short?)DataReaderTools.CleanValue(row["NumericPrecision"]),
+                    NumericScale = (short?)DataReaderTools.CleanValue(row["NumericScale"]),
+                    AllowNull = (bool)row["AllowDBNull"]
+                });
+            }
+
+            return result;
+        }
+
         private void CreateTable(ExportTable table)
         {
             Output
@@ -109,28 +140,6 @@ namespace SqlDatabase.Export
             Output
                 .Line(")")
                 .Text("VALUES ");
-        }
-
-        private ExportTable ReadSchemaTable(DataTable metadata, string tableName)
-        {
-            var result = new ExportTable { Name = tableName };
-
-            var rows = metadata.Rows.Cast<DataRow>().OrderBy(i => (int)i["ColumnOrdinal"]);
-
-            foreach (var row in rows)
-            {
-                result.Columns.Add(new ExportTableColumn
-                {
-                    Name = (string)row["ColumnName"],
-                    SqlDataTypeName = (string)row["DataTypeName"],
-                    Size = (int)row["ColumnSize"],
-                    NumericPrecision = (short?)DataReaderTools.CleanValue(row["NumericPrecision"]),
-                    NumericScale = (short?)DataReaderTools.CleanValue(row["NumericScale"]),
-                    AllowNull = (bool)row["AllowDBNull"]
-                });
-            }
-
-            return result;
         }
     }
 }

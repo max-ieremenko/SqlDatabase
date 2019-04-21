@@ -154,6 +154,33 @@ namespace SqlDatabase.Export
         [Test]
         public void EmptySchemaTable()
         {
+            ExportTable actual;
+
+            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "select 1, N'2' x, NULL";
+                connection.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    actual = _exporter.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
+                }
+            }
+
+            actual.Columns.Count.ShouldBe(3);
+
+            actual.Columns[0].Name.ShouldBe("GeneratedName1");
+            actual.Columns[0].AllowNull.ShouldBeFalse();
+            actual.Columns[0].SqlDataTypeName.ShouldBe("int");
+
+            actual.Columns[1].Name.ShouldBe("x");
+            actual.Columns[1].AllowNull.ShouldBeFalse();
+            actual.Columns[1].SqlDataTypeName.ShouldBe("nvarchar");
+
+            actual.Columns[2].Name.ShouldBe("GeneratedName2");
+            actual.Columns[2].AllowNull.ShouldBeTrue();
+            actual.Columns[2].SqlDataTypeName.ShouldBe("int");
         }
     }
 }
