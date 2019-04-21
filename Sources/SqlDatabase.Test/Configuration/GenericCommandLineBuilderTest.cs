@@ -95,5 +95,16 @@ namespace SqlDatabase.Configuration
             actual.Length.ShouldBe(3);
             actual[2].ShouldBe("-toTable=name");
         }
+
+        [Test]
+        public void BuildArrayExportToFile()
+        {
+            var actual = _sut
+                .SetExportToFile("file name")
+                .BuildArray(false);
+
+            actual.Length.ShouldBe(3);
+            actual[2].ShouldBe("-toFile=file name");
+        }
     }
 }

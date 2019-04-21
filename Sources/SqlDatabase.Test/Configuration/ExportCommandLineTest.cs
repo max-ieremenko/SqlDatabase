@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Commands;
+using SqlDatabase.Export;
 using SqlDatabase.IO;
 using SqlDatabase.Scripts;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration
 {
@@ -36,13 +39,15 @@ namespace SqlDatabase.Configuration
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
                 new Arg("from", @"c:\folder"),
-                new Arg("toTable", "dbo.ExportedData")));
+                new Arg("toTable", "dbo.ExportedData"),
+                new Arg("toFile", "file path")));
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
 
             _sut.Connection?.DataSource.ShouldBe(".");
             _sut.Connection?.InitialCatalog.ShouldBe("test");
             _sut.DestinationTableName.ShouldBe("dbo.ExportedData");
+            _sut.DestinationFileName.ShouldBe("file path");
         }
 
         [Test]
@@ -58,6 +63,7 @@ namespace SqlDatabase.Configuration
             actual.Log.ShouldNotBe(_log.Object);
             actual.Database.ShouldBeOfType<Database>();
             actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
+            actual.OpenOutput.ShouldNotBeNull();
             actual.DestinationTableName.ShouldBe("table 1");
         }
 
@@ -67,6 +73,65 @@ namespace SqlDatabase.Configuration
             _sut.Transaction = TransactionMode.PerStep;
 
             Assert.Throws<NotSupportedException>(_sut.Validate);
+        }
+
+        [Test]
+        public void CreateOutputConsole()
+        {
+            var actual = _sut.CreateOutput();
+
+            string output;
+            using (var console = new TempConsoleOut())
+            {
+                using (var writer = actual())
+                {
+                    writer.Write("hello");
+                }
+
+                output = console.GetOutput();
+            }
+
+            output.ShouldBe("hello");
+        }
+
+        [Test]
+        public void WrapLoggerConsole()
+        {
+            _sut.WrapLogger(_log.Object).ShouldBeOfType<DataExportLogger>();
+        }
+
+        [Test]
+        public void CreateOutputFile()
+        {
+            using (var file = new TempFile(".sql"))
+            {
+                _sut.DestinationFileName = file.Location;
+
+                var actual = _sut.CreateOutput();
+
+                using (var writer = actual())
+                {
+                    writer.Write("hello 1");
+                }
+
+                FileAssert.Exists(file.Location);
+                File.ReadAllText(file.Location).ShouldBe("hello 1");
+
+                using (var writer = actual())
+                {
+                    writer.Write("hello 2");
+                }
+
+                File.ReadAllText(file.Location).ShouldBe("hello 2");
+            }
+        }
+
+        [Test]
+        public void WrapLoggerFile()
+        {
+            _sut.DestinationFileName = "file";
+
+            _sut.WrapLogger(_log.Object).ShouldBe(_log.Object);
         }
     }
 }

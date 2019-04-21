@@ -13,6 +13,7 @@
         internal const string Transaction = "transaction";
 
         internal const string ExportToTable = "toTable";
+        internal const string ExportToFile = "toFile";
 
         internal const string PreFormatOutputLogs = "preFormatOutputLogs";
 

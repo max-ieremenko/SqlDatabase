@@ -134,14 +134,14 @@ ORDER BY Person.Id";
 
         [Test]
         [Order(3)]
-        public void ExportData()
+        public void ExportDataToConsole()
         {
             // export
             var args = new GenericCommandLineBuilder()
                 .SetCommand(CommandLineFactory.CommandExport)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
-                .SetExportToTable("dbo.ExportedData")
+                .SetExportToTable("dbo.ExportedData1")
                 .BuildArray(false);
 
             int exitCode;
@@ -156,35 +156,56 @@ ORDER BY Person.Id";
             exitCode.ShouldBe(0);
 
             // exec
-            args = new GenericCommandLineBuilder()
-                .SetCommand(CommandLineFactory.CommandExecute)
-                .SetConnection(_connectionString)
-                .SetInLineScript(output)
-                .BuildArray(false);
-
-            Program.Main(args).ShouldBe(0);
+            InvokeExecuteCommand(b => b.SetInLineScript(output));
 
             // test
             using (var c = new SqlConnection(_connectionString))
             {
                 c.Open();
 
-                var test = c.ExecuteScalar("SELECT COUNT(1) FROM dbo.ExportedData");
+                var test = c.ExecuteScalar("SELECT COUNT(1) FROM dbo.ExportedData1");
                 test.ShouldBe(2);
             }
         }
 
         [Test]
         [Order(4)]
+        public void ExportDataToFile()
+        {
+            using (var output = new TempFile(".sql"))
+            {
+                // export
+                var args = new GenericCommandLineBuilder()
+                    .SetCommand(CommandLineFactory.CommandExport)
+                    .SetConnection(_connectionString)
+                    .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
+                    .SetExportToTable("dbo.ExportedData2")
+                    .SetExportToFile(output.Location)
+                    .BuildArray(false);
+
+                Program.Main(args).ShouldBe(0);
+                Console.WriteLine(File.ReadAllText(output.Location));
+
+                // exec
+                InvokeExecuteCommand(b => b.SetScripts(output.Location));
+            }
+
+            // test
+            using (var c = new SqlConnection(_connectionString))
+            {
+                c.Open();
+
+                var test = c.ExecuteScalar("SELECT COUNT(1) FROM dbo.ExportedData2");
+                test.ShouldBe(2);
+            }
+        }
+
+        [Test]
+        [Order(5)]
         public void ExecuteScript()
         {
-            var args = new GenericCommandLineBuilder()
-                .SetCommand(CommandLineFactory.CommandExecute)
-                .SetConnection(_connectionString)
-                .SetScripts(Path.Combine(_scriptsLocation, "execute", "drop.database.sql"))
-                .BuildArray(false);
-
-            Assert.AreEqual(0, Program.Main(args));
+            InvokeExecuteCommand(b =>
+                b.SetScripts(Path.Combine(_scriptsLocation, "execute", "drop.database.sql")));
 
             var sql = "SELECT DB_ID('{0}')".FormatWith(new SqlConnectionStringBuilder(_connectionString).InitialCatalog);
 
@@ -195,6 +216,18 @@ ORDER BY Person.Id";
                 var test = c.ExecuteScalar(sql);
                 Assert.IsNull(test);
             }
+        }
+
+        private void InvokeExecuteCommand(Action<GenericCommandLineBuilder> builder)
+        {
+            var cmd = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandExecute)
+                .SetConnection(_connectionString);
+
+            builder(cmd);
+            var args = cmd.BuildArray(false);
+
+            Program.Main(args).ShouldBe(0);
         }
     }
 }

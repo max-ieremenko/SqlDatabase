@@ -21,6 +21,8 @@ namespace SqlDatabase.Configuration
 
         public string ExportToTable { get; set; }
 
+        public string ExportToFile { get; set; }
+
         public bool PreFormatOutputLogs { get; set; }
     }
 }

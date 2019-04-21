@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using SqlDatabase.Commands;
 using SqlDatabase.Export;
@@ -9,6 +10,8 @@ namespace SqlDatabase.Configuration
     internal sealed class ExportCommandLine : CommandLineBase
     {
         public string DestinationTableName { get; set; }
+
+        public string DestinationFileName { get; set; }
 
         public override ICommand CreateCommand(ILogger logger)
         {
@@ -21,16 +24,31 @@ namespace SqlDatabase.Configuration
                 Sources = Scripts.ToArray()
             };
 
-            logger = new DataExportLogger(logger);
-
             return new DatabaseExportCommand
             {
-                Log = logger,
-                OpenOutput = () => Console.Out,
+                Log = WrapLogger(logger),
+                OpenOutput = CreateOutput(),
                 Database = CreateDatabase(logger, configuration),
                 ScriptSequence = sequence,
                 DestinationTableName = DestinationTableName
             };
+        }
+
+        internal Func<TextWriter> CreateOutput()
+        {
+            var fileName = DestinationFileName;
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return () => Console.Out;
+            }
+
+            return () => new StreamWriter(fileName, false);
+        }
+
+        internal ILogger WrapLogger(ILogger logger)
+        {
+            return string.IsNullOrEmpty(DestinationFileName) ? new DataExportLogger(logger) : logger;
         }
 
         protected internal override void Validate()
@@ -46,6 +64,12 @@ namespace SqlDatabase.Configuration
             if (Arg.ExportToTable.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
                 DestinationTableName = arg.Value;
+                return true;
+            }
+
+            if (Arg.ExportToFile.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                DestinationFileName = arg.Value;
                 return true;
             }
 

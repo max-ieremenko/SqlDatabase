@@ -19,11 +19,13 @@ namespace SqlDatabase.PowerShell
         public void BuildCommandLine()
         {
             _sut.ToTable = "table 1";
+            _sut.ToFile = "file name";
 
             var cmd = new GenericCommandLineBuilder();
             _sut.BuildCommandLine(cmd);
 
             cmd.Line.ExportToTable.ShouldBe("table 1");
+            cmd.Line.ExportToFile.ShouldBe("file name");
         }
     }
 }

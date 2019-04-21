@@ -14,9 +14,14 @@ namespace SqlDatabase.PowerShell
         [Parameter(HelpMessage = "Generate INSERT INTO toTable")]
         public string ToTable { get; set; }
 
+        [Parameter(HelpMessage = "Write generated script to file")]
+        public string ToFile { get; set; }
+
         internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
         {
-            cmd.SetExportToTable(ToTable);
+            cmd
+                .SetExportToTable(ToTable)
+                .SetExportToFile(ToFile);
         }
     }
 }
