@@ -14,6 +14,31 @@ namespace SqlDatabase.Scripts
 
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
+            var batches = ResolveBatches(variables, logger);
+
+            foreach (var batch in batches)
+            {
+                command.CommandText = batch;
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public IEnumerable<IDataReader> ExecuteReader(IDbCommand command, IVariables variables, ILogger logger)
+        {
+            var batches = ResolveBatches(variables, logger);
+
+            foreach (var batch in batches)
+            {
+                command.CommandText = batch;
+                using (var reader = command.ExecuteReader())
+                {
+                    yield return reader;
+                }
+            }
+        }
+
+        private IEnumerable<string> ResolveBatches(IVariables variables, ILogger logger)
+        {
             var scriptParser = new SqlScriptVariableParser(variables);
 
             var batches = new List<string>();
@@ -35,11 +60,7 @@ namespace SqlDatabase.Scripts
                 logger.Info("variable {0} was replaced with {1}".FormatWith(entry.Key, entry.Value));
             }
 
-            foreach (var batch in batches)
-            {
-                command.CommandText = batch;
-                command.ExecuteNonQuery();
-            }
+            return batches;
         }
     }
 }

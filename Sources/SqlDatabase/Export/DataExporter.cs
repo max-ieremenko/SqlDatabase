@@ -3,18 +3,16 @@ using System.Linq;
 
 namespace SqlDatabase.Export
 {
-    internal sealed class DataExporter
+    internal sealed class DataExporter : IDataExporter
     {
         public SqlWriter Output { get; set; }
 
-        public string ExportTableName { get; set; }
-
-        public void Export(IDataReader source)
+        public void Export(IDataReader source, string tableName)
         {
             ExportTable table;
             using (var metadata = source.GetSchemaTable())
             {
-                table = ReadSchemaTable(metadata);
+                table = ReadSchemaTable(metadata, tableName);
             }
 
             CreateTable(table);
@@ -54,7 +52,7 @@ namespace SqlDatabase.Export
         {
             Output
                 .Text("CREATE TABLE ")
-                .Name(table.Name)
+                .Text(table.Name)
                 .Line()
                 .Line("(");
 
@@ -93,7 +91,7 @@ namespace SqlDatabase.Export
         {
             Output
                 .Text("INSERT INTO ")
-                .Name(table.Name)
+                .Text(table.Name)
                 .Text("(");
 
             for (var i = 0; i < table.Columns.Count; i++)
@@ -113,18 +111,9 @@ namespace SqlDatabase.Export
                 .Text("VALUES ");
         }
 
-        private ExportTable ReadSchemaTable(DataTable metadata)
+        private ExportTable ReadSchemaTable(DataTable metadata, string tableName)
         {
-            var result = new ExportTable();
-
-            if (!string.IsNullOrWhiteSpace(ExportTableName))
-            {
-                result.Name = new[] { ExportTableName };
-            }
-            else
-            {
-                result.Name = new[] { "dbo", "DataExport" };
-            }
+            var result = new ExportTable { Name = tableName };
 
             var rows = metadata.Rows.Cast<DataRow>().OrderBy(i => (int)i["ColumnOrdinal"]);
 

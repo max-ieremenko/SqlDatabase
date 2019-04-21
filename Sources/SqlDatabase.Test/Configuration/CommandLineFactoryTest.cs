@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Shouldly;
@@ -17,41 +18,16 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        public void FindCommandCreateCommandLine()
+        [TestCase(CommandLineFactory.CommandCreate, typeof(CreateCommandLine))]
+        [TestCase(CommandLineFactory.CommandUpgrade, typeof(UpgradeCommandLine))]
+        [TestCase(CommandLineFactory.CommandExecute, typeof(ExecuteCommandLine))]
+        [TestCase(CommandLineFactory.CommandExport, typeof(ExportCommandLine))]
+        [TestCase(CommandLineFactory.CommandEcho, typeof(EchoCommandLine))]
+        public void FindCommand(string command, Type commandLine)
         {
-            var commandArgs = new List<Arg> { new Arg("create") };
+            var commandArgs = new List<Arg> { new Arg(command) };
 
-            _sut.FindCommand(commandArgs).ShouldBeOfType<CreateCommandLine>();
-
-            commandArgs.Count.ShouldBe(0);
-        }
-
-        [Test]
-        public void FindCommandExecuteCommandLine()
-        {
-            var commandArgs = new List<Arg> { new Arg("execute") };
-
-            _sut.FindCommand(commandArgs).ShouldBeOfType<ExecuteCommandLine>();
-
-            commandArgs.Count.ShouldBe(0);
-        }
-
-        [Test]
-        public void FindCommandUpgradeCommandLine()
-        {
-            var commandArgs = new List<Arg> { new Arg("upgrade") };
-
-            _sut.FindCommand(commandArgs).ShouldBeOfType<UpgradeCommandLine>();
-
-            commandArgs.Count.ShouldBe(0);
-        }
-
-        [Test]
-        public void FindCommandEchoCommandLine()
-        {
-            var commandArgs = new List<Arg> { new Arg("echo") };
-
-            _sut.FindCommand(commandArgs).ShouldBeOfType<EchoCommandLine>();
+            _sut.FindCommand(commandArgs).ShouldBeOfType(commandLine);
 
             commandArgs.Count.ShouldBe(0);
         }

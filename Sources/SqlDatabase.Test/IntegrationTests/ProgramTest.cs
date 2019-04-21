@@ -133,6 +133,19 @@ ORDER BY Person.Id";
 
         [Test]
         [Order(3)]
+        public void ExportData()
+        {
+            var args = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandExport)
+                .SetConnection(_connectionString)
+                .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
+                .BuildArray(false);
+
+            Assert.AreEqual(0, Program.Main(args));
+        }
+
+        [Test]
+        [Order(4)]
         public void ExecuteScript()
         {
             var args = new GenericCommandLineBuilder()

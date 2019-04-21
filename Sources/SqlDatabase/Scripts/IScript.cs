@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 
 namespace SqlDatabase.Scripts
 {
@@ -7,5 +8,7 @@ namespace SqlDatabase.Scripts
         string DisplayName { get; set; }
 
         void Execute(IDbCommand command, IVariables variables, ILogger logger);
+
+        IEnumerable<IDataReader> ExecuteReader(IDbCommand command, IVariables variables, ILogger logger);
     }
 }

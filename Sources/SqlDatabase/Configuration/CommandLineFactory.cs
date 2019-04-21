@@ -8,6 +8,7 @@ namespace SqlDatabase.Configuration
         internal const string CommandUpgrade = "Upgrade";
         internal const string CommandCreate = "Create";
         internal const string CommandExecute = "Execute";
+        internal const string CommandExport = "Export";
         internal const string CommandEcho = "Echo";
 
         public ICommandLine Resolve(CommandLine args)
@@ -52,7 +53,7 @@ namespace SqlDatabase.Configuration
             return result();
         }
 
-        private Func<ICommandLine> Resolve(string name)
+        private static Func<ICommandLine> Resolve(string name)
         {
             if (CommandCreate.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
@@ -67,6 +68,11 @@ namespace SqlDatabase.Configuration
             if (CommandExecute.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
                 return () => new ExecuteCommandLine();
+            }
+
+            if (CommandExport.Equals(name, StringComparison.OrdinalIgnoreCase))
+            {
+                return () => new ExportCommandLine();
             }
 
             if (CommandEcho.Equals(name, StringComparison.OrdinalIgnoreCase))

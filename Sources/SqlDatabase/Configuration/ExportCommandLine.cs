@@ -1,11 +1,12 @@
 ﻿using System;
 using SqlDatabase.Commands;
+using SqlDatabase.Export;
 using SqlDatabase.IO;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration
 {
-    internal sealed class CreateCommandLine : CommandLineBase
+    internal sealed class ExportCommandLine : CommandLineBase
     {
         public override ICommand CreateCommand(ILogger logger)
         {
@@ -22,9 +23,12 @@ namespace SqlDatabase.Configuration
                 sequence.Sources.Add(FileSystemFactory.FileSystemInfoFromPath(script));
             }
 
-            return new DatabaseCreateCommand
+            logger = new DataExportLogger(logger);
+
+            return new DatabaseExportCommand
             {
                 Log = logger,
+                OpenOutput = () => Console.Out,
                 Database = CreateDatabase(logger, configuration),
                 ScriptSequence = sequence
             };

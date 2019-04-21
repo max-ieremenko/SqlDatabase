@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Scripts
 {
@@ -15,9 +16,11 @@ namespace SqlDatabase.Scripts
         private Mock<ILogger> _logger;
         private Variables _variables;
         private Mock<IDbCommand> _command;
+        private TextScript _sut;
 
         private IList<string> _logOutput;
         private IList<string> _executedScripts;
+        private Mock<IDataReader> _executedReader;
 
         [SetUp]
         public void BeforeEachTest()
@@ -41,20 +44,24 @@ namespace SqlDatabase.Scripts
                 .Setup(c => c.ExecuteNonQuery())
                 .Callback(() => _executedScripts.Add(_command.Object.CommandText))
                 .Returns(0);
+
+            _executedReader = new Mock<IDataReader>(MockBehavior.Strict);
+            _command
+                .Setup(c => c.ExecuteReader())
+                .Callback(() => _executedScripts.Add(_command.Object.CommandText))
+                .Returns(_executedReader.Object);
+
+            _sut = new TextScript();
+            _variables.SetValue(VariableSource.CommandLine, "var1", "[some value]");
         }
 
         [Test]
         public void ExecuteShowVariableReplacement()
         {
-            var sut = new TextScript
-            {
-                ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("{{var1}} {{var1}}"))
-            };
-            _variables.SetValue(VariableSource.CommandLine, "var1", "[some value]");
+            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("{{var1}} {{var1}}"));
 
-            sut.Execute(_command.Object, _variables, _logger.Object);
+            _sut.Execute(_command.Object, _variables, _logger.Object);
 
-            _command.VerifyAll();
             Assert.AreEqual(1, _executedScripts.Count);
             Assert.AreEqual("[some value] [some value]", _executedScripts[0]);
 
@@ -64,23 +71,32 @@ namespace SqlDatabase.Scripts
         [Test]
         public void Execute()
         {
-            var sut = new TextScript
-            {
-                ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
+            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
 {{var1}}
 go
 text2
-go"))
-            };
-            _variables.SetValue(VariableSource.CommandLine, "var1", "text1");
+go"));
 
-            sut.Execute(_command.Object, _variables, _logger.Object);
-
-            _command.VerifyAll();
+            _sut.Execute(_command.Object, _variables, _logger.Object);
 
             Assert.AreEqual(2, _executedScripts.Count);
-            Assert.AreEqual("text1", _executedScripts[0]);
+            Assert.AreEqual("[some value]", _executedScripts[0]);
             Assert.AreEqual("text2", _executedScripts[1]);
+        }
+
+        [Test]
+        public void ExecuteReader()
+        {
+            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("select {{var1}}"));
+            _executedReader.Setup(r => r.Dispose());
+
+            var actual = _sut.ExecuteReader(_command.Object, _variables, _logger.Object).ToList();
+
+            _executedScripts.Count.ShouldBe(1);
+            _executedScripts[0].ShouldBe("select [some value]");
+
+            actual.Count.ShouldBe(1);
+            actual[0].ShouldBe(_executedReader.Object);
         }
     }
 }

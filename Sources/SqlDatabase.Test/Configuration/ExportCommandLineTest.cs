@@ -9,17 +9,17 @@ using SqlDatabase.Scripts;
 namespace SqlDatabase.Configuration
 {
     [TestFixture]
-    public class CreateCommandLineTest
+    public class ExportCommandLineTest
     {
         private Mock<ILogger> _log;
-        private CreateCommandLine _sut;
+        private ExportCommandLine _sut;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _log = new Mock<ILogger>(MockBehavior.Strict);
 
-            _sut = new CreateCommandLine();
+            _sut = new ExportCommandLine();
         }
 
         [Test]
@@ -27,22 +27,12 @@ namespace SqlDatabase.Configuration
         {
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
-                new Arg("from", @"c:\folder"),
-                new Arg("varX", "1 2 3"),
-                new Arg("varY", "value"),
-                new Arg("configuration", "app.config")));
+                new Arg("from", @"c:\folder")));
 
             _sut.Scripts.ShouldBe(new[] { @"c:\folder" });
 
-            _sut.Connection.ShouldNotBeNull();
-            _sut.Connection.DataSource.ShouldBe(".");
-            _sut.Connection.InitialCatalog.ShouldBe("test");
-
-            _sut.Variables.Keys.ShouldBe(new[] { "X", "Y" });
-            _sut.Variables["x"].ShouldBe("1 2 3");
-            _sut.Variables["y"].ShouldBe("value");
-
-            _sut.ConfigurationFile.ShouldBe("app.config");
+            _sut.Connection?.DataSource.ShouldBe(".");
+            _sut.Connection?.InitialCatalog.ShouldBe("test");
         }
 
         [Test]
@@ -52,9 +42,9 @@ namespace SqlDatabase.Configuration
 
             var actual = _sut
                 .CreateCommand(_log.Object)
-                .ShouldBeOfType<DatabaseCreateCommand>();
+                .ShouldBeOfType<DatabaseExportCommand>();
 
-            actual.Log.ShouldBe(_log.Object);
+            actual.Log.ShouldNotBe(_log.Object);
             actual.Database.ShouldBeOfType<Database>();
             actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
         }

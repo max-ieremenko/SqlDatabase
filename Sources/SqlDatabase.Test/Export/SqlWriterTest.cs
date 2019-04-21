@@ -27,12 +27,11 @@ namespace SqlDatabase.Export
         }
 
         [Test]
-        [TestCase("[schema].[Name]", "schema", "Name")]
-        [TestCase("[schema].[Name]", "[schema]", "[Name]")]
-        [TestCase("[schema].[Name]", "[schema", "Name]")]
-        public void Name(string expected, params string[] names)
+        [TestCase("[Name]", "Name")]
+        [TestCase("[Name]", "[Name]")]
+        public void Name(string expected, string value)
         {
-            _sut.Name(names);
+            _sut.Name(value);
 
             _output.ToString().ShouldBe(expected);
         }

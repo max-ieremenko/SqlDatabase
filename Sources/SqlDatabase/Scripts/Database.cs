@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using SqlDatabase.Configuration;
@@ -126,6 +127,27 @@ namespace SqlDatabase.Scripts
                     }
 
                     transaction?.Commit();
+                }
+            }
+        }
+
+        public IEnumerable<IDataReader> ExecuteReader(IScript script)
+        {
+            Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
+
+            using (var connection = CreateConnection(false))
+            {
+                connection.InfoMessage += OnConnectionInfoMessage;
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+
+                    foreach (var reader in script.ExecuteReader(command, Variables, Log))
+                    {
+                        yield return reader;
+                    }
                 }
             }
         }

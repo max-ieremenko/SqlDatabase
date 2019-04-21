@@ -87,13 +87,13 @@ namespace SqlDatabase.Configuration
             return database;
         }
 
+        protected internal virtual void Validate()
+        {
+        }
+
         protected virtual bool ParseArg(Arg arg)
         {
             return false;
-        }
-
-        protected virtual void Validate()
-        {
         }
 
         private bool TryParseKnownPair(Arg arg)

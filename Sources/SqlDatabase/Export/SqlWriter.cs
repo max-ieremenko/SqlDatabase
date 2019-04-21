@@ -42,31 +42,21 @@ namespace SqlDatabase.Export
             return this;
         }
 
-        public SqlWriter Name(params string[] names)
+        public SqlWriter Name(string value)
         {
             const char OpenBracket = '[';
             const char CloseBracket = ']';
 
-            for (var i = 0; i < names.Length; i++)
+            if (value[0] != OpenBracket)
             {
-                if (i > 0)
-                {
-                    Output.Write(".");
-                }
+                Output.Write(OpenBracket);
+            }
 
-                var name = names[i];
+            Output.Write(value);
 
-                if (name[0] != OpenBracket)
-                {
-                    Output.Write(OpenBracket);
-                }
-
-                Output.Write(names[i]);
-
-                if (name[name.Length - 1] != CloseBracket)
-                {
-                    Output.Write(CloseBracket);
-                }
+            if (value[value.Length - 1] != CloseBracket)
+            {
+                Output.Write(CloseBracket);
             }
 
             return this;

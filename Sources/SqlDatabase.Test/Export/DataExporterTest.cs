@@ -60,8 +60,7 @@ namespace SqlDatabase.Export
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    _exporter.ExportTableName = "#tmp";
-                    _exporter.Export(reader);
+                    _exporter.Export(reader, "#tmp");
                 }
             }
 
@@ -126,8 +125,7 @@ namespace SqlDatabase.Export
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    _exporter.ExportTableName = "#tmp";
-                    _exporter.Export(reader);
+                    _exporter.Export(reader, "#tmp");
                 }
             }
 

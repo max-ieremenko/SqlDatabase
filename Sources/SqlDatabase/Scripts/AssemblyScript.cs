@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
@@ -34,6 +35,11 @@ namespace SqlDatabase.Scripts
                     domain.Unload();
                 }
             }
+        }
+
+        public IEnumerable<IDataReader> ExecuteReader(IDbCommand command, IVariables variables, ILogger logger)
+        {
+            throw new NotSupportedException("Assembly script does not support readers.");
         }
 
         internal void ResolveScriptExecutor(ISubDomain domain)
