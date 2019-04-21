@@ -131,6 +131,12 @@ namespace SqlDatabase.Configuration
                 return true;
             }
 
+            if (Arg.InLineScript.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                SetInLineScript(arg.Value);
+                return true;
+            }
+
             if (Arg.Transaction.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
                 SetTransaction(arg.Value);
@@ -167,6 +173,14 @@ namespace SqlDatabase.Configuration
         private void SetScripts(string value)
         {
             Scripts.Add(FileSystemFactory.FileSystemInfoFromPath(value));
+        }
+
+        private void SetInLineScript(string value)
+        {
+            var index = Scripts.OfType<InLineScriptFile>().Count() + 1;
+            var script = new InLineScriptFile("from{0}.sql".FormatWith(index), value);
+
+            Scripts.Add(script);
         }
 
         private void SetTransaction(string modeName)

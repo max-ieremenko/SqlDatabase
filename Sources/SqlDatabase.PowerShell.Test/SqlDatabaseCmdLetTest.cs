@@ -73,6 +73,7 @@ namespace SqlDatabase.PowerShell
 
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Database), dataBase);
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.From), new[] { from1, from2 });
+            _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.FromSql), new[] { "sql text 1", "sql text 2" });
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Transaction), TransactionMode.PerStep.ToString());
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Configuration), "app.config");
             _invokeSqlDatabase.Parameters.Add(nameof(SqlDatabaseCmdLet.Var), new[] { "x=1", "y=2" });
@@ -86,11 +87,16 @@ namespace SqlDatabase.PowerShell
             commandLine.ShouldNotBeNull();
             commandLine.Command.ShouldBe(Command);
             commandLine.Connection.ToString().ShouldBe(dataBase);
+            commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
+            commandLine.ConfigurationFile.ShouldBe("app.config");
+
             commandLine.Scripts.Count.ShouldBe(2);
             commandLine.Scripts[0].ShouldBe(from1);
             commandLine.Scripts[1].ShouldBe(from2);
-            commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
-            commandLine.ConfigurationFile.ShouldBe("app.config");
+
+            commandLine.InLineScript.Count.ShouldBe(2);
+            commandLine.InLineScript[0].ShouldBe("sql text 1");
+            commandLine.InLineScript[1].ShouldBe("sql text 2");
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
             commandLine.Variables["x"].ShouldBe("1");

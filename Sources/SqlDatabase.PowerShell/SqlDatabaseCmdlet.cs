@@ -16,9 +16,13 @@ namespace SqlDatabase.PowerShell
         [Alias("d")]
         public string Database { get; set; }
 
-        [Parameter(Mandatory = true, Position = 2, ValueFromPipeline = true, HelpMessage = "Scripts file.")]
+        [Parameter(Position = 2, ValueFromPipeline = true, HelpMessage = "A path to a folder or zip archive with sql scripts or path to a file.")]
         [Alias("f")]
         public string[] From { get; set; }
+
+        [Parameter(HelpMessage = "Sql script text.")]
+        [Alias("s")]
+        public string[] FromSql { get; set; }
 
         [Parameter(Position = 3, HelpMessage = "Transaction mode. Possible values: none, perStep. Default is none.")]
         [Alias("t")]
@@ -43,9 +47,20 @@ namespace SqlDatabase.PowerShell
                 .SetTransaction(Transaction)
                 .SetConfigurationFile(Configuration);
 
-            foreach (var from in From)
+            if (From != null && From.Length > 0)
             {
-                cmd.SetScripts(from);
+                foreach (var from in From)
+                {
+                    cmd.SetScripts(from);
+                }
+            }
+
+            if (FromSql != null && FromSql.Length > 0)
+            {
+                foreach (var from in FromSql)
+                {
+                    cmd.SetInLineScript(from);
+                }
             }
 
             if (Var != null && Var.Length > 0)

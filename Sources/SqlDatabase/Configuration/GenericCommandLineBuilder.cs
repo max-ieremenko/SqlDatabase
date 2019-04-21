@@ -37,6 +37,13 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
+        public GenericCommandLineBuilder SetInLineScript(string value)
+        {
+            Line.InLineScript.Add(value);
+
+            return this;
+        }
+
         public GenericCommandLineBuilder SetTransaction(TransactionMode mode)
         {
             Line.Transaction = mode;
@@ -95,13 +102,18 @@ namespace SqlDatabase.Configuration
 
             var result = new List<string>
             {
-                cmd.Command.ToString(),
-                CombineArg(Arg.Database, cmd.Connection.ToString(), escaped)
+                cmd.Command,
+                CombineArg(Arg.Database, cmd.Connection, escaped)
             };
 
             foreach (var script in cmd.Scripts)
             {
                 result.Add(CombineArg(Arg.Scripts, script, escaped));
+            }
+
+            foreach (var script in cmd.InLineScript)
+            {
+                result.Add(CombineArg(Arg.InLineScript, script, escaped));
             }
 
             if (cmd.Transaction != default(TransactionMode))

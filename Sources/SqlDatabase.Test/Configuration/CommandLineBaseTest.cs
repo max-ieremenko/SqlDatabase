@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.IO;
 
 namespace SqlDatabase.Configuration
 {
@@ -13,6 +14,7 @@ namespace SqlDatabase.Configuration
         private Mock<ILogger> _log;
         private Mock<IConfigurationManager> _configurationManager;
         private AppConfiguration _configuration;
+        private Mock<IFileSystemFactory> _fs;
         private CommandLineBase _sut;
 
         [SetUp]
@@ -27,8 +29,11 @@ namespace SqlDatabase.Configuration
                 .SetupGet(c => c.SqlDatabase)
                 .Returns(_configuration);
 
+            _fs = new Mock<IFileSystemFactory>(MockBehavior.Strict);
+
             _sut = new Mock<CommandLineBase> { CallBase = true }.Object;
             _sut.Connection = new SqlConnectionStringBuilder();
+            _sut.FileSystemFactory = _fs.Object;
         }
 
         [Test]
@@ -68,6 +73,34 @@ namespace SqlDatabase.Configuration
 
             ex.Message.ShouldContain("a b");
             ex.Message.ShouldContain("c d");
+        }
+
+        [Test]
+        public void ParseFrom()
+        {
+            var file = new Mock<IFileSystemInfo>(MockBehavior.Strict);
+            _fs
+                .Setup(f => f.FileSystemInfoFromPath(@"c:\11.sql"))
+                .Returns(file.Object);
+
+            _sut.Parse(new CommandLine(new Arg("from", @"c:\11.sql")));
+
+            _sut.Scripts.ShouldBe(new[] { file.Object });
+        }
+
+        [Test]
+        public void ParseFromSql()
+        {
+            _sut.Parse(new CommandLine(
+                new Arg("fromSql", "sql script text 1"),
+                new Arg("fromSql", "sql script text 2")));
+
+            _sut.Scripts.Count.ShouldBe(2);
+            _sut.Scripts[0].ShouldBeOfType<InLineScriptFile>();
+            _sut.Scripts[1].ShouldBeOfType<InLineScriptFile>();
+
+            _sut.Scripts[0].Name.ShouldBe("from1.sql");
+            _sut.Scripts[1].Name.ShouldBe("from2.sql");
         }
     }
 }

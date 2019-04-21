@@ -7,6 +7,7 @@
 
         internal const string Database = "database";
         internal const string Scripts = "from";
+        internal const string InLineScript = "fromSql";
         internal const string Variable = "var";
         internal const string Configuration = "configuration";
         internal const string Transaction = "transaction";

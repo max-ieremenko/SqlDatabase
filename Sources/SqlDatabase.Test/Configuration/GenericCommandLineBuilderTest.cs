@@ -58,5 +58,31 @@ namespace SqlDatabase.Configuration
             actual.Args[6].Key.ShouldBe("varvar1");
             actual.Args[6].Value.ShouldBe("value 1");
         }
+
+        [Test]
+        public void BuildArrayScripts()
+        {
+            var actual = _sut
+                .SetScripts("file1")
+                .SetScripts("file2")
+                .BuildArray(false);
+
+            actual.Length.ShouldBe(4);
+            actual[2].ShouldBe("-from=file1");
+            actual[3].ShouldBe("-from=file2");
+        }
+
+        [Test]
+        public void BuildArrayInLineScripts()
+        {
+            var actual = _sut
+                .SetInLineScript("file1")
+                .SetInLineScript("file2")
+                .BuildArray(false);
+
+            actual.Length.ShouldBe(4);
+            actual[2].ShouldBe("-fromSql=file1");
+            actual[3].ShouldBe("-fromSql=file2");
+        }
     }
 }
