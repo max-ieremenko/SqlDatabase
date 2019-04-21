@@ -8,6 +8,8 @@ namespace SqlDatabase.Configuration
 {
     internal sealed class ExportCommandLine : CommandLineBase
     {
+        public string DestinationTableName { get; set; }
+
         public override ICommand CreateCommand(ILogger logger)
         {
             var configuration = new ConfigurationManager();
@@ -26,7 +28,8 @@ namespace SqlDatabase.Configuration
                 Log = logger,
                 OpenOutput = () => Console.Out,
                 Database = CreateDatabase(logger, configuration),
-                ScriptSequence = sequence
+                ScriptSequence = sequence,
+                DestinationTableName = DestinationTableName
             };
         }
 
@@ -36,6 +39,17 @@ namespace SqlDatabase.Configuration
             {
                 throw new NotSupportedException("Transaction mode is not supported.");
             }
+        }
+
+        protected override bool ParseArg(Arg arg)
+        {
+            if (Arg.ExportToTable.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                DestinationTableName = arg.Value;
+                return true;
+            }
+
+            return false;
         }
     }
 }

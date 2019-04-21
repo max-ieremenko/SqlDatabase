@@ -60,7 +60,7 @@ namespace SqlDatabase.Commands
             _exporter
                 .SetupSet(e => e.Output = It.IsNotNull<SqlWriter>());
             _exporter
-                .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport1"));
+                .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport"));
 
             _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { script.Object });
 

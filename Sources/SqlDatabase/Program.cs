@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using SqlDatabase.Configuration;
 using SqlDatabase.Log;
@@ -22,12 +21,6 @@ namespace SqlDatabase
             else
             {
                 exitCode = ExecuteCommand(cmd, logger) ? ExitCode.Ok : ExitCode.ExecutionErrors;
-            }
-
-            if (Debugger.IsAttached)
-            {
-                Console.WriteLine("...");
-                Console.ReadLine();
             }
 
             return (int)exitCode;

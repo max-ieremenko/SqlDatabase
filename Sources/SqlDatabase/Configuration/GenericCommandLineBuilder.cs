@@ -85,6 +85,12 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
+        public GenericCommandLineBuilder SetExportToTable(string name)
+        {
+            Line.ExportToTable = name;
+            return this;
+        }
+
         public GenericCommandLineBuilder SetPreFormatOutputLogs(bool value)
         {
             Line.PreFormatOutputLogs = value;
@@ -124,6 +130,11 @@ namespace SqlDatabase.Configuration
             if (!string.IsNullOrEmpty(cmd.ConfigurationFile))
             {
                 result.Add(CombineArg(Arg.Configuration, cmd.ConfigurationFile, escaped));
+            }
+
+            if (!string.IsNullOrEmpty(cmd.ExportToTable))
+            {
+                result.Add(CombineArg(Arg.ExportToTable, cmd.ExportToTable, escaped));
             }
 
             foreach (var entry in cmd.Variables)

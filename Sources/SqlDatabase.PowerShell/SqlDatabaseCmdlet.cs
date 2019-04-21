@@ -39,6 +39,10 @@ namespace SqlDatabase.PowerShell
         // only for tests
         internal static ISqlDatabaseProgram Program { get; set; }
 
+        internal virtual void BuildCommandLine(GenericCommandLineBuilder cmd)
+        {
+        }
+
         protected sealed override void ProcessRecord()
         {
             var cmd = new GenericCommandLineBuilder()
@@ -71,6 +75,7 @@ namespace SqlDatabase.PowerShell
                 }
             }
 
+            BuildCommandLine(cmd);
             ResolveProgram().ExecuteCommand(cmd.Build());
         }
 

@@ -12,6 +12,8 @@ namespace SqlDatabase.Commands
 
         public Func<TextWriter> OpenOutput { get; set; }
 
+        public string DestinationTableName { get; set; }
+
         internal Func<IDataExporter> ExporterFactory { get; set; } = () => new DataExporter();
 
         protected override void Greet(string databaseLocation)
@@ -41,14 +43,20 @@ namespace SqlDatabase.Commands
                         {
                             readerIndex++;
 
-                            var exportTableName = "dbo.SqlDatabaseExport" + readerIndex;
-                            exporter.Export(reader, exportTableName);
+                            exporter.Export(reader, GetExportTableName(DestinationTableName, readerIndex));
                         }
                     }
 
                     Log.Info("done in {0}".FormatWith(timer.Elapsed));
                 }
             }
+        }
+
+        private static string GetExportTableName(string name, int index)
+        {
+            var result = string.IsNullOrWhiteSpace(name) ? "dbo.SqlDatabaseExport" : name;
+
+            return index > 1 ? result + index : result;
         }
     }
 }

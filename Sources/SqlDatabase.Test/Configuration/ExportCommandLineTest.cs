@@ -35,18 +35,21 @@ namespace SqlDatabase.Configuration
 
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
-                new Arg("from", @"c:\folder")));
+                new Arg("from", @"c:\folder"),
+                new Arg("toTable", "dbo.ExportedData")));
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
 
             _sut.Connection?.DataSource.ShouldBe(".");
             _sut.Connection?.InitialCatalog.ShouldBe("test");
+            _sut.DestinationTableName.ShouldBe("dbo.ExportedData");
         }
 
         [Test]
         public void CreateCommand()
         {
             _sut.Connection = new SqlConnectionStringBuilder();
+            _sut.DestinationTableName = "table 1";
 
             var actual = _sut
                 .CreateCommand(_log.Object)
@@ -55,6 +58,7 @@ namespace SqlDatabase.Configuration
             actual.Log.ShouldNotBe(_log.Object);
             actual.Database.ShouldBeOfType<Database>();
             actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
+            actual.DestinationTableName.ShouldBe("table 1");
         }
 
         [Test]

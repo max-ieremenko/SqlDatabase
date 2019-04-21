@@ -11,6 +11,9 @@
         internal const string Variable = "var";
         internal const string Configuration = "configuration";
         internal const string Transaction = "transaction";
+
+        internal const string ExportToTable = "toTable";
+
         internal const string PreFormatOutputLogs = "preFormatOutputLogs";
 
         public Arg(string key, string value)

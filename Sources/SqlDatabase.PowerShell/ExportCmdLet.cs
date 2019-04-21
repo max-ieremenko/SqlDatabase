@@ -10,5 +10,13 @@ namespace SqlDatabase.PowerShell
             : base(CommandLineFactory.CommandExport)
         {
         }
+
+        [Parameter(HelpMessage = "Generate INSERT INTO toTable")]
+        public string ToTable { get; set; }
+
+        internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
+        {
+            cmd.SetExportToTable(ToTable);
+        }
     }
 }

@@ -84,5 +84,16 @@ namespace SqlDatabase.Configuration
             actual[2].ShouldBe("-fromSql=file1");
             actual[3].ShouldBe("-fromSql=file2");
         }
+
+        [Test]
+        public void BuildArrayExportToTable()
+        {
+            var actual = _sut
+                .SetExportToTable("name")
+                .BuildArray(false);
+
+            actual.Length.ShouldBe(3);
+            actual[2].ShouldBe("-toTable=name");
+        }
     }
 }

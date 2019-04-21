@@ -5,6 +5,7 @@ using System.Linq;
 using Dapper;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
 using SqlDatabase.TestApi;
@@ -135,13 +136,42 @@ ORDER BY Person.Id";
         [Order(3)]
         public void ExportData()
         {
+            // export
             var args = new GenericCommandLineBuilder()
                 .SetCommand(CommandLineFactory.CommandExport)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
+                .SetExportToTable("dbo.ExportedData")
                 .BuildArray(false);
 
-            Assert.AreEqual(0, Program.Main(args));
+            int exitCode;
+            string output;
+            using (var console = new TempConsoleOut())
+            {
+                exitCode = Program.Main(args);
+                output = console.GetOutput();
+            }
+
+            Console.WriteLine(output);
+            exitCode.ShouldBe(0);
+
+            // exec
+            args = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandExecute)
+                .SetConnection(_connectionString)
+                .SetInLineScript(output)
+                .BuildArray(false);
+
+            Program.Main(args).ShouldBe(0);
+
+            // test
+            using (var c = new SqlConnection(_connectionString))
+            {
+                c.Open();
+
+                var test = c.ExecuteScalar("SELECT COUNT(1) FROM dbo.ExportedData");
+                test.ShouldBe(2);
+            }
         }
 
         [Test]
