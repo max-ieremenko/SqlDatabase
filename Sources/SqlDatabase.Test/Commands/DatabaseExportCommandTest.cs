@@ -33,7 +33,7 @@ namespace SqlDatabase.Commands
                     Console.WriteLine("Info: {0}", m);
                 });
 
-            _exporter = new Mock<IDataExporter>(MockBehavior.Strict);
+            _exporter = new Mock<IDataExporter>();
 
             _sut = new DatabaseExportCommand
             {

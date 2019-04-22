@@ -6,6 +6,8 @@ namespace SqlDatabase.Export
     {
         SqlWriter Output { get; set; }
 
+        ILogger Log { get; set; }
+
         void Export(IDataReader source, string tableName);
     }
 }

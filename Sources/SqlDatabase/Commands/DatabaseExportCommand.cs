@@ -31,6 +31,7 @@ namespace SqlDatabase.Commands
 
                 var exporter = ExporterFactory();
                 exporter.Output = new SqlWriter(output);
+                exporter.Log = Log;
 
                 foreach (var script in sequences)
                 {

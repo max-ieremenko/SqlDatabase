@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
+using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
@@ -13,15 +14,21 @@ namespace SqlDatabase.Export
     public class DataExporterTest
     {
         private StringBuilder _output;
-        private DataExporter _exporter;
+        private DataExporter _sut;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _output = new StringBuilder();
 
-            _exporter = new DataExporter
+            var log = new Mock<ILogger>(MockBehavior.Strict);
+            log
+                .Setup(l => l.Info(It.IsAny<string>()))
+                .Callback<string>(m => Console.WriteLine("Info: {0}", m));
+
+            _sut = new DataExporter
             {
+                Log = log.Object,
                 Output = new SqlWriter(new StringWriter(_output))
             };
         }
@@ -50,7 +57,7 @@ namespace SqlDatabase.Export
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    _exporter.Export(reader, "#tmp");
+                    _sut.Export(reader, "#tmp");
                 }
             }
 
@@ -93,11 +100,11 @@ select * from @x";
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var table = _exporter.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
+                    var table = _sut.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
                     table.Columns[1].SqlDataTypeName.ShouldBe("VARBINARY");
                     table.Columns[1].Size.ShouldBe(8);
 
-                    _exporter.Export(reader, "#tmp");
+                    _sut.Export(reader, "#tmp");
                 }
             }
 
@@ -132,7 +139,7 @@ select * from @x";
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    Assert.Throws<NotSupportedException>(() => _exporter.ReadSchemaTable(reader.GetSchemaTable(), "#tmp"));
+                    Assert.Throws<NotSupportedException>(() => _sut.ReadSchemaTable(reader.GetSchemaTable(), "#tmp"));
                 }
             }
         }
@@ -150,7 +157,7 @@ select * from @x";
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    actual = _exporter.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
+                    actual = _sut.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
                 }
             }
 
@@ -167,6 +174,38 @@ select * from @x";
             actual.Columns[2].Name.ShouldBe("GeneratedName2");
             actual.Columns[2].AllowNull.ShouldBeTrue();
             actual.Columns[2].SqlDataTypeName.ShouldBe("int");
+        }
+
+        [Test]
+        public void InsertBatchSize()
+        {
+            string slq500;
+            string slq2;
+
+            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "select * from sys.databases";
+                connection.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    _sut.Export(reader, "#tmp");
+                    slq500 = _output.ToString();
+                }
+
+                _output.Clear();
+                _sut.MaxInsertBatchSize = 2;
+                using (var reader = cmd.ExecuteReader())
+                {
+                    _sut.Export(reader, "#tmp");
+                    slq2 = _output.ToString();
+                }
+            }
+
+            Console.WriteLine(slq2);
+
+            slq2.Length.ShouldBeGreaterThan(slq500.Length);
         }
 
         private static IEnumerable<TestCaseData> GetExportCases()

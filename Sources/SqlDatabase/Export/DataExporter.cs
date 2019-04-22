@@ -8,6 +8,10 @@ namespace SqlDatabase.Export
     {
         public SqlWriter Output { get; set; }
 
+        public int MaxInsertBatchSize { get; set; } = 500;
+
+        public ILogger Log { get; set; }
+
         public void Export(IDataReader source, string tableName)
         {
             ExportTable table;
@@ -20,12 +24,20 @@ namespace SqlDatabase.Export
 
             Output.Line();
 
-            WriteInsertHeader(table);
-
+            var batchNum = 0;
             var rowNum = 0;
             while (source.Read())
             {
-                if (rowNum > 0)
+                if (rowNum == 0)
+                {
+                    if (batchNum > 0)
+                    {
+                        Output.Go().Line();
+                    }
+
+                    WriteInsertHeader(table);
+                }
+                else
                 {
                     Output.Text("      ,");
                 }
@@ -44,9 +56,21 @@ namespace SqlDatabase.Export
 
                 Output.Line(")");
                 rowNum++;
+
+                if (rowNum == MaxInsertBatchSize)
+                {
+                    batchNum++;
+                    rowNum = 0;
+
+                    Log.Info("{0} rows".FormatWith(batchNum * MaxInsertBatchSize));
+                }
             }
 
             Output.Go();
+            if (rowNum > 0)
+            {
+                Log.Info("{0} rows".FormatWith((batchNum * MaxInsertBatchSize) + rowNum));
+            }
         }
 
         internal ExportTable ReadSchemaTable(DataTable metadata, string tableName)
