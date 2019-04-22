@@ -1,0 +1,29 @@
+﻿Usage:  SqlDatabase upgrade [options]...
+
+Upgrade an existing database
+
+[options]
+  -database: connection string to target database
+        "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True"
+
+  -from: a path to a folder or zip archive with migration steps. Repeat -from to setup several sources.
+        -from=C:\MyDatabase\UpgradeScripts - execute migration steps on MyDatabase from UpgradeScripts folder
+        -from=C:\MyDatabase\UpgradeScripts.zip - execute migration steps on MyDatabase from UpgradeScripts.zip archive
+        -from=C:\MyDatabase.zip\UpgradeScripts - execute migration steps on MyDatabase from UpgradeScripts folder in MyDatabase.zip archive
+
+  -var: set a variable in format "-var[name of variable]=[value of variable]"
+        -varRecoveryModel=FULL - usage: ALTER DATABASE [{{NewDatabase}}] SET RECOVERY {{RecoveryModel}} WITH NO_WAIT
+
+  -transaction: transaction mode. Possible values: none, perStep. Default is none.
+        -transaction=perStep
+
+  -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
+        -configuration=C:\MyDatabase\sql-database.config
+
+exit codes:
+  0 - OK
+  1 - invalid command line
+  2 - errors during execution
+
+example: upgrade "MyDatabase" on "server", migration steps from "C:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
+  SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2

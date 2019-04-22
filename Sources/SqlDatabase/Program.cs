@@ -11,19 +11,22 @@ namespace SqlDatabase
         {
             var logger = CreateLogger(args);
 
-            ExitCode exitCode;
-            var cmd = ParseCommandLine(args, logger);
-            if (cmd == null)
+            var factory = ResolveFactory(args, logger);
+            if (factory == null)
             {
-                logger.Info(LoadHelpContent());
-                exitCode = ExitCode.InvalidCommandLine;
-            }
-            else
-            {
-                exitCode = ExecuteCommand(cmd, logger) ? ExitCode.Ok : ExitCode.ExecutionErrors;
+                logger.Info(LoadHelpContent("CommandLine.txt"));
+                return ExitCode.InvalidCommandLine;
             }
 
-            return (int)exitCode;
+            ICommandLine cmd;
+            if (factory.ShowCommandHelp || (cmd = ResolveCommandLine(factory, logger)) == null)
+            {
+                logger.Info(LoadHelpContent("CommandLine." + factory.ActiveCommandName + ".txt"));
+                return ExitCode.InvalidCommandLine;
+            }
+
+            var exitCode = ExecuteCommand(cmd, logger) ? ExitCode.Ok : ExitCode.ExecutionErrors;
+            return exitCode;
         }
 
         private static bool ExecuteCommand(ICommandLine cmd, ILogger logger)
@@ -41,7 +44,21 @@ namespace SqlDatabase
             }
         }
 
-        private static ICommandLine ParseCommandLine(string[] args, ILogger logger)
+        private static ICommandLine ResolveCommandLine(CommandLineFactory factory, ILogger logger)
+        {
+            try
+            {
+                return factory.Resolve();
+            }
+            catch (Exception e)
+            {
+                logger.Error("Invalid command line: {0}".FormatWith(e.Message));
+            }
+
+            return null;
+        }
+
+        private static CommandLineFactory ResolveFactory(string[] args, ILogger logger)
         {
             try
             {
@@ -51,7 +68,8 @@ namespace SqlDatabase
                     return null;
                 }
 
-                return new CommandLineFactory().Resolve(command);
+                var factory = new CommandLineFactory { Args = command };
+                return factory.Bind() ? factory : null;
             }
             catch (Exception e)
             {
@@ -68,10 +86,10 @@ namespace SqlDatabase
                 LoggerFactory.CreateDefault();
         }
 
-        private static string LoadHelpContent()
+        private static string LoadHelpContent(string fileName)
         {
             var scope = typeof(ICommandLine);
-            using (var stream = scope.Assembly.GetManifestResourceStream(scope, "CommandLine.txt"))
+            using (var stream = scope.Assembly.GetManifestResourceStream(scope, fileName))
             using (var reader = new StreamReader(stream))
             {
                 return reader.ReadToEnd();

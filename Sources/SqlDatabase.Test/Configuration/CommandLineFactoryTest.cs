@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using Shouldly;
 
@@ -23,24 +21,16 @@ namespace SqlDatabase.Configuration
         [TestCase(CommandLineFactory.CommandExecute, typeof(ExecuteCommandLine))]
         [TestCase(CommandLineFactory.CommandExport, typeof(ExportCommandLine))]
         [TestCase(CommandLineFactory.CommandEcho, typeof(EchoCommandLine))]
-        public void FindCommand(string command, Type commandLine)
+        public void Bind(string command, Type commandLine)
         {
-            var commandArgs = new List<Arg> { new Arg(command) };
+            _sut.Args = new CommandLine(new Arg(command));
 
-            _sut.FindCommand(commandArgs).ShouldBeOfType(commandLine);
+            _sut.Bind().ShouldBeTrue();
 
-            commandArgs.Count.ShouldBe(0);
-        }
+            _sut.ActiveCommandName.ShouldBe(command);
+            _sut.ShowCommandHelp.ShouldBeFalse();
 
-        [Test]
-        [TestCase("unknown command")]
-        [TestCase("execute", "create")]
-        [TestCase("execute", "execute")]
-        public void FailToFindCommand(params string[] args)
-        {
-            var commandArgs = args.Select(i => new Arg(i)).ToList();
-
-            Assert.Throws<InvalidCommandLineException>(() => _sut.FindCommand(commandArgs));
+            CommandLineFactory.CreateCommand(_sut.ActiveCommandName).ShouldBeOfType(commandLine);
         }
     }
 }

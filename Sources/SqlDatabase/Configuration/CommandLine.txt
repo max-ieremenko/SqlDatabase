@@ -1,28 +1,9 @@
-﻿Usage: SqlDatabase <command> <switches>...
+﻿Usage:  SqlDatabase <command> [options]...
 
 <command>
-  create: create new database
-  upgrade: upgrade existing database
-  execute: execute one script file
+  create: create a database
+  upgrade: upgrade an existing database
+  execute: execute script file(s)
+  export: export data from a database
 
-<switches>
-  -database: connection string to target database
-  -from: a path to a folder or zip archive with sql scripts or path to a file for execute command. Repeat -from to setup several sources.
-  -fromSql: sql script text for execute command. Repeat -fromSql to setup several scripts.
-  -var: set a variable in format "-var[name of variable]=[value of variable]"
-  -transaction: transaction mode. Possible values: none, perStep. Default is none.
-  -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
-
-exit codes:
-  0 - OK
-  1 - invalid command line
-  2 - errors during execution
-
-create "database" on "server" based on scripts from "c:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
-SqlDatabase.exe create "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\NewDatabase -varVariable1=value1 -varVariable2=value2
-
-upgrade "database" on "server" based on scripts from "c:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
-SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\MigrationSteps -varVariable1=value1 -varVariable2=value2
-
-execute script from "c:\Scripts\script.sql" on "database" on "server" with "Variable1=value1" and "Variable2=value2"
-SqlDatabase.exe execute "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" -from=c:\Scripts\script.sql -varVariable1=value1 -varVariable2=value2
+Run 'SqlDatabase <command> -help' for more information on a command.

@@ -1,11 +1,11 @@
 ﻿namespace SqlDatabase
 {
-    internal enum ExitCode
+    internal static class ExitCode
     {
-        Ok = 0,
+        public const int Ok = 0;
 
-        InvalidCommandLine = 1,
+        public const int InvalidCommandLine = 1;
 
-        ExecutionErrors = 2
+        public const int ExecutionErrors = 2;
     }
 }

@@ -1,0 +1,37 @@
+﻿Usage:  SqlDatabase export [options]...
+
+Export data from a database to "INSERT INTO" sql script file
+
+[options]
+  -database: connection string to the database
+        "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True"
+
+  -fromSql: an sql script to select export data. Repeat -fromSql to setup several scripts.
+        "-fromSql=select * from sys.databases"
+        "-fromSql=select * schema.table"
+		"-fromSql=select 1"
+
+  -from: a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.
+		-from=C:\MyDatabase\Script.sql - execute data selections scripts on MyDatabase from file Script.sql
+
+  -toTable: setup "INSERT INTO" table name. Default is dbo.SqlDatabaseExport.
+		-toTable=#tempData
+		-toTable=schema.Table
+
+  -toFile: write sql scripts into a file. By default write into standard output (console).
+
+  -var: set a variable in format "-var[name of variable]=[value of variable]"
+        -varId=100
+        -varSchema=dbo
+		-varTable=Table1 - usage: SELECT * FROM [{{Schema}}].[{{Table}}] WHERE Id > {{Id}}
+
+  -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
+        -configuration=C:\MyDatabase\sql-database.config
+
+exit codes:
+  0 - OK
+  1 - invalid command line
+  2 - errors during execution
+
+example: export data from sys.tables view into "c:\tables.sql" from "MyDatabase" on "server"
+  SqlDatabase.exe export "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" "-fromSql=select * from sys.tables" -toFile=c:\tables.sql

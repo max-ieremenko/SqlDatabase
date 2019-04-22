@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace SqlDatabase.Configuration
 {
@@ -11,73 +11,80 @@ namespace SqlDatabase.Configuration
         internal const string CommandExport = "Export";
         internal const string CommandEcho = "Echo";
 
-        public ICommandLine Resolve(CommandLine args)
+        public CommandLine Args { get; set; }
+
+        public string ActiveCommandName { get; private set; }
+
+        public bool ShowCommandHelp { get; private set; }
+
+        public bool Bind()
         {
-            var commandArgs = new List<Arg>(args.Args);
-            var result = FindCommand(commandArgs);
+            var commandArgs = Args.Args.ToList();
+            if (commandArgs.Count == 0 || commandArgs[0].IsPair)
+            {
+                return false;
+            }
 
-            result.Parse(new CommandLine(commandArgs, args.Original));
+            ActiveCommandName = commandArgs[0].Value;
+            var command = CreateCommand(ActiveCommandName);
 
-            return result;
-        }
+            if (command == null)
+            {
+                return false;
+            }
 
-        internal ICommandLine FindCommand(List<Arg> commandArgs)
-        {
-            Func<ICommandLine> result = null;
-            string name = null;
+            commandArgs.RemoveAt(0);
 
             for (var i = 0; i < commandArgs.Count; i++)
             {
                 var arg = commandArgs[i];
-                Func<ICommandLine> factory;
 
-                if (!arg.IsPair && (factory = Resolve(arg.Value)) != null)
+                if (arg.IsPair
+                    && (Arg.Help.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)
+                        || Arg.HelpShort.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (result != null)
-                    {
-                        throw new InvalidCommandLineException("The <command> is duplicated: [{0}] and [{1}].".FormatWith(name, arg.Value));
-                    }
-
-                    result = factory;
-                    name = arg.Value;
+                    ShowCommandHelp = true;
                     commandArgs.RemoveAt(i);
-                    i--;
+                    break;
                 }
             }
 
-            if (result == null)
-            {
-                throw new InvalidCommandLineException("A <command> not found.");
-            }
-
-            return result();
+            Args = new CommandLine(commandArgs, Args.Original);
+            return true;
         }
 
-        private static Func<ICommandLine> Resolve(string name)
+        public ICommandLine Resolve()
+        {
+            var command = CreateCommand(ActiveCommandName);
+            command.Parse(Args);
+            return command;
+        }
+
+        internal static ICommandLine CreateCommand(string name)
         {
             if (CommandCreate.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
-                return () => new CreateCommandLine();
+                return new CreateCommandLine();
             }
 
             if (CommandUpgrade.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
-                return () => new UpgradeCommandLine();
+                return new UpgradeCommandLine();
             }
 
             if (CommandExecute.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
-                return () => new ExecuteCommandLine();
+                return new ExecuteCommandLine();
             }
 
             if (CommandExport.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
-                return () => new ExportCommandLine();
+                return new ExportCommandLine();
             }
 
             if (CommandEcho.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
-                return () => new EchoCommandLine();
+                return new EchoCommandLine();
             }
 
             return null;

@@ -38,7 +38,11 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <None Remove="Configuration\CommandLine.create.txt" />
+    <None Remove="Configuration\CommandLine.execute.txt" />
+    <None Remove="Configuration\CommandLine.export.txt" />
     <None Remove="Configuration\CommandLine.txt" />
+    <None Remove="Configuration\CommandLine.upgrade.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +50,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
 

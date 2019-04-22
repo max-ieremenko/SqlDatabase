@@ -15,6 +15,9 @@
         internal const string ExportToTable = "toTable";
         internal const string ExportToFile = "toFile";
 
+        internal const string Help = "help";
+        internal const string HelpShort = "h";
+
         internal const string PreFormatOutputLogs = "preFormatOutputLogs";
 
         public Arg(string key, string value)
