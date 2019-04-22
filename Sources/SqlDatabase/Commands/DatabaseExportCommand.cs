@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using SqlDatabase.Export;
 using SqlDatabase.Scripts;
 
@@ -40,12 +41,7 @@ namespace SqlDatabase.Commands
 
                     using (Log.Indent())
                     {
-                        foreach (var reader in Database.ExecuteReader(script))
-                        {
-                            readerIndex++;
-
-                            exporter.Export(reader, GetExportTableName(DestinationTableName, readerIndex));
-                        }
+                        ExportScript(exporter, script, ref readerIndex);
                     }
 
                     Log.Info("done in {0}".FormatWith(timer.Elapsed));
@@ -53,11 +49,46 @@ namespace SqlDatabase.Commands
             }
         }
 
-        private static string GetExportTableName(string name, int index)
+        private static string GetExportTableName(string name, int index, int subIndex)
         {
-            var result = string.IsNullOrWhiteSpace(name) ? "dbo.SqlDatabaseExport" : name;
+            var result = new StringBuilder(20);
 
-            return index > 1 ? result + index : result;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                result.Append("dbo.SqlDatabaseExport");
+            }
+            else
+            {
+                result.Append(name);
+            }
+
+            if (index > 1)
+            {
+                result.Append(index);
+            }
+
+            if (subIndex > 1)
+            {
+                result.Append('_').Append(subIndex);
+            }
+
+            return result.ToString();
+        }
+
+        private void ExportScript(IDataExporter exporter, IScript script, ref int readerIndex)
+        {
+            foreach (var reader in Database.ExecuteReader(script))
+            {
+                readerIndex++;
+                var readerSubIndex = 0;
+
+                do
+                {
+                    readerSubIndex++;
+                    exporter.Export(reader, GetExportTableName(DestinationTableName, readerIndex, readerSubIndex));
+                }
+                while (reader.NextResult());
+            }
         }
     }
 }
