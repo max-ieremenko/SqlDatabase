@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace SqlDatabase.Export
 {
     internal sealed class SqlWriter : IDisposable
     {
+        private const char Q = '\'';
+
         public SqlWriter(TextWriter output)
         {
             Output = output;
@@ -94,6 +97,8 @@ namespace SqlDatabase.Export
                 case "NCHAR":
                 case "VARCHAR":
                 case "NVARCHAR":
+                case "BINARY":
+                case "VARBINARY":
                     if (size <= 0 || size == int.MaxValue)
                     {
                         sizeText = "MAX";
@@ -132,45 +137,127 @@ namespace SqlDatabase.Export
                 return this;
             }
 
+            if (!TryWriteValue(value))
+            {
+                throw new NotSupportedException("Type [{0}] is not supported.".FormatWith(value.GetType()));
+            }
+
+            return this;
+        }
+
+        private bool TryWriteValue(object value)
+        {
             var type = value.GetType();
 
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
                     Output.Write((bool)value ? "1" : "0");
-                    break;
+                    return true;
+
                 case TypeCode.Char:
                     break;
                 case TypeCode.SByte:
-                    break;
                 case TypeCode.UInt16:
-                    break;
                 case TypeCode.Byte:
                 case TypeCode.Int32:
                 case TypeCode.Int64:
                 case TypeCode.Int16:
                 case TypeCode.Single:
-                case TypeCode.Double:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
                 case TypeCode.Decimal:
                     Output.Write(Convert.ToString(value, CultureInfo.InvariantCulture));
-                    break;
-                case TypeCode.UInt32:
-                    break;
-                case TypeCode.UInt64:
-                    break;
+                    return true;
+
+                case TypeCode.Double:
+                    ValueDouble((double)value);
+                    return true;
+
                 case TypeCode.DateTime:
-                    break;
+                    ValueDate((DateTime)value);
+                    return true;
+
                 case TypeCode.String:
-                    Output.Write("N'{0}'", value);
-                    break;
-                ////case TypeCode.Empty:
-                ////case TypeCode.DBNull:
-                ////case TypeCode.Object:
-                default:
-                    throw new NotSupportedException("Type [{0}] is not supported.".FormatWith(type));
+                    ValueString((string)value);
+                    return true;
             }
 
-            return this;
+            if (value is Guid id)
+            {
+                ValueGuid(id);
+                return true;
+            }
+
+            if (value is byte[] array)
+            {
+                ValueByteArray(array);
+                return true;
+            }
+
+            if (value is TimeSpan time)
+            {
+                ValueTimeSpan(time);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ValueString(string value)
+        {
+            Output.Write('N');
+            Output.Write(Q);
+            for (var i = 0; i < value.Length; i++)
+            {
+                var c = value[i];
+                Output.Write(c);
+
+                if (c == '\'')
+                {
+                    Output.Write(Q);
+                }
+            }
+
+            Output.Write(Q);
+        }
+
+        private void ValueDate(DateTime value)
+        {
+            Output.Write(Q);
+            Output.Write(value.ToString("yyyy-MM-dd HH:mm:ss:fff", CultureInfo.InvariantCulture));
+            Output.Write(Q);
+        }
+
+        private void ValueGuid(Guid value)
+        {
+            Output.Write(Q);
+            Output.Write(value);
+            Output.Write(Q);
+        }
+
+        private void ValueByteArray(byte[] value)
+        {
+            var buff = new StringBuilder(value.Length * 2);
+            buff.Append("0x");
+            for (var i = 0; i < value.Length; i++)
+            {
+                buff.AppendFormat(CultureInfo.InvariantCulture, "{0:x2}", value[i]);
+            }
+
+            Output.Write(buff.ToString());
+        }
+
+        private void ValueDouble(double value)
+        {
+            Output.Write(value.ToString("G17", CultureInfo.InvariantCulture));
+        }
+
+        private void ValueTimeSpan(TimeSpan value)
+        {
+            Output.Write(Q);
+            Output.Write(value.ToString("g", CultureInfo.InvariantCulture));
+            Output.Write(Q);
         }
     }
 }

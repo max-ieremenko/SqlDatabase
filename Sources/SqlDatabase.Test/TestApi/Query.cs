@@ -16,5 +16,15 @@ namespace SqlDatabase.TestApi
 
             return con;
         }
+
+        public static object ExecuteScalar(string sql)
+        {
+            using (var connection = Open())
+            using (var cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                return cmd.ExecuteScalar();
+            }
+        }
     }
 }

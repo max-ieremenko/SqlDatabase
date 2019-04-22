@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 
 namespace SqlDatabase.Export
@@ -65,11 +66,26 @@ namespace SqlDatabase.Export
                     name = GeneratedName + generatedIndex;
                 }
 
+                var typeName = (string)row["DataTypeName"];
+                var size = (int)row["ColumnSize"];
+
+                if ("timestamp".Equals(typeName, StringComparison.OrdinalIgnoreCase)
+                    || "RowVersion".Equals(typeName, StringComparison.OrdinalIgnoreCase))
+                {
+                    typeName = "VARBINARY";
+                    size = 8;
+                }
+                else if (typeName.EndsWith("sys.HIERARCHYID", StringComparison.OrdinalIgnoreCase))
+                {
+                    // System.IO.FileNotFoundException : Could not load file or assembly 'Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91' or one of its dependencies
+                    throw new NotSupportedException("Data type hierarchyid is not supported, to export data convert value to NVARCHAR: SELECT CAST([{0}] AND NVARCHAR(100)) [{0}]".FormatWith(name));
+                }
+
                 result.Columns.Add(new ExportTableColumn
                 {
                     Name = name,
-                    SqlDataTypeName = (string)row["DataTypeName"],
-                    Size = (int)row["ColumnSize"],
+                    SqlDataTypeName = typeName,
+                    Size = size,
                     NumericPrecision = (short?)DataReaderTools.CleanValue(row["NumericPrecision"]),
                     NumericScale = (short?)DataReaderTools.CleanValue(row["NumericScale"]),
                     AllowNull = (bool)row["AllowDBNull"]
