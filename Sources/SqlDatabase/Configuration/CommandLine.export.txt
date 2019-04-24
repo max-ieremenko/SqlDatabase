@@ -1,14 +1,14 @@
 ﻿Usage:  SqlDatabase export [options]...
 
-Export data from a database to "INSERT INTO" sql script file
+Export data from a database to sql script file
 
 [options]
   -database: connection string to the database
         "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True"
 
   -fromSql: an sql script to select export data. Repeat -fromSql to setup several scripts.
-        "-fromSql=select * from sys.databases"
-        "-fromSql=select * schema.table"
+        "-fromSql=SELECT * FROM sys.databases"
+        "-fromSql=SELECT * FROM schema.table"
 		"-fromSql=select 1"
 
   -from: a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.
@@ -33,5 +33,5 @@ exit codes:
   1 - invalid command line
   2 - errors during execution
 
-example: export data from sys.tables view into "c:\tables.sql" from "MyDatabase" on "server"
-  SqlDatabase.exe export "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" "-fromSql=select * from sys.tables" -toFile=c:\tables.sql
+example: export data from sys.databases view into "c:\databases.sql" from "MyDatabase" on "server"
+> SqlDatabase.exe export "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" "-fromSql=SELECT * FROM sys.databases" -toFile=c:\databases.sql

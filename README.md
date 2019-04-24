@@ -6,7 +6,7 @@ SqlDatabase
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlDatabase.svg?style=flat-square)](https://www.powershellgallery.com/packages/SqlDatabase)
 [![GitHub release](https://img.shields.io/github/release/max-ieremenko/SqlDatabase.svg?style=flat-square&label=manual%20download)](https://github.com/max-ieremenko/SqlDatabase/releases)
 
-Command line and PowerShell tool for SQL Server to execute scripts and database migrations.
+Command line and PowerShell tool for SQL Server to execute scripts, export data and database migrations.
 
 Table of Contents
 -----------------
@@ -14,10 +14,10 @@ Table of Contents
 <!-- toc -->
 
 - [Installation](#installation)
-- [Create database](#create-database)
-- [Upgrade database](#upgrade-database)
-- [Execute script](#execute-script)
-- [CLI](#cli)
+- [Execute script(s) (file)](#execute-script)
+- [Export data from a database to sql script (file)](#export-data)
+- [Create a database](#create-database)
+- [Upgrade an existing database](#upgrade-database)
 - [Scripts](#scripts)
 - [Variables](#variables)
 - [*.zip files](#zip-files)
@@ -54,52 +54,10 @@ $ dotnet tool install --global SqlDatabase.GlobalTool
 
 [Back to ToC](#table-of-contents)
 
-Create database
----------------
-
-create new database *[MyDatabase]* on server *[MyServer]* from scripts in [Examples\CreateDatabaseFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder) with "Variable1=value1" and "Variable2=value2"
-
-```bash
-$ SqlDatabase create ^
-      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" ^
-      -from=Examples\CreateDatabaseFolder ^
-      -varVariable1=value1 ^
-      -varVariable2=value2
-
-PS> Create-SqlDatabase `
-      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
-      -from Examples\CreateDatabaseFolder `
-      -var Variable1=value1,Variable2=value2 `
-      -InformationAction Continue
-```
-
-[Back to ToC](#table-of-contents)
-
-Upgrade database
-----------------
-
-upgrade existing database *[MyDatabase]* on server *[MyServer]* from scripts in [Examples\MigrationStepsFolder](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder) with "Variable1=value1" and "Variable2=value2"
-
-```bash
-$ SqlDatabase upgrade ^
-      "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" ^
-      -from=Examples\MigrationStepsFolder ^
-      -varVariable1=value1 ^
-      -varVariable2=value2
-
-PS> Upgrade-SqlDatabase `
-      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
-      -from Examples\MigrationStepsFolder `
-      -var Variable1=value1,Variable2=value2 `
-      -InformationAction Continue
-```
-
-[Back to ToC](#table-of-contents)
-
-Execute script
+Execute script(s) (file) <a name="execute-script"></a>
 --------------
 
-execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
+execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder)
 
 ```bash
 $ SqlDatabase execute ^
@@ -117,21 +75,65 @@ PS> Execute-SqlDatabase `
 
 [Back to ToC](#table-of-contents)
 
-CLI
----
+Export data from a database to sql script (file) <a name="export-data"></a>
+--------------
 
-|Switch|Description|
-|:--|:----------|
-|-database|set connection string to target database|
-|-from|path to a folder or .zip file with scripts or script file name. Repeat -from to setup several sources|
-|-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
-|-configuration|path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
-|[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
+export data from sys.databases view into "c:\databases.sql" from "MyDatabase" on "server", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData)
 
-Exit codes
-* 0 - OK
-* 1 - invalid command line
-* 2 - errors during execution
+```bash
+$ SqlDatabase export ^
+      "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" ^
+      "-fromSql=SELECT * FROM sys.databases" ^
+      -toFile=c:\databases.sql
+
+PS> Export-SqlDatabase `
+      -database "Data Source=server;Initial Catalog=database;Integrated Security=True" `
+      -fromSql "SELECT * FROM sys.databases" `
+      -toFile c:\databases.sql `
+      -InformationAction Continue
+```
+
+[Back to ToC](#table-of-contents)
+
+Create a database <a name="create-database"></a>
+---------------
+
+create new database *[MyDatabase]* on server *[MyServer]* from scripts in *[Examples\CreateDatabaseFolder]* with "Variable1=value1" and "Variable2=value2", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
+
+```bash
+$ SqlDatabase create ^
+      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" ^
+      -from=Examples\CreateDatabaseFolder ^
+      -varVariable1=value1 ^
+      -varVariable2=value2
+
+PS> Create-SqlDatabase `
+      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
+      -from Examples\CreateDatabaseFolder `
+      -var Variable1=value1,Variable2=value2 `
+      -InformationAction Continue
+```
+
+[Back to ToC](#table-of-contents)
+
+Upgrade an existing database <a name="upgrade-database"></a>
+----------------
+
+upgrade existing database *[MyDatabase]* on server *[MyServer]* from scripts in *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
+
+```bash
+$ SqlDatabase upgrade ^
+      "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" ^
+      -from=Examples\MigrationStepsFolder ^
+      -varVariable1=value1 ^
+      -varVariable2=value2
+
+PS> Upgrade-SqlDatabase `
+      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
+      -from Examples\MigrationStepsFolder `
+      -var Variable1=value1,Variable2=value2 `
+      -InformationAction Continue
+```
 
 [Back to ToC](#table-of-contents)
 
@@ -139,7 +141,7 @@ Scripts
 -------
 
 - *.sql* a text file with Sql Server scripts
-- *.dll* or *.exe* an .NET assembly with a script implementation, see [details](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
+- *.dll* or *.exe* an .NET assembly with a script implementation, details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
 
 [Back to ToC](#table-of-contents)
 
@@ -230,8 +232,10 @@ Parameters *-from* and *-configuration* in the command line interpret .zip files
 Examples
 --------
 
-* [create database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
-* [upgrade database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
+* [execute script(s)](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder)
+* [export data](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData)
+* [create a database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
+* [upgrade an existing database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
 * [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
 * [assembly script](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
 

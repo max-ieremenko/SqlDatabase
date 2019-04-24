@@ -1,20 +1,21 @@
-﻿Create a database
+﻿Execute script(s) (file)
 =================
 
 ```bash
-$ SqlDatabase create ^
-      "-database=Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" ^
-      -from=Examples\CreateDatabaseFolder ^
+$ SqlDatabase execute ^
+      "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" ^
+      -from=c:\Scripts\script.sql ^
       -varVariable1=value1 ^
       -varVariable2=value2
 
-PS> Create-SqlDatabase `
-      -database "Data Source=MyServer;Initial Catalog=MyDatabase;Integrated Security=True" `
-      -from Examples\CreateDatabaseFolder `
-      -var Variable1=value1,Variable2=value2
+PS> Execute-SqlDatabase `
+      -database "Data Source=server;Initial Catalog=database;Integrated Security=True" `
+      -from c:\Scripts\script.sql `
+      -var Variable1=value1,Variable2=value2 `
+      -InformationAction Continue
 ```
 
-create new database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\CreateDatabaseFolder* with "Variable1=value1" and "Variable2=value2"
+execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
 
 CLI
 ===
@@ -23,26 +24,35 @@ CLI
 |:--|:----------|
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.|
+|-fromSql|an sql script text. Repeat -fromSql to setup several scripts.|
 |-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
 #### -from
 
 ```bash
-# create a new database from script files in CreateScripts folder
--from=C:\MyDatabase\CreateScripts
+# execute migration script files in Scripts folder
+-from=C:\MyDatabase\Scripts
 
-# create a new database from script files in CreateScripts.zip archive
--from=C:\MyDatabase\CreateScripts.zip
+# execute script files from Scripts.zip archive
+-from=C:\MyDatabase\Scripts.zip
 
-# create a new database from script files in CreateScripts folder in MyDatabase.zip archive
--from=C:\MyDatabase.zip\CreateScripts
+# execute script files from Scripts folder in MyDatabase.zip archive
+-from=C:\MyDatabase.zip\Scripts
 
-# create a new database from scripts in file CreateScript.sql
--from=C:\MyDatabase\CreateScript.sql
+# execute scripts from file Script.sql
+-from=C:\MyDatabase\Script.sql
 
-# create a new database from scripts in file CreateScript.sql in MyDatabase.zip archive
--from=C:\MyDatabase.zip\CreateScript.sql
+# execute scripts from file Script.sql in MyDatabase.zip archive
+-from=C:\MyDatabase.zip\Script.sql
+```
+
+#### -fromSql
+
+```bash
+"-fromSql=CREATE TABLE [dbo].[Person]"
+
+"-fromSql=CREATE TABLE [{{Schema}}].[{{Table}}]" -varSchema=dbo -varTable=Person
 ```
 
 #### -var
@@ -74,7 +84,6 @@ CREATE TABLE [dbo].[Person]
 * 1 - invalid command line
 * 2 - errors during execution
 
-
 Script`s execution order
 ========================
 
@@ -83,18 +92,11 @@ Script`s execution order
 
 |File|Execution order|
 |:--|:----------|
-|01_database|1|
-|├── 01_DropExisting.sql|1.1|
-|├── 02_Create.sql|1.2|
-|└── 03_Version.sql|1.3|
-|02_schemas|2|
-|└── 01_demo.sql|2.1|
-|03_tables|3|
-|├── 01_demo.Department.sql|3.1|
-|└── 02_demo.Employee.sql|3.2|
-|05_data|4|
+|data|4|
 |└── 01_staff.sql|4.1|
-
+|01_demo.sql|1|
+|02_demo.Department.sql|2|
+|03_demo.Employee.sql|3|
 
 Predefined variables
 ========================
@@ -105,35 +107,19 @@ Predefined variables
 
 
 Sql script example
-==================
-
+=============================
 ```sql
--- 01_database/02_Create.sql
-USE master
+-- 2.0_2.1.sql
+PRINT 'create table Demo'
 GO
 
-CREATE DATABASE [{{DatabaseName}}]
+CREATE TABLE dbo.Demo
+(
+	Id INT NOT NULL
+)
 GO
 
-ALTER DATABASE [{{DatabaseName}}] SET RECOVERY SIMPLE WITH NO_WAIT
-GO
-
-ALTER DATABASE [{{DatabaseName}}] SET ALLOW_SNAPSHOT_ISOLATION ON
-GO
-```
-
-```sql
--- at runtime
-USE master
-GO
-
-CREATE DATABASE [MyDatabase]
-GO
-
-ALTER DATABASE [MyDatabase] SET RECOVERY SIMPLE WITH NO_WAIT
-GO
-
-ALTER DATABASE [MyDatabase] SET ALLOW_SNAPSHOT_ISOLATION ON
+ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
 GO
 ```
 
@@ -151,15 +137,15 @@ namespace <any namespace name>
             Console.WriteLine("start execution");
 
             // execute a query
-            command.CommandText = string.Format("CREATE DATABASE [{0}]", variables["DatabaseName"]);
+            command.CommandText = "create table Demo");
             command.ExecuteNonQuery();
 
             // execute a query
-            command.CommandText = string.Format("ALTER DATABASE [{0}] SET RECOVERY SIMPLE WITH NO_WAIT", variables["DatabaseName"]);
+            command.CommandText = 'CREATE TABLE dbo.Demo ( Id INT NOT NULL )';
             command.ExecuteNonQuery();
 
             // execute a query
-            command.CommandText = string.Format("ALTER DATABASE [{0}] SET ALLOW_SNAPSHOT_ISOLATION ON", variables["DatabaseName"]);
+            command.CommandText = 'ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)';
             command.ExecuteNonQuery();
 
             // write a message to a log

@@ -26,4 +26,4 @@ exit codes:
   2 - errors during execution
 
 example: upgrade "MyDatabase" on "server", migration steps from "C:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
-  SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2
+> SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2

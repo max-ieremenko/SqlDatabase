@@ -16,7 +16,7 @@ Create a database
   -var: set a variable in format "-var[name of variable]=[value of variable]"
         -varRecoveryModel=FULL - usage: ALTER DATABASE [{{NewDatabase}}] SET RECOVERY {{RecoveryModel}} WITH NO_WAIT
 
-  -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
+  -configuration: a path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
 exit codes:
@@ -24,5 +24,6 @@ exit codes:
   1 - invalid command line
   2 - errors during execution
 
-example: create "NewDatabase" on "server" based on scripts from "C:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
-  SqlDatabase.exe create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2
+example:
+create new "NewDatabase" on "server" based on scripts from "C:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
+> SqlDatabase.exe create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2

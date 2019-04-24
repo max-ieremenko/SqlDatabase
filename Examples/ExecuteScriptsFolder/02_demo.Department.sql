@@ -1,0 +1,12 @@
+CREATE TABLE demo.Department
+(
+	Id INT NOT NULL IDENTITY(1, 1)
+	,Name NVARCHAR(300) NOT NULL
+)
+GO
+
+ALTER TABLE demo.Department ADD CONSTRAINT PK_Department PRIMARY KEY CLUSTERED (Id)
+GO
+
+CREATE NONCLUSTERED INDEX IX_Department_Name ON demo.Department	(Name)
+GO

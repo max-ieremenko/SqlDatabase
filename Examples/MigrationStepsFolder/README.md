@@ -15,23 +15,68 @@ PS> Upgrade-SqlDatabase `
 ```
 upgrade existing database *MyDatabase* on Sql Server *MyServer* based on scripts from *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2"
 
-|Switch|Description|
+CLI
+===
+
+|Option|Description|
 |:--|:----------|
 |-database|set connection string to target database|
-|-from|path to a folder or .zip file with migration steps. Repeat to setup several sources.|
+|-from|a path to a folder or zip archive with migration steps. Repeat -from to setup several sources.|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
-|-configuration|path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
+|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |[-var]|set a variable in format "=var[name of variable]=[value of variable]"|
 
+#### -from
 
-Execution order
+```bash
+# execute migration steps from UpgradeScripts folder
+-from=C:\MyDatabase\UpgradeScripts
+
+# execute migration steps from UpgradeScripts.zip archive
+-from=C:\MyDatabase\UpgradeScripts.zip
+
+# execute migration steps from UpgradeScripts folder in MyDatabase.zip archive
+-from=C:\MyDatabase.zip\UpgradeScripts
+```
+
+#### -var
+
+```sql
+-- X.X_X.Y.sql
+PRINT 'drop table {{Schema}}.{{Table}}'
+DROP TABLE [{{Schema}}].[{{Table}}]
+```
+
+```bash
+# execute X.X_X.Y.sql
+-from=script.sql -varSchema=dbo -varTable=Person
+
+# output
+script.sql ...
+   variable Schema was replaced with dbo
+   variable Table was replaced with Person
+```
+
+```sql
+-- script at runtime
+PRINT 'drop table dbo.Person'
+DROP TABLE [dbo].[Person]
+```
+
+#### Exit codes
+* 0 - OK
+* 1 - invalid command line
+* 2 - errors during execution
+
+
+Step`s execution order
 ===============
 
 1. Resolve the current database version
 2. Build migration steps sequence
 3. Execute migration steps one by one and update current database version
 
-### Example
+#### Example
 The following script is used by SqlDatabase to resolve the current database version, details are in [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
 
 ```sql
@@ -54,12 +99,12 @@ The current version is *1.2*, so we have the following migration steps sequence:
 Each step will be executed one by one:
 ```sql
 /* 1.0_1.3.zip\1.2_1.3.sql */
-run 1.0_1.3.zip\1.2_1.3.sql
+execute 1.0_1.3.zip\1.2_1.3.sql
 -- update current version
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'1.3'
 
 /* 1.3_2.0.sql */
-run 1.3_2.0.sql
+execute 1.3_2.0.sql
 -- update current version
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'2.0'
 
@@ -76,7 +121,7 @@ Predefined variables
 |TargetVersion|the database version after execution of a migration step|
 
 
-Migration .sql script example
+Migration .sql step example
 =============================
 ```sql
 -- 2.0_2.1.sql
@@ -93,7 +138,7 @@ ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
 GO
 ```
 
-Assembly script example
+Migration .dll step example
 =======================
 
 ```C#
@@ -107,11 +152,15 @@ namespace <any namespace name>
             Console.WriteLine("start execution");
 
             // execute a query
-            command.CommandText = string.Format("print 'current database name is {0}'", variables["DatabaseName"]);
+            command.CommandText = "create table Demo");
             command.ExecuteNonQuery();
 
             // execute a query
-            command.CommandText = 'CREATE SCHEMA [demo]';
+            command.CommandText = 'CREATE TABLE dbo.Demo ( Id INT NOT NULL )';
+            command.ExecuteNonQuery();
+
+            // execute a query
+            command.CommandText = 'ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)';
             command.ExecuteNonQuery();
 
             // write a message to a log
@@ -120,4 +169,3 @@ namespace <any namespace name>
     }
 }
 ```
-more details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
