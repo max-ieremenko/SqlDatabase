@@ -212,9 +212,9 @@ The variable value is resolving in the following order:
 
 ### Predefined variables
 
-- *DatabaseName* - the target database name
-- *CurrentVersion* - the database version before execution of a migration step
-- *TargetVersion* - the database version after execution of a migration step
+- *DatabaseName* - the target database name (-database=...Initial Catalog=MyDatabase...)
+- *CurrentVersion* - the database version before execution of a [migration step](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
+- *TargetVersion* - the database version after execution of a [migration step](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
 
 [Back to ToC](#table-of-contents)
 
