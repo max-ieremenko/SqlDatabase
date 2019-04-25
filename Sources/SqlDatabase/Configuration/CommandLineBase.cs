@@ -29,12 +29,12 @@ namespace SqlDatabase.Configuration
 
             if (Connection == null)
             {
-                throw new InvalidCommandLineException("Argument {0} is not specified.".FormatWith(Arg.Database));
+                throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Database));
             }
 
             if (Scripts.Count == 0)
             {
-                throw new InvalidCommandLineException("Argument {0} is not specified.".FormatWith(Arg.Scripts));
+                throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Scripts));
             }
 
             Validate();
@@ -114,12 +114,12 @@ namespace SqlDatabase.Configuration
             }
             catch (Exception ex)
             {
-                throw new InvalidCommandLineException("Fail to parse argument [{0}].".FormatWith(arg), ex);
+                throw new InvalidCommandLineException("Fail to parse option [{0}].".FormatWith(arg), ex);
             }
 
             if (!isParsed)
             {
-                throw new InvalidCommandLineException("Unknown argument [{0}].".FormatWith(arg));
+                throw new InvalidCommandLineException("Unknown option [{0}].".FormatWith(arg));
             }
         }
 

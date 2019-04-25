@@ -20,9 +20,14 @@ namespace SqlDatabase.Configuration
         public bool Bind()
         {
             var commandArgs = Args.Args.ToList();
-            if (commandArgs.Count == 0 || commandArgs[0].IsPair)
+            if (commandArgs.Count == 0)
             {
                 return false;
+            }
+
+            if (commandArgs[0].IsPair)
+            {
+                throw new InvalidCommandLineException("<command> not found.");
             }
 
             ActiveCommandName = commandArgs[0].Value;
@@ -30,7 +35,7 @@ namespace SqlDatabase.Configuration
 
             if (command == null)
             {
-                return false;
+                throw new InvalidCommandLineException("Unknown command [{0}].".FormatWith(ActiveCommandName));
             }
 
             commandArgs.RemoveAt(0);

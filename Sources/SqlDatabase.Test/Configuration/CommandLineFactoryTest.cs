@@ -32,5 +32,31 @@ namespace SqlDatabase.Configuration
 
             CommandLineFactory.CreateCommand(_sut.ActiveCommandName).ShouldBeOfType(commandLine);
         }
+
+        [Test]
+        public void BindEmptyCommandLine()
+        {
+            _sut.Args = new CommandLine(new Arg[0], new string[0]);
+
+            _sut.Bind().ShouldBeFalse();
+        }
+
+        [Test]
+        public void BindUnknownCommand()
+        {
+            _sut.Args = new CommandLine(new Arg("Unknown"));
+
+            var ex = Assert.Throws<InvalidCommandLineException>(() => _sut.Bind());
+
+            ex.Message.ShouldContain("[Unknown]");
+        }
+
+        [Test]
+        public void BindNoCommand()
+        {
+            _sut.Args = new CommandLine(new Arg("key", "value"));
+
+            Assert.Throws<InvalidCommandLineException>(() => _sut.Bind());
+        }
     }
 }
