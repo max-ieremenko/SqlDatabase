@@ -5,16 +5,47 @@
 $ SqlDatabase export ^
       "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" ^
       "-fromSql=SELECT * FROM sys.databases" ^
+      -toTable=#databases ^
       -toFile=c:\databases.sql
 
 PS> Export-SqlDatabase `
       -database "Data Source=server;Initial Catalog=database;Integrated Security=True" `
       -fromSql "SELECT * FROM sys.databases" `
       -toFile c:\databases.sql `
+      -toTable #databases `
       -InformationAction Continue
 ```
 
 export data from sys.databases view into "c:\databases.sql" from "MyDatabase" on "server"
+
+#### c:\databases.sql
+
+```sql
+CREATE TABLE #databases
+(
+    [name] NVARCHAR(128) NOT NULL
+    ,[database_id] INT NOT NULL
+    ,[source_database_id] INT NULL
+    ,[owner_sid] VARBINARY(85) NULL
+    ,[create_date] DATETIME NOT NULL
+    ,[compatibility_level] TINYINT NOT NULL
+    ,[collation_name] NVARCHAR(128) NULL
+    ,[user_access] TINYINT NULL
+    ,[user_access_desc] NVARCHAR(60) NULL
+    ,[is_read_only] BIT NULL
+    ,[is_auto_close_on] BIT NOT NULL
+    ,[is_auto_shrink_on] BIT NULL
+    ,[state] TINYINT NULL
+    -- ...
+)
+GO
+
+INSERT INTO #databases([name], [database_id], [source_database_id], [owner_sid], [create_date], [compatibility_level], [collation_name], [user_access], [user_access_desc], [is_read_only], [is_auto_close_on], [is_auto_shrink_on], [state] /* ... */)
+VALUES (N'master', 1, NULL, 0x01, '2003-04-08 09:13:36:390', 140, N'SQL_Latin1_General_CP1_CI_AS', 0, N'MULTI_USER', 0, 0, 0, 0 /* ... */)
+      ,(N'tempdb', 2, NULL, 0x01, '2019-04-25 16:11:04:140', 140, N'SQL_Latin1_General_CP1_CI_AS', 0, N'MULTI_USER', 0, 0, 0, 0 /* ... */)
+      -- ...
+GO
+```
 
 CLI
 ===
