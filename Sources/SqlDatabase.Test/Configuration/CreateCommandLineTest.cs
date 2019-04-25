@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -65,14 +64,6 @@ namespace SqlDatabase.Configuration
             actual.Log.ShouldBe(_log.Object);
             actual.Database.ShouldBeOfType<Database>();
             actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
-        }
-
-        [Test]
-        public void DoesNotSupportTransaction()
-        {
-            _sut.Transaction = TransactionMode.PerStep;
-
-            Assert.Throws<NotSupportedException>(_sut.Validate);
         }
     }
 }

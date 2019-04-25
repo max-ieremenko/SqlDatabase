@@ -39,11 +39,12 @@ namespace SqlDatabase.Configuration
         [Test]
         public void CreateDatabase()
         {
-            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object);
+            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.PerStep);
 
             actual.Log.ShouldBe(_log.Object);
             actual.ConnectionString.ShouldNotBeNull();
             actual.Configuration.ShouldBe(_configuration);
+            actual.Transaction.ShouldBe(TransactionMode.PerStep);
         }
 
         [Test]
@@ -55,7 +56,7 @@ namespace SqlDatabase.Configuration
             _configuration.Variables.Add(new NameValueConfigurationElement("b", "2.2"));
             _configuration.Variables.Add(new NameValueConfigurationElement("c", "3"));
 
-            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object);
+            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None);
 
             Assert.AreEqual("1", actual.Variables.GetValue("a"));
             Assert.AreEqual("2", actual.Variables.GetValue("b"));
@@ -69,7 +70,7 @@ namespace SqlDatabase.Configuration
 
             _configuration.Variables.Add(new NameValueConfigurationElement("c d", "1"));
 
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateDatabase(_log.Object, _configurationManager.Object));
+            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None));
 
             ex.Message.ShouldContain("a b");
             ex.Message.ShouldContain("c d");
@@ -86,21 +87,6 @@ namespace SqlDatabase.Configuration
             _sut.Parse(new CommandLine(new Arg("from", @"c:\11.sql")));
 
             _sut.Scripts.ShouldBe(new[] { file.Object });
-        }
-
-        [Test]
-        public void ParseFromSql()
-        {
-            _sut.Parse(new CommandLine(
-                new Arg("fromSql", "sql script text 1"),
-                new Arg("fromSql", "sql script text 2")));
-
-            _sut.Scripts.Count.ShouldBe(2);
-            _sut.Scripts[0].ShouldBeOfType<InLineScriptFile>();
-            _sut.Scripts[1].ShouldBeOfType<InLineScriptFile>();
-
-            _sut.Scripts[0].Name.ShouldBe("from1.sql");
-            _sut.Scripts[1].Name.ShouldBe("from2.sql");
         }
     }
 }

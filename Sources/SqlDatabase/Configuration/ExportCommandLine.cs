@@ -28,7 +28,7 @@ namespace SqlDatabase.Configuration
             {
                 Log = WrapLogger(logger),
                 OpenOutput = CreateOutput(),
-                Database = CreateDatabase(logger, configuration),
+                Database = CreateDatabase(logger, configuration, TransactionMode.None),
                 ScriptSequence = sequence,
                 DestinationTableName = DestinationTableName
             };
@@ -51,14 +51,6 @@ namespace SqlDatabase.Configuration
             return string.IsNullOrEmpty(DestinationFileName) ? new DataExportLogger(logger) : logger;
         }
 
-        protected internal override void Validate()
-        {
-            if (Transaction != TransactionMode.None)
-            {
-                throw new NotSupportedException("Transaction mode is not supported.");
-            }
-        }
-
         protected override bool ParseArg(Arg arg)
         {
             if (Arg.ExportToTable.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
@@ -70,6 +62,12 @@ namespace SqlDatabase.Configuration
             if (Arg.ExportToFile.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
                 DestinationFileName = arg.Value;
+                return true;
+            }
+
+            if (Arg.InLineScript.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                SetInLineScript(arg.Value);
                 return true;
             }
 

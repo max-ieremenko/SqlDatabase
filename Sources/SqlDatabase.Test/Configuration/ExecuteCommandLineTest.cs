@@ -28,19 +28,26 @@ namespace SqlDatabase.Configuration
         public void Parse()
         {
             var folder = new Mock<IFileSystemInfo>(MockBehavior.Strict);
+            var sql = new Mock<IFileSystemInfo>(MockBehavior.Strict);
             _fs
                 .Setup(f => f.FileSystemInfoFromPath(@"c:\folder"))
                 .Returns(folder.Object);
+            _fs
+                .Setup(f => f.FromContent("from2.sql", "drop 1"))
+                .Returns(sql.Object);
 
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
                 new Arg("from", @"c:\folder"),
+                new Arg("fromSql", "drop 1"),
                 new Arg("varX", "1 2 3"),
                 new Arg("varY", "value"),
                 new Arg("configuration", "app.config"),
                 new Arg("transaction", "perStep")));
 
-            _sut.Scripts.ShouldBe(new[] { folder.Object });
+            _sut.Scripts.Count.ShouldBe(2);
+            _sut.Scripts[0].ShouldBe(folder.Object);
+            _sut.Scripts[1].ShouldBe(sql.Object);
 
             _sut.Connection.ShouldNotBeNull();
             _sut.Connection.DataSource.ShouldBe(".");

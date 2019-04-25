@@ -12,8 +12,6 @@ namespace SqlDatabase.Configuration
     {
         public SqlConnectionStringBuilder Connection { get; set; }
 
-        public TransactionMode Transaction { get; set; }
-
         public IList<IFileSystemInfo> Scripts { get; } = new List<IFileSystemInfo>();
 
         public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -44,14 +42,14 @@ namespace SqlDatabase.Configuration
 
         public abstract ICommand CreateCommand(ILogger logger);
 
-        internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration)
+        internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration, TransactionMode transaction)
         {
             var database = new Database
             {
                 ConnectionString = Connection.ToString(),
                 Log = logger,
                 Configuration = configuration.SqlDatabase,
-                Transaction = Transaction
+                Transaction = transaction
             };
 
             var configurationVariables = configuration.SqlDatabase.Variables;
@@ -95,6 +93,14 @@ namespace SqlDatabase.Configuration
             return false;
         }
 
+        protected void SetInLineScript(string value)
+        {
+            var index = Scripts.Count + 1;
+            var script = FileSystemFactory.FromContent("from{0}.sql".FormatWith(index), value);
+
+            Scripts.Add(script);
+        }
+
         private void ApplyArg(Arg arg)
         {
             bool isParsed;
@@ -131,18 +137,6 @@ namespace SqlDatabase.Configuration
                 return true;
             }
 
-            if (Arg.InLineScript.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
-            {
-                SetInLineScript(arg.Value);
-                return true;
-            }
-
-            if (Arg.Transaction.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
-            {
-                SetTransaction(arg.Value);
-                return true;
-            }
-
             if (arg.Key.StartsWith(Arg.Variable, StringComparison.OrdinalIgnoreCase))
             {
                 SetVariable(arg.Key.Substring(Arg.Variable.Length), arg.Value);
@@ -173,24 +167,6 @@ namespace SqlDatabase.Configuration
         private void SetScripts(string value)
         {
             Scripts.Add(FileSystemFactory.FileSystemInfoFromPath(value));
-        }
-
-        private void SetInLineScript(string value)
-        {
-            var index = Scripts.OfType<InLineScriptFile>().Count() + 1;
-            var script = new InLineScriptFile("from{0}.sql".FormatWith(index), value);
-
-            Scripts.Add(script);
-        }
-
-        private void SetTransaction(string modeName)
-        {
-            if (!Enum.TryParse<TransactionMode>(modeName, true, out var mode))
-            {
-                throw new InvalidCommandLineException(Arg.Transaction, "Unknown transaction mode [{0}].".FormatWith(modeName));
-            }
-
-            Transaction = mode;
         }
 
         private void SetVariable(string name, string value)

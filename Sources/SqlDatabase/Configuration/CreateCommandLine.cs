@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using SqlDatabase.Commands;
 using SqlDatabase.Scripts;
 
@@ -21,17 +20,9 @@ namespace SqlDatabase.Configuration
             return new DatabaseCreateCommand
             {
                 Log = logger,
-                Database = CreateDatabase(logger, configuration),
+                Database = CreateDatabase(logger, configuration, TransactionMode.None),
                 ScriptSequence = sequence
             };
-        }
-
-        protected internal override void Validate()
-        {
-            if (Transaction != TransactionMode.None)
-            {
-                throw new NotSupportedException("Transaction mode is not supported.");
-            }
         }
     }
 }

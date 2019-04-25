@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.IO;
 using Moq;
 using NUnit.Framework;
@@ -32,17 +31,24 @@ namespace SqlDatabase.Configuration
         public void Parse()
         {
             var folder = new Mock<IFileSystemInfo>(MockBehavior.Strict);
+            var sql = new Mock<IFileSystemInfo>(MockBehavior.Strict);
             _fs
                 .Setup(f => f.FileSystemInfoFromPath(@"c:\folder"))
                 .Returns(folder.Object);
+            _fs
+                .Setup(f => f.FromContent("from1.sql", "select 1"))
+                .Returns(sql.Object);
 
             _sut.Parse(new CommandLine(
                 new Arg("database", "Data Source=.;Initial Catalog=test"),
+                new Arg("fromSql", "select 1"),
                 new Arg("from", @"c:\folder"),
                 new Arg("toTable", "dbo.ExportedData"),
                 new Arg("toFile", "file path")));
 
-            _sut.Scripts.ShouldBe(new[] { folder.Object });
+            _sut.Scripts.Count.ShouldBe(2);
+            _sut.Scripts[0].ShouldBe(sql.Object);
+            _sut.Scripts[1].ShouldBe(folder.Object);
 
             _sut.Connection?.DataSource.ShouldBe(".");
             _sut.Connection?.InitialCatalog.ShouldBe("test");
@@ -65,14 +71,6 @@ namespace SqlDatabase.Configuration
             actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
             actual.OpenOutput.ShouldNotBeNull();
             actual.DestinationTableName.ShouldBe("table 1");
-        }
-
-        [Test]
-        public void DoesNotSupportTransaction()
-        {
-            _sut.Transaction = TransactionMode.PerStep;
-
-            Assert.Throws<NotSupportedException>(_sut.Validate);
         }
 
         [Test]

@@ -5,19 +5,19 @@ namespace SqlDatabase.IO
 {
     internal sealed class InLineScriptFile : IFile
     {
-        private readonly string _content;
-
         public InLineScriptFile(string name, string content)
         {
-            _content = content;
             Name = name;
+            Content = content;
         }
 
         public string Name { get; }
 
+        public string Content { get; }
+
         public Stream OpenRead()
         {
-            return new MemoryStream(Encoding.UTF8.GetBytes(_content));
+            return new MemoryStream(Encoding.UTF8.GetBytes(Content));
         }
     }
 }

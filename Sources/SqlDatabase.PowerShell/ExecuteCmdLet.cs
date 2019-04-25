@@ -11,5 +11,44 @@ namespace SqlDatabase.PowerShell
             : base(CommandLineFactory.CommandExecute)
         {
         }
+
+        [Parameter(Position = 2, ValueFromPipeline = true, HelpMessage = "A path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.")]
+        [Alias("f")]
+        public string[] From { get; set; }
+
+        [Parameter(HelpMessage = "An sql script text. Repeat -fromSql to setup several scripts.")]
+        [Alias("s")]
+        public string[] FromSql { get; set; }
+
+        [Parameter(Position = 3, HelpMessage = "Transaction mode. Possible values: none, perStep. Default is none.")]
+        [Alias("t")]
+        public TransactionMode Transaction { get; set; }
+
+        [Parameter(Position = 4, HelpMessage = "A path to application configuration file. Default is current SqlDatabase.exe.config.")]
+        [Alias("c")]
+        public string Configuration { get; set; }
+
+        internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
+        {
+            if (From != null && From.Length > 0)
+            {
+                foreach (var from in From)
+                {
+                    cmd.SetScripts(from);
+                }
+            }
+
+            if (FromSql != null && FromSql.Length > 0)
+            {
+                foreach (var from in FromSql)
+                {
+                    cmd.SetInLineScript(from);
+                }
+            }
+
+            cmd
+                .SetTransaction(Transaction)
+                .SetConfigurationFile(Configuration);
+        }
     }
 }

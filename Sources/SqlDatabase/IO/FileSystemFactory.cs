@@ -73,6 +73,11 @@ namespace SqlDatabase.IO
 
         IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string path) => FileSystemInfoFromPath(path);
 
+        public IFileSystemInfo FromContent(string name, string content)
+        {
+            return new InLineScriptFile(name, content);
+        }
+
         private static IFolder TryToResolveEntryPoint(string path)
         {
             if (Directory.Exists(path))
