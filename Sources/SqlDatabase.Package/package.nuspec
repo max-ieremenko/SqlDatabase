@@ -13,7 +13,7 @@
     <description>SqlDatabase is a tool for SQL Server, allows executing scripts and database migrations.</description>
     <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
     <copyright>(C) 2018-2019 Max Ieremenko.</copyright>
-    <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations</tags>
+    <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</tags>
   </metadata>
 
   <files>
