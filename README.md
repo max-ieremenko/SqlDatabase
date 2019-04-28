@@ -21,6 +21,7 @@ Table of Contents
 - [Scripts](#scripts)
 - [Variables](#variables)
 - [*.zip files](#zip-files)
+- [Examples](#examples)
 - [License](#license)
 
 <!-- tocstop -->
@@ -57,7 +58,7 @@ $ dotnet tool install --global SqlDatabase.GlobalTool
 Execute script(s) (file) <a name="execute-script"></a>
 --------------
 
-execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder)
+execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase execute ^
@@ -73,12 +74,14 @@ PS> Execute-SqlDatabase `
       -InformationAction Continue
 ```
 
+ See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder).
+
 [Back to ToC](#table-of-contents)
 
 Export data from a database to sql script (file) <a name="export-data"></a>
 --------------
 
-export data from sys.databases view into "c:\databases.sql" from "MyDatabase" on "server", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData)
+export data from sys.databases view into "c:\databases.sql" from "MyDatabase" on "server"
 
 ```bash
 $ SqlDatabase export ^
@@ -93,12 +96,14 @@ PS> Export-SqlDatabase `
       -InformationAction Continue
 ```
 
+ See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData).
+
 [Back to ToC](#table-of-contents)
 
 Create a database <a name="create-database"></a>
 ---------------
 
-create new database *[MyDatabase]* on server *[MyServer]* from scripts in *[Examples\CreateDatabaseFolder]* with "Variable1=value1" and "Variable2=value2", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
+create new database *[MyDatabase]* on server *[MyServer]* from scripts in *[Examples\CreateDatabaseFolder]* with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase create ^
@@ -114,12 +119,14 @@ PS> Create-SqlDatabase `
       -InformationAction Continue
 ```
 
+ See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder).
+
 [Back to ToC](#table-of-contents)
 
 Upgrade an existing database <a name="upgrade-database"></a>
 ----------------
 
-upgrade existing database *[MyDatabase]* on server *[MyServer]* from scripts in *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2", details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
+upgrade existing database *[MyDatabase]* on server *[MyServer]* from scripts in *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2"
 
 ```bash
 $ SqlDatabase upgrade ^
@@ -134,6 +141,8 @@ PS> Upgrade-SqlDatabase `
       -var Variable1=value1,Variable2=value2 `
       -InformationAction Continue
 ```
+
+ See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
 
 [Back to ToC](#table-of-contents)
 

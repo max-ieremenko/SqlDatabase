@@ -4,15 +4,15 @@ Export data from a database to sql script file
 
 [options]
   -database: connection string to the database
-        "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True"
+        "-database=Data Source=server;Initial Catalog=master;Integrated Security=True"
 
   -fromSql: an sql script to select export data. Repeat -fromSql to setup several scripts.
-        "-fromSql=SELECT * FROM sys.databases"
-        "-fromSql=SELECT * FROM schema.table"
+        "-fromSql=SELECT * FROM sys.tables"
+        "-fromSql=SELECT * FROM sys.tables ORDER BY name"
 		"-fromSql=select 1"
 
   -from: a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.
-		-from=C:\MyDatabase\Script.sql - execute data selections scripts on MyDatabase from file Script.sql
+		-from=C:\MyDatabase\Script.sql - execute data selections scripts from file Script.sql
 
   -toTable: setup "INSERT INTO" table name. Default is dbo.SqlDatabaseExport.
 		-toTable=#tempData
@@ -33,5 +33,5 @@ exit codes:
   1 - invalid command line
   2 - errors during execution
 
-example: export data from sys.databases view into "c:\databases.sql" from "MyDatabase" on "server"
-> SqlDatabase.exe export "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" "-fromSql=SELECT * FROM sys.databases" -toFile=c:\databases.sql
+example: export data from sys.tables view into "c:\databases.sql" from "master" database on "server"
+> SqlDatabase.exe export "-database=Data Source=server;Initial Catalog=master;Integrated Security=True" "-fromSql=SELECT * FROM sys.tables" -toFile=c:\tables.sql
