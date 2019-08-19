@@ -244,7 +244,7 @@ Examples
 * [execute script(s)](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder)
 * [export data](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData)
 * [create a database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
-* [upgrade an existing database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
+* [upgrade an existing database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
 * [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
 * [assembly script](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
 
