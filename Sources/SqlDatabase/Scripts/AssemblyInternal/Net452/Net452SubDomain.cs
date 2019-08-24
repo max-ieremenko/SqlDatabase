@@ -29,7 +29,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
             var setup = new AppDomainSetup
             {
                 ApplicationBase = _appBase.Location,
-                ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile
+                ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
+                LoaderOptimization = LoaderOptimization.MultiDomainHost
             };
 
             _app = AppDomain.CreateDomain(appBaseName, null, setup);
