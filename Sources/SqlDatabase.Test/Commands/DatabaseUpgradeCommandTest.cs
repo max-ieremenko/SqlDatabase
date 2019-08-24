@@ -47,10 +47,7 @@ namespace SqlDatabase.Commands
         [Test]
         public void DatabaseIsUpToDate()
         {
-            var currentVersion = new Version("1.0");
-
-            _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
-            _scriptSequence.Setup(s => s.BuildSequence(currentVersion)).Returns(new ScriptStep[0]);
+            _scriptSequence.Setup(s => s.BuildSequence()).Returns(new ScriptStep[0]);
 
             _sut.Execute();
 
@@ -69,15 +66,14 @@ namespace SqlDatabase.Commands
             var updateTo3 = new Mock<IScript>(MockBehavior.Strict);
             updateTo3.SetupGet(s => s.DisplayName).Returns("3.0");
 
-            var stepTo2 = new ScriptStep(currentVersion, new Version("2.0"), updateTo2.Object);
-            var stepTo3 = new ScriptStep(new Version("2.0"), new Version("3.0"), updateTo3.Object);
+            var stepTo2 = new ScriptStep("module1", currentVersion, new Version("2.0"), updateTo2.Object);
+            var stepTo3 = new ScriptStep("module2", new Version("2.0"), new Version("3.0"), updateTo3.Object);
 
-            _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
             _database
-                .Setup(d => d.Execute(updateTo2.Object, stepTo2.From, stepTo2.To))
-                .Callback(() => _database.Setup(d => d.Execute(updateTo3.Object, stepTo3.From, stepTo3.To)));
+                .Setup(d => d.Execute(updateTo2.Object, "module1", stepTo2.From, stepTo2.To))
+                .Callback(() => _database.Setup(d => d.Execute(updateTo3.Object, "module2", stepTo3.From, stepTo3.To)));
 
-            _scriptSequence.Setup(s => s.BuildSequence(currentVersion)).Returns(new[] { stepTo2, stepTo3 });
+            _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { stepTo2, stepTo3 });
 
             _sut.Execute();
 
@@ -96,13 +92,12 @@ namespace SqlDatabase.Commands
             var updateTo3 = new Mock<IScript>(MockBehavior.Strict);
             updateTo3.SetupGet(s => s.DisplayName).Returns("3.0");
 
-            var stepTo2 = new ScriptStep(currentVersion, new Version("2.0"), updateTo2.Object);
-            var stepTo3 = new ScriptStep(new Version("2.0"), new Version("3.0"), updateTo3.Object);
+            var stepTo2 = new ScriptStep(string.Empty, currentVersion, new Version("2.0"), updateTo2.Object);
+            var stepTo3 = new ScriptStep(string.Empty, new Version("2.0"), new Version("3.0"), updateTo3.Object);
 
-            _database.Setup(d => d.GetCurrentVersion()).Returns(currentVersion);
-            _database.Setup(d => d.Execute(updateTo2.Object, stepTo2.From, stepTo2.To)).Throws<InvalidOperationException>();
+            _database.Setup(d => d.Execute(updateTo2.Object, string.Empty, stepTo2.From, stepTo2.To)).Throws<InvalidOperationException>();
 
-            _scriptSequence.Setup(s => s.BuildSequence(currentVersion)).Returns(new[] { stepTo2, stepTo3 });
+            _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { stepTo2, stepTo3 });
 
             Assert.Throws<InvalidOperationException>(_sut.Execute);
 

@@ -36,7 +36,7 @@ namespace SqlDatabase.Scripts.UpgradeInternal
                         }
 
                         var script = scriptFactory.FromFile(file);
-                        steps.Add(new ScriptStep(from, to, script));
+                        steps.Add(new ScriptStep(moduleName, from, to, script));
                     }
                 }
             }

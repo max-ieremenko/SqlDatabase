@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using Dapper;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.TestApi;
 
@@ -13,8 +14,11 @@ namespace SqlDatabase.Scripts
     [TestFixture]
     public class DatabaseTest
     {
-        private Database _sut;
+        private const string ModuleName = "SomeModuleName";
+        private const string SelectModuleVersion = "SELECT value from sys.fn_listextendedproperty('version-{{ModuleName}}', default, default, default, default, default, default)";
+        private const string UpdateModuleVersion = "EXEC sys.sp_updateextendedproperty @name=N'version-{{ModuleName}}', @value=N'{{TargetVersion}}'";
 
+        private Database _sut;
         private IList<string> _logOutput;
 
         [SetUp]
@@ -46,7 +50,7 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
-        public void GetCurrentVersion()
+        public void GetCurrentVersionDefault()
         {
             string expected;
             using (var c = Query.Open())
@@ -54,7 +58,23 @@ namespace SqlDatabase.Scripts
                 expected = c.ExecuteScalar<string>(new AppConfiguration().GetCurrentVersionScript);
             }
 
-            var actual = _sut.GetCurrentVersion();
+            var actual = _sut.GetCurrentVersion(null);
+            Assert.AreEqual(new Version(expected), actual);
+        }
+
+        [Test]
+        public void GetCurrentVersionModuleName()
+        {
+            _sut.Configuration.GetCurrentVersionScript = SelectModuleVersion;
+            _sut.Configuration.SetCurrentVersionScript = UpdateModuleVersion;
+
+            string expected;
+            using (var c = Query.Open())
+            {
+                expected = c.ExecuteScalar<string>(SelectModuleVersion.Replace("{{ModuleName}}", ModuleName));
+            }
+
+            var actual = _sut.GetCurrentVersion(ModuleName);
             Assert.AreEqual(new Version(expected), actual);
         }
 
@@ -76,7 +96,7 @@ namespace SqlDatabase.Scripts
                     StringAssert.AreEqualIgnoringCase(Query.DatabaseName, (string)cmd.ExecuteScalar());
                 });
 
-            _sut.Execute(script.Object, new Version("1.0"), new Version("1.0"));
+            _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0"));
             script.VerifyAll();
         }
 
@@ -100,7 +120,7 @@ namespace SqlDatabase.Scripts
                     StringAssert.AreEqualIgnoringCase(Query.DatabaseName, (string)cmd.ExecuteScalar());
                 });
 
-            _sut.Execute(script.Object, new Version("1.0"), new Version("1.0"));
+            _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0"));
             script.VerifyAll();
         }
 
@@ -120,7 +140,7 @@ namespace SqlDatabase.Scripts
                     throw new InvalidOperationException();
                 });
 
-            Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object, new Version("1.0"), new Version("1.0")));
+            Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0")));
             script.VerifyAll();
 
             using (var c = Query.Open())
@@ -138,27 +158,62 @@ namespace SqlDatabase.Scripts
                 .Callback<IDbCommand, IVariables, ILogger>((_, vars, s) =>
                 {
                     StringAssert.AreEqualIgnoringCase(Query.DatabaseName, vars.GetValue("DatabaseName"));
+                    Assert.AreEqual("module name", vars.GetValue("ModuleName"));
                     Assert.AreEqual("1.0", vars.GetValue("CurrentVersion"));
                     Assert.AreEqual("2.0", vars.GetValue("TargetVersion"));
                 });
 
-            _sut.Execute(script.Object, new Version("1.0"), new Version("2.0"));
+            _sut.Execute(script.Object, "module name", new Version("1.0"), new Version("2.0"));
             script.VerifyAll();
         }
 
         [Test]
-        public void ExecuteUpgradeChangeDatabaseVersion()
+        public void ExecuteUpgradeChangeDatabaseVersionNoModules()
         {
-            var versionFrom = _sut.GetCurrentVersion();
+            var versionFrom = _sut.GetCurrentVersion(null);
             var versionTo = new Version(versionFrom.Major + 1, 0);
 
             var script = new Mock<IScript>(MockBehavior.Strict);
             script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
 
-            _sut.Execute(script.Object, versionFrom, versionTo);
+            _sut.Execute(script.Object, null, versionFrom, versionTo);
             script.VerifyAll();
 
-            Assert.AreEqual(versionTo, _sut.GetCurrentVersion());
+            Assert.AreEqual(versionTo, _sut.GetCurrentVersion(null));
+        }
+
+        [Test]
+        public void ExecuteUpgradeChangeDatabaseVersionModuleName()
+        {
+            _sut.Configuration.GetCurrentVersionScript = SelectModuleVersion;
+            _sut.Configuration.SetCurrentVersionScript = UpdateModuleVersion;
+
+            var versionFrom = _sut.GetCurrentVersion(ModuleName);
+            var versionTo = new Version(versionFrom.Major + 1, 0);
+
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
+
+            _sut.Execute(script.Object, ModuleName, versionFrom, versionTo);
+            script.VerifyAll();
+
+            Assert.AreEqual(versionTo, _sut.GetCurrentVersion(ModuleName));
+        }
+
+        [Test]
+        public void ExecuteUpgradeChangeDatabaseVersionValidateVersion()
+        {
+            _sut.Configuration.GetCurrentVersionScript = "SELECT '3.0'";
+            _sut.Configuration.SetCurrentVersionScript = "SELECT 1";
+
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
+
+            var ex = Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object, null, new Version("1.0"), new Version("2.0")));
+            script.VerifyAll();
+
+            ex.Message.ShouldContain("3.0");
+            ex.Message.ShouldContain("2.0");
         }
 
         [Test]
@@ -184,7 +239,7 @@ namespace SqlDatabase.Scripts
                     StringAssert.Contains("master", _logOutput[0]);
                 });
 
-            _sut.Execute(script.Object, new Version("1.0"), new Version("2.0"));
+            _sut.Execute(script.Object, null, new Version("1.0"), new Version("2.0"));
 
             script.VerifyAll();
         }

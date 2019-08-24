@@ -29,6 +29,12 @@ namespace SqlDatabase.Scripts
             set => SetValue(VariableSource.Runtime, nameof(TargetVersion), value);
         }
 
+        public string ModuleName
+        {
+            get => GetValue(nameof(ModuleName));
+            set => SetValue(VariableSource.Runtime, nameof(ModuleName), value);
+        }
+
         public IEnumerable<string> GetNames()
         {
             return _valueByName.Keys;

@@ -74,7 +74,7 @@ ORDER BY Person.Id";
                 ConnectionString = _connectionString,
                 Configuration = _configuration
             };
-            Assert.AreEqual(new Version("1.2"), db.GetCurrentVersion());
+            Assert.AreEqual(new Version("1.2"), db.GetCurrentVersion(null));
 
             using (var c = new SqlConnection(_connectionString))
             {
@@ -116,7 +116,7 @@ ORDER BY Person.Id";
                 ConnectionString = _connectionString,
                 Configuration = _configuration
             };
-            Assert.AreEqual(new Version("2.1"), db.GetCurrentVersion());
+            Assert.AreEqual(new Version("2.1"), db.GetCurrentVersion(null));
 
             using (var c = new SqlConnection(_connectionString))
             {

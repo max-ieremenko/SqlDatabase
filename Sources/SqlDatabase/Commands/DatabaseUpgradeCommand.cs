@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text;
 using SqlDatabase.Scripts;
-using SqlDatabase.Scripts.UpgradeInternal;
 
 namespace SqlDatabase.Commands
 {
@@ -18,10 +17,10 @@ namespace SqlDatabase.Commands
         protected override void ExecuteCore()
         {
             Log.Info("get database version");
-            var version = Database.GetCurrentVersion();
+            var version = Database.GetCurrentVersion(null);
             Log.Info("current database version is {0}".FormatWith(version));
 
-            var sequences = ScriptSequence.BuildSequence(version);
+            var sequences = ScriptSequence.BuildSequence();
             if (sequences.Count == 0)
             {
                 Log.Info("the database is up-to-date.");
@@ -37,7 +36,7 @@ namespace SqlDatabase.Commands
 
                 using (Log.Indent())
                 {
-                    Database.Execute(step.Script, step.From, step.To);
+                    Database.Execute(step.Script, step.ModuleName, step.From, step.To);
                 }
 
                 Log.Info("done in {0}".FormatWith(timer.Elapsed));

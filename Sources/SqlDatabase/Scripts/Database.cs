@@ -23,26 +23,18 @@ namespace SqlDatabase.Scripts
 
         internal Variables Variables { get; }
 
-        public Version GetCurrentVersion()
+        public Version GetCurrentVersion(string moduleName)
         {
-            string version;
+            Variables.ModuleName = moduleName;
 
             using (var connection = new SqlConnection(ConnectionString))
             using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = 0;
-                command.CommandText = Configuration.GetCurrentVersionScript;
-
                 connection.Open();
-                version = Convert.ToString(command.ExecuteScalar());
-            }
 
-            if (!Version.TryParse(version, out var result))
-            {
-                throw new InvalidOperationException("The current value [{0}] of database version is invalid.".FormatWith(version));
+                return ReadCurrentVersion(command);
             }
-
-            return result;
         }
 
         public string GetServerVersion()
@@ -57,13 +49,14 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        public void Execute(IScript script, Version currentVersion, Version targetVersion)
+        public void Execute(IScript script, string moduleName, Version currentVersion, Version targetVersion)
         {
+            Variables.ModuleName = moduleName;
             Variables.CurrentVersion = currentVersion.ToString();
             Variables.TargetVersion = targetVersion.ToString();
             Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 
-            var updateVersion = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
+            var updateVersionScript = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
 
             using (var connection = CreateConnection())
             using (var command = connection.CreateCommand())
@@ -85,8 +78,17 @@ namespace SqlDatabase.Scripts
                         command.ExecuteNonQuery();
                     }
 
-                    command.CommandText = updateVersion;
+                    command.CommandText = updateVersionScript;
                     command.ExecuteNonQuery();
+
+                    var checkVersion = ReadCurrentVersion(command);
+                    if (checkVersion != targetVersion)
+                    {
+                        throw new InvalidOperationException("Set version script works incorrectly: expected version is {0}, but actual is {1}. Script: {2}".FormatWith(
+                            targetVersion,
+                            checkVersion,
+                            updateVersionScript));
+                    }
 
                     transaction?.Commit();
                 }
@@ -167,6 +169,25 @@ namespace SqlDatabase.Scripts
 
             var connection = new SqlConnection(connectionString);
             return connection;
+        }
+
+        private Version ReadCurrentVersion(SqlCommand command)
+        {
+            command.CommandText = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.GetCurrentVersionScript);
+
+            var version = Convert.ToString(command.ExecuteScalar());
+
+            if (!Version.TryParse(version, out var result))
+            {
+                if (string.IsNullOrEmpty(Variables.ModuleName))
+                {
+                    throw new InvalidOperationException("The current value [{0}] of database version is invalid.".FormatWith(version));
+                }
+
+                throw new InvalidOperationException("The current value [{0}] of module [{1}] version is invalid.".FormatWith(version, Variables.ModuleName));
+            }
+
+            return result;
         }
     }
 }

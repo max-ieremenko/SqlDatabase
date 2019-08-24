@@ -59,11 +59,6 @@ namespace SqlDatabase.Scripts
             return BuildSequence(scripts);
         }
 
-        public IList<ScriptStep> BuildSequence(Version currentVersion)
-        {
-            throw new NotImplementedException();
-        }
-
         private IList<ScriptStep> BuildSequence(UpgradeScriptCollection scripts)
         {
             var sequence = new List<ScriptStep>();

@@ -6,12 +6,15 @@ namespace SqlDatabase.Scripts
     [DebuggerDisplay("{Script.DisplayName}")]
     public readonly struct ScriptStep
     {
-        public ScriptStep(Version from, Version to, IScript script)
+        public ScriptStep(string moduleName, Version from, Version to, IScript script)
         {
+            ModuleName = moduleName;
             From = from;
             To = to;
             Script = script;
         }
+
+        public string ModuleName { get; }
 
         public Version From { get; }
 

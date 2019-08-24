@@ -10,9 +10,9 @@ namespace SqlDatabase.Scripts
 
         string GetServerVersion();
 
-        Version GetCurrentVersion();
+        Version GetCurrentVersion(string moduleName);
 
-        void Execute(IScript script, Version currentVersion, Version targetVersion);
+        void Execute(IScript script, string moduleName, Version currentVersion, Version targetVersion);
 
         void Execute(IScript script);
 
