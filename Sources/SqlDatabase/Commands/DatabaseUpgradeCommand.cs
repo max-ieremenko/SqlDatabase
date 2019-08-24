@@ -16,10 +16,6 @@ namespace SqlDatabase.Commands
 
         protected override void ExecuteCore()
         {
-            Log.Info("get database version");
-            var version = Database.GetCurrentVersion(null);
-            Log.Info("current database version is {0}".FormatWith(version));
-
             var sequences = ScriptSequence.BuildSequence();
             if (sequences.Count == 0)
             {

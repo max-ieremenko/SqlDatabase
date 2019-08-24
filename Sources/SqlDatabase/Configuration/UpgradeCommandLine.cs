@@ -2,6 +2,7 @@
 using System.Linq;
 using SqlDatabase.Commands;
 using SqlDatabase.Scripts;
+using SqlDatabase.Scripts.UpgradeInternal;
 
 namespace SqlDatabase.Configuration
 {
@@ -14,16 +15,19 @@ namespace SqlDatabase.Configuration
             var configuration = new ConfigurationManager();
             configuration.LoadFrom(ConfigurationFile);
 
+            var database = CreateDatabase(logger, configuration, Transaction);
+
             var sequence = new UpgradeScriptSequence
             {
                 ScriptFactory = new ScriptFactory { Configuration = configuration.SqlDatabase },
+                VersionResolver = new ModuleVersionResolver { Database = database, Log = logger },
                 Sources = Scripts.ToArray()
             };
 
             return new DatabaseUpgradeCommand
             {
                 Log = logger,
-                Database = CreateDatabase(logger, configuration, Transaction),
+                Database = database,
                 ScriptSequence = sequence
             };
         }

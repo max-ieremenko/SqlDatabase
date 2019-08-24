@@ -46,7 +46,7 @@ namespace SqlDatabase.Scripts
         [TestCase("10")]
         public void ExtractDependenciesInvalidVersion(string versionText)
         {
-            var input = "module dependency: moduleName " + versionText;
+            var input = "-- module dependency: moduleName " + versionText;
             var ex = Assert.Throws<InvalidOperationException>(() => SqlBatchParser.ExtractDependencies(input, "file name").ToArray());
 
             ex.Message.ShouldContain("moduleName");
