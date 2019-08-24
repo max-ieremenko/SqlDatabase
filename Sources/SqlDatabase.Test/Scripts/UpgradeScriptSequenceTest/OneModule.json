@@ -1,0 +1,141 @@
+[
+  {
+    "name": "empty sequence",
+    "version": [
+      {
+        "module": "",
+        "version": "1.0"
+      }
+    ],
+    "files": [],
+    "sequence": []
+  },
+
+  {
+    "name": "up-to-date",
+    "version": [
+      {
+        "module": "",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" }
+    ],
+    "sequence": []
+  },
+
+  {
+    "name": "update not found",
+    "version": [
+      {
+        "module": "",
+        "version": "3.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" }
+    ],
+    "exception": [ "3.0" ]
+  },
+
+  {
+    "name": "sub folders",
+    "version": [
+      {
+        "module": "",
+        "version": "1.0"
+      }
+    ],
+    "files": [
+      { "name": "archived/1.0_2.0.sql" },
+      { "name": "archived/2.0_2.1.sql" },
+      { "name": "archived/2.1_5.0.sql" },
+      { "name": "5.0_5.1.sql" }
+    ],
+    "sequence": [ "1.0_2.0.sql", "2.0_2.1.sql", "2.1_5.0.sql", "5.0_5.1.sql" ]
+  },
+
+  {
+    "name": "long sequence",
+    "version": [
+      {
+        "module": "",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" },
+      { "name": "2.0_5.0.sql" },
+      { "name": "5.0_5.1.sql" },
+      { "name": "5.1_6.0.sql" },
+
+      { "name": "3.0_6.0.sql" }
+    ],
+    "sequence": [ "2.0_5.0.sql", "5.0_5.1.sql", "5.1_6.0.sql" ]
+  },
+
+  {
+    "name": "short sequence",
+    "version": [
+      {
+        "module": "",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" },
+      { "name": "2.0_5.0.sql" },
+      { "name": "5.0_5.1.sql" },
+      { "name": "5.1_6.0.sql" },
+
+      { "name": "2.0_6.0.sql" }
+    ],
+    "sequence": [ "2.0_6.0.sql" ]
+  },
+
+  {
+    "name": "select max step",
+    "version": [
+      {
+        "module": "",
+        "version": "1.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" },
+      { "name": "1.0_3.0.sql" }
+    ],
+    "sequence": [ "1.0_3.0.sql" ]
+  },
+
+  {
+    "name": "ignore files",
+    "version": [
+      {
+        "module": "",
+        "version": "1.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" },
+      { "name": "1.0_2.0.txt" }
+    ],
+    "sequence": [ "1.0_2.0.sql" ]
+  },
+
+  {
+    "name": "duplicated step",
+    "version": [
+      {
+        "module": "",
+        "version": "1.0"
+      }
+    ],
+    "files": [
+      { "name": "1.0_2.0.sql" },
+      { "name": "1.0_2.0.exe" }
+    ],
+    "exception": [ "1.0_2.0.exe", "1.0_2.0.sql" ]
+  }
+]

@@ -10,5 +10,7 @@ namespace SqlDatabase.Scripts
         void Execute(IDbCommand command, IVariables variables, ILogger logger);
 
         IEnumerable<IDataReader> ExecuteReader(IDbCommand command, IVariables variables, ILogger logger);
+
+        IList<ScriptDependency> GetDependencies();
     }
 }

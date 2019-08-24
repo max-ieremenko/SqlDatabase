@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
+    <None Remove="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
+    <None Remove="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
@@ -33,6 +39,9 @@
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseOneLineComment.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseStoredProcedure.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case01.sql" />
+    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
+    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
+    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
   </ItemGroup>
 
   <ItemGroup>

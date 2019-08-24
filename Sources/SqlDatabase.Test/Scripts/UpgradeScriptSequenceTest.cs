@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.IO;
+using SqlDatabase.Scripts.UpgradeInternal;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
@@ -13,214 +17,150 @@ namespace SqlDatabase.Scripts
     {
         private UpgradeScriptSequence _sut;
         private Mock<IFolder> _root;
+        private Mock<IModuleVersionResolver> _versionResolver;
+        private Mock<IScriptFactory> _scriptFactory;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _root = new Mock<IFolder>(MockBehavior.Strict);
 
-            var scriptFactory = new Mock<IScriptFactory>(MockBehavior.Strict);
-            scriptFactory
+            _scriptFactory = new Mock<IScriptFactory>(MockBehavior.Strict);
+            _scriptFactory
                 .Setup(f => f.IsSupported(It.IsAny<string>()))
                 .Returns<string>(s => ".sql".Equals(Path.GetExtension(s)) || ".exe".Equals(Path.GetExtension(s)));
 
-            scriptFactory
-                .Setup(s => s.FromFile(It.IsNotNull<IFile>()))
-                .Returns<IFile>(file =>
-                {
-                    var script = new Mock<IScript>(MockBehavior.Strict);
-                    script.SetupGet(s => s.DisplayName).Returns(file.Name);
-                    return script.Object;
-                });
+            _versionResolver = new Mock<IModuleVersionResolver>(MockBehavior.Strict);
 
             _sut = new UpgradeScriptSequence
             {
                 Sources = { _root.Object },
-                ScriptFactory = scriptFactory.Object
+                ScriptFactory = _scriptFactory.Object,
+                VersionResolver = _versionResolver.Object
             };
         }
 
         [Test]
-        public void EmptySequence()
+        [TestCaseSource(nameof(GetBuildSequence))]
+        public void BuildSequence(BuildSequenceCase testCase)
         {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new IFile[0]);
+            var folderByName = new Dictionary<string, List<IFile>>(StringComparer.OrdinalIgnoreCase);
+            var files = new List<IFile>();
 
-            var actual = _sut.BuildSequence(new Version("1.0"));
-            Assert.AreEqual(0, actual.Count);
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void IsUpToDate()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[] { FileFactory.File("1.0_2.0.sql") });
-
-            var actual = _sut.BuildSequence(new Version("2.0"));
-            Assert.AreEqual(0, actual.Count);
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void UpdateNotFound()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[] { FileFactory.File("1.0_2.0.sql") });
-
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.BuildSequence(new Version("3.0")));
-            StringAssert.Contains("3.0", ex.Message);
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void LongFileSequence()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[]
+            foreach (var sourceFile in testCase.Files)
             {
-                FileFactory.File("1.0_2.0.sql"),
-                FileFactory.File("2.0_5.0.sql"),
-                FileFactory.File("5.0_5.1.sql"),
-                FileFactory.File("5.1_6.0.sql"),
+                var folderName = Path.GetDirectoryName(sourceFile.Name);
+                var folder = files;
 
-                FileFactory.File("3.0_6.0.sql"),
-            });
+                if (!string.IsNullOrEmpty(folderName))
+                {
+                    if (!folderByName.ContainsKey(folderName))
+                    {
+                        folderByName.Add(folderName, new List<IFile>());
+                    }
 
-            var actual = _sut.BuildSequence(new Version("2.0"));
-            CollectionAssert.AreEqual(
-                new[] { "2.0_5.0.sql", "5.0_5.1.sql", "5.1_6.0.sql" },
-                actual.Select(i => i.Script.DisplayName).ToArray());
+                    folder = folderByName[folderName];
+                }
 
-            _root.VerifyAll();
-        }
+                var file = FileFactory.File(Path.GetFileName(sourceFile.Name));
+                folder.Add(file);
 
-        [Test]
-        public void ShortFileSequence()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[]
+                var dependencies = new ScriptDependency[0];
+                if (sourceFile.Dependencies != null)
+                {
+                    dependencies = sourceFile.Dependencies.Select(i => new ScriptDependency(i.Module, new Version(i.Version))).ToArray();
+                }
+
+                var script = new Mock<IScript>(MockBehavior.Strict);
+                script.SetupGet(s => s.DisplayName).Returns(file.Name);
+                script.Setup(s => s.GetDependencies()).Returns(dependencies);
+
+                _scriptFactory
+                    .Setup(s => s.FromFile(file))
+                    .Returns(script.Object);
+            }
+
+            _root.Setup(r => r.GetFolders()).Returns(folderByName.Select(i => FileFactory.Folder(i.Key, i.Value.ToArray())));
+            _root.Setup(r => r.GetFiles()).Returns(files);
+
+            foreach (var version in testCase.Version)
             {
-                FileFactory.File("1.0_2.0.sql"),
-                FileFactory.File("2.0_5.0.sql"),
-                FileFactory.File("5.0_5.1.sql"),
-                FileFactory.File("5.1_6.0.sql"),
+                _versionResolver
+                    .Setup(r => r.GetCurrentVersion(version.Module ?? string.Empty))
+                    .Returns(new Version(version.Version));
+            }
 
-                FileFactory.File("2.0_6.0.sql"),
-            });
-
-            var actual = _sut.BuildSequence(new Version("2.0"));
-            CollectionAssert.AreEqual(
-                new[] { "2.0_6.0.sql" },
-                actual.Select(i => i.Script.DisplayName).ToArray());
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void MixedSequence()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new[]
+            if (testCase.Exception == null)
             {
-                FileFactory.Folder(
-                    "1.0_5.0.zip",
-                    FileFactory.File("1.0_2.0.sql"),
-                    FileFactory.File("2.0_2.1.sql"),
-                    FileFactory.File("2.1_5.0.sql"))
-            });
-            _root.Setup(r => r.GetFiles()).Returns(new[]
-            {
-                FileFactory.File("5.0_5.1.sql")
-            });
-
-            var actual = _sut.BuildSequence(new Version("1.0"));
-
-            CollectionAssert.AreEqual(
-                new[] { "1.0_2.0.sql", "2.0_2.1.sql", "2.1_5.0.sql", "5.0_5.1.sql" },
-                actual.Select(i => i.Script.DisplayName).ToArray());
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void SelectMaxStep()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[]
-            {
-                FileFactory.File("1.0_2.0.sql"),
-                FileFactory.File("1.0_3.0.sql")
-            });
-
-            var actual = _sut.BuildSequence(new Version("1.0"));
-            CollectionAssert.AreEqual(
-                new[] { "1.0_3.0.sql" },
-                actual.Select(i => i.Script.DisplayName).ToArray());
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void IgnoreFiles()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[]
-            {
-                FileFactory.File("1.0_2.0.txt"),
-                FileFactory.File("1.0_2.0.sql")
-            });
-
-            var actual = _sut.BuildSequence(new Version("1.0"));
-            CollectionAssert.AreEqual(
-                new[] { "1.0_2.0.sql" },
-                actual.Select(i => i.Script.DisplayName).ToArray());
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        public void DuplicatedStep()
-        {
-            _root.Setup(r => r.GetFolders()).Returns(new IFolder[0]);
-            _root.Setup(r => r.GetFiles()).Returns(new[]
-            {
-                FileFactory.File("1.0_2.0.exe"),
-                FileFactory.File("1.0_2.0.sql")
-            });
-
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.BuildSequence(new Version("1.0")));
-            StringAssert.Contains("1.0_2.0.exe", ex.Message);
-            StringAssert.Contains("1.0_2.0.sql", ex.Message);
-
-            _root.VerifyAll();
-        }
-
-        [Test]
-        [TestCase("1.0_1.1.sql", "1.0", "1.1")]
-        [TestCase("1.0.1.2_1.2.1.sql", "1.0.1.2", "1.2.1")]
-        [TestCase("1_2.sql", "1.0", "2.0")]
-        [TestCase("1.0.sql", null, null)]
-        [TestCase("xxx.sql", null, null)]
-        [TestCase("xxx_1.0.sql", null, null)]
-        [TestCase("1.0_xxx.sql", null, null)]
-        [TestCase("2.0_1.0.sql", null, null)]
-        public void ParseName(string name, string from, string to)
-        {
-            var version = UpgradeScriptSequence.ParseName(name);
-
-            if (from == null)
-            {
-                Assert.IsNull(version);
+                var actual = _sut.BuildSequence();
+                actual.Select(i => i.Script.DisplayName).ToArray().ShouldBe(testCase.Sequence);
             }
             else
             {
-                Assert.IsNotNull(version);
-                Assert.AreEqual(new Version(from), version.From);
-                Assert.AreEqual(new Version(to), version.To);
+                var ex = Assert.Throws<InvalidOperationException>(() => _sut.BuildSequence());
+                Console.WriteLine(ex.Message);
+                foreach (var tag in testCase.Exception)
+                {
+                    ex.Message.ShouldContain(tag);
+                }
             }
+        }
+
+        private static IEnumerable<TestCaseData> GetBuildSequence()
+        {
+            var anchor = typeof(UpgradeScriptSequenceTest);
+            var prefix = anchor.Namespace + "." + anchor.Name + ".";
+
+            var sources = anchor
+                .Assembly
+                .GetManifestResourceNames()
+                .Where(i => i.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(i => i);
+
+            foreach (var sourceName in sources)
+            {
+                BuildSequenceCase[] testCases;
+                using (var stream = anchor.Assembly.GetManifestResourceStream(sourceName))
+                using (var reader = new JsonTextReader(new StreamReader(stream)))
+                {
+                    testCases = new JsonSerializer().Deserialize<BuildSequenceCase[]>(reader);
+                }
+
+                foreach (var testCase in testCases)
+                {
+                    yield return new TestCaseData(testCase)
+                    {
+                        TestName = sourceName.Substring(prefix.Length) + "-" + testCase.Name
+                    };
+                }
+            }
+        }
+
+        public sealed class BuildSequenceCase
+        {
+            public string Name { get; set; }
+
+            public ModuleVersion[] Version { get; set; }
+
+            public SourceFile[] Files { get; set; }
+
+            public string[] Sequence { get; set; }
+
+            public string[] Exception { get; set; }
+        }
+
+        public sealed class ModuleVersion
+        {
+            public string Module { get; set; }
+
+            public string Version { get; set; }
+        }
+
+        public sealed class SourceFile
+        {
+            public string Name { get; set; }
+
+            public ModuleVersion[] Dependencies { get; set; }
         }
     }
 }

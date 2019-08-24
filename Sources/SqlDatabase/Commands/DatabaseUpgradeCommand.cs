@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using SqlDatabase.Scripts;
+using SqlDatabase.Scripts.UpgradeInternal;
 
 namespace SqlDatabase.Commands
 {

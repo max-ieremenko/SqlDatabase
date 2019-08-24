@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SqlDatabase.Scripts
 {
-    public struct ScriptStep
+    [DebuggerDisplay("{Script.DisplayName}")]
+    public readonly struct ScriptStep
     {
         public ScriptStep(Version from, Version to, IScript script)
         {
@@ -11,10 +13,10 @@ namespace SqlDatabase.Scripts
             Script = script;
         }
 
-        public Version From { get; set; }
+        public Version From { get; }
 
-        public Version To { get; set; }
+        public Version To { get; }
 
-        public IScript Script { get; set; }
+        public IScript Script { get; }
     }
 }

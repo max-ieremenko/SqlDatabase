@@ -42,6 +42,11 @@ namespace SqlDatabase.Scripts
             throw new NotSupportedException("Assembly script does not support readers.");
         }
 
+        public IList<ScriptDependency> GetDependencies()
+        {
+            throw new NotImplementedException();
+        }
+
         internal void ResolveScriptExecutor(ISubDomain domain)
         {
             if (!domain.ResolveScriptExecutor(Configuration.ClassName, Configuration.MethodName))

@@ -1,0 +1,236 @@
+[
+  {
+    "name": "up-to-date",
+    "version": [
+      {
+        "module": "a",
+        "version": "2.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a_1.0_2.0.sql"
+      },
+
+      {
+        "name": "b_1.0_2.0.sql"
+      }
+    ],
+    "sequence": []
+  },
+
+  {
+    "name": "update b only",
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "b_2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "1.0"
+          }
+        ]
+      }
+    ],
+    "sequence": [ "b_2.0_3.0.sql" ]
+  },
+
+  {
+    "name": "one by one",
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a_1.0_2.0.sql"
+      },
+      {
+        "name": "a_2.0_3.0.sql"
+      },
+
+      {
+        "name": "b_2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "2.0"
+          }
+        ]
+      },
+      {
+        "name": "b_3.0_4.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "3.0"
+          }
+        ]
+      }
+    ],
+    "sequence": [
+      "a_1.0_2.0.sql",
+      "b_2.0_3.0.sql",
+      "a_2.0_3.0.sql",
+      "b_3.0_4.0.sql"
+    ]
+  },
+
+  {
+    "name": "update b is blocked",
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "b_2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "2.0"
+          }
+        ]
+      }
+    ],
+    "exception": [ "b_2.0_3.0.sql", "depends" ]
+  },
+
+  {
+    "name": "independent update",
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a_1.0_2.0.sql"
+      },
+      {
+        "name": "a_2.0_3.0.sql"
+      },
+
+      {
+        "name": "b_2.0_3.0.sql"
+      },
+      {
+        "name": "b_3.0_4.0.sql"
+      }
+    ],
+    "sequence": [
+      "a_1.0_2.0.sql",
+      "a_2.0_3.0.sql",
+      "b_2.0_3.0.sql",
+      "b_3.0_4.0.sql"
+    ]
+  },
+
+  {
+    "name": "update not possible",
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a_1.0_2.0.sql",
+        "dependencies": [
+          {
+            "module": "b",
+            "version": "3.0"
+          }
+        ]
+      },
+      {
+        "name": "b_2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "2.0"
+          }
+        ]
+      }
+    ],
+    "exception": [ "Not possible" ]
+  },
+
+  {
+    "name": "external dependency",
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      },
+      {
+        "module": "c",
+        "version": "1.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a_1.0_2.0.sql",
+        "dependencies": [
+          {
+            "module": "c",
+            "version": "1.0"
+          }
+        ]
+      },
+      {
+        "name": "b_2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "2.0"
+          }
+        ]
+      }
+    ],
+    "sequence": [
+      "a_1.0_2.0.sql",
+      "b_2.0_3.0.sql"
+    ]
+  }
+]

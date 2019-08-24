@@ -37,6 +37,11 @@ namespace SqlDatabase.Scripts
             }
         }
 
+        public IList<ScriptDependency> GetDependencies()
+        {
+            throw new NotImplementedException();
+        }
+
         private IEnumerable<string> ResolveBatches(IVariables variables, ILogger logger)
         {
             var scriptParser = new SqlScriptVariableParser(variables);
