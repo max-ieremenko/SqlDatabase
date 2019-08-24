@@ -25,7 +25,7 @@ $ SqlDatabase ... -configuration=path\to\sql-database.config
   </configSections>
 
   <sqlDatabase getCurrentVersion="SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)"
-               setCurrentVersion="EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}''">
+               setCurrentVersion="EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'">
                
     <assemblyScript className="SqlDatabaseScript"
                     methodName="Execute" />
@@ -51,7 +51,7 @@ SELECT value from sys.fn_listextendedproperty('version', default, default, defau
 An sql script to update the current version of database, see [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
 Default value:
 ```sql
-EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}''
+EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'
 ```
 
 ## Example (get/set)CurrentVersion
