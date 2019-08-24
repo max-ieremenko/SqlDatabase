@@ -37,14 +37,12 @@ namespace SqlDatabase.Scripts
                 version = Convert.ToString(command.ExecuteScalar());
             }
 
-            try
-            {
-                return new Version(version);
-            }
-            catch (ArgumentException)
+            if (!Version.TryParse(version, out var result))
             {
                 throw new InvalidOperationException("The current value [{0}] of database version is invalid.".FormatWith(version));
             }
+
+            return result;
         }
 
         public string GetServerVersion()

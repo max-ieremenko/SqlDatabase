@@ -98,5 +98,19 @@ go"));
             actual.Count.ShouldBe(1);
             actual[0].ShouldBe(_executedReader.Object);
         }
+
+        [Test]
+        public void GetDependencies()
+        {
+            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
+-- module dependency: a 1.0
+go
+-- module dependency: b 1.0
+go"));
+
+            var actual = _sut.GetDependencies();
+
+            actual.ShouldBe(new[] { new ScriptDependency("a", new Version("1.0")) });
+        }
     }
 }

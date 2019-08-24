@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,6 +8,8 @@ namespace SqlDatabase.Scripts
 {
     internal static class SqlBatchParser
     {
+        private const string ModuleDependencyPattern = "^(-|\\*)+.*module dependency:\\s?(?'name'[\\w\\-]+)\\s+(?'version'[\\.\\w]+)";
+
         public static IEnumerable<string> SplitByGo(Stream sql)
         {
             var batch = new StringBuilder();
@@ -38,6 +41,31 @@ namespace SqlDatabase.Scripts
             }
         }
 
+        public static IEnumerable<ScriptDependency> ExtractDependencies(string sql, string scriptName)
+        {
+            if (string.IsNullOrWhiteSpace(sql))
+            {
+                yield break;
+            }
+
+            using (var reader = new StringReader(sql))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (TryParseDependencyLine(line, out var moduleName, out var versionText))
+                    {
+                        if (!Version.TryParse(versionText, out var version))
+                        {
+                            throw new InvalidOperationException("The current version value [{0}] of module [{1}] is invalid, script {2}.".FormatWith(versionText, moduleName, scriptName));
+                        }
+
+                        yield return new ScriptDependency(moduleName, version);
+                    }
+                }
+            }
+        }
+
         internal static bool IsGo(string text)
         {
             return Regex.IsMatch(text, "^(\\s*(go)+\\s*)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -53,6 +81,22 @@ namespace SqlDatabase.Scripts
                     yield return line;
                 }
             }
+        }
+
+        private static bool TryParseDependencyLine(string line, out string moduleName, out string version)
+        {
+            moduleName = null;
+            version = null;
+
+            var match = Regex.Match(line, ModuleDependencyPattern, RegexOptions.IgnoreCase);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            moduleName = match.Groups["name"].Value;
+            version = match.Groups["version"].Value;
+            return true;
         }
     }
 }

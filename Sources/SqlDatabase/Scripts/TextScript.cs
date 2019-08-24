@@ -39,7 +39,13 @@ namespace SqlDatabase.Scripts
 
         public IList<ScriptDependency> GetDependencies()
         {
-            throw new NotImplementedException();
+            string batch;
+            using (var sql = ReadSqlContent())
+            {
+                batch = SqlBatchParser.SplitByGo(sql).FirstOrDefault();
+            }
+
+            return SqlBatchParser.ExtractDependencies(batch, DisplayName).ToArray();
         }
 
         private IEnumerable<string> ResolveBatches(IVariables variables, ILogger logger)

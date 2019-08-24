@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Scripts
 {
@@ -11,7 +12,7 @@ namespace SqlDatabase.Scripts
     public class SqlBatchParserTest
     {
         [Test]
-        [TestCaseSource(typeof(SqlBatchParserTest), nameof(GetSplitByGoTestCases))]
+        [TestCaseSource(nameof(GetSplitByGoTestCases))]
         public void SplitByGo(Stream input, string[] expected)
         {
             var actual = SqlBatchParser.SplitByGo(input);
@@ -32,10 +33,65 @@ namespace SqlDatabase.Scripts
             Assert.AreEqual(expected, SqlBatchParser.IsGo(line));
         }
 
-        private static IEnumerable<object> GetSplitByGoTestCases()
+        [Test]
+        [TestCaseSource(nameof(GetExtractDependenciesTestCases))]
+        public void ExtractDependencies(string sql, ScriptDependency[] expected)
+        {
+            var actual = SqlBatchParser.ExtractDependencies(sql, "file name").ToArray();
+            actual.ShouldBe(expected);
+        }
+
+        [Test]
+        [TestCase("1.a")]
+        [TestCase("10")]
+        public void ExtractDependenciesInvalidVersion(string versionText)
+        {
+            var input = "module dependency: moduleName " + versionText;
+            var ex = Assert.Throws<InvalidOperationException>(() => SqlBatchParser.ExtractDependencies(input, "file name").ToArray());
+
+            ex.Message.ShouldContain("moduleName");
+            ex.Message.ShouldContain(versionText);
+        }
+
+        private static IEnumerable<TestCaseData> GetSplitByGoTestCases()
+        {
+            foreach (var testCase in ReadResources("Go"))
+            {
+                yield return new TestCaseData(
+                    new MemoryStream(Encoding.Default.GetBytes(testCase.Input)),
+                    testCase.Expected)
+                {
+                    TestName = testCase.Name
+                };
+            }
+        }
+
+        private static IEnumerable<TestCaseData> GetExtractDependenciesTestCases()
+        {
+            foreach (var testCase in ReadResources("Dependencies"))
+            {
+                var expected = new List<ScriptDependency>();
+                foreach (var line in testCase.Expected)
+                {
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        parts.Length.ShouldBe(2);
+                        expected.Add(new ScriptDependency(parts[0], new Version(parts[1])));
+                    }
+                }
+
+                yield return new TestCaseData(testCase.Input, expected.ToArray())
+                {
+                    TestName = testCase.Name
+                };
+            }
+        }
+
+        private static IEnumerable<(string Name, string Input, string[] Expected)> ReadResources(string folder)
         {
             var anchor = typeof(SqlBatchParserTest);
-            var prefix = anchor.Namespace + "." + anchor.Name + ".";
+            var prefix = anchor.Namespace + "." + anchor.Name + "." + folder + ".";
 
             var sources = anchor
                 .Assembly
@@ -45,14 +101,18 @@ namespace SqlDatabase.Scripts
 
             foreach (var sourceName in sources)
             {
-                var testCase = BuildSplitByGoTestCase(sourceName);
-                testCase.TestName = Path.GetFileNameWithoutExtension(sourceName.Substring(prefix.Length));
+                using (var stream = anchor.Assembly.GetManifestResourceStream(sourceName))
+                using (var reader = new StreamReader(stream))
+                {
+                    var name = Path.GetFileNameWithoutExtension(sourceName.Substring(prefix.Length));
+                    var (input, expected) = ParseResource(reader);
 
-                yield return testCase;
+                    yield return (name, input, expected);
+                }
             }
         }
 
-        private static TestCaseData BuildSplitByGoTestCase(string sourceName)
+        private static (string Input, string[] Expected) ParseResource(TextReader reader)
         {
             const string Separator = "--------------";
 
@@ -60,41 +120,37 @@ namespace SqlDatabase.Scripts
             var expected = new List<string>();
             var currentExpected = new StringBuilder();
 
-            using (var stream = typeof(SqlBatchParserTest).Assembly.GetManifestResourceStream(sourceName))
-            using (var reader = new StreamReader(stream))
+            var isInput = true;
+
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-                var isInput = true;
-
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                if (line == Separator)
                 {
-                    if (line == Separator)
+                    isInput = false;
+                    if (currentExpected.Length > 0)
                     {
-                        isInput = false;
-                        if (currentExpected.Length > 0)
-                        {
-                            expected.Add(currentExpected.ToString());
-                            currentExpected.Clear();
-                        }
+                        expected.Add(currentExpected.ToString());
+                        currentExpected.Clear();
                     }
-                    else if (isInput)
+                }
+                else if (isInput)
+                {
+                    if (input.Length > 0)
                     {
-                        if (input.Length > 0)
-                        {
-                            input.AppendLine();
-                        }
+                        input.AppendLine();
+                    }
 
-                        input.Append(line);
-                    }
-                    else
+                    input.Append(line);
+                }
+                else
+                {
+                    if (currentExpected.Length > 0)
                     {
-                        if (currentExpected.Length > 0)
-                        {
-                            currentExpected.AppendLine();
-                        }
-
-                        currentExpected.Append(line);
+                        currentExpected.AppendLine();
                     }
+
+                    currentExpected.Append(line);
                 }
             }
 
@@ -103,9 +159,7 @@ namespace SqlDatabase.Scripts
                 expected.Add(currentExpected.ToString());
             }
 
-            return new TestCaseData(
-                new MemoryStream(Encoding.Default.GetBytes(input.ToString())),
-                expected.ToArray());
+            return (input.ToString(), expected.ToArray());
         }
     }
 }

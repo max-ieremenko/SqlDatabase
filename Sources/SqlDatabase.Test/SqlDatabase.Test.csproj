@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net452;netcoreapp2.2</TargetFrameworks>
@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case01.sql" />
+    <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case02.sql" />
+    <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case03.sql" />
+    <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case04.sql" />
+    <None Remove="Scripts\SqlBatchParserTest\Dependencies\Empty.sql" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
@@ -35,10 +40,15 @@
   
   <ItemGroup>
     <EmbeddedResource Include="IO\Content.zip" />
-    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case02.sql" />
-    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseOneLineComment.sql" />
-    <EmbeddedResource Include="Scripts\SqlBatchParserTest\CaseStoredProcedure.sql" />
-    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Case01.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case04.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case03.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case02.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case01.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Empty.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Go\Case02.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Go\CaseOneLineComment.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Go\CaseStoredProcedure.sql" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Go\Case01.sql" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
@@ -53,6 +63,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
