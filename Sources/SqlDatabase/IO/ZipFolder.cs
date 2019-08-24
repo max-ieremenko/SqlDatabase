@@ -41,7 +41,7 @@ namespace SqlDatabase.IO
                 return ZipFile.OpenRead(FileName);
             }
 
-            var file = new ZipFolderFile(_parent, FileName);
+            var file = new ZipFolderFile(_parent, _parent, FileName);
             return new ZipArchive(file.OpenRead(), ZipArchiveMode.Read, false);
         }
 
@@ -102,7 +102,7 @@ namespace SqlDatabase.IO
                 }
                 else
                 {
-                    owner.Files.Add(new ZipFolderFile(this, entry.FullName));
+                    owner.Files.Add(new ZipFolderFile(this, owner, entry.FullName));
                 }
             }
 

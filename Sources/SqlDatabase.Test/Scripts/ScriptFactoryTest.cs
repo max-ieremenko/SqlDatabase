@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.TestApi;
 
@@ -25,44 +26,46 @@ namespace SqlDatabase.Scripts
         {
             var file = FileFactory.File("11.sql", Encoding.UTF8.GetBytes("some script"));
 
-            Assert.IsTrue(_sut.IsSupported(file.Name));
-            var script = _sut.FromFile(file);
+            _sut.IsSupported(file.Name).ShouldBeTrue();
 
-            Assert.IsInstanceOf<TextScript>(script);
+            var script = _sut.FromFile(file).ShouldBeOfType<TextScript>();
 
-            var textScript = (TextScript)script;
-            Assert.AreEqual("11.sql", script.DisplayName);
-            Assert.AreEqual("some script", new StreamReader(textScript.ReadSqlContent()).ReadToEnd());
+            script.DisplayName.ShouldBe("11.sql");
+            new StreamReader(script.ReadSqlContent()).ReadToEnd().ShouldBe("some script");
         }
 
         [Test]
         public void FromDllFile()
         {
-            var file = FileFactory.File("11.dll", new byte[] { 1, 2, 3 });
+            var file = FileFactory.File(
+                "11.dll",
+                new byte[] { 1, 2, 3 },
+                FileFactory.Folder("name", FileFactory.File("11.txt", new byte[] { 3, 2, 1 })));
 
-            Assert.IsTrue(_sut.IsSupported(file.Name));
-            var script = _sut.FromFile(file);
+            _sut.IsSupported(file.Name).ShouldBeTrue();
 
-            Assert.IsInstanceOf<AssemblyScript>(script);
+            var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
 
-            var assemblyScript = (AssemblyScript)script;
-            Assert.AreEqual("11.dll", script.DisplayName);
-            Assert.AreEqual(new byte[] { 1, 2, 3 }, assemblyScript.ReadAssemblyContent());
+            script.DisplayName.ShouldBe("11.dll");
+            script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
+            script.ReadDescriptionContent().ShouldBe(new byte[] { 3, 2, 1 });
         }
 
         [Test]
         public void FromExeFile()
         {
-            var file = FileFactory.File("11.exe", new byte[] { 1, 2, 3 });
+            var file = FileFactory.File(
+                "11.exe",
+                new byte[] { 1, 2, 3 },
+                FileFactory.Folder("name"));
 
-            Assert.IsTrue(_sut.IsSupported(file.Name));
-            var script = _sut.FromFile(file);
+            _sut.IsSupported(file.Name).ShouldBeTrue();
 
-            Assert.IsInstanceOf<AssemblyScript>(script);
+            var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
 
-            var assemblyScript = (AssemblyScript)script;
-            Assert.AreEqual("11.exe", script.DisplayName);
-            Assert.AreEqual(new byte[] { 1, 2, 3 }, assemblyScript.ReadAssemblyContent());
+            script.DisplayName.ShouldBe("11.exe");
+            script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
+            script.ReadDescriptionContent().ShouldBeNull();
         }
 
         [Test]
@@ -70,7 +73,7 @@ namespace SqlDatabase.Scripts
         {
             var file = FileFactory.File("11.txt");
 
-            Assert.IsFalse(_sut.IsSupported(file.Name));
+            _sut.IsSupported(file.Name).ShouldBeFalse();
             Assert.Throws<NotSupportedException>(() => _sut.FromFile(file));
         }
     }

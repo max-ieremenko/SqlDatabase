@@ -9,7 +9,7 @@ namespace SqlDatabase.TestApi
 {
     internal static class FileFactory
     {
-        public static IFile File(string name, byte[] content = null)
+        public static IFile File(string name, byte[] content, IFolder parent)
         {
             var file = new Mock<IFile>(MockBehavior.Strict);
 
@@ -20,8 +20,12 @@ namespace SqlDatabase.TestApi
                 file.Setup(f => f.OpenRead()).Returns(new MemoryStream(content));
             }
 
+            file.Setup(f => f.GetParent()).Returns(parent);
+
             return file.Object;
         }
+
+        public static IFile File(string name, byte[] content = null) => File(name, content, null);
 
         public static IFile File(string name, string content)
         {

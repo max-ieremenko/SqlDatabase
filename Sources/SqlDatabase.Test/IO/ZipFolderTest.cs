@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.IO
@@ -53,6 +54,8 @@ namespace SqlDatabase.IO
             {
                 Assert.AreEqual("11", reader.ReadToEnd());
             }
+
+            files[0].GetParent().GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
         }
 
         [Test]
@@ -75,6 +78,8 @@ namespace SqlDatabase.IO
             {
                 Assert.AreEqual("22", reader.ReadToEnd());
             }
+
+            files[0].GetParent().ShouldBe(subFolders[1]);
         }
 
         [Test]
@@ -92,6 +97,8 @@ namespace SqlDatabase.IO
             {
                 Assert.AreEqual("11", reader.ReadToEnd());
             }
+
+            files[0].GetParent().GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
         }
     }
 }

@@ -14,6 +14,11 @@ namespace SqlDatabase.IO
 
         public string Location { get; }
 
+        public IFolder GetParent()
+        {
+            return new FileSystemFolder(Path.GetDirectoryName(Location));
+        }
+
         public Stream OpenRead()
         {
             return File.OpenRead(Location);

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Linq;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
 
@@ -11,6 +13,8 @@ namespace SqlDatabase.Scripts
         public string DisplayName { get; set; }
 
         public Func<byte[]> ReadAssemblyContent { get; set; }
+
+        public Func<byte[]> ReadDescriptionContent { get; set; }
 
         public AssemblyScriptConfiguration Configuration { get; set; }
 
@@ -44,7 +48,17 @@ namespace SqlDatabase.Scripts
 
         public IList<ScriptDependency> GetDependencies()
         {
-            throw new NotImplementedException();
+            var description = ReadDescriptionContent();
+            if (description == null || description.Length == 0)
+            {
+                return new ScriptDependency[0];
+            }
+
+            using (var stream = new MemoryStream(description))
+            using (var reader = new StreamReader(stream))
+            {
+                return SqlBatchParser.ExtractDependencies(reader.ReadToEnd(), DisplayName).ToArray();
+            }
         }
 
         internal void ResolveScriptExecutor(ISubDomain domain)

@@ -20,5 +20,11 @@ namespace SqlDatabase.IO
                 new StreamReader(stream).ReadToEnd().ShouldBe(Content);
             }
         }
+
+        [Test]
+        public void GetParent()
+        {
+            new InLineScriptFile("name", string.Empty).GetParent().ShouldBeNull();
+        }
     }
 }

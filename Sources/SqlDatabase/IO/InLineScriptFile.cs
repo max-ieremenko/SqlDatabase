@@ -15,6 +15,8 @@ namespace SqlDatabase.IO
 
         public string Content { get; }
 
+        public IFolder GetParent() => null;
+
         public Stream OpenRead()
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(Content));

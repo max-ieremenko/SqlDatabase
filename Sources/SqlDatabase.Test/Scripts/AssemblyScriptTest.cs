@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -94,6 +95,32 @@ namespace SqlDatabase.Scripts
                 .Returns(false);
 
             Assert.Throws<InvalidOperationException>(() => _sut.Execute(domain.Object, _command.Object, _variables));
+        }
+
+        [Test]
+        public void GetDependencies()
+        {
+            _sut.ReadDescriptionContent = () => Encoding.Default.GetBytes(@"
+-- module dependency: a 1.0
+-- module dependency: b 1.0");
+
+            var actual = _sut.GetDependencies();
+
+            actual.ShouldBe(new[]
+            {
+                new ScriptDependency("a", new Version("1.0")),
+                new ScriptDependency("b", new Version("1.0"))
+            });
+        }
+
+        [Test]
+        public void GetDependenciesNoDescription()
+        {
+            _sut.ReadDescriptionContent = () => null;
+
+            var actual = _sut.GetDependencies();
+
+            actual.ShouldBeEmpty();
         }
     }
 }

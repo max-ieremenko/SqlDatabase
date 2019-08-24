@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using SqlDatabase.Configuration;
 using SqlDatabase.IO;
 
@@ -38,7 +39,8 @@ namespace SqlDatabase.Scripts
                 {
                     DisplayName = file.Name,
                     Configuration = Configuration.AssemblyScript,
-                    ReadAssemblyContent = CreateBinaryReader(file)
+                    ReadAssemblyContent = CreateBinaryReader(file),
+                    ReadDescriptionContent = CreateAssemblyScriptDescriptionReader(file)
                 };
             }
 
@@ -47,16 +49,39 @@ namespace SqlDatabase.Scripts
 
         private static Func<byte[]> CreateBinaryReader(IFile file)
         {
+            return () => BinaryRead(file);
+        }
+
+        private static Func<byte[]> CreateAssemblyScriptDescriptionReader(IFile file)
+        {
             return () =>
             {
-                using (var source = file.OpenRead())
-                using (var dest = new MemoryStream())
+                var parent = file.GetParent();
+                if (parent == null)
                 {
-                    source.CopyTo(dest);
-
-                    return dest.ToArray();
+                    return null;
                 }
+
+                var descriptionName = Path.GetFileNameWithoutExtension(file.Name) + ".txt";
+                var description = parent.GetFiles().FirstOrDefault(i => string.Equals(descriptionName, i.Name, StringComparison.OrdinalIgnoreCase));
+                if (description == null)
+                {
+                    return null;
+                }
+
+                return BinaryRead(description);
             };
+        }
+
+        private static byte[] BinaryRead(IFile file)
+        {
+            using (var source = file.OpenRead())
+            using (var dest = new MemoryStream())
+            {
+                source.CopyTo(dest);
+
+                return dest.ToArray();
+            }
         }
     }
 }
