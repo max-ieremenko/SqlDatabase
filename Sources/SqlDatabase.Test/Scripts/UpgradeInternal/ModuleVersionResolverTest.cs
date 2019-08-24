@@ -48,9 +48,9 @@ namespace SqlDatabase.Scripts.UpgradeInternal
             _sut.GetCurrentVersion(ModuleName).ShouldBe(moduleVersion);
 
             _database.VerifyAll();
-            _logOutput.Count.ShouldBe(2);
-            _logOutput[1].ShouldContain(ModuleName);
-            _logOutput[1].ShouldContain(moduleVersion.ToString());
+            _logOutput.Count.ShouldBe(1);
+            _logOutput[0].ShouldContain(ModuleName);
+            _logOutput[0].ShouldContain(moduleVersion.ToString());
         }
 
         [Test]
@@ -65,9 +65,9 @@ namespace SqlDatabase.Scripts.UpgradeInternal
             _sut.GetCurrentVersion(null).ShouldBe(version);
 
             _database.VerifyAll();
-            _logOutput.Count.ShouldBe(2);
-            _logOutput[1].ShouldContain("database version");
-            _logOutput[1].ShouldContain(version.ToString());
+            _logOutput.Count.ShouldBe(1);
+            _logOutput[0].ShouldContain("database version");
+            _logOutput[0].ShouldContain(version.ToString());
         }
 
         [Test]

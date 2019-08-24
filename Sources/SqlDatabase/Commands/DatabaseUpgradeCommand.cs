@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using SqlDatabase.Scripts;
 
@@ -16,16 +17,23 @@ namespace SqlDatabase.Commands
 
         protected override void ExecuteCore()
         {
-            var sequences = ScriptSequence.BuildSequence();
-            if (sequences.Count == 0)
+            var sequence = ScriptSequence.BuildSequence();
+            if (sequence.Count == 0)
             {
                 Log.Info("the database is up-to-date.");
                 return;
             }
 
-            ShowMigrationSequence(sequences);
+            if (sequence.Any(i => string.IsNullOrEmpty(i.ModuleName)))
+            {
+                ShowMigrationSequenceShort(sequence);
+            }
+            else
+            {
+                ShowMigrationSequenceFull(sequence);
+            }
 
-            foreach (var step in sequences)
+            foreach (var step in sequence)
             {
                 var timer = Stopwatch.StartNew();
                 Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
@@ -39,7 +47,7 @@ namespace SqlDatabase.Commands
             }
         }
 
-        private void ShowMigrationSequence(IList<ScriptStep> sequence)
+        private void ShowMigrationSequenceShort(IList<ScriptStep> sequence)
         {
             var message = new StringBuilder()
                 .AppendFormat("sequence: {0}", sequence[0].From);
@@ -47,6 +55,25 @@ namespace SqlDatabase.Commands
             foreach (var step in sequence)
             {
                 message.AppendFormat(" => {0}", step.To);
+            }
+
+            Log.Info(message.ToString());
+        }
+
+        private void ShowMigrationSequenceFull(IList<ScriptStep> sequence)
+        {
+            var message = new StringBuilder()
+                .Append("sequence: ");
+
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                var step = sequence[i];
+                if (i > 0)
+                {
+                    message.Append("; ");
+                }
+
+                message.AppendFormat("{0} {1} => {2}", step.ModuleName, step.From, step.To);
             }
 
             Log.Info(message.ToString());

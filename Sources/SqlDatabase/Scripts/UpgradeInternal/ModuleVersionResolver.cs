@@ -29,24 +29,15 @@ namespace SqlDatabase.Scripts.UpgradeInternal
 
         private Version LoadVersion(string moduleName)
         {
-            if (moduleName.Length == 0)
-            {
-                Log.Info("get database version");
-            }
-            else
-            {
-                Log.Info("get module [{0}] version".FormatWith(moduleName));
-            }
-
             var version = Database.GetCurrentVersion(moduleName);
 
             if (moduleName.Length == 0)
             {
-                Log.Info("current database version is {0}".FormatWith(version));
+                Log.Info("database version is {0}".FormatWith(version));
             }
             else
             {
-                Log.Info("current module [{0}] version is {1}".FormatWith(moduleName, version));
+                Log.Info("module [{0}] version is {1}".FormatWith(moduleName, version));
             }
 
             return version;

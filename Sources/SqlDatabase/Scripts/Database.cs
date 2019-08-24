@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using SqlDatabase.Configuration;
 
@@ -56,8 +57,6 @@ namespace SqlDatabase.Scripts
             Variables.TargetVersion = targetVersion.ToString();
             Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 
-            var updateVersionScript = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
-
             using (var connection = CreateConnection())
             using (var command = connection.CreateCommand())
             {
@@ -78,17 +77,7 @@ namespace SqlDatabase.Scripts
                         command.ExecuteNonQuery();
                     }
 
-                    command.CommandText = updateVersionScript;
-                    command.ExecuteNonQuery();
-
-                    var checkVersion = ReadCurrentVersion(command);
-                    if (checkVersion != targetVersion)
-                    {
-                        throw new InvalidOperationException("Set version script works incorrectly: expected version is {0}, but actual is {1}. Script: {2}".FormatWith(
-                            targetVersion,
-                            checkVersion,
-                            updateVersionScript));
-                    }
+                    WriteCurrentVersion(command, targetVersion);
 
                     transaction?.Commit();
                 }
@@ -171,11 +160,44 @@ namespace SqlDatabase.Scripts
             return connection;
         }
 
+        private void WriteCurrentVersion(SqlCommand command, Version targetVersion)
+        {
+            var script = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
+            command.CommandText = script;
+
+            try
+            {
+                command.ExecuteNonQuery();
+            }
+            catch (DbException ex)
+            {
+                throw new InvalidOperationException("Fail to update the version, script: {0}".FormatWith(script), ex);
+            }
+
+            var checkVersion = ReadCurrentVersion(command);
+            if (checkVersion != targetVersion)
+            {
+                throw new InvalidOperationException("Set version script works incorrectly: expected version is {0}, but actual is {1}. Script: {2}".FormatWith(
+                    targetVersion,
+                    checkVersion,
+                    script));
+            }
+        }
+
         private Version ReadCurrentVersion(SqlCommand command)
         {
-            command.CommandText = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.GetCurrentVersionScript);
+            var script = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.GetCurrentVersionScript);
+            command.CommandText = script;
 
-            var version = Convert.ToString(command.ExecuteScalar());
+            string version;
+            try
+            {
+                version = Convert.ToString(command.ExecuteScalar());
+            }
+            catch (DbException ex)
+            {
+                throw new InvalidOperationException("Fail to read the version, script: {0}".FormatWith(script), ex);
+            }
 
             if (!Version.TryParse(version, out var result))
             {

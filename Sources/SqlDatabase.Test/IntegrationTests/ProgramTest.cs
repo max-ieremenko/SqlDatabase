@@ -134,6 +134,50 @@ ORDER BY Person.Id";
 
         [Test]
         [Order(3)]
+        public void UpgradeDatabaseModularity()
+        {
+            var args = new GenericCommandLineBuilder()
+                .SetCommand(CommandLineFactory.CommandUpgrade)
+                .SetConnection(_connectionString)
+                .SetScripts(Path.Combine(_scriptsLocation, "UpgradeModularity"))
+                .SetConfigurationFile(Path.Combine(_scriptsLocation, "UpgradeModularity", "SqlDatabase.exe.config"));
+
+            Program.Main(args.BuildArray(false)).ShouldBe(0);
+
+            const string Sql = @"
+SELECT p.Name, a.City
+FROM moduleA.Person p
+     LEFT JOIN moduleB.PersonAddress a ON a.PersonId = p.Id
+ORDER BY p.Name";
+
+            var configuration = new SqlDatabase.Configuration.ConfigurationManager();
+            configuration.LoadFrom(args.Line.ConfigurationFile);
+
+            var db = new Database
+            {
+                ConnectionString = _connectionString,
+                Configuration = configuration.SqlDatabase
+            };
+            db.GetCurrentVersion("ModuleA").ShouldBe(new Version("2.0"));
+            db.GetCurrentVersion("ModuleB").ShouldBe(new Version("1.1"));
+            db.GetCurrentVersion("ModuleC").ShouldBe(new Version("2.0"));
+
+            using (var c = new SqlConnection(_connectionString))
+            {
+                c.Open();
+                var rows = c.Query(Sql).ToList();
+                rows.Count.ShouldBe(2);
+
+                Assert.AreEqual("John", rows[0].Name);
+                Assert.AreEqual("London", rows[0].City);
+
+                Assert.AreEqual("Maria", rows[1].Name);
+                Assert.IsNull(rows[1].City);
+            }
+        }
+
+        [Test]
+        [Order(4)]
         public void ExportDataToConsole()
         {
             // export
@@ -169,7 +213,7 @@ ORDER BY Person.Id";
         }
 
         [Test]
-        [Order(4)]
+        [Order(5)]
         public void ExportDataToFile()
         {
             using (var output = new TempFile(".sql"))
@@ -201,7 +245,7 @@ ORDER BY Person.Id";
         }
 
         [Test]
-        [Order(5)]
+        [Order(6)]
         public void ExecuteScript()
         {
             InvokeExecuteCommand(b =>
