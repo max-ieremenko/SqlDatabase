@@ -1,0 +1,17 @@
+/*
+* module dependency: person 2.0
+*/
+GO
+
+CREATE TABLE dbo.Book
+(
+	Id INT NOT NULL IDENTITY(1, 1)
+	,AuthorId INT NOT NULL
+	,Name NVARCHAR(250) NOT NULL
+)
+
+ALTER TABLE dbo.Book ADD CONSTRAINT PK_dbo_Book PRIMARY KEY CLUSTERED (Id)
+GO
+
+ALTER TABLE dbo.Book ADD CONSTRAINT FK_Book_AuthorId FOREIGN KEY (AuthorId) REFERENCES dbo.Person (Id)
+GO

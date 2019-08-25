@@ -25,6 +25,7 @@ CLI
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
 |-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
+|-whatIf|shows what would happen if the command runs. The command is not run|
 
 #### -from
 
@@ -68,7 +69,6 @@ DROP TABLE [dbo].[Person]
 * 1 - invalid command line
 * 2 - errors during execution
 
-
 Step`s execution order
 ===============
 
@@ -76,40 +76,11 @@ Step`s execution order
 2. Build migration steps sequence
 3. Execute migration steps one by one and update current database version
 
-#### Example
-The following script is used by SqlDatabase to resolve the current database version, details are in [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
+The folder structure does not matter, SqlDatabase analyzes all files and folders recursively.
 
-```sql
--- select current version
-SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)
+See example of straight forward upgrade [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder/StraightForward).
 
--- output
--- 1.2
-```
-
-The current version is *1.2*, so we have the following migration steps sequence:
-1. 1.0_1.3.zip\1.2_1.3.sql
-2. 1.3_2.0.sql
-3. 2.0_2.1.sql
-4. 2.1_2.2.sql
-5. 2.2_3.0.sql
-6. 3.0_3.1.sql
-7. 3.0_4.0.sql
-
-Each step will be executed one by one:
-```sql
-/* 1.0_1.3.zip\1.2_1.3.sql */
-execute 1.0_1.3.zip\1.2_1.3.sql
--- update current version
-EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'1.3'
-
-/* 1.3_2.0.sql */
-execute 1.3_2.0.sql
--- update current version
-EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'2.0'
-
--- ....
-```
+See example of modularity upgrade here [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder/Modularity).
 
 Predefined variables
 ====================
@@ -117,8 +88,9 @@ Predefined variables
 |Name|Description|
 |:--|:----------|
 |DatabaseName|the target database name|
-|CurrentVersion|the database version before execution of a migration step|
-|TargetVersion|the database version after execution of a migration step|
+|CurrentVersion|the database version before execution of current migration step|
+|TargetVersion|the database version after execution of current migration step|
+|ModuleName|the module name of current migration step, empty string in case of straight forward upgrade|
 
 
 Migration .sql step example

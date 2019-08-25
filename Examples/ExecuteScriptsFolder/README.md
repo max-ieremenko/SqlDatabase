@@ -27,6 +27,7 @@ CLI
 |-fromSql|an sql script text. Repeat -fromSql to setup several scripts.|
 |-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
+|-whatIf|shows what would happen if the command runs. The command is not run|
 
 #### -from
 
