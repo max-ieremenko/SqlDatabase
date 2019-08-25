@@ -28,7 +28,7 @@ namespace SqlDatabase.Configuration
             {
                 Log = WrapLogger(logger),
                 OpenOutput = CreateOutput(),
-                Database = CreateDatabase(logger, configuration, TransactionMode.None),
+                Database = CreateDatabase(logger, configuration, TransactionMode.None, false),
                 ScriptSequence = sequence,
                 DestinationTableName = DestinationTableName
             };

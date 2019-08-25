@@ -37,7 +37,8 @@ namespace SqlDatabase.Configuration
                 new Arg("from", @"c:\folder"),
                 new Arg("varX", "1 2 3"),
                 new Arg("varY", "value"),
-                new Arg("configuration", "app.config")));
+                new Arg("configuration", "app.config"),
+                new Arg("whatIf")));
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
 
@@ -50,11 +51,14 @@ namespace SqlDatabase.Configuration
             _sut.Variables["y"].ShouldBe("value");
 
             _sut.ConfigurationFile.ShouldBe("app.config");
+
+            _sut.WhatIf.ShouldBeTrue();
         }
 
         [Test]
         public void CreateCommand()
         {
+            _sut.WhatIf = true;
             _sut.Connection = new SqlConnectionStringBuilder();
 
             var actual = _sut
@@ -62,7 +66,9 @@ namespace SqlDatabase.Configuration
                 .ShouldBeOfType<DatabaseCreateCommand>();
 
             actual.Log.ShouldBe(_log.Object);
-            actual.Database.ShouldBeOfType<Database>();
+            var database = actual.Database.ShouldBeOfType<Database>();
+            database.WhatIf.ShouldBeTrue();
+
             actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
         }
     }

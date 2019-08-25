@@ -39,12 +39,13 @@ namespace SqlDatabase.Configuration
         [Test]
         public void CreateDatabase()
         {
-            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.PerStep);
+            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.PerStep, true);
 
             actual.Log.ShouldBe(_log.Object);
             actual.ConnectionString.ShouldNotBeNull();
             actual.Configuration.ShouldBe(_configuration);
             actual.Transaction.ShouldBe(TransactionMode.PerStep);
+            actual.WhatIf.ShouldBeTrue();
         }
 
         [Test]
@@ -56,7 +57,7 @@ namespace SqlDatabase.Configuration
             _configuration.Variables.Add(new NameValueConfigurationElement("b", "2.2"));
             _configuration.Variables.Add(new NameValueConfigurationElement("c", "3"));
 
-            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None);
+            var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None, false);
 
             Assert.AreEqual("1", actual.Variables.GetValue("a"));
             Assert.AreEqual("2", actual.Variables.GetValue("b"));
@@ -70,7 +71,7 @@ namespace SqlDatabase.Configuration
 
             _configuration.Variables.Add(new NameValueConfigurationElement("c d", "1"));
 
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None));
+            var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None, false));
 
             ex.Message.ShouldContain("a b");
             ex.Message.ShouldContain("c d");

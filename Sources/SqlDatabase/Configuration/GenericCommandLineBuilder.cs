@@ -103,6 +103,12 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
+        public GenericCommandLineBuilder SetWhatIf(bool value)
+        {
+            Line.WhatIf = value;
+            return this;
+        }
+
         public GenericCommandLine Build()
         {
             return Line;
@@ -156,6 +162,11 @@ namespace SqlDatabase.Configuration
             if (cmd.PreFormatOutputLogs)
             {
                 result.Add(CombineArg(Arg.PreFormatOutputLogs, cmd.PreFormatOutputLogs.ToString(), false));
+            }
+
+            if (cmd.WhatIf)
+            {
+                result.Add(CombineArg(Arg.WhatIf, cmd.WhatIf.ToString(), false));
             }
 
             return result.ToArray();

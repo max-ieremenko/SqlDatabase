@@ -121,6 +121,36 @@ namespace SqlDatabase.Scripts.UpgradeInternal
             }
         }
 
+        public void ShowWithDependencies(ILogger logger)
+        {
+            foreach (var moduleName in _stepsByModule.Keys.OrderBy(i => i))
+            {
+                var steps = _stepsByModule[moduleName];
+                logger.Info("module [{0}], {1} step{2}:".FormatWith(
+                    moduleName,
+                    steps.Count,
+                    steps.Count == 1 ? null : "s"));
+
+                using (logger.Indent())
+                {
+                    foreach (var step in steps)
+                    {
+                        var dependencies = GetDependencies(step);
+                        if (dependencies.Count == 0)
+                        {
+                            logger.Info("{0}, no dependencies".FormatWith(step.Script.DisplayName));
+                        }
+                        else
+                        {
+                            logger.Info("{0}, depends on {1}".FormatWith(
+                                step.Script.DisplayName,
+                                string.Join("; ", dependencies.OrderBy(i => i.ModuleName))));
+                        }
+                    }
+                }
+            }
+        }
+
         public void ValidateModuleDependencies(string moduleName, IModuleVersionResolver versionResolver)
         {
             foreach (var step in _stepsByModule[moduleName])

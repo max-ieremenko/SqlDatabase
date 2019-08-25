@@ -71,7 +71,7 @@ namespace SqlDatabase.Scripts
 
         internal void Execute(ISubDomain domain, IDbCommand command, IVariables variables)
         {
-            if (!domain.Execute(command, variables))
+            if (command != null && !domain.Execute(command, variables))
             {
                 throw new InvalidOperationException("Errors during script execution.");
             }

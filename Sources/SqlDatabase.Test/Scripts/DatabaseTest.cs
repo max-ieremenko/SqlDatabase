@@ -168,6 +168,18 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
+        public void ExecuteUpgradeWhatIf()
+        {
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(null, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
+
+            _sut.WhatIf = true;
+            _sut.Execute(script.Object, "module name", new Version("1.0"), new Version("2.0"));
+            script.VerifyAll();
+        }
+
+        [Test]
         public void ExecuteUpgradeChangeDatabaseVersionNoModules()
         {
             var versionFrom = _sut.GetCurrentVersion(null);
@@ -281,6 +293,18 @@ namespace SqlDatabase.Scripts
                     StringAssert.AreEqualIgnoringCase("master", (string)cmd.ExecuteScalar());
                 });
 
+            _sut.Execute(script.Object);
+            script.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteWhatIf()
+        {
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(null, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
+
+            _sut.WhatIf = true;
             _sut.Execute(script.Object);
             script.VerifyAll();
         }

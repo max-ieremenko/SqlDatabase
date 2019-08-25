@@ -33,11 +33,11 @@ namespace SqlDatabase.Scripts.UpgradeInternal
 
             if (moduleName.Length == 0)
             {
-                Log.Info("database version is {0}".FormatWith(version));
+                Log.Info("database version: {0}".FormatWith(version));
             }
             else
             {
-                Log.Info("module [{0}] version is {1}".FormatWith(moduleName, version));
+                Log.Info("module [{0}] version: {1}".FormatWith(moduleName, version));
             }
 
             return version;

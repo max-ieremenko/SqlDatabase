@@ -22,6 +22,8 @@ namespace SqlDatabase.Scripts
 
         public TransactionMode Transaction { get; set; }
 
+        public bool WhatIf { get; set; }
+
         internal Variables Variables { get; }
 
         public Version GetCurrentVersion(string moduleName)
@@ -57,30 +59,13 @@ namespace SqlDatabase.Scripts
             Variables.TargetVersion = targetVersion.ToString();
             Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 
-            using (var connection = CreateConnection())
-            using (var command = connection.CreateCommand())
+            if (WhatIf)
             {
-                connection.InfoMessage += OnConnectionInfoMessage;
-
-                command.CommandTimeout = 0;
-                connection.Open();
-
-                using (var transaction = Transaction == TransactionMode.PerStep ? connection.BeginTransaction(IsolationLevel.ReadCommitted) : null)
-                {
-                    command.Transaction = transaction;
-
-                    script.Execute(command, Variables, Log);
-
-                    if (!Variables.DatabaseName.Equals(connection.Database, StringComparison.OrdinalIgnoreCase))
-                    {
-                        command.CommandText = "USE [{0}]".FormatWith(Variables.DatabaseName);
-                        command.ExecuteNonQuery();
-                    }
-
-                    WriteCurrentVersion(command, targetVersion);
-
-                    transaction?.Commit();
-                }
+                ExecuteWhatIf(script);
+            }
+            else
+            {
+                InvokeExecuteUpgrade(script, targetVersion);
             }
         }
 
@@ -88,35 +73,13 @@ namespace SqlDatabase.Scripts
         {
             Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 
-            bool useMaster;
-
-            using (var connection = CreateConnection(true))
-            using (var command = connection.CreateCommand())
+            if (WhatIf)
             {
-                command.CommandTimeout = 0;
-                connection.Open();
-
-                command.CommandText = "SELECT 1 FROM sys.databases WHERE Name=N'{0}'".FormatWith(Variables.DatabaseName);
-                var value = command.ExecuteScalar();
-
-                useMaster = value == null || Convert.IsDBNull(value);
+                ExecuteWhatIf(script);
             }
-
-            using (var connection = CreateConnection(useMaster))
+            else
             {
-                connection.InfoMessage += OnConnectionInfoMessage;
-                connection.Open();
-
-                using (var transaction = Transaction == TransactionMode.PerStep ? connection.BeginTransaction(IsolationLevel.ReadCommitted) : null)
-                {
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandTimeout = 0;
-                        script.Execute(command, Variables, Log);
-                    }
-
-                    transaction?.Commit();
-                }
+                InvokeExecute(script);
             }
         }
 
@@ -203,13 +166,82 @@ namespace SqlDatabase.Scripts
             {
                 if (string.IsNullOrEmpty(Variables.ModuleName))
                 {
-                    throw new InvalidOperationException("The current value [{0}] of database version is invalid.".FormatWith(version));
+                    throw new InvalidOperationException("The version [{0}] of database is invalid.".FormatWith(version));
                 }
 
-                throw new InvalidOperationException("The current value [{0}] of module [{1}] version is invalid.".FormatWith(version, Variables.ModuleName));
+                throw new InvalidOperationException("The version [{0}] of module [{1}] is invalid.".FormatWith(version, Variables.ModuleName));
             }
 
             return result;
+        }
+
+        private void InvokeExecuteUpgrade(IScript script, Version targetVersion)
+        {
+            using (var connection = CreateConnection())
+            using (var command = connection.CreateCommand())
+            {
+                connection.InfoMessage += OnConnectionInfoMessage;
+
+                command.CommandTimeout = 0;
+                connection.Open();
+
+                using (var transaction = Transaction == TransactionMode.PerStep ? connection.BeginTransaction(IsolationLevel.ReadCommitted) : null)
+                {
+                    command.Transaction = transaction;
+
+                    script.Execute(command, Variables, Log);
+
+                    if (!Variables.DatabaseName.Equals(connection.Database, StringComparison.OrdinalIgnoreCase))
+                    {
+                        command.CommandText = "USE [{0}]".FormatWith(Variables.DatabaseName);
+                        command.ExecuteNonQuery();
+                    }
+
+                    WriteCurrentVersion(command, targetVersion);
+
+                    transaction?.Commit();
+                }
+            }
+        }
+
+        private void InvokeExecute(IScript script)
+        {
+            bool useMaster;
+
+            using (var connection = CreateConnection(true))
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandTimeout = 0;
+                connection.Open();
+
+                command.CommandText = "SELECT 1 FROM sys.databases WHERE Name=N'{0}'".FormatWith(Variables.DatabaseName);
+                var value = command.ExecuteScalar();
+
+                useMaster = value == null || Convert.IsDBNull(value);
+            }
+
+            using (var connection = CreateConnection(useMaster))
+            {
+                connection.InfoMessage += OnConnectionInfoMessage;
+                connection.Open();
+
+                using (var transaction = Transaction == TransactionMode.PerStep ? connection.BeginTransaction(IsolationLevel.ReadCommitted) : null)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandTimeout = 0;
+                        script.Execute(command, Variables, Log);
+                    }
+
+                    transaction?.Commit();
+                }
+            }
+        }
+
+        private void ExecuteWhatIf(IScript script)
+        {
+            Log.Info("what-if mode");
+            script.Execute(null, Variables, Log);
         }
     }
 }

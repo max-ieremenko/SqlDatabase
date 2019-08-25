@@ -85,6 +85,20 @@ go"));
         }
 
         [Test]
+        public void ExecuteWhatIf()
+        {
+            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
+{{var1}}
+go
+text2
+go"));
+
+            _sut.Execute(null, _variables, _logger.Object);
+
+            Assert.AreEqual(0, _executedScripts.Count);
+        }
+
+        [Test]
         public void ExecuteReader()
         {
             _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("select {{var1}}"));

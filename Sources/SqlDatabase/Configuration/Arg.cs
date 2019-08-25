@@ -1,6 +1,6 @@
 ﻿namespace SqlDatabase.Configuration
 {
-    internal struct Arg
+    internal readonly struct Arg
     {
         internal const string Base64Sign = "+";
         internal const string Sign = "-";
@@ -11,6 +11,7 @@
         internal const string Variable = "var";
         internal const string Configuration = "configuration";
         internal const string Transaction = "transaction";
+        internal const string WhatIf = "whatIf";
 
         internal const string ExportToTable = "toTable";
         internal const string ExportToFile = "toFile";

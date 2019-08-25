@@ -26,6 +26,7 @@ namespace SqlDatabase.Configuration
                 .SetConfigurationFile("configuration file")
                 .SetTransaction(TransactionMode.PerStep)
                 .SetVariable("var1", "value 1")
+                .SetWhatIf(true)
                 .SetPreFormatOutputLogs(true)
                 .BuildArray(true);
 
@@ -57,6 +58,9 @@ namespace SqlDatabase.Configuration
 
             actual.Args[6].Key.ShouldBe("varvar1");
             actual.Args[6].Value.ShouldBe("value 1");
+
+            actual.Args[7].Key.ShouldBe("whatIf");
+            actual.Args[7].Value.ShouldBe("True");
         }
 
         [Test]

@@ -16,10 +16,13 @@ namespace SqlDatabase.Scripts
         {
             var batches = ResolveBatches(variables, logger);
 
-            foreach (var batch in batches)
+            if (command != null)
             {
-                command.CommandText = batch;
-                command.ExecuteNonQuery();
+                foreach (var batch in batches)
+                {
+                    command.CommandText = batch;
+                    command.ExecuteNonQuery();
+                }
             }
         }
 

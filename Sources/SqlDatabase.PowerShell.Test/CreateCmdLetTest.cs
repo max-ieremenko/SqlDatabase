@@ -17,10 +17,11 @@ namespace SqlDatabase.PowerShell
                 commandName,
                 c =>
                 {
-                    c.Parameters.Add(nameof(ExportCmdLet.Database), "connection string");
-                    c.Parameters.Add(nameof(ExportCmdLet.From), new[] { "file 1", "file 2" });
-                    c.Parameters.Add(nameof(ExportCmdLet.Configuration), "app.config");
-                    c.Parameters.Add(nameof(ExportCmdLet.Var), new[] { "x=1", "y=2" });
+                    c.Parameters.Add(nameof(CreateCmdLet.Database), "connection string");
+                    c.Parameters.Add(nameof(CreateCmdLet.From), new[] { "file 1", "file 2" });
+                    c.Parameters.Add(nameof(CreateCmdLet.Configuration), "app.config");
+                    c.Parameters.Add(nameof(CreateCmdLet.Var), new[] { "x=1", "y=2" });
+                    c.Parameters.Add(nameof(CreateCmdLet.WhatIf), true);
                 });
 
             commandLines.Length.ShouldBe(1);
@@ -30,6 +31,7 @@ namespace SqlDatabase.PowerShell
             commandLine.Connection.ShouldBe("connection string");
             commandLine.Scripts.ShouldBe(new[] { "file 1", "file 2" });
             commandLine.ConfigurationFile.ShouldBe("app.config");
+            commandLine.WhatIf.ShouldBeTrue();
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
             commandLine.Variables["x"].ShouldBe("1");
@@ -43,7 +45,7 @@ namespace SqlDatabase.PowerShell
         {
             var commandLines = InvokeCommandPipeLine(
                 commandName,
-                c => c.Parameters.Add(nameof(UpgradeCmdLet.Database), "connection string"),
+                c => c.Parameters.Add(nameof(CreateCmdLet.Database), "connection string"),
                 "file 1",
                 "file 2");
 

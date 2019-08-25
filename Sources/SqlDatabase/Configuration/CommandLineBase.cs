@@ -42,14 +42,15 @@ namespace SqlDatabase.Configuration
 
         public abstract ICommand CreateCommand(ILogger logger);
 
-        internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration, TransactionMode transaction)
+        internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration, TransactionMode transaction, bool whatIf)
         {
             var database = new Database
             {
                 ConnectionString = Connection.ToString(),
                 Log = logger,
                 Configuration = configuration.SqlDatabase,
-                Transaction = transaction
+                Transaction = transaction,
+                WhatIf = whatIf
             };
 
             var configurationVariables = configuration.SqlDatabase.Variables;
@@ -86,6 +87,24 @@ namespace SqlDatabase.Configuration
 
         protected internal virtual void Validate()
         {
+        }
+
+        protected static bool TryParseWhatIf(Arg arg, out bool whatIf)
+        {
+            if (Arg.WhatIf.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                whatIf = string.IsNullOrEmpty(arg.Value) || bool.Parse(arg.Value);
+                return true;
+            }
+
+            if (!arg.IsPair && Arg.WhatIf.Equals(arg.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                whatIf = true;
+                return true;
+            }
+
+            whatIf = false;
+            return false;
         }
 
         protected virtual bool ParseArg(Arg arg)

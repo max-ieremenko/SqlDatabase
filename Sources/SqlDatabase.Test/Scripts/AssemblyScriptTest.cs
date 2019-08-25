@@ -98,6 +98,14 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
+        public void ExecuteWhatIf()
+        {
+            var domain = new Mock<ISubDomain>(MockBehavior.Strict);
+
+            _sut.Execute(domain.Object, null, _variables);
+        }
+
+        [Test]
         public void GetDependencies()
         {
             _sut.ReadDescriptionContent = () => Encoding.Default.GetBytes(@"

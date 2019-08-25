@@ -15,6 +15,10 @@ namespace SqlDatabase.Scripts
 
         public IModuleVersionResolver VersionResolver { get; set; }
 
+        public ILogger Log { get; set; }
+
+        public bool WhatIf { get; set; }
+
         public IList<ScriptStep> BuildSequence()
         {
             var scripts = new UpgradeScriptCollection();
@@ -44,6 +48,11 @@ namespace SqlDatabase.Scripts
             }
 
             scripts.LoadDependencies();
+
+            if (WhatIf)
+            {
+                scripts.ShowWithDependencies(Log);
+            }
 
             foreach (var moduleName in scripts.ModuleNames)
             {

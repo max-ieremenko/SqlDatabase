@@ -10,18 +10,22 @@ namespace SqlDatabase.Configuration
     {
         public TransactionMode Transaction { get; set; }
 
+        public bool WhatIf { get; set; }
+
         public override ICommand CreateCommand(ILogger logger)
         {
             var configuration = new ConfigurationManager();
             configuration.LoadFrom(ConfigurationFile);
 
-            var database = CreateDatabase(logger, configuration, Transaction);
+            var database = CreateDatabase(logger, configuration, Transaction, WhatIf);
 
             var sequence = new UpgradeScriptSequence
             {
                 ScriptFactory = new ScriptFactory { Configuration = configuration.SqlDatabase },
                 VersionResolver = new ModuleVersionResolver { Database = database, Log = logger },
-                Sources = Scripts.ToArray()
+                Sources = Scripts.ToArray(),
+                Log = logger,
+                WhatIf = WhatIf
             };
 
             return new DatabaseUpgradeCommand
@@ -37,6 +41,12 @@ namespace SqlDatabase.Configuration
             if (Arg.Transaction.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
                 SetTransaction(arg.Value);
+                return true;
+            }
+
+            if (TryParseWhatIf(arg, out var value))
+            {
+                WhatIf = value;
                 return true;
             }
 

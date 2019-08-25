@@ -17,12 +17,13 @@ namespace SqlDatabase.PowerShell
                 commandName,
                 c =>
                 {
-                    c.Parameters.Add(nameof(UpgradeCmdLet.Database), "connection string");
-                    c.Parameters.Add(nameof(UpgradeCmdLet.From), new[] { "file 1", "file 2" });
-                    c.Parameters.Add(nameof(ExportCmdLet.FromSql), new[] { "sql text 1", "sql text 2" });
-                    c.Parameters.Add(nameof(UpgradeCmdLet.Transaction), TransactionMode.PerStep);
-                    c.Parameters.Add(nameof(UpgradeCmdLet.Configuration), "app.config");
-                    c.Parameters.Add(nameof(UpgradeCmdLet.Var), new[] { "x=1", "y=2" });
+                    c.Parameters.Add(nameof(ExecuteCmdLet.Database), "connection string");
+                    c.Parameters.Add(nameof(ExecuteCmdLet.From), new[] { "file 1", "file 2" });
+                    c.Parameters.Add(nameof(ExecuteCmdLet.FromSql), new[] { "sql text 1", "sql text 2" });
+                    c.Parameters.Add(nameof(ExecuteCmdLet.Transaction), TransactionMode.PerStep);
+                    c.Parameters.Add(nameof(ExecuteCmdLet.Configuration), "app.config");
+                    c.Parameters.Add(nameof(ExecuteCmdLet.Var), new[] { "x=1", "y=2" });
+                    c.Parameters.Add(nameof(ExecuteCmdLet.WhatIf), true);
                 });
 
             commandLines.Length.ShouldBe(1);
@@ -34,6 +35,7 @@ namespace SqlDatabase.PowerShell
             commandLine.InLineScript.ShouldBe(new[] { "sql text 1", "sql text 2" });
             commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
             commandLine.ConfigurationFile.ShouldBe("app.config");
+            commandLine.WhatIf.ShouldBeTrue();
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
             commandLine.Variables["x"].ShouldBe("1");
@@ -47,7 +49,7 @@ namespace SqlDatabase.PowerShell
         {
             var commandLines = InvokeCommandPipeLine(
                 commandName,
-                c => c.Parameters.Add(nameof(UpgradeCmdLet.Database), "connection string"),
+                c => c.Parameters.Add(nameof(ExecuteCmdLet.Database), "connection string"),
                 "file 1",
                 "file 2");
 

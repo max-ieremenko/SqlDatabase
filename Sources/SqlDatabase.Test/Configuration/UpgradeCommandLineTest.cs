@@ -38,7 +38,8 @@ namespace SqlDatabase.Configuration
                 new Arg("varX", "1 2 3"),
                 new Arg("varY", "value"),
                 new Arg("configuration", "app.config"),
-                new Arg("transaction", "perStep")));
+                new Arg("transaction", "perStep"),
+                new Arg("whatIf")));
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
 
@@ -53,11 +54,14 @@ namespace SqlDatabase.Configuration
             _sut.ConfigurationFile.ShouldBe("app.config");
 
             _sut.Transaction.ShouldBe(TransactionMode.PerStep);
+
+            _sut.WhatIf.ShouldBeTrue();
         }
 
         [Test]
         public void CreateCommand()
         {
+            _sut.WhatIf = true;
             _sut.Connection = new SqlConnectionStringBuilder();
 
             var actual = _sut
@@ -65,8 +69,11 @@ namespace SqlDatabase.Configuration
                 .ShouldBeOfType<DatabaseUpgradeCommand>();
 
             actual.Log.ShouldBe(_log.Object);
-            actual.Database.ShouldBeOfType<Database>();
-            actual.ScriptSequence.ShouldBeOfType<UpgradeScriptSequence>();
+            var database = actual.Database.ShouldBeOfType<Database>();
+            database.WhatIf.ShouldBeTrue();
+
+            var sequence = actual.ScriptSequence.ShouldBeOfType<UpgradeScriptSequence>();
+            sequence.WhatIf.ShouldBeTrue();
         }
     }
 }

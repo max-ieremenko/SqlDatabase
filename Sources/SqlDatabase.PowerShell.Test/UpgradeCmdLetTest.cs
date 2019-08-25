@@ -22,6 +22,7 @@ namespace SqlDatabase.PowerShell
                     c.Parameters.Add(nameof(UpgradeCmdLet.Transaction), TransactionMode.PerStep);
                     c.Parameters.Add(nameof(UpgradeCmdLet.Configuration), "app.config");
                     c.Parameters.Add(nameof(UpgradeCmdLet.Var), new[] { "x=1", "y=2" });
+                    c.Parameters.Add(nameof(UpgradeCmdLet.WhatIf), true);
                 });
 
             commandLines.Length.ShouldBe(1);
@@ -32,6 +33,7 @@ namespace SqlDatabase.PowerShell
             commandLine.Scripts.ShouldBe(new[] { "file 1", "file 2" });
             commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
             commandLine.ConfigurationFile.ShouldBe("app.config");
+            commandLine.WhatIf.ShouldBeTrue();
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
             commandLine.Variables["x"].ShouldBe("1");

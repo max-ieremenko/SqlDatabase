@@ -20,6 +20,8 @@ Upgrade an existing database
   -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
+  -whatIf: shows what would happen if the command runs. The command is not run.
+
 exit codes:
   0 - OK
   1 - invalid command line
@@ -27,3 +29,6 @@ exit codes:
 
 example: upgrade "MyDatabase" on "server", migration steps from "C:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
 > SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2
+
+example: use previous example with -whatIf options to show steps without execution
+> SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2 -whatIf

@@ -19,6 +19,8 @@ Create a database
   -configuration: a path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
+  -whatIf: shows what would happen if the command runs. The command is not run.
+
 exit codes:
   0 - OK
   1 - invalid command line
@@ -27,3 +29,6 @@ exit codes:
 example:
 create new "NewDatabase" on "server" based on scripts from "C:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
 > SqlDatabase.exe create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2
+
+example: use previous example with -whatIf options to show steps without execution
+> SqlDatabase.exe create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2 -whatIf

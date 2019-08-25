@@ -9,6 +9,8 @@ namespace SqlDatabase.Configuration
     {
         public TransactionMode Transaction { get; set; }
 
+        public bool WhatIf { get; set; }
+
         public override ICommand CreateCommand(ILogger logger)
         {
             var configuration = new ConfigurationManager();
@@ -23,7 +25,7 @@ namespace SqlDatabase.Configuration
             return new DatabaseExecuteCommand
             {
                 Log = logger,
-                Database = CreateDatabase(logger, configuration, Transaction),
+                Database = CreateDatabase(logger, configuration, Transaction, WhatIf),
                 ScriptSequence = sequence
             };
         }
@@ -39,6 +41,12 @@ namespace SqlDatabase.Configuration
             if (Arg.InLineScript.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
                 SetInLineScript(arg.Value);
+                return true;
+            }
+
+            if (TryParseWhatIf(arg, out var value))
+            {
+                WhatIf = value;
                 return true;
             }
 
