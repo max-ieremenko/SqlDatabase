@@ -4,6 +4,7 @@ Straight forward upgrade
 Step file name <a name="file-name"></a>
 ===
 A file name must be in the format "[version from]\_[version to].[extension]", for example
+
 |FileVersion from|Version to|Extension|
 |:--|:----------|:----------|:----------|
 |1.0_2.0.sql|1.0|2.0|.sql|

@@ -17,6 +17,7 @@ Table of Contents
 Step file name <a name="file-name"></a>
 ===
 A file name must be in the format "[module name]\_[version from]\_[version to].[extension]", for example
+
 |File|Module name|Version from|Version to|Extension|
 |:--|:----------|:----------|:----------|:----------|
 |moduleA_1.0_2.0.sql|moduleA|1.0|2.0|.sql|
