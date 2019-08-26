@@ -25,7 +25,7 @@ CLI
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.|
 |-fromSql|an sql script text. Repeat -fromSql to setup several scripts.|
-|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
+|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 |-whatIf|shows what would happen if the command runs. The command is not run|
 

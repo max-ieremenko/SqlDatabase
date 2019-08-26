@@ -74,7 +74,7 @@ PS> Execute-SqlDatabase `
       -InformationAction Continue
 ```
 
- See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder).
+ See more details [here](Examples/ExecuteScriptsFolder).
 
 [Back to ToC](#table-of-contents)
 
@@ -96,7 +96,7 @@ PS> Export-SqlDatabase `
       -InformationAction Continue
 ```
 
- See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData).
+ See more details [here](Examples/ExportData).
 
 [Back to ToC](#table-of-contents)
 
@@ -119,7 +119,7 @@ PS> Create-SqlDatabase `
       -InformationAction Continue
 ```
 
- See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder).
+ See more details [here](Examples/CreateDatabaseFolder).
 
 [Back to ToC](#table-of-contents)
 
@@ -142,7 +142,7 @@ PS> Upgrade-SqlDatabase `
       -InformationAction Continue
 ```
 
- See more details [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
+ See more details [here](Examples/MigrationStepsFolder).
 
 [Back to ToC](#table-of-contents)
 
@@ -217,13 +217,14 @@ The variable value is resolving in the following order:
 
 1. check command line
 2. check environment variable (Environment.GetEnvironmentVariable())
-3. check [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
+3. check [configuration file](Examples/ConfigurationFile)
 
 ### Predefined variables
 
 - *DatabaseName* - the target database name (-database=...Initial Catalog=MyDatabase...)
-- *CurrentVersion* - the database version before execution of a [migration step](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
-- *TargetVersion* - the database version after execution of a [migration step](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
+- *CurrentVersion* - the database/module version before execution of a [migration step](Examples/MigrationStepsFolder)
+- *TargetVersion* - the database/module version after execution of a [migration step](Examples/MigrationStepsFolder)
+- *ModuleName* - the module name of current [migration step](Examples/MigrationStepsFolder), empty string in case of straight forward upgrade
 
 [Back to ToC](#table-of-contents)
 
@@ -241,18 +242,18 @@ Parameters *-from* and *-configuration* in the command line interpret .zip files
 Examples
 --------
 
-* [execute script(s)](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExecuteScriptsFolder)
-* [export data](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ExportData)
-* [create a database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CreateDatabaseFolder)
-* [upgrade an existing database](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder)
-* [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
-* [assembly script](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
+* [execute script(s)](Examples/ExecuteScriptsFolder)
+* [export data](Examples/ExportData)
+* [create a database](Examples/CreateDatabaseFolder)
+* [upgrade an existing database](Examples/MigrationStepsFolder)
+* [configuration file](Examples/ConfigurationFile)
+* [assembly script](Examples/CSharpMirationStep)
 
 [Back to ToC](#table-of-contents)
 
 License
 -------
 
-This tool is distributed under the [MIT](https://github.com/max-ieremenko/SqlDatabase/tree/master/LICENSE) license.
+This tool is distributed under the [MIT](LICENSE) license.
 
 [Back to ToC](#table-of-contents)

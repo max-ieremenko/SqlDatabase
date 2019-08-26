@@ -13,14 +13,14 @@ A file name must be in the format "[version from]\_[version to].[extension]", fo
 
 Select/update a database version <a name="module-version"></a>
 ===
-Scripts for resolving and updating a database version are defined in the [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile).
+Scripts for resolving and updating a database version are defined in the [configuration file](../../ConfigurationFile).
 
 Execution
 ===
 In the current folder are migration steps
-- 1.0_1.1.sql - creates a table "dbo.Person"
-- 1.1_2.0.sql - creates a table "dbo.Book"
-- 2.0_3.0.sql - creates a table "dbo.BookComment"
+- [1.0_1.1.sql](1.0_1.1.sql) - creates a table "dbo.Person"
+- [1.1_2.0.sql](1.1_2.0.sql) - creates a table "dbo.Book"
+- [2.0_3.0.sql](2.0_3.0.sql) - creates a table "dbo.BookComment"
 
 The folder structure does not matter, SqlDatabase analyzes all files and folders recursively.
 
@@ -28,7 +28,7 @@ The folder structure does not matter, SqlDatabase analyzes all files and folders
 1. Load all migartion steps
 2. Resolve the current version of database: 1.0
 4. build migration sequence: 1.0 => 1.1; 1.1 => 2.0; 2.0 => 3.0
-5. Execute each step executed one by one:
+5. Execute each step one by one:
 
 ```sql
 /* 1.0 => 1.1 */

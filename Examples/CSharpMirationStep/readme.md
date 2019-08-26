@@ -11,7 +11,7 @@ The build output is 2.1_2.2.dll with target framework 4.5.2.
 Due to the current dependencies, 2.1_2.2.dll works well on .net core 2.2.
 
 ## Script source
-Method [SqlDatabaseScript.Execute](https://github.com/max-ieremenko/SqlDatabase/blob/master/Examples/CSharpMirationStep/SqlDatabaseScript.cs) implements a logic of script
+Method [SqlDatabaseScript.Execute](SqlDatabaseScript.cs) implements a logic of script
 ```C#
 namespace SqlDatabaseCustomScript
 {
@@ -52,7 +52,7 @@ Use
 ## Runtime .NET desktop
 At runtime the assembly will be loaded into private application domain with
 * ApplicationBase: temporary directory
-* ConfigurationFile: current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
+* ConfigurationFile: current [SqlDatabase.exe.config](../ConfigurationFile)
 * Location of assembly: ApplicationBase, temporary directory
 ```C#
     public class SqlDatabaseScript
@@ -76,7 +76,7 @@ After the migration step is finished or failed
 ## Runtime .NET Core
 At runtime the assembly will be loaded into the current application domain.
 * ApplicationBase: is a directory of SqlDatabase
-* ConfigurationFile: current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)
+* ConfigurationFile: current [SqlDatabase.exe.config](../ConfigurationFile)
 * Script assembly has no location:
 ```C#
     public class SqlDatabaseScript
@@ -108,7 +108,7 @@ Supported signatures of Execute method
 Names *SqlDatabaseScript* and *Execute* are configurable.
 
 ## Configuration
-name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile):
+name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](../ConfigurationFile):
 ```xml
 <configuration>
   <configSections>

@@ -28,7 +28,7 @@ A file name must be in the format "[module name]\_[version from]\_[version to].[
 
 Step dependencies <a name="dependencies"></a>
 ===
-Dependencies are optional. The are are written as a special type of comment in the form "module dependency: [module name] [module version]". Module names are not case-sensitive.
+Dependencies are optional. They are are written as a special type of comment in the form "module dependency: [module name] [module version]". Module names are not case-sensitive.
 
 #### .sql step
 Once GO instruction has been processed, SqlDatabase no longer looks for dependencies. Therefore, all dependencies must be at the very top of a script.
@@ -82,7 +82,7 @@ Step moduleB_1.0_2.0.dll, text file moduleB_1.0_2.0.txt
 
 Select/update a module version <a name="module-version"></a>
 ===
-Scripts for resolving and updating a module version are defined in the [configuration file](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile).
+Scripts for resolving and updating a module version are defined in the [configuration file](../../ConfigurationFile).
 
 Default scripts must be changed in order to support modularity. Here is one possible example
 ```sql
@@ -98,9 +98,9 @@ EXEC sys.sp_updateextendedproperty @name=N'version-{{ModuleName}}', @value=N'{{T
 Execution
 ===
 In the current folder are migration steps for three modules *person*, *book* and *reader*.
-- person_1.0_2.0.sql - creates a table "dbo.Person"
-- book_1.0_2.0.sql - creates a table "dbo.Book", depends on person 2.0
-- reader_1.0_2.0.sql - creates a table "dbo.BookComment", depends on person 2.0 and book 2.0
+- [person_1.0_2.0.sql](person_1.0_2.0.sql) - creates a table "dbo.Person"
+- [book_1.0_2.0.sql](book_1.0_2.0.sql) - creates a table "dbo.Book", depends on person 2.0
+- [reader_1.0_2.0.sql](reader_1.0_2.0.sql) - creates a table "dbo.BookComment", depends on person 2.0 and book 2.0
 
 The folder structure does not matter, SqlDatabase analyzes all files and folders recursively.
 
@@ -109,7 +109,7 @@ The folder structure does not matter, SqlDatabase analyzes all files and folders
 2. Resolve the current version of modules: author 1.0, book 1.0 and reader 1.0
 3. Resolve migration step dependencies
 4. build migration sequence: person 1.0 => 2.0; book 1.0 => 2.0; reader 1.0 => 2.0;
-5. Execute each step executed one by one:
+5. Execute each step one by one:
 
 ```sql
 /* person 1.0 => 2.0 */
@@ -130,6 +130,6 @@ EXEC sys.sp_updateextendedproperty @name=N'version-reader', @value=N'2.0'
 
 -whatIf option <a name="whatIf"></a>
 ===
-Use SqlDatabase -whatIf to list all steps with resolved dependencies and test upgrade sequence.
+Use SqlDatabase -whatIf to list all steps with resolved dependencies and to test upgrade sequence.
 
 [Back to ToC](#table-of-contents)

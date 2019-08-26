@@ -1,7 +1,7 @@
 Configuration file
 ==================
 
-By default the current configuration file is "SqlDatabase.exe.config". It can be changed in a CLI
+By default the current configuration file is [SqlDatabase.exe.config](SqlDatabase.exe.config). It can be changed in a CLI
 ```bash
 $ SqlDatabase ... -configuration=path\to\sql-database.config
 ```
@@ -41,14 +41,14 @@ $ SqlDatabase ... -configuration=path\to\sql-database.config
 ```
 
 ## getCurrentVersion
-An sql script to determine the current version of database, see [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
+An sql script to determine the current version of database, see [database upgrade](../MigrationStepsFolder).
 Default value:
 ```sql
 SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)
 ```
 
 ## setCurrentVersion
-An sql script to update the current version of database, see [database upgrade](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/MigrationStepsFolder).
+An sql script to update the current version of database, see [database upgrade](../MigrationStepsFolder).
 Default value:
 ```sql
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'
@@ -71,7 +71,7 @@ GO
 ```
 
 ## assemblyScript
-A configuration of [.NET Assembly scripts](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep).
+A configuration of [.NET Assembly scripts](../CSharpMirationStep).
 
 * className - a script class name, default value is *SqlDatabaseScript*
 * methodName - a method, entry point of *SqlDatabaseScript*

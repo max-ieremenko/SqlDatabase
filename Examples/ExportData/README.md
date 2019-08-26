@@ -58,7 +58,7 @@ CLI
 |-fromSql|an sql script to select export data. Repeat -fromSql to setup several scripts.|
 |-toTable|setup "INSERT INTO" table name. Default is dbo.SqlDatabaseExport.|
 |-toFile|write sql scripts into a file. By default write into standard output (console/information stream).|
-|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/ConfigurationFile)|
+|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 
 #### -from
