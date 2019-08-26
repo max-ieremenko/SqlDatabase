@@ -150,7 +150,7 @@ Scripts
 -------
 
 - *.sql* a text file with Sql Server scripts
-- *.dll* or *.exe* an .NET assembly with a script implementation, details are [here](https://github.com/max-ieremenko/SqlDatabase/tree/master/Examples/CSharpMirationStep)
+- *.dll* or *.exe* an .NET assembly with a script implementation, details are [here](Examples/CSharpMirationStep)
 
 [Back to ToC](#table-of-contents)
 
