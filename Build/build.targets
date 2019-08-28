@@ -36,7 +36,7 @@
               PropertyName="PackageVersion" />
     </TrimVersion>
 
-    <Warning Text="PackageVersion: $(PackageVersion)" />
+    <Message Text="PackageVersion: $(PackageVersion)" />
 
     <ReplaceTextInFile Filename="$(BuildOut452)\SqlDatabase.psd1"
                        MatchText="{{ModuleVersion}}"
