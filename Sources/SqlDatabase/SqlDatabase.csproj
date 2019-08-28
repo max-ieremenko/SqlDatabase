@@ -32,7 +32,6 @@
     <RepositoryUrl>https://github.com/max-ieremenko/SqlDatabase</RepositoryUrl>
     <PackageProjectUrl>https://github.com/max-ieremenko/SqlDatabase</PackageProjectUrl>
     <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE</PackageLicenseUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>(C) 2018-2019 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
@@ -49,6 +48,7 @@
 
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+	<None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
   </ItemGroup>
 
   <ItemGroup>

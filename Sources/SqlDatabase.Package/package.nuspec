@@ -5,7 +5,6 @@
     <version>1.0.0</version>
     <authors>Max Ieremenko</authors>
     <owners>Max Ieremenko</owners>
-    <licenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE</licenseUrl>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
     <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
@@ -20,6 +19,9 @@
   <files>
     <file src="tools\**\*"
           target="tools/"/>
+
+    <file src="..\..\LICENSE.md"
+          target="LICENSE.md"/>
 
     <file src="$bin$\SqlDatabase.exe"
           target="tools" />
