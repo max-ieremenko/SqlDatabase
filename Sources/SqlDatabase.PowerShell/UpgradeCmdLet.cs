@@ -25,7 +25,7 @@ namespace SqlDatabase.PowerShell
         public string Configuration { get; set; }
 
         [Parameter(Position = 5, HelpMessage = "Shows what would happen if the command runs. The command is not run.")]
-        public bool WhatIf { get; set; }
+        public SwitchParameter WhatIf { get; set; }
 
         internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
         {

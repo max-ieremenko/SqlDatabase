@@ -22,7 +22,7 @@ namespace SqlDatabase.PowerShell
                     c.Parameters.Add(nameof(UpgradeCmdLet.Transaction), TransactionMode.PerStep);
                     c.Parameters.Add(nameof(UpgradeCmdLet.Configuration), "app.config");
                     c.Parameters.Add(nameof(UpgradeCmdLet.Var), new[] { "x=1", "y=2" });
-                    c.Parameters.Add(nameof(UpgradeCmdLet.WhatIf), true);
+                    c.Parameters.Add(nameof(UpgradeCmdLet.WhatIf));
                 });
 
             commandLines.Length.ShouldBe(1);

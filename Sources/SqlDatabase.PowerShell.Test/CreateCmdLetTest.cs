@@ -21,7 +21,7 @@ namespace SqlDatabase.PowerShell
                     c.Parameters.Add(nameof(CreateCmdLet.From), new[] { "file 1", "file 2" });
                     c.Parameters.Add(nameof(CreateCmdLet.Configuration), "app.config");
                     c.Parameters.Add(nameof(CreateCmdLet.Var), new[] { "x=1", "y=2" });
-                    c.Parameters.Add(nameof(CreateCmdLet.WhatIf), true);
+                    c.Parameters.Add(nameof(CreateCmdLet.WhatIf));
                 });
 
             commandLines.Length.ShouldBe(1);
