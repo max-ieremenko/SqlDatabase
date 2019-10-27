@@ -14,7 +14,7 @@
 	process
 	{
 		$connectionString = Get-ConnectionStringFomProjectConfiguration $ConfigurationFrom
-		$sqlDatabaseConfig = Get-ProjectFilePath "SolutionScripts" "Internal\SqlDatabase.config"
+		$sqlDatabaseConfig = Get-ProjectFilePath "SolutionScripts" "SqlDatabase.config"
 
 		$connectionStringBuilder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder -ArgumentList $connectionString
 		if ($DatabaseName)
