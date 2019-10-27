@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net452</TargetFrameworks>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors />
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyName>Demo.SolutionScripts</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SolutionScripts" Version="1.2.0" />
+    <PackageReference Include="SqlDatabase" Version="2.0.0" />
+  </ItemGroup>
+
+</Project>

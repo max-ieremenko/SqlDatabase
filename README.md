@@ -20,6 +20,7 @@ Table of Contents
 - [Upgrade an existing database](#upgrade-database)
 - [Scripts](#scripts)
 - [Variables](#variables)
+- [VS Package manager console](#console)
 - [*.zip files](#zip-files)
 - [Examples](#examples)
 - [License](#license)
@@ -228,6 +229,13 @@ The variable value is resolving in the following order:
 
 [Back to ToC](#table-of-contents)
 
+VS Package manager console <a name="console"></a>
+------------------------------------------------
+
+To integrate SqlDatabase into the Visual studio package manager console please check this [example](Examples/PackageManagerConsole).
+
+[Back to ToC](#table-of-contents)
+
 *.zip files <a name="zip-files"></a>
 ------------------------------------
 
@@ -246,6 +254,7 @@ Examples
 * [export data](Examples/ExportData)
 * [create a database](Examples/CreateDatabaseFolder)
 * [upgrade an existing database](Examples/MigrationStepsFolder)
+* [how to use SqlDatabase in the VS Package manager console](Examples/PackageManagerConsole)
 * [configuration file](Examples/ConfigurationFile)
 * [assembly script](Examples/CSharpMirationStep)
 
