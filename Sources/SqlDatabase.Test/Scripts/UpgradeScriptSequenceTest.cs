@@ -16,14 +16,14 @@ namespace SqlDatabase.Scripts
     public class UpgradeScriptSequenceTest
     {
         private UpgradeScriptSequence _sut;
-        private Mock<IFolder> _root;
+        private SourceFolder _root;
         private Mock<IModuleVersionResolver> _versionResolver;
         private Mock<IScriptFactory> _scriptFactory;
 
         [SetUp]
         public void BeforeEachTest()
         {
-            _root = new Mock<IFolder>(MockBehavior.Strict);
+            _root = new SourceFolder("Test");
 
             _scriptFactory = new Mock<IScriptFactory>(MockBehavior.Strict);
             _scriptFactory
@@ -34,7 +34,7 @@ namespace SqlDatabase.Scripts
 
             _sut = new UpgradeScriptSequence
             {
-                Sources = { _root.Object },
+                Sources = { _root },
                 ScriptFactory = _scriptFactory.Object,
                 VersionResolver = _versionResolver.Object
             };
@@ -44,26 +44,9 @@ namespace SqlDatabase.Scripts
         [TestCaseSource(nameof(GetBuildSequence))]
         public void BuildSequence(BuildSequenceCase testCase)
         {
-            var folderByName = new Dictionary<string, List<IFile>>(StringComparer.OrdinalIgnoreCase);
-            var files = new List<IFile>();
-
             foreach (var sourceFile in testCase.Files)
             {
-                var folderName = Path.GetDirectoryName(sourceFile.Name);
-                var folder = files;
-
-                if (!string.IsNullOrEmpty(folderName))
-                {
-                    if (!folderByName.ContainsKey(folderName))
-                    {
-                        folderByName.Add(folderName, new List<IFile>());
-                    }
-
-                    folder = folderByName[folderName];
-                }
-
-                var file = FileFactory.File(Path.GetFileName(sourceFile.Name));
-                folder.Add(file);
+                var file = AddFile(_root, sourceFile.Name);
 
                 var dependencies = new ScriptDependency[0];
                 if (sourceFile.Dependencies != null)
@@ -80,15 +63,14 @@ namespace SqlDatabase.Scripts
                     .Returns(script.Object);
             }
 
-            _root.Setup(r => r.GetFolders()).Returns(folderByName.Select(i => FileFactory.Folder(i.Key, i.Value.ToArray())));
-            _root.Setup(r => r.GetFiles()).Returns(files);
-
             foreach (var version in testCase.Version)
             {
                 _versionResolver
                     .Setup(r => r.GetCurrentVersion(version.Module ?? string.Empty))
                     .Returns(new Version(version.Version));
             }
+
+            _sut.FolderAsModuleName = testCase.FolderAsModuleName;
 
             if (testCase.Exception == null)
             {
@@ -136,9 +118,22 @@ namespace SqlDatabase.Scripts
             }
         }
 
+        private static IFile AddFile(SourceFolder root, string fileName)
+        {
+            var path = fileName.Split('/');
+            for (var i = 0; i < path.Length - 1; i++)
+            {
+                root = root.GetOrCreateSubFolder(path[i]);
+            }
+
+            return root.AddFile(path.Last());
+        }
+
         public sealed class BuildSequenceCase
         {
             public string Name { get; set; }
+
+            public bool FolderAsModuleName { get; set; }
 
             public ModuleVersion[] Version { get; set; }
 
@@ -161,6 +156,48 @@ namespace SqlDatabase.Scripts
             public string Name { get; set; }
 
             public ModuleVersion[] Dependencies { get; set; }
+        }
+
+        private sealed class SourceFolder : IFolder
+        {
+            private readonly IDictionary<string, SourceFolder> _subFolderByName;
+            private readonly IDictionary<string, IFile> _fileByName;
+
+            public SourceFolder(string name)
+            {
+                Name = name;
+
+                _subFolderByName = new Dictionary<string, SourceFolder>(StringComparer.OrdinalIgnoreCase);
+                _fileByName = new Dictionary<string, IFile>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            public string Name { get; }
+
+            public IEnumerable<IFolder> GetFolders() => _subFolderByName.Values;
+
+            public IEnumerable<IFile> GetFiles() => _fileByName.Values;
+
+            public SourceFolder GetOrCreateSubFolder(string name)
+            {
+                if (!_subFolderByName.TryGetValue(name, out var result))
+                {
+                    result = new SourceFolder(name);
+                    _subFolderByName.Add(name, result);
+                }
+
+                return result;
+            }
+
+            public IFile AddFile(string name)
+            {
+                if (!_fileByName.TryGetValue(name, out var result))
+                {
+                    result = FileFactory.File(name);
+                    _fileByName.Add(name, result);
+                }
+
+                return result;
+            }
         }
     }
 }

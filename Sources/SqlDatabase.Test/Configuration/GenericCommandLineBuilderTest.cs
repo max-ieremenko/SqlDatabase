@@ -27,6 +27,7 @@ namespace SqlDatabase.Configuration
                 .SetTransaction(TransactionMode.PerStep)
                 .SetVariable("var1", "value 1")
                 .SetWhatIf(true)
+                .SetFolderAsModuleName(true)
                 .SetPreFormatOutputLogs(true)
                 .BuildArray(true);
 
@@ -61,6 +62,9 @@ namespace SqlDatabase.Configuration
 
             actual.Args[7].Key.ShouldBe("whatIf");
             actual.Args[7].Value.ShouldBe("True");
+
+            actual.Args[8].Key.ShouldBe("folderAsModuleName");
+            actual.Args[8].Value.ShouldBe("True");
         }
 
         [Test]

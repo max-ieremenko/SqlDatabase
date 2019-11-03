@@ -11,35 +11,20 @@ namespace SqlDatabase.Scripts.UpgradeInternal
         private readonly IDictionary<string, IList<ScriptStep>> _stepsByModule = new Dictionary<string, IList<ScriptStep>>(StringComparer.OrdinalIgnoreCase);
         private readonly IDictionary<IScript, IList<ScriptDependency>> _dependencyByStep = new Dictionary<IScript, IList<ScriptDependency>>();
 
+        public UpgradeScriptCollection(bool folderAsModuleName)
+        {
+            FolderAsModuleName = folderAsModuleName;
+        }
+
+        public bool FolderAsModuleName { get; }
+
         public ICollection<string> ModuleNames => _stepsByModule.Keys;
 
         public IList<ScriptStep> GetSteps(string moduleName) => _stepsByModule[moduleName];
 
         public void LoadFrom(IEnumerable<IFileSystemInfo> sources, IScriptFactory scriptFactory)
         {
-            foreach (var source in sources)
-            {
-                if (source is IFolder folder)
-                {
-                    var children = folder.GetFolders().Cast<IFileSystemInfo>().Concat(folder.GetFiles());
-                    LoadFrom(children, scriptFactory);
-                }
-                else
-                {
-                    var file = (IFile)source;
-                    if (scriptFactory.IsSupported(file.Name) && TryParseFileName(file.Name, out var moduleName, out var from, out var to))
-                    {
-                        if (!_stepsByModule.TryGetValue(moduleName, out var steps))
-                        {
-                            steps = new List<ScriptStep>();
-                            _stepsByModule.Add(moduleName, steps);
-                        }
-
-                        var script = scriptFactory.FromFile(file);
-                        steps.Add(new ScriptStep(moduleName, from, to, script));
-                    }
-                }
-            }
+            LoadFrom(sources, scriptFactory, 0, null);
         }
 
         public void BuildModuleSequence(string moduleName, Version moduleVersion)
@@ -278,6 +263,53 @@ namespace SqlDatabase.Scripts.UpgradeInternal
             }
 
             return null;
+        }
+
+        private void LoadFrom(IEnumerable<IFileSystemInfo> sources, IScriptFactory scriptFactory, int depth, string rootFolderName)
+        {
+            foreach (var source in sources)
+            {
+                if (source is IFolder folder)
+                {
+                    if (FolderAsModuleName && depth == 1)
+                    {
+                        rootFolderName = folder.Name;
+                    }
+
+                    var children = folder.GetFolders().Cast<IFileSystemInfo>().Concat(folder.GetFiles());
+                    LoadFrom(children, scriptFactory, depth + 1, rootFolderName);
+                }
+                else
+                {
+                    var file = (IFile)source;
+                    if (scriptFactory.IsSupported(file.Name) && TryParseFileName(file.Name, out var moduleName, out var from, out var to))
+                    {
+                        if (FolderAsModuleName && string.IsNullOrEmpty(rootFolderName))
+                        {
+                            throw new InvalidOperationException("File [{0}] is not expected in the root folder.".FormatWith(file.Name));
+                        }
+
+                        if (FolderAsModuleName && !string.IsNullOrEmpty(moduleName) && !moduleName.Equals(rootFolderName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new InvalidOperationException("File [{0}] with module name [{1}] is not expected in the folder [{2}].".FormatWith(file.Name, moduleName, rootFolderName));
+                        }
+
+                        if (FolderAsModuleName)
+                        {
+                            moduleName = rootFolderName;
+                        }
+
+                        if (!_stepsByModule.TryGetValue(moduleName, out var steps))
+                        {
+                            steps = new List<ScriptStep>();
+                            _stepsByModule.Add(moduleName, steps);
+                        }
+
+                        var script = scriptFactory.FromFile(file);
+                        steps.Add(new ScriptStep(moduleName, from, to, script));
+                    }
+                }
+            }
         }
 
         private IList<ScriptDependency> GetDependencies(ScriptStep step) => _dependencyByStep[step.Script];

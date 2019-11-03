@@ -1,0 +1,101 @@
+[
+  {
+    "name": "up-to-date",
+    "folderAsModuleName": true,
+    "version": [
+      {
+        "module": "a",
+        "version": "2.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a/1.0_2.0.sql"
+      },
+
+      {
+        "name": "b/1.0_2.0.sql"
+      }
+    ],
+    "sequence": []
+  },
+
+  {
+    "name": "update b only",
+    "folderAsModuleName": true,
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "b/2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "1.0"
+          }
+        ]
+      }
+    ],
+    "sequence": [ "2.0_3.0.sql" ]
+  },
+
+  {
+    "name": "one by one",
+    "folderAsModuleName": true,
+    "version": [
+      {
+        "module": "a",
+        "version": "1.0"
+      },
+      {
+        "module": "b",
+        "version": "2.0"
+      }
+    ],
+    "files": [
+      {
+        "name": "a/1.0_2.0.sql"
+      },
+      {
+        "name": "a/sub-folder/2.0_3.0.sql"
+      },
+
+      {
+        "name": "b/sub-folder/2.0_3.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "2.0"
+          }
+        ]
+      },
+      {
+        "name": "b/3.0_4.0.sql",
+        "dependencies": [
+          {
+            "module": "a",
+            "version": "3.0"
+          }
+        ]
+      }
+    ],
+    "sequence": [
+      "1.0_2.0.sql",
+      "2.0_3.0.sql",
+      "2.0_3.0.sql",
+      "3.0_4.0.sql"
+    ]
+  }
+]

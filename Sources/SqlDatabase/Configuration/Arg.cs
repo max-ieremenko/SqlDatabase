@@ -12,6 +12,7 @@
         internal const string Configuration = "configuration";
         internal const string Transaction = "transaction";
         internal const string WhatIf = "whatIf";
+        internal const string FolderAsModuleName = "folderAsModuleName";
 
         internal const string ExportToTable = "toTable";
         internal const string ExportToFile = "toFile";

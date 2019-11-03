@@ -39,6 +39,7 @@ namespace SqlDatabase.Configuration
                 new Arg("varY", "value"),
                 new Arg("configuration", "app.config"),
                 new Arg("transaction", "perStep"),
+                new Arg("folderAsModuleName"),
                 new Arg("whatIf")));
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
@@ -56,12 +57,14 @@ namespace SqlDatabase.Configuration
             _sut.Transaction.ShouldBe(TransactionMode.PerStep);
 
             _sut.WhatIf.ShouldBeTrue();
+            _sut.FolderAsModuleName.ShouldBeTrue();
         }
 
         [Test]
         public void CreateCommand()
         {
             _sut.WhatIf = true;
+            _sut.FolderAsModuleName = true;
             _sut.Connection = new SqlConnectionStringBuilder();
 
             var actual = _sut
@@ -74,6 +77,7 @@ namespace SqlDatabase.Configuration
 
             var sequence = actual.ScriptSequence.ShouldBeOfType<UpgradeScriptSequence>();
             sequence.WhatIf.ShouldBeTrue();
+            sequence.FolderAsModuleName.ShouldBeTrue();
         }
     }
 }

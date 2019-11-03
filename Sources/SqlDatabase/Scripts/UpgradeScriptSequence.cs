@@ -17,11 +17,13 @@ namespace SqlDatabase.Scripts
 
         public ILogger Log { get; set; }
 
+        public bool FolderAsModuleName { get; set; }
+
         public bool WhatIf { get; set; }
 
         public IList<ScriptStep> BuildSequence()
         {
-            var scripts = new UpgradeScriptCollection();
+            var scripts = new UpgradeScriptCollection(FolderAsModuleName);
             scripts.LoadFrom(Sources, ScriptFactory);
 
             // folder is empty

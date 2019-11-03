@@ -27,6 +27,9 @@ namespace SqlDatabase.PowerShell
         [Parameter(Position = 5, HelpMessage = "Shows what would happen if the command runs. The command is not run.")]
         public SwitchParameter WhatIf { get; set; }
 
+        [Parameter(Position = 6)]
+        public SwitchParameter FolderAsModuleName { get; set; }
+
         internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
         {
             if (From != null && From.Length > 0)
@@ -40,7 +43,8 @@ namespace SqlDatabase.PowerShell
             cmd
                 .SetConfigurationFile(Configuration)
                 .SetTransaction(Transaction)
-                .SetWhatIf(WhatIf);
+                .SetWhatIf(WhatIf)
+                .SetFolderAsModuleName(FolderAsModuleName);
         }
     }
 }

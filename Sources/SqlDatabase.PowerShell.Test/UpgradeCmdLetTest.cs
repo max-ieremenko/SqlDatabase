@@ -23,6 +23,7 @@ namespace SqlDatabase.PowerShell
                     c.Parameters.Add(nameof(UpgradeCmdLet.Configuration), "app.config");
                     c.Parameters.Add(nameof(UpgradeCmdLet.Var), new[] { "x=1", "y=2" });
                     c.Parameters.Add(nameof(UpgradeCmdLet.WhatIf));
+                    c.Parameters.Add(nameof(UpgradeCmdLet.FolderAsModuleName));
                 });
 
             commandLines.Length.ShouldBe(1);
@@ -34,6 +35,7 @@ namespace SqlDatabase.PowerShell
             commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
             commandLine.ConfigurationFile.ShouldBe("app.config");
             commandLine.WhatIf.ShouldBeTrue();
+            commandLine.FolderAsModuleName.ShouldBeTrue();
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
             commandLine.Variables["x"].ShouldBe("1");

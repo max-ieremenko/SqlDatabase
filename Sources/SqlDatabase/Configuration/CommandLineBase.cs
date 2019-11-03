@@ -89,23 +89,25 @@ namespace SqlDatabase.Configuration
         {
         }
 
-        protected static bool TryParseWhatIf(Arg arg, out bool whatIf)
+        protected static bool TryParseSwitchParameter(Arg arg, string parameterName, out bool value)
         {
-            if (Arg.WhatIf.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            if (parameterName.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
-                whatIf = string.IsNullOrEmpty(arg.Value) || bool.Parse(arg.Value);
+                value = string.IsNullOrEmpty(arg.Value) || bool.Parse(arg.Value);
                 return true;
             }
 
-            if (!arg.IsPair && Arg.WhatIf.Equals(arg.Value, StringComparison.OrdinalIgnoreCase))
+            if (!arg.IsPair && parameterName.Equals(arg.Value, StringComparison.OrdinalIgnoreCase))
             {
-                whatIf = true;
+                value = true;
                 return true;
             }
 
-            whatIf = false;
+            value = false;
             return false;
         }
+
+        protected static bool TryParseWhatIf(Arg arg, out bool whatIf) => TryParseSwitchParameter(arg, Arg.WhatIf, out whatIf);
 
         protected virtual bool ParseArg(Arg arg)
         {

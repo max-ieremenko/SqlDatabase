@@ -17,6 +17,7 @@
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case03.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case04.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Empty.sql" />
+    <None Remove="Scripts\UpgradeScriptSequenceTest\FolderAsModuleName.json" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
@@ -50,6 +51,7 @@
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Go\CaseStoredProcedure.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Go\Case01.sql" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
+    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\FolderAsModuleName.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
   </ItemGroup>

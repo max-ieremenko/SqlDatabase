@@ -26,5 +26,7 @@ namespace SqlDatabase.Configuration
         public bool PreFormatOutputLogs { get; set; }
 
         public bool WhatIf { get; set; }
+
+        public bool FolderAsModuleName { get; set; }
     }
 }

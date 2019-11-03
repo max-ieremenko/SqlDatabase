@@ -109,6 +109,12 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
+        public GenericCommandLineBuilder SetFolderAsModuleName(bool value)
+        {
+            Line.FolderAsModuleName = value;
+            return this;
+        }
+
         public GenericCommandLine Build()
         {
             return Line;
@@ -167,6 +173,11 @@ namespace SqlDatabase.Configuration
             if (cmd.WhatIf)
             {
                 result.Add(CombineArg(Arg.WhatIf, cmd.WhatIf.ToString(), false));
+            }
+
+            if (cmd.FolderAsModuleName)
+            {
+                result.Add(CombineArg(Arg.FolderAsModuleName, cmd.FolderAsModuleName.ToString(), false));
             }
 
             return result.ToArray();

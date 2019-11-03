@@ -10,6 +10,8 @@ namespace SqlDatabase.Configuration
     {
         public TransactionMode Transaction { get; set; }
 
+        public bool FolderAsModuleName { get; set; }
+
         public bool WhatIf { get; set; }
 
         public override ICommand CreateCommand(ILogger logger)
@@ -25,6 +27,7 @@ namespace SqlDatabase.Configuration
                 VersionResolver = new ModuleVersionResolver { Database = database, Log = logger },
                 Sources = Scripts.ToArray(),
                 Log = logger,
+                FolderAsModuleName = FolderAsModuleName,
                 WhatIf = WhatIf
             };
 
@@ -47,6 +50,12 @@ namespace SqlDatabase.Configuration
             if (TryParseWhatIf(arg, out var value))
             {
                 WhatIf = value;
+                return true;
+            }
+
+            if (TryParseSwitchParameter(arg, Arg.FolderAsModuleName, out value))
+            {
+                FolderAsModuleName = value;
                 return true;
             }
 
