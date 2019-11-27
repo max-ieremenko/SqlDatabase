@@ -7,7 +7,9 @@
     <owners>Max Ieremenko</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
+	<repository type="git" url="https://github.com/max-ieremenko/SqlDatabase" commit="$RepositoryCommit$" />
     <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
+    <icon>icon-32.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A command line and PowerShell tool for SQL Server.</summary>
     <description>SqlDatabase is a tool for SQL Server, allows executing scripts, database migrations and data export.</description>
@@ -22,6 +24,8 @@
 
     <file src="..\..\LICENSE.md"
           target="LICENSE.md"/>
+    <file src="..\..\icon-32.png"
+          target="icon-32.png"/>
 
     <file src="$bin$\SqlDatabase.exe"
           target="tools" />

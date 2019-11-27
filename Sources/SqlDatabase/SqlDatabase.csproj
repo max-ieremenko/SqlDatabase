@@ -12,8 +12,7 @@
     <StartupObject />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
-	<!-- NU5125: The 'licenseUrl' element will be deprecated. Consider using the 'license' element instead -->
-    <NoWarn>1701;1702;NU5125</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -22,7 +21,7 @@
 	     <PackAsTool>true</PackAsTool> is in the build
 	-->
     <ToolCommandName>SqlDatabase</ToolCommandName>
-	<PackageId>SqlDatabase.GlobalTool</PackageId>
+    <PackageId>SqlDatabase.GlobalTool</PackageId>
 
     <Authors>Max Ieremenko</Authors>
     <Company></Company>
@@ -32,6 +31,7 @@
     <RepositoryUrl>https://github.com/max-ieremenko/SqlDatabase</RepositoryUrl>
     <PackageProjectUrl>https://github.com/max-ieremenko/SqlDatabase</PackageProjectUrl>
     <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
+    <PackageIcon>icon-32.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>(C) 2018-2019 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
@@ -48,7 +48,8 @@
 
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-	<None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
   </ItemGroup>
 
   <ItemGroup>

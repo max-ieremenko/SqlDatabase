@@ -13,7 +13,6 @@
     <!-- working directory of msbuild is root\build -->
     <BuildOut>$(MSBuildProjectDirectory)\..\build.out</BuildOut>
     <BuildOut452>$(BuildOut)\net452</BuildOut452>
-    <BuildOutCore>$(BuildOut)\netCore</BuildOutCore>
   </PropertyGroup>
 
   <Target Name="main">
@@ -31,20 +30,29 @@
               ItemName="AssemblyIdentities"/>
     </GetAssemblyIdentity>
 
+    <GetRepositoryCommit>
+      <Output TaskParameter="CommitId"
+              PropertyName="RepositoryCommitId" />
+    </GetRepositoryCommit>
+
     <TrimVersion Value="%(AssemblyIdentities.Version)">
       <Output TaskParameter="Version"
               PropertyName="PackageVersion" />
     </TrimVersion>
 
     <Message Text="PackageVersion: $(PackageVersion)" />
+    <Message Text="RepositoryCommitId: $(RepositoryCommitId)" />
 
     <ReplaceTextInFile Filename="$(BuildOut452)\SqlDatabase.psd1"
                        MatchText="{{ModuleVersion}}"
                        ReplacementText="$(PackageVersion)" />
 
-    <Exec Command="$(nuget) pack ..\Sources\SqlDatabase.Package\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut452) -Version $(PackageVersion) -p bin=$(BuildOut452)" />
+    <Exec Command="$(nuget) pack ..\Sources\SqlDatabase.Package\package.nuspec -NoPackageAnalysis -verbosity detailed -OutputDirectory $(BuildOut) -Version $(PackageVersion) -p RepositoryCommit=$(RepositoryCommitId) -p bin=$(BuildOut452)" />
 
-    <Exec Command="dotnet pack ..\Sources\SqlDatabase\SqlDatabase.csproj -c Release -p:PackAsTool=true -p:TargetFrameworks=netcoreapp2.2 -p:PackageVersion=$(PackageVersion) -o $(BuildOutCore)" />
+    <Exec Command="dotnet pack ..\Sources\SqlDatabase\SqlDatabase.csproj -c Release -p:PackAsTool=true -p:TargetFrameworks=netcoreapp2.2 -p:PackageVersion=$(PackageVersion) -p:RepositoryCommit=$(RepositoryCommitId) -o $(BuildOut)" />
+
+    <ZipDirectory SourceDirectory="$(BuildOut452)"
+                  DestinationFile="$(BuildOut)\SqlDatabase.$(PackageVersion).zip" />
   </Target>
 
   <UsingTask TaskName="TrimVersion"
@@ -102,6 +110,42 @@
             text.Replace(MatchText, ReplacementText);
             File.WriteAllText(Filename, text.ToString(), fileEncoding);
           ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="GetRepositoryCommit"
+             TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <CommitId ParameterType="System.String"
+                Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Runtime.Serialization" />
+      <Reference Include="System.Xml" />
+      <Using Namespace="System" />
+      <Using Namespace="System.Net" />
+      <Using Namespace="System.Runtime.Serialization.Json" />
+      <Using Namespace="System.Xml" />
+      <Code Type="Fragment"
+            Language="cs">
+        <![CDATA[
+            var client = new WebClient();
+            client.Headers.Add("User-Agent", "ThirdPartyLibraries");
+            using (var stream = client.OpenRead("https://api.github.com/repos/max-ieremenko/SqlDatabase/commits/master"))
+            using (var reader = JsonReaderWriterFactory.CreateJsonReader(stream, XmlDictionaryReaderQuotas.Max))
+            {
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1 && "sha".Equals(reader.Name, StringComparison.Ordinal))
+                    {
+                        CommitId = reader.ReadElementContentAsString("sha", string.Empty);
+                        break;
+                    }
+                }
+            }
+        ]]>
       </Code>
     </Task>
   </UsingTask>

@@ -16,6 +16,7 @@
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case02.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case03.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case04.sql" />
+    <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case05.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Empty.sql" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\FolderAsModuleName.json" />
     <None Remove="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
@@ -41,6 +42,7 @@
   
   <ItemGroup>
     <EmbeddedResource Include="IO\Content.zip" />
+    <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case05.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case04.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case03.sql" />
     <EmbeddedResource Include="Scripts\SqlBatchParserTest\Dependencies\Case02.sql" />
