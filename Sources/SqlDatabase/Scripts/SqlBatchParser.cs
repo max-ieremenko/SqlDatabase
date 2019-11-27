@@ -8,7 +8,7 @@ namespace SqlDatabase.Scripts
 {
     internal static class SqlBatchParser
     {
-        private const string ModuleDependencyPattern = "^(-|\\*)+.*module dependency:\\s?(?'name'[\\w\\-]+)\\s+(?'version'[\\.\\w]+)";
+        private const string ModuleDependencyPattern = "^(-|\\*)+.*module dependency:\\s?(?'name'[\\w\\-]+)(\\s+|\\s*-\\s*)(?'version'[\\.\\w]+)";
 
         public static IEnumerable<string> SplitByGo(Stream sql)
         {
