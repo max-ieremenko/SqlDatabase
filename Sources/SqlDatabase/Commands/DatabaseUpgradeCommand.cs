@@ -36,7 +36,14 @@ namespace SqlDatabase.Commands
             foreach (var step in sequence)
             {
                 var timer = Stopwatch.StartNew();
-                Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
+                if (string.IsNullOrEmpty(step.ModuleName))
+                {
+                    Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
+                }
+                else
+                {
+                    Log.Info("execute {0} {1} ...".FormatWith(step.ModuleName, step.Script.DisplayName));
+                }
 
                 using (Log.Indent())
                 {
