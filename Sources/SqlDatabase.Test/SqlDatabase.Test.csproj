@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netcoreapp2.2</TargetFrameworks>
-	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <CodeAnalysisRuleSet>..\StyleCope.ruleset</CodeAnalysisRuleSet>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>SqlDatabase</RootNamespace>
+    <NoWarn>1701;1702;NU1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,11 +61,11 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" Version="1.50.5" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Moq" Version="4.10.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
