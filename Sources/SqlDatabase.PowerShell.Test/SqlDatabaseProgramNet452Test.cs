@@ -9,12 +9,12 @@ using SqlDatabase.Configuration;
 namespace SqlDatabase.PowerShell
 {
     [TestFixture]
-    public class SqlDatabaseProgramTest
+    public class SqlDatabaseProgramNet452Test
     {
         private Mock<ICmdlet> _owner;
         private IList<string> _output;
         private IList<string> _outputErrors;
-        private SqlDatabaseProgram _sut;
+        private SqlDatabaseProgramNet452 _sut;
 
         [SetUp]
         public void BeforeEachTest()
@@ -30,7 +30,7 @@ namespace SqlDatabase.PowerShell
                 .Setup(o => o.WriteErrorLine(It.IsNotNull<string>()))
                 .Callback<string>(_outputErrors.Add);
 
-            _sut = new SqlDatabaseProgram(_owner.Object);
+            _sut = new SqlDatabaseProgramNet452(_owner.Object);
         }
 
         [Test]

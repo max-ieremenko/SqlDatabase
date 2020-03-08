@@ -5,13 +5,13 @@ using SqlDatabase.Configuration;
 
 namespace SqlDatabase.PowerShell
 {
-    internal sealed class SqlDatabaseProgram : ISqlDatabaseProgram
+    internal sealed class SqlDatabaseProgramNet452 : ISqlDatabaseProgram
     {
         private readonly ICmdlet _owner;
         private readonly ILogger _logger;
         private readonly OutputReader _reader;
 
-        public SqlDatabaseProgram(ICmdlet owner)
+        public SqlDatabaseProgramNet452(ICmdlet owner)
         {
             _owner = owner;
             _logger = new CmdLetLogger(owner);
@@ -38,7 +38,14 @@ namespace SqlDatabase.PowerShell
 
         private static Process CreateProcess(GenericCommandLine command)
         {
-            var sqlDatabase = typeof(Program).Assembly.Location;
+            var assemblyLocation = typeof(Program).Assembly.Location;
+
+            var sqlDatabase = Path.Combine(Path.GetDirectoryName(assemblyLocation), "net452", Path.GetFileNameWithoutExtension(assemblyLocation) + ".exe");
+            if (!File.Exists(sqlDatabase))
+            {
+                // debug
+                sqlDatabase = Path.Combine(Path.GetDirectoryName(assemblyLocation), Path.GetFileNameWithoutExtension(assemblyLocation) + ".exe");
+            }
 
             var startInfo = new ProcessStartInfo
             {

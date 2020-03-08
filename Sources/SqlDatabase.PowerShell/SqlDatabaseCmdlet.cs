@@ -1,4 +1,6 @@
-﻿using System.Management.Automation;
+﻿using System;
+using System.Collections;
+using System.Management.Automation;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.PowerShell
@@ -47,7 +49,18 @@ namespace SqlDatabase.PowerShell
 
         private ISqlDatabaseProgram ResolveProgram()
         {
-            return Program ?? new SqlDatabaseProgram(new PowerShellCmdlet(this));
+            if (Program != null)
+            {
+                return Program;
+            }
+
+            var psVersionTable = (IEnumerable)GetVariableValue("PSVersionTable");
+            if (psVersionTable == null)
+            {
+                throw new PlatformNotSupportedException("$PSVersionTable is not defined.");
+            }
+
+            return SqlDatabaseProgramFactory.CreateProgram(psVersionTable, new PowerShellCmdlet(this));
         }
     }
 }
