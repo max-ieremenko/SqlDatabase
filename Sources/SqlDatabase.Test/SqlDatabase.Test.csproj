@@ -2,14 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netcoreapp2.2</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <CodeAnalysisRuleSet>..\StyleCope.ruleset</CodeAnalysisRuleSet>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>SqlDatabase</RootNamespace>
-    <NoWarn>1701;1702;NU1702</NoWarn>
+    <NoWarn>NU1702</NoWarn>
+    <OutputPath>..\bin\Tests</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,10 +24,6 @@
     <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
 
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
@@ -67,7 +58,6 @@
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
