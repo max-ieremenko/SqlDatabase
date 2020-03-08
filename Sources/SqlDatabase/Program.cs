@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using SqlDatabase.Configuration;
 using SqlDatabase.Log;
 
@@ -10,7 +11,11 @@ namespace SqlDatabase
         public static int Main(string[] args)
         {
             var logger = CreateLogger(args);
+            return Run(logger, args);
+        }
 
+        internal static int Run(ILogger logger, string[] args)
+        {
             var factory = ResolveFactory(args, logger);
             if (factory == null)
             {
@@ -18,10 +23,15 @@ namespace SqlDatabase
                 return ExitCode.InvalidCommandLine;
             }
 
-            ICommandLine cmd;
-            if (factory.ShowCommandHelp || (cmd = ResolveCommandLine(factory, logger)) == null)
+            if (factory.ShowCommandHelp)
             {
                 logger.Info(LoadHelpContent("CommandLine." + factory.ActiveCommandName + ".txt"));
+                return ExitCode.InvalidCommandLine;
+            }
+
+            var cmd = ResolveCommandLine(factory, logger);
+            if (cmd == null)
+            {
                 return ExitCode.InvalidCommandLine;
             }
 
@@ -38,8 +48,7 @@ namespace SqlDatabase
             }
             catch (Exception ex)
             {
-                logger.Error(ex.Message);
-                logger.Info(ex.ToString());
+                logger.Error(ex);
                 return false;
             }
         }
@@ -50,9 +59,9 @@ namespace SqlDatabase
             {
                 return factory.Resolve();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                logger.Error("Invalid command line: {0}".FormatWith(e.Message));
+                logger.Error("Invalid command line.", ex);
             }
 
             return null;
@@ -71,9 +80,9 @@ namespace SqlDatabase
                 var factory = new CommandLineFactory { Args = command };
                 return factory.Bind() ? factory : null;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                logger.Error("Invalid command line: {0}".FormatWith(e.Message));
+                logger.Error("Invalid command line.", ex);
             }
 
             return null;
@@ -89,7 +98,20 @@ namespace SqlDatabase
         private static string LoadHelpContent(string fileName)
         {
             var scope = typeof(ICommandLine);
-            using (var stream = scope.Assembly.GetManifestResourceStream(scope, fileName))
+
+            // .net core resource name is case-sensitive
+            var fullName = scope.Namespace + "." + fileName;
+            var resourceName = scope
+                .Assembly
+                .GetManifestResourceNames()
+                .FirstOrDefault(i => string.Equals(fullName, i, StringComparison.OrdinalIgnoreCase));
+
+            if (resourceName == null)
+            {
+                throw new InvalidOperationException("Help file [{0}] not found.".FormatWith(fullName));
+            }
+
+            using (var stream = scope.Assembly.GetManifestResourceStream(resourceName))
             using (var reader = new StreamReader(stream))
             {
                 return reader.ReadToEnd();

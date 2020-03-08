@@ -23,8 +23,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
-                Log.Info(ex.ToString());
+                Log.Error(ex);
             }
             finally
             {

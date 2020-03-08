@@ -55,8 +55,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             }
             catch (Exception ex)
             {
-                Log.Error("Fail to create instance of {0}: {1}".FormatWith(type.FullName, ex.Message));
-                Log.Info(ex.ToString());
+                Log.Error("Fail to create instance of {0}.".FormatWith(type.FullName), ex);
                 return null;
             }
 
