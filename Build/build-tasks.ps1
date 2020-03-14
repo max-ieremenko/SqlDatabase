@@ -14,7 +14,9 @@ Task Test -Depends InitializeTests `
     , TestPowerShellCore624 `
     , TestPowerShellCore70 `
     , TestGlobalTool22 `
-    , TestNetCore22
+    , TestGlobalTool31 `
+    , TestNetCore22 `
+    , TestNetCore31
 
 Task Initialize {
     $script:nugetexe = Join-Path $PSScriptRoot "nuget.exe"
@@ -50,7 +52,7 @@ Task Build {
         ((Get-Content -Path $psdFile.FullName -Raw) -replace '{{ModuleVersion}}', $packageVersion) | Set-Content -Path $psdFile.FullName
     }
 
-    # copy to pwershell net452
+    # copy to powershell net452
     $net45Dest = Join-Path $moduleBin "net452"
     $net45Source = Join-Path $binDir "SqlDatabase\net452"
     New-Item -Path $net45Dest -ItemType Directory
@@ -60,11 +62,12 @@ Task Build {
 
 Task PackGlobalTool {
     $projectFile = Join-Path $sourceDir "SqlDatabase\SqlDatabase.csproj"
+
     Exec {
         dotnet pack `
             -c Release `
             -p:PackAsTool=true `
-            -p:TargetFrameworks=netcoreapp2.2 `
+            -p:GlobalTool=true `
             -p:PackageVersion=$packageVersion `
             -p:RepositoryCommit=$repositoryCommitId `
             -o $binDir `
@@ -102,6 +105,10 @@ Task PackManualDownload {
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore22.zip"
     $source = Join-Path $binDir "SqlDatabase\netcoreapp2.2\publish\*"
+    Compress-Archive -Path $source, $lic -DestinationPath $destination
+
+    $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore31.zip"
+    $source = Join-Path $binDir "SqlDatabase\netcoreapp3.1\publish\*"
     Compress-Archive -Path $source, $lic -DestinationPath $destination
 }
 
@@ -161,36 +168,17 @@ Task TestPowerShellDesktop {
 }
 
 Task TestGlobalTool22 {
-    $packageName = "SqlDatabase.GlobalTool.$packageVersion.nupkg"
-    $app = (Join-Path ([System.IO.Path]::GetFullPath($binDir)) $packageName) + ":/app/$packageName"
-    $test = [System.IO.Path]::GetFullPath($moduleIntegrationTests) + ":/test"
+    Test-GlobalTool "microsoft/dotnet:2.2-sdk"
+}
 
-    Exec {
-        docker run --rm `
-            -v $app `
-            -v $test `
-            --env connectionString=$connectionString `
-            --env test=/test `
-            --env app=/app `
-            --env packageVersion=$packageVersion `
-            "microsoft/dotnet:2.2-sdk" `
-            bash /test/TestGlobalTool.sh
-    }
+Task TestGlobalTool31 {
+    Test-GlobalTool "mcr.microsoft.com/dotnet/core/sdk:3.1"
 }
 
 Task TestNetCore22 {
-    $bin = Join-Path $binDir "SqlDatabase\netcoreapp2.2\publish"
-    $app = $bin + ":/app"
-    $test = $moduleIntegrationTests + ":/test"
+    Test-NetCore "netcoreapp2.2" "microsoft/dotnet:2.2-runtime"
+}
 
-    Exec {
-        docker run --rm `
-            -v $app `
-            -v $test `
-            --env connectionString=$connectionString `
-            --env test=/test `
-            -w "/app" `
-            "microsoft/dotnet:2.2-runtime" `
-            bash /test/Test.sh
-    }
+Task TestNetCore31 {
+    Test-NetCore "netcoreapp3.1" "mcr.microsoft.com/dotnet/core/runtime:3.1"
 }

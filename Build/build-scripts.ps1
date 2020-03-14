@@ -63,3 +63,38 @@ function Test-PowerShellDesktop($command) {
         Remove-Item -Path $app -Force -Recurse
     }
 }
+
+function Test-GlobalTool($image) {
+    $packageName = "SqlDatabase.GlobalTool.$packageVersion.nupkg"
+    $app = (Join-Path $binDir $packageName) + ":/app/$packageName"
+    $test = $moduleIntegrationTests + ":/test"
+
+    Exec {
+        docker run --rm `
+            -v $app `
+            -v $test `
+            --env connectionString=$connectionString `
+            --env test=/test `
+            --env app=/app `
+            --env packageVersion=$packageVersion `
+            $image `
+            bash /test/TestGlobalTool.sh
+    }
+}
+
+function Test-NetCore($targetFramework, $image) {
+    $bin = Join-Path $binDir "SqlDatabase\$targetFramework\publish"
+    $app = $bin + ":/app"
+    $test = $moduleIntegrationTests + ":/test"
+
+    Exec {
+        docker run --rm `
+            -v $app `
+            -v $test `
+            --env connectionString=$connectionString `
+            --env test=/test `
+            -w "/app" `
+            $image `
+            bash /test/Test.sh
+    }
+}

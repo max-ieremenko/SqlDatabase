@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Condition="'$(GlobalTool)' != true">
+    <TargetFrameworks>net452;netcoreapp2.2;netcoreapp3.1;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GlobalTool)' == true">
+    <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp2.2;netstandard2.0</TargetFrameworks>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
@@ -9,9 +16,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- dotnet pack properties
-	     <PackAsTool>true</PackAsTool> is in the build
-	-->
     <ToolCommandName>SqlDatabase</ToolCommandName>
     <PackageId>SqlDatabase.GlobalTool</PackageId>
 
