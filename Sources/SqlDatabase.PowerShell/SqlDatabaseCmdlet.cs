@@ -25,6 +25,14 @@ namespace SqlDatabase.PowerShell
         // only for tests
         internal static ISqlDatabaseProgram Program { get; set; }
 
+        internal static void AppendDefaultConfiguration(GenericCommandLine command)
+        {
+            if (string.IsNullOrEmpty(command.ConfigurationFile))
+            {
+                command.ConfigurationFile = ConfigurationManager.ResolveDefaultConfigurationFile();
+            }
+        }
+
         internal virtual void BuildCommandLine(GenericCommandLineBuilder cmd)
         {
         }
@@ -44,7 +52,11 @@ namespace SqlDatabase.PowerShell
             }
 
             BuildCommandLine(cmd);
-            ResolveProgram().ExecuteCommand(cmd.Build());
+
+            var command = cmd.Build();
+            AppendDefaultConfiguration(command);
+
+            ResolveProgram().ExecuteCommand(command);
         }
 
         private ISqlDatabaseProgram ResolveProgram()

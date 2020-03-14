@@ -11,6 +11,14 @@ namespace SqlDatabase.Configuration
     {
         public AppConfiguration SqlDatabase { get; private set; }
 
+        public static string ResolveDefaultConfigurationFile()
+        {
+            var currentLocation = Path.GetDirectoryName(typeof(ConfigurationManager).Assembly.Location);
+            var fileName = ResolveFile(new FileSystemFolder(currentLocation)).Name;
+
+            return Path.Combine(currentLocation, fileName);
+        }
+
         public void LoadFrom(string configurationFile)
         {
             try
