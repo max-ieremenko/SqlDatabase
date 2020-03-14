@@ -1,0 +1,5 @@
+mcr.microsoft.com/powershell:6.0.2-ubuntu-16.04
+	Create-SqlDatabase : Invalid command line. ---> Could not load file or assembly 'System.Data.SqlClient, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'. The system cannot find the file specified.
+	
+mcr.microsoft.com/powershell:6.0.4-ubuntu-16.04
+	Create-SqlDatabase : Could not load file or assembly 'System.Configuration.ConfigurationManager, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. The system cannot find the file specified.

@@ -5,7 +5,7 @@
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
-    <OutputPath>..\bin\SqlDatabase</OutputPath>
+    <OutputPath>..\..\bin\SqlDatabase</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

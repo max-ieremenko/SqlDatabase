@@ -26,5 +26,5 @@ if ($activeModule)
 
 if ($import)
 {
-    Import-Module $thisModule -DisableNameChecking
+    Import-Module $thisModule
 }

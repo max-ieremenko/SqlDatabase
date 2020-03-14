@@ -27,20 +27,7 @@
     <file src="..\..\icon-32.png"
           target="icon-32.png"/>
 
-    <file src="$bin$\SqlDatabase.exe"
-          target="tools" />
-    <file src="$bin$\SqlDatabase.pdb"
-          target="tools" />
-    <file src="$bin$\SqlDatabase.exe.config"
-          target="tools" />
-
-    <file src="$bin$\SqlDatabase.PowerShell.dll"
-          target="tools" />
-    <file src="$bin$\SqlDatabase.PowerShell.pdb"
-          target="tools" />
-    <file src="$bin$\SqlDatabase.psd1"
-          target="tools" />
-    <file src="$bin$\SqlDatabase.psm1"
-          target="tools" />
+    <file src="$bin$\**\*"
+          target="tools/" />
   </files>
 </package>

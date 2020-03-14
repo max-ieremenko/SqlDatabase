@@ -1,5 +1,10 @@
 Set-StrictMode -Version Latest
 
+if (($PSVersionTable.Keys -contains "PSEdition") -and ($PSVersionTable.PSEdition -ne 'Desktop') -and ([version]$PSVersionTable.PSVersion -lt "6.1.0")) {
+    Write-Error "This module requires PowerShell 6.1.0+. Please, upgrade your PowerShell version."
+    Exit 1
+}
+
 $psModule = $ExecutionContext.SessionState.Module
 $root = $psModule.ModuleBase
 $dllPath = Join-Path -Path $root "SqlDatabase.PowerShell.dll"
