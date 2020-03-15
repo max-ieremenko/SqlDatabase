@@ -116,6 +116,15 @@ Task PackManualDownload {
 Task InitializeTests {
     Copy-Item -Path (Join-Path $sourceDir "SqlDatabase.Test\IntegrationTests") -Destination $binDir -Force -Recurse
     Copy-Item -Path (Join-Path $binDir "Tests\net452\2.1_2.2.*") -Destination (Join-Path $binDir "IntegrationTests\Upgrade") -Force -Recurse
+
+    # fix unix line endings
+    $test = $moduleIntegrationTests + ":/test"
+    Exec {
+        docker run --rm `
+            -v $test `
+            mcr.microsoft.com/dotnet/core/sdk:3.1 `
+            bash -c "sed -i 's/\r//g' /test/TestGlobalTool.sh /test/Test.sh"
+    }
 }
 
 Task TestPowerShellCore611 {
