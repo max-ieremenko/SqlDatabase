@@ -6,7 +6,7 @@ SqlDatabase
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlDatabase.svg?style=flat-square)](https://www.powershellgallery.com/packages/SqlDatabase)
 [![GitHub release](https://img.shields.io/github/release/max-ieremenko/SqlDatabase.svg?style=flat-square&label=manual%20download)](https://github.com/max-ieremenko/SqlDatabase/releases)
 
-Command line and PowerShell tool for SQL Server to execute scripts, export data and database migrations.
+Command-line tool and PowerShell module for SQL Server to execute scripts, export data and database migrations.
 
 Table of Contents
 -----------------
@@ -17,7 +17,7 @@ Table of Contents
 - [Execute script(s) (file)](#execute-script)
 - [Export data from a database to sql script (file)](#export-data)
 - [Create a database](#create-database)
-- [Upgrade an existing database](#upgrade-database)
+- [Migrate an existing database](#upgrade-database)
 - [Scripts](#scripts)
 - [Variables](#variables)
 - [VS Package manager console](#console)
@@ -29,6 +29,12 @@ Table of Contents
 
 Installation
 ------------
+
+PowerShell module is compatible with PowerShell Desktop 5.1 and Powershell Core 6.1.0+.
+
+Dotnet tool requires .Net Core SDK 2.2/3.1.
+
+Command-line tool is compatible with .Net Framework 4.5.2+ and .Net Core runtime 2.2/3.1.
 
 ### PowerShell, from gallery
 
@@ -124,7 +130,7 @@ PS> Create-SqlDatabase `
 
 [Back to ToC](#table-of-contents)
 
-Upgrade an existing database <a name="upgrade-database"></a>
+Migrate an existing database <a name="upgrade-database"></a>
 ----------------
 
 upgrade existing database *[MyDatabase]* on server *[MyServer]* from scripts in *Examples\MigrationStepsFolder* with "Variable1=value1" and "Variable2=value2"
