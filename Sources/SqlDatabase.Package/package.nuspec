@@ -11,7 +11,7 @@
     <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
     <icon>icon-32.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>A command line and PowerShell tool for SQL Server.</summary>
+    <summary>Command-line tool and PowerShell module for SQL Server.</summary>
     <description>SqlDatabase is a tool for SQL Server, allows executing scripts, database migrations and data export.</description>
     <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
     <copyright>(C) 2018-2020 Max Ieremenko.</copyright>
