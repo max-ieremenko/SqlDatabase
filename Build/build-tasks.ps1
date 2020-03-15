@@ -52,7 +52,8 @@ Task Build {
         ((Get-Content -Path $psdFile.FullName -Raw) -replace '{{ModuleVersion}}', $packageVersion) | Set-Content -Path $psdFile.FullName
     }
 
-    # copy to powershell net452
+    # copy to powershell
+    Copy-Item -Path (Join-Path $sourceDir "..\LICENSE.md") -Destination $moduleBin
     $net45Dest = Join-Path $moduleBin "net452"
     $net45Source = Join-Path $binDir "SqlDatabase\net452"
     New-Item -Path $net45Dest -ItemType Directory
@@ -101,7 +102,7 @@ Task PackManualDownload {
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-PowerShell.zip"
     $source = Join-Path $moduleBin "*"
-    Compress-Archive -Path $source, $lic -DestinationPath $destination
+    Compress-Archive -Path $source -DestinationPath $destination
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore22.zip"
     $source = Join-Path $binDir "SqlDatabase\netcoreapp2.2\publish\*"
