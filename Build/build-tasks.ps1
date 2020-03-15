@@ -28,7 +28,7 @@ Task Initialize {
     $script:moduleBin = Join-Path $binDir "SqlDatabase.PowerShell\netstandard2.0\"
     $script:moduleIntegrationTests = Join-Path $binDir "IntegrationTests"
 
-    $mssql = Resolve-SqlServerIp $sqlContainer
+    $mssql = Resolve-SqlServerIp "mssql"
     $script:connectionString = "Data Source=$mssql;Initial Catalog=SqlDatabaseTest;User Id=sa;Password=P@ssw0rd;"
 
     Write-Host "PackageVersion: $packageVersion"
