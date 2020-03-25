@@ -77,6 +77,11 @@ Task PackGlobalTool {
 }
 
 Task PackNet452 {
+    $bin = $moduleBin
+    if (-not $bin.EndsWith("\")) {
+        $bin += "\"
+    }
+
     $nuspec = Join-Path $sourceDir "SqlDatabase.Package\package.nuspec"
     Exec { 
         & $nugetexe pack `

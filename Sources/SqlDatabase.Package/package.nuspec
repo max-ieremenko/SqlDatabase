@@ -27,7 +27,7 @@
     <file src="..\..\icon-32.png"
           target="icon-32.png"/>
 
-    <file src="$bin$\**\*"
+    <file src="$bin$**\*"
           target="tools/" />
   </files>
 </package>
