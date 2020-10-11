@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SqlDatabase</id>
+    <version>1.0.0</version>
+    <authors>Max Ieremenko</authors>
+    <owners>Max Ieremenko</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
+    <repository type="git" url="https://github.com/max-ieremenko/SqlDatabase" commit="$RepositoryCommit$" />
+    <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
+    <icon>icon-32.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Command-line tool and PowerShell module for SQL Server.</summary>
+    <description>SqlDatabase is a tool for SQL Server, allows executing scripts, database migrations and data export.</description>
+    <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
+    <copyright>(C) 2018-2020 Max Ieremenko.</copyright>
+    <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</tags>
+  </metadata>
+
+  <files>
+    <file src="tools\**\*"
+          target="tools/"/>
+
+    <file src="..\..\..\LICENSE.md"
+          target="LICENSE.md"/>
+    <file src="..\..\..\icon-32.png"
+          target="icon-32.png"/>
+
+    <file src="$bin$**\*"
+          target="tools/" />
+  </files>
+</package>

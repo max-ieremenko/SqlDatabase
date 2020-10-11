@@ -1,7 +1,12 @@
 Include ".\build-scripts.ps1"
 
-Task default -Depends Initialize, Clean, Build, Pack, Test
-Task Pack -Depends PackGlobalTool, PackNet452, PackManualDownload
+Task default -Depends Initialize, Clean, Build, Pack, UnitTest, Test
+Task Pack -Depends PackGlobalTool, PackNet452, PackChoco, PackManualDownload
+Task UnitTest -Depends InitializeTests `
+    , UnitTest452 `
+    , UnitTest472 `
+    , UnitTestcore22 `
+    , UnitTestcore31
 Task Test -Depends InitializeTests `
     , TestPublishModule `
     , TestPowerShellDesktop `
@@ -13,6 +18,10 @@ Task Test -Depends InitializeTests `
     , TestPowerShellCore621 `
     , TestPowerShellCore624 `
     , TestPowerShellCore70 `
+    , TestPowerShellCore701 `
+    , TestPowerShellCore702 `
+    , TestPowerShellCore703 `
+    , TestPowerShellCore710 `
     , TestGlobalTool22 `
     , TestGlobalTool31 `
     , TestNetCore22 `
@@ -22,6 +31,8 @@ Task Initialize {
     $script:nugetexe = Join-Path $PSScriptRoot "nuget.exe"
     $script:sourceDir = Join-Path $PSScriptRoot "..\Sources"
     $script:binDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\bin"))
+    $script:binNugetDir = Join-Path $binDir "nuget"
+    $script:binChocoDir = Join-Path $binDir "choco"
     $script:packageVersion = Get-AssemblyVersion (Join-Path $sourceDir "GlobalAssemblyInfo.cs")
     $script:repositoryCommitId = Get-RepositoryCommitId
 
@@ -39,6 +50,10 @@ Task Clean {
     if (Test-Path $binDir) {
         Remove-Item -Path $binDir -Recurse -Force
     }
+
+    New-Item -Path $binDir -ItemType Directory | Out-Null
+    New-Item -Path $binNugetDir -ItemType Directory | Out-Null
+    New-Item -Path $binChocoDir -ItemType Directory | Out-Null
 }
 
 Task Build {
@@ -71,7 +86,7 @@ Task PackGlobalTool {
             -p:GlobalTool=true `
             -p:PackageVersion=$packageVersion `
             -p:RepositoryCommit=$repositoryCommitId `
-            -o $binDir `
+            -o $binNugetDir `
             $projectFile
     }
 }
@@ -82,16 +97,33 @@ Task PackNet452 {
         $bin += "\"
     }
 
-    $nuspec = Join-Path $sourceDir "SqlDatabase.Package\package.nuspec"
+    $nuspec = Join-Path $sourceDir "SqlDatabase.Package\nuget\package.nuspec"
     Exec { 
         & $nugetexe pack `
             -NoPackageAnalysis `
             -verbosity detailed `
-            -OutputDirectory $binDir `
+            -OutputDirectory $binNugetDir `
             -Version $packageVersion `
             -p RepositoryCommit=$repositoryCommitId `
-            -p bin=$moduleBin `
+            -p bin=$bin `
             $nuspec
+    }
+}
+
+Task PackChoco {
+    $bin = $moduleBin
+    if (-not $bin.EndsWith("\")) {
+        $bin += "\"
+    }
+
+    $nuspec = Join-Path $sourceDir "SqlDatabase.Package\choco\sqldatabase.nuspec"
+    Exec { 
+        choco pack `
+            $nuspec `
+            -verbosity detailed `
+            --outputdirectory $binChocoDir `
+            --version $packageVersion `
+            -p bin=$bin
     }
 }
 
@@ -132,6 +164,22 @@ Task InitializeTests {
     }
 }
 
+Task UnitTest452 {
+    Test-Unit "net452"
+}
+
+Task UnitTest472 {
+    Test-Unit "net472"
+}
+
+Task UnitTestcore22 {
+    Test-Unit "netcoreapp2.2"
+}
+
+Task UnitTestcore31 {
+    Test-Unit "netcoreapp3.1"
+}
+
 Task TestPowerShellCore611 {
     Test-PowerShellCore "mcr.microsoft.com/powershell:6.1.1-alpine-3.8"
 }
@@ -162,6 +210,22 @@ Task TestPowerShellCore624 {
 
 Task TestPowerShellCore70 {
     Test-PowerShellCore "mcr.microsoft.com/powershell:7.0.0-ubuntu-18.04"
+}
+
+Task TestPowerShellCore701 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.0.1-ubuntu-18.04"
+}
+
+Task TestPowerShellCore702 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.0.2-ubuntu-18.04"
+}
+
+Task TestPowerShellCore703 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.0.3-ubuntu-18.04"
+}
+
+Task TestPowerShellCore710 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.0-rc.1-ubuntu-18.04-20200928"
 }
 
 Task TestPublishModule {

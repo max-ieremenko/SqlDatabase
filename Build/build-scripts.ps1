@@ -66,7 +66,7 @@ function Test-PowerShellDesktop($command) {
 
 function Test-GlobalTool($image) {
     $packageName = "SqlDatabase.GlobalTool.$packageVersion.nupkg"
-    $app = (Join-Path $binDir $packageName) + ":/app/$packageName"
+    $app = (Join-Path $binNugetDir $packageName) + ":/app/$packageName"
     $test = $moduleIntegrationTests + ":/test"
 
     Exec {
@@ -97,4 +97,19 @@ function Test-NetCore($targetFramework, $image) {
             $image `
             bash /test/Test.sh
     }
+}
+
+function Test-Unit($targetFramework) {
+    $sourceDir = Join-Path $binDir "Tests"
+    $sourceDir = Join-Path $sourceDir $targetFramework
+
+    $testList = Get-ChildItem -Path $sourceDir -Recurse -Filter *.Test.dll `
+        | ForEach-Object {$_.FullName}
+    
+    if (-not $testList.Count) {
+        throw ($Framework + " test list is empty.")
+    }
+    
+    $testList
+    Exec { dotnet vstest $testList }
 }

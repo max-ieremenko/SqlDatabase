@@ -1,15 +1,14 @@
-<?xml version="1.0"?>
-<package >
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>SqlDatabase</id>
     <version>1.0.0</version>
+    <title>SqlDatabase (PowerShell Module)</title>
     <authors>Max Ieremenko</authors>
     <owners>Max Ieremenko</owners>
-    <license type="expression">MIT</license>
+    <licenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
-	<repository type="git" url="https://github.com/max-ieremenko/SqlDatabase" commit="$RepositoryCommit$" />
     <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
-    <icon>icon-32.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Command-line tool and PowerShell module for SQL Server.</summary>
     <description>SqlDatabase is a tool for SQL Server, allows executing scripts, database migrations and data export.</description>
@@ -22,12 +21,10 @@
     <file src="tools\**\*"
           target="tools/"/>
 
-    <file src="..\..\LICENSE.md"
-          target="LICENSE.md"/>
-    <file src="..\..\icon-32.png"
-          target="icon-32.png"/>
+    <file src="..\..\..\LICENSE.md"
+          target="tools\LICENSE.md"/>
 
     <file src="$bin$**\*"
-          target="tools/" />
+          target="tools/SqlDatabase" />
   </files>
 </package>
