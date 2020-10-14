@@ -8,6 +8,10 @@
     <owners>Max Ieremenko</owners>
     <licenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
+    <packageSourceUrl>https://github.com/max-ieremenko/SqlDatabase</packageSourceUrl>
+	<projectSourceUrl>https://github.com/max-ieremenko/SqlDatabase</projectSourceUrl>
+    <docsUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/README.md</docsUrl>
+	<bugTrackerUrl>https://github.com/max-ieremenko/SqlDatabase/issues</bugTrackerUrl>
     <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Command-line tool and PowerShell module for SQL Server.</summary>

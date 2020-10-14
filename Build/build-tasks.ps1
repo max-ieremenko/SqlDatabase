@@ -120,7 +120,6 @@ Task PackChoco {
     Exec { 
         choco pack `
             $nuspec `
-            -verbosity detailed `
             --outputdirectory $binChocoDir `
             --version $packageVersion `
             -p bin=$bin
