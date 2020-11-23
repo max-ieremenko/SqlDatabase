@@ -22,6 +22,7 @@ Task Test -Depends InitializeTests `
     , TestPowerShellCore702 `
     , TestPowerShellCore703 `
     , TestPowerShellCore710 `
+    , TestPowerShellCore720 `
     , TestGlobalTool22 `
     , TestGlobalTool31 `
     , TestNetCore22 `
@@ -224,7 +225,11 @@ Task TestPowerShellCore703 {
 }
 
 Task TestPowerShellCore710 {
-    Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.0-rc.1-ubuntu-18.04-20200928"
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.0-ubuntu-18.04"
+}
+
+Task TestPowerShellCore720 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.2.0-preview.1-ubuntu-20.04"
 }
 
 Task TestPublishModule {
