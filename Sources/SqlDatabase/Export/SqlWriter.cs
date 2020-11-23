@@ -195,9 +195,15 @@ namespace SqlDatabase.Export
                 return true;
             }
 
-            if (value is TimeSpan time)
+            if (value is TimeSpan timeSpan)
             {
-                ValueTimeSpan(time);
+                ValueTimeSpan(timeSpan);
+                return true;
+            }
+
+            if (value is DateTimeOffset dateTimeOffset)
+            {
+                ValueDateTimeOffset(dateTimeOffset);
                 return true;
             }
 
@@ -257,6 +263,13 @@ namespace SqlDatabase.Export
         {
             Output.Write(Q);
             Output.Write(value.ToString("g", CultureInfo.InvariantCulture));
+            Output.Write(Q);
+        }
+
+        private void ValueDateTimeOffset(DateTimeOffset value)
+        {
+            Output.Write(Q);
+            Output.Write(value.ToString("yyyy-MM-ddTHH:mm:ss.fffK", CultureInfo.InvariantCulture));
             Output.Write(Q);
         }
     }

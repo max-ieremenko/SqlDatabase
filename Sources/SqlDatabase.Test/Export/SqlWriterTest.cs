@@ -20,6 +20,12 @@ namespace SqlDatabase.Export
             _sut = new SqlWriter(new StringWriter(_output));
         }
 
+        [TearDown]
+        public void AfterEachTest()
+        {
+            Console.WriteLine(_output);
+        }
+
         [Test]
         public void Null()
         {
@@ -97,6 +103,19 @@ namespace SqlDatabase.Export
             _sut
                 .Text("SELECT ")
                 .Value(value);
+
+            Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
+        }
+
+        [Test]
+        public void ValueDateTimeOffset()
+        {
+            var value = new DateTimeOffset(2020, 11, 23, 00, 02, 50, 999, TimeSpan.FromHours(2));
+
+            _sut
+                .Text("SELECT CAST(")
+                .Value(value)
+                .Text(" AS DATETIMEOFFSET)");
 
             Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
         }
