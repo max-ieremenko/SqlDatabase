@@ -2,13 +2,13 @@
 ==========================================
 
 Any assembly script is
-- .exe or .dll .NET assembly
-- target framework is 4.5.2 or .net core 2.2
+- .exe or .dll for target framework is 4.5.2+
+- .dll for .net core 2.2/3.1 or .net5.0
 - has exactly one class with script implementation
 
 This project is an example of script implementation.
 The build output is 2.1_2.2.dll with target framework 4.5.2.
-Due to the current dependencies, 2.1_2.2.dll works well on .net core 2.2.
+Due to the current dependencies, 2.1_2.2.dll works well on .net core 2.2/3.1 and .net 5.0.
 
 ## Script source
 Method [SqlDatabaseScript.Execute](SqlDatabaseScript.cs) implements a logic of script
