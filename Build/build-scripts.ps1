@@ -104,7 +104,8 @@ function Test-Unit($targetFramework) {
     $sourceDir = Join-Path $sourceDir $targetFramework
 
     $testList = Get-ChildItem -Path $sourceDir -Recurse -Filter *.Test.dll `
-        | ForEach-Object {$_.FullName}
+        | Where-Object FullName -NotMatch \\ref\\ `
+        | ForEach-Object {$_.FullName}    
     
     if (-not $testList.Count) {
         throw ($Framework + " test list is empty.")

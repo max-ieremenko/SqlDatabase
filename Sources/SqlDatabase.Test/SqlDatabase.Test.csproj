@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net452;netcoreapp2.2;netcoreapp3.1;net5.0</TargetFrameworks>
     <RootNamespace>SqlDatabase</RootNamespace>
     <NoWarn>NU1702</NoWarn>
     <OutputPath>..\..\bin\Tests</OutputPath>
@@ -30,6 +30,7 @@
     <!-- fix configuration for .net core tests
 	https://github.com/dotnet/corefx/issues/22101 -->
     <Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\testhost.dll.config" />
+    <Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\ReSharperTestRunner64.dll.config" />
   </Target>
   
   <ItemGroup>
@@ -52,11 +53,11 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" Version="1.50.5" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+    <PackageReference Include="Moq" Version="4.15.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>

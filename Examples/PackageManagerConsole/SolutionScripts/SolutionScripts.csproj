@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SolutionScripts" Version="1.2.0" />
-    <PackageReference Include="SqlDatabase" Version="2.1.1" />
+    <PackageReference Include="SqlDatabase" Version="2.1.2" />
   </ItemGroup>
 
 </Project>

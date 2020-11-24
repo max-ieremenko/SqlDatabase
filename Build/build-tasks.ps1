@@ -6,7 +6,8 @@ Task UnitTest -Depends InitializeTests `
     , UnitTest452 `
     , UnitTest472 `
     , UnitTestcore22 `
-    , UnitTestcore31
+    , UnitTestcore31 `
+    , UnitTest50
 Task Test -Depends InitializeTests `
     , TestPublishModule `
     , TestPowerShellDesktop `
@@ -22,10 +23,13 @@ Task Test -Depends InitializeTests `
     , TestPowerShellCore702 `
     , TestPowerShellCore703 `
     , TestPowerShellCore710 `
+    , TestPowerShellCore720 `
     , TestGlobalTool22 `
     , TestGlobalTool31 `
+    , TestGlobalTool50 `
     , TestNetCore22 `
-    , TestNetCore31
+    , TestNetCore31 `
+    , TestNet50
 
 Task Initialize {
     $script:nugetexe = Join-Path $PSScriptRoot "nuget.exe"
@@ -147,6 +151,10 @@ Task PackManualDownload {
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore31.zip"
     $source = Join-Path $binDir "SqlDatabase\netcoreapp3.1\publish\*"
     Compress-Archive -Path $source, $lic -DestinationPath $destination
+
+    $destination = Join-Path $out "SqlDatabase.$packageVersion-net50.zip"
+    $source = Join-Path $binDir "SqlDatabase\net5.0\publish\*"
+    Compress-Archive -Path $source, $lic -DestinationPath $destination
 }
 
 Task InitializeTests {
@@ -177,6 +185,10 @@ Task UnitTestcore22 {
 
 Task UnitTestcore31 {
     Test-Unit "netcoreapp3.1"
+}
+
+Task UnitTest50 {
+    Test-Unit "net5.0"
 }
 
 Task TestPowerShellCore611 {
@@ -224,7 +236,11 @@ Task TestPowerShellCore703 {
 }
 
 Task TestPowerShellCore710 {
-    Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.0-rc.1-ubuntu-18.04-20200928"
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.0-ubuntu-18.04"
+}
+
+Task TestPowerShellCore720 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.2.0-preview.1-ubuntu-20.04"
 }
 
 Task TestPublishModule {
@@ -253,10 +269,18 @@ Task TestGlobalTool31 {
     Test-GlobalTool "mcr.microsoft.com/dotnet/core/sdk:3.1"
 }
 
+Task TestGlobalTool50 {
+    Test-GlobalTool "mcr.microsoft.com/dotnet/sdk:5.0"
+}
+
 Task TestNetCore22 {
     Test-NetCore "netcoreapp2.2" "microsoft/dotnet:2.2-runtime"
 }
 
 Task TestNetCore31 {
     Test-NetCore "netcoreapp3.1" "mcr.microsoft.com/dotnet/core/runtime:3.1"
+}
+
+Task TestNet50 {
+    Test-NetCore "net5.0" "mcr.microsoft.com/dotnet/runtime:5.0"
 }

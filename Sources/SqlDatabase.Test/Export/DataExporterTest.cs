@@ -255,6 +255,10 @@ select * from @x";
             yield return new TestCaseData("DATETIME2", date, date) { TestName = "DATETIME2" };
             yield return new TestCaseData("SMALLDATETIME", date.AddSeconds(-30), date.AddSeconds(30)) { TestName = "SMALLDATETIME" };
             yield return new TestCaseData("TIME", date.TimeOfDay, date.TimeOfDay) { TestName = "TIME" };
+
+            var dateTimeOffset = new DateTimeOffset(2020, 11, 23, 00, 02, 50, 999, TimeSpan.FromHours(2));
+            yield return new TestCaseData("DATETIMEOFFSET", dateTimeOffset, dateTimeOffset) { TestName = "DATETIMEOFFSET" };
+
             ////yield return new TestCaseData() { TestName = "" };
         }
     }

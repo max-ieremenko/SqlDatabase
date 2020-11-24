@@ -6,7 +6,7 @@ SqlDatabase
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlDatabase.svg?style=flat-square)](https://www.powershellgallery.com/packages/SqlDatabase)
 [![GitHub release](https://img.shields.io/github/release/max-ieremenko/SqlDatabase.svg?style=flat-square&label=manual%20download)](https://github.com/max-ieremenko/SqlDatabase/releases)
 
-Command-line tool and PowerShell module for SQL Server to execute scripts, export data and database migrations.
+Command-line tool and PowerShell module for SQL Server allows to execute scripts, database migrations and export data.
 
 Table of Contents
 -----------------
@@ -30,11 +30,11 @@ Table of Contents
 Installation
 ------------
 
-PowerShell module is compatible with PowerShell Desktop 5.1 and Powershell Core 6.1.0+.
+PowerShell module is compatible with Powershell Core 6.1+ and PowerShell Desktop 5.1.
 
-Dotnet tool requires .Net Core SDK 2.2/3.1.
+Dotnet tool requires SDK .Net 5.0 or .Net Core 2.2/3.1.
 
-Command-line tool is compatible with .Net Framework 4.5.2+ and .Net Core runtime 2.2/3.1.
+Command-line tool is compatible with .Net runtime 5.0, .Net Core runtime 2.2/3.1 and .Net Framework 4.5.2+.
 
 ### PowerShell, from gallery
 
