@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.TestApi;
@@ -31,10 +32,19 @@ namespace SqlDatabase.PowerShell
 
             commandLine.Command.ShouldBe(CommandLineFactory.CommandExecute);
             commandLine.Connection.ShouldBe("connection string");
-            commandLine.Scripts.ShouldBe(new[] { "file 1", "file 2" });
+
+            commandLine.Scripts.Count.ShouldBe(2);
+            Path.IsPathRooted(commandLine.Scripts[0]).ShouldBeTrue();
+            Path.GetFileName(commandLine.Scripts[0]).ShouldBe("file 1");
+            Path.IsPathRooted(commandLine.Scripts[1]).ShouldBeTrue();
+            Path.GetFileName(commandLine.Scripts[1]).ShouldBe("file 2");
+
             commandLine.InLineScript.ShouldBe(new[] { "sql text 1", "sql text 2" });
             commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
-            commandLine.ConfigurationFile.ShouldBe("app.config");
+
+            Path.IsPathRooted(commandLine.ConfigurationFile).ShouldBeTrue();
+            Path.GetFileName(commandLine.ConfigurationFile).ShouldBe("app.config");
+
             commandLine.WhatIf.ShouldBeTrue();
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
@@ -57,12 +67,16 @@ namespace SqlDatabase.PowerShell
 
             commandLines[0].Command.ShouldBe(CommandLineFactory.CommandExecute);
             commandLines[0].Connection.ShouldBe("connection string");
-            commandLines[0].Scripts.ShouldBe(new[] { "file 1" });
+            commandLines[0].Scripts.Count.ShouldBe(1);
+            Path.IsPathRooted(commandLines[0].Scripts[0]).ShouldBeTrue();
+            Path.GetFileName(commandLines[0].Scripts[0]).ShouldBe("file 1");
             commandLines[0].InLineScript.Count.ShouldBe(0);
 
             commandLines[1].Command.ShouldBe(CommandLineFactory.CommandExecute);
             commandLines[1].Connection.ShouldBe("connection string");
-            commandLines[1].Scripts.ShouldBe(new[] { "file 2" });
+            commandLines[1].Scripts.Count.ShouldBe(1);
+            Path.IsPathRooted(commandLines[1].Scripts[0]).ShouldBeTrue();
+            Path.GetFileName(commandLines[1].Scripts[0]).ShouldBe("file 2");
             commandLines[1].InLineScript.Count.ShouldBe(0);
         }
     }

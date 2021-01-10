@@ -32,16 +32,10 @@ namespace SqlDatabase.PowerShell
 
         internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
         {
-            if (From != null && From.Length > 0)
-            {
-                foreach (var from in From)
-                {
-                    cmd.SetScripts(from);
-                }
-            }
+            this.AppendFrom(From, cmd);
 
             cmd
-                .SetConfigurationFile(Configuration)
+                .SetConfigurationFile(this.RootPath(Configuration))
                 .SetTransaction(Transaction)
                 .SetWhatIf(WhatIf)
                 .SetFolderAsModuleName(FolderAsModuleName);
