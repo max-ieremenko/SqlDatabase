@@ -18,7 +18,7 @@
     <description>SqlDatabase is a tool for SQL Server, allows to execute scripts, database migrations and export data.
 Requires Powershell Core 6.1+ or PowerShell Desktop 5.1.</description>
     <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
-    <copyright>(C) 2018-2020 Max Ieremenko.</copyright>
+    <copyright>(C) 2018-2021 Max Ieremenko.</copyright>
     <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</tags>
   </metadata>
 
