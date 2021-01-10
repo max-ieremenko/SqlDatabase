@@ -45,9 +45,9 @@ namespace SqlDatabase.PowerShell
 
             if (Var != null && Var.Length > 0)
             {
-                foreach (var value in Var)
+                for (var i = 0; i < Var.Length; i++)
                 {
-                    cmd.SetVariable(value);
+                    cmd.SetVariable(Var[i]);
                 }
             }
 
@@ -66,8 +66,7 @@ namespace SqlDatabase.PowerShell
                 return Program;
             }
 
-            var psVersionTable = (IEnumerable)GetVariableValue("PSVersionTable");
-            if (psVersionTable == null)
+            if (!this.TryGetPSVersionTable(out var psVersionTable))
             {
                 throw new PlatformNotSupportedException("$PSVersionTable is not defined.");
             }
