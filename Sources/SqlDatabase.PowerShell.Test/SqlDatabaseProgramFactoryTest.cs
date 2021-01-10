@@ -23,7 +23,7 @@ namespace SqlDatabase.PowerShell
 
             var owner = new Mock<ICmdlet>(MockBehavior.Strict);
 
-            var actual = SqlDatabaseProgramFactory.CreateProgram(psVersionTable, owner.Object);
+            var actual = SqlDatabaseProgramFactory.CreateProgram(new PSVersionTable(psVersionTable), owner.Object);
 
             actual.ShouldBeOfType(expected);
         }

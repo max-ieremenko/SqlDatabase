@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.TestApi;
@@ -29,11 +30,19 @@ namespace SqlDatabase.PowerShell
 
             commandLine.Command.ShouldBe(CommandLineFactory.CommandExport);
             commandLine.Connection.ShouldBe("connection string");
-            commandLine.Scripts.ShouldBe(new[] { "file 1", "file 2" });
+
+            commandLine.Scripts.Count.ShouldBe(2);
+            Path.IsPathRooted(commandLine.Scripts[0]).ShouldBeTrue();
+            Path.GetFileName(commandLine.Scripts[0]).ShouldBe("file 1");
+            Path.IsPathRooted(commandLine.Scripts[1]).ShouldBeTrue();
+            Path.GetFileName(commandLine.Scripts[1]).ShouldBe("file 2");
+
             commandLine.InLineScript.ShouldBe(new[] { "sql text 1", "sql text 2" });
             commandLine.ExportToFile.ShouldBe("to file");
             commandLine.ExportToTable.ShouldBe("to table");
-            commandLine.ConfigurationFile.ShouldBe("app.config");
+
+            Path.IsPathRooted(commandLine.ConfigurationFile).ShouldBeTrue();
+            Path.GetFileName(commandLine.ConfigurationFile).ShouldBe("app.config");
 
             commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
             commandLine.Variables["x"].ShouldBe("1");
