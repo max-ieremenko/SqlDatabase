@@ -3,7 +3,6 @@ Include ".\build-scripts.ps1"
 Task default -Depends Initialize, Clean, Build, Pack, UnitTest, Test
 Task Pack -Depends PackGlobalTool, PackNet452, PackChoco, PackManualDownload
 Task UnitTest -Depends InitializeTests `
-    , UnitTest452 `
     , UnitTest472 `
     , UnitTestcore22 `
     , UnitTestcore31 `
@@ -159,7 +158,7 @@ Task PackManualDownload {
 
 Task InitializeTests {
     Copy-Item -Path (Join-Path $sourceDir "SqlDatabase.Test\IntegrationTests") -Destination $binDir -Force -Recurse
-    Copy-Item -Path (Join-Path $binDir "Tests\net452\2.1_2.2.*") -Destination (Join-Path $binDir "IntegrationTests\Upgrade") -Force -Recurse
+    Copy-Item -Path (Join-Path $binDir "Tests\net472\2.1_2.2.*") -Destination (Join-Path $binDir "IntegrationTests\Upgrade") -Force -Recurse
 
     # fix unix line endings
     $test = $moduleIntegrationTests + ":/test"
@@ -169,10 +168,6 @@ Task InitializeTests {
             mcr.microsoft.com/dotnet/core/sdk:3.1 `
             bash -c "sed -i 's/\r//g' /test/TestGlobalTool.sh /test/Test.sh"
     }
-}
-
-Task UnitTest452 {
-    Test-Unit "net452"
 }
 
 Task UnitTest472 {
@@ -240,7 +235,7 @@ Task TestPowerShellCore710 {
 }
 
 Task TestPowerShellCore720 {
-    Test-PowerShellCore "mcr.microsoft.com/powershell:7.2.0-preview.1-ubuntu-20.04"
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.2.0-preview.2-ubuntu-20.04"
 }
 
 Task TestPublishModule {
