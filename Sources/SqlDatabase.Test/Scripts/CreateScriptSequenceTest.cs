@@ -68,7 +68,8 @@ namespace SqlDatabase.Scripts
                 .Concat(files)
                 .ToArray();
 
-            _sut.Sources.Add(FileFactory.Folder("root", content));
+            _sut.Sources = new IFileSystemInfo[] { FileFactory.Folder("root", content) };
+
             var actual = _sut.BuildSequence();
 
             // sorted A-Z, first files then folders
@@ -88,9 +89,14 @@ namespace SqlDatabase.Scripts
         [Test]
         public void BuildSequenceFromFolderAndFile()
         {
-            _sut.Sources.Add(FileFactory.Folder("root", FileFactory.File("20.sql"), FileFactory.File("10.sql")));
-            _sut.Sources.Add(FileFactory.File("02.sql"));
-            _sut.Sources.Add(FileFactory.File("01.sql"));
+            _sut.Sources = new IFileSystemInfo[]
+            {
+                FileFactory.Folder("root", FileFactory.File("20.sql"), FileFactory.File("10.sql")),
+                FileFactory.File("02.sql"),
+                FileFactory.File("01.sql"),
+                FileFactory.File("ignore")
+            };
+
             var actual = _sut.BuildSequence();
 
             // sorted A-Z, first files then folders

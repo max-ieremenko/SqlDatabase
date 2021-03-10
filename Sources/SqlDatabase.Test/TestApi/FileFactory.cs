@@ -27,11 +27,14 @@ namespace SqlDatabase.TestApi
 
         public static IFile File(string name, byte[] content = null) => File(name, content, null);
 
-        public static IFile File(string name, string content)
+        public static IFile File(string name, string content) => File(name, content, null);
+
+        public static IFile File(string name, string content, IFolder parent)
         {
             return File(
                 name,
-                string.IsNullOrEmpty(content) ? new byte[0] : Encoding.UTF8.GetBytes(content));
+                string.IsNullOrEmpty(content) ? new byte[0] : Encoding.UTF8.GetBytes(content),
+                parent);
         }
 
         public static IFolder Folder(string name, params IFileSystemInfo[] content)
