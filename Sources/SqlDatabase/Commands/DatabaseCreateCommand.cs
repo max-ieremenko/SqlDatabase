@@ -8,6 +8,8 @@ namespace SqlDatabase.Commands
     {
         public ICreateScriptSequence ScriptSequence { get; set; }
 
+        public IPowerShellFactory PowerShellFactory { get; set; }
+
         protected override void Greet(string databaseLocation)
         {
             Log.Info("Create {0}".FormatWith(databaseLocation));
@@ -20,6 +22,8 @@ namespace SqlDatabase.Commands
             {
                 throw new ConfigurationErrorsException("scripts to create database not found.");
             }
+
+            PowerShellFactory.InitializeIfRequested(Log);
 
             foreach (var script in sequences)
             {

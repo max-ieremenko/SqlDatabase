@@ -10,13 +10,16 @@ namespace SqlDatabase.Scripts
     {
         public AppConfiguration Configuration { get; set; }
 
+        public IPowerShellFactory PowerShellFactory { get; set; }
+
         public bool IsSupported(string fileName)
         {
             var ext = Path.GetExtension(fileName);
 
             return ".sql".Equals(ext, StringComparison.OrdinalIgnoreCase)
                    || ".exe".Equals(ext, StringComparison.OrdinalIgnoreCase)
-                   || ".dll".Equals(ext, StringComparison.OrdinalIgnoreCase);
+                   || ".dll".Equals(ext, StringComparison.OrdinalIgnoreCase)
+                   || (PowerShellFactory != null && ".ps1".Equals(ext, StringComparison.OrdinalIgnoreCase));
         }
 
         public IScript FromFile(IFile file)
@@ -40,7 +43,25 @@ namespace SqlDatabase.Scripts
                     DisplayName = file.Name,
                     Configuration = Configuration.AssemblyScript,
                     ReadAssemblyContent = CreateBinaryReader(file),
-                    ReadDescriptionContent = CreateAssemblyScriptDescriptionReader(file)
+                    ReadDescriptionContent = CreateScriptDescriptionReader(file)
+                };
+            }
+
+            if (".ps1".Equals(ext, StringComparison.OrdinalIgnoreCase))
+            {
+                if (PowerShellFactory == null)
+                {
+                    throw new NotSupportedException(".ps1 scripts are not supported in this context.");
+                }
+
+                PowerShellFactory.Request();
+
+                return new PowerShellScript
+                {
+                    DisplayName = file.Name,
+                    ReadScriptContent = file.OpenRead,
+                    ReadDescriptionContent = CreateScriptDescriptionReader(file),
+                    PowerShellFactory = PowerShellFactory
                 };
             }
 
@@ -52,7 +73,7 @@ namespace SqlDatabase.Scripts
             return () => BinaryRead(file);
         }
 
-        private static Func<byte[]> CreateAssemblyScriptDescriptionReader(IFile file)
+        private static Func<Stream> CreateScriptDescriptionReader(IFile file)
         {
             return () =>
             {
@@ -64,12 +85,8 @@ namespace SqlDatabase.Scripts
 
                 var descriptionName = Path.GetFileNameWithoutExtension(file.Name) + ".txt";
                 var description = parent.GetFiles().FirstOrDefault(i => string.Equals(descriptionName, i.Name, StringComparison.OrdinalIgnoreCase));
-                if (description == null)
-                {
-                    return null;
-                }
 
-                return BinaryRead(description);
+                return description?.OpenRead();
             };
         }
 

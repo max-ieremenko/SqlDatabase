@@ -11,6 +11,8 @@ namespace SqlDatabase.Commands
         private DatabaseExecuteCommand _sut;
         private Mock<IDatabase> _database;
         private Mock<ICreateScriptSequence> _scriptSequence;
+        private Mock<IPowerShellFactory> _powerShellFactory;
+        private Mock<ILogger> _log;
 
         [SetUp]
         public void BeforeEachTest()
@@ -21,9 +23,11 @@ namespace SqlDatabase.Commands
 
             _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-            var log = new Mock<ILogger>(MockBehavior.Strict);
-            log.Setup(l => l.Indent()).Returns((IDisposable)null);
-            log
+            _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
+
+            _log = new Mock<ILogger>(MockBehavior.Strict);
+            _log.Setup(l => l.Indent()).Returns((IDisposable)null);
+            _log
                 .Setup(l => l.Info(It.IsAny<string>()))
                 .Callback<string>(m =>
                 {
@@ -33,8 +37,9 @@ namespace SqlDatabase.Commands
             _sut = new DatabaseExecuteCommand
             {
                 Database = _database.Object,
-                Log = log.Object,
-                ScriptSequence = _scriptSequence.Object
+                Log = _log.Object,
+                ScriptSequence = _scriptSequence.Object,
+                PowerShellFactory = _powerShellFactory.Object
             };
         }
 
@@ -47,6 +52,9 @@ namespace SqlDatabase.Commands
             var script2 = new Mock<IScript>(MockBehavior.Strict);
             script2.SetupGet(s => s.DisplayName).Returns("step 2");
 
+            _powerShellFactory
+                .Setup(f => f.InitializeIfRequested(_log.Object));
+
             _database
                 .Setup(d => d.Execute(script1.Object))
                 .Callback(() => _database.Setup(d => d.Execute(script2.Object)));
@@ -58,6 +66,7 @@ namespace SqlDatabase.Commands
             _database.VerifyAll();
             script1.VerifyAll();
             script2.VerifyAll();
+            _powerShellFactory.VerifyAll();
         }
     }
 }
