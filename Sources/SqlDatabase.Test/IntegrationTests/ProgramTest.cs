@@ -25,6 +25,8 @@ namespace SqlDatabase.IntegrationTests
         [SetUp]
         public void BeforeEachTest()
         {
+            TestPowerShellHost.GetOrCreateFactory();
+
             _scriptsLocation = ConfigurationManager.AppSettings["IntegrationTestsScriptsLocation"];
             if (!Path.IsPathRooted(_scriptsLocation))
             {
