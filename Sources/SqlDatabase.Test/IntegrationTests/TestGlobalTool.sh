@@ -1,3 +1,4 @@
+set -e
 export PATH="$PATH:/root/.dotnet/tools"
 dotnet tool install -g --add-source $app SqlDatabase.GlobalTool --version $packageVersion
 
