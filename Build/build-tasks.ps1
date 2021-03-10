@@ -23,6 +23,7 @@ Task Test -Depends InitializeTests `
     , TestPowerShellCore703 `
     , TestPowerShellCore710 `
     , TestPowerShellCore720 `
+    , TestPowerShellCore712 `
     , TestGlobalTool22 `
     , TestGlobalTool31 `
     , TestGlobalTool50 `
@@ -77,6 +78,7 @@ Task Build {
     New-Item -Path $net45Dest -ItemType Directory
     Copy-Item -Path (Join-Path $net45Source "SqlDatabase.exe") -Destination $net45Dest
     Copy-Item -Path (Join-Path $net45Source "SqlDatabase.pdb") -Destination $net45Dest
+    Copy-Item -Path (Join-Path $net45Source "System.Management.Automation.dll") -Destination $net45Dest
 }
 
 Task PackGlobalTool {
@@ -234,6 +236,10 @@ Task TestPowerShellCore710 {
     Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.0-ubuntu-18.04"
 }
 
+Task TestPowerShellCore712 {
+    Test-PowerShellCore "mcr.microsoft.com/powershell:7.1.2-ubuntu-20.04"
+}
+
 Task TestPowerShellCore720 {
     Test-PowerShellCore "mcr.microsoft.com/powershell:7.2.0-preview.2-ubuntu-20.04"
 }
@@ -257,25 +263,25 @@ Task TestPowerShellDesktop {
 }
 
 Task TestGlobalTool22 {
-    Test-GlobalTool "microsoft/dotnet:2.2-sdk"
+    Test-GlobalTool "sqldatabase/dotnet_pwsh:2.2-sdk"
 }
 
 Task TestGlobalTool31 {
-    Test-GlobalTool "mcr.microsoft.com/dotnet/core/sdk:3.1"
+    Test-GlobalTool "sqldatabase/dotnet_pwsh:3.1-sdk"
 }
 
 Task TestGlobalTool50 {
-    Test-GlobalTool "mcr.microsoft.com/dotnet/sdk:5.0"
+    Test-GlobalTool "sqldatabase/dotnet_pwsh:5.0-sdk"
 }
 
 Task TestNetCore22 {
-    Test-NetCore "netcoreapp2.2" "microsoft/dotnet:2.2-runtime"
+    Test-NetCore "netcoreapp2.2" "sqldatabase/dotnet_pwsh:2.2-runtime"
 }
 
 Task TestNetCore31 {
-    Test-NetCore "netcoreapp3.1" "mcr.microsoft.com/dotnet/core/runtime:3.1"
+    Test-NetCore "netcoreapp3.1" "sqldatabase/dotnet_pwsh:3.1-runtime"
 }
 
 Task TestNet50 {
-    Test-NetCore "net5.0" "mcr.microsoft.com/dotnet/runtime:5.0"
+    Test-NetCore "net5.0" "sqldatabase/dotnet_pwsh:5.0-runtime"
 }
