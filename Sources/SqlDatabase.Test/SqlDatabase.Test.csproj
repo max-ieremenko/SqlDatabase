@@ -8,6 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper.StrongName" Version="2.0.78" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="Shouldly" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj" />
+    <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case01.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case02.sql" />
     <None Remove="Scripts\SqlBatchParserTest\Dependencies\Case03.sql" />
@@ -49,21 +64,6 @@
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\FolderAsModuleName.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Dapper.StrongName" Version="2.0.78" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="Moq" Version="4.15.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NUnit" Version="3.13.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="Shouldly" Version="4.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj" />
-    <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
   </ItemGroup>
 
 </Project>
