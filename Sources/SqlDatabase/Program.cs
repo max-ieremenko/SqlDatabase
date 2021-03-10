@@ -25,7 +25,7 @@ namespace SqlDatabase
 
             if (factory.ShowCommandHelp)
             {
-                logger.Info(LoadHelpContent("CommandLine." + factory.ActiveCommandName + ".txt"));
+                logger.Info(LoadHelpContent(GetHelpFileName(factory.ActiveCommandName)));
                 return ExitCode.InvalidCommandLine;
             }
 
@@ -93,6 +93,16 @@ namespace SqlDatabase
             return CommandLineParser.PreFormatOutputLogs(args) ?
                 LoggerFactory.CreatePreFormatted() :
                 LoggerFactory.CreateDefault();
+        }
+
+        private static string GetHelpFileName(string commandName)
+        {
+#if NET452
+            const string Runtime = ".net452";
+#else
+            const string Runtime = null;
+#endif
+            return "CommandLine." + commandName + Runtime + ".txt";
         }
 
         private static string LoadHelpContent(string fileName)

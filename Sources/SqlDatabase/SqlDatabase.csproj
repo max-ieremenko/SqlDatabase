@@ -33,19 +33,19 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="Configuration\CommandLine.create.txt" />
-    <None Remove="Configuration\CommandLine.execute.txt" />
-    <None Remove="Configuration\CommandLine.export.txt" />
-    <None Remove="Configuration\CommandLine.txt" />
-    <None Remove="Configuration\CommandLine.upgrade.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
     <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+    <EmbeddedResource Include="Configuration\CommandLine.export.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.txt" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
     <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
