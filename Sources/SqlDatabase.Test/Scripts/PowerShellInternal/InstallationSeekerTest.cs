@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 using InstallationInfo = SqlDatabase.Scripts.PowerShellInternal.InstallationSeeker.InstallationInfo;
 
 namespace SqlDatabase.Scripts.PowerShellInternal
@@ -17,7 +20,6 @@ namespace SqlDatabase.Scripts.PowerShellInternal
             if (actual)
             {
                 Console.WriteLine(path);
-                InstallationSeeker.IsPowerShellCore(path).ShouldBeTrue();
             }
         }
 
@@ -31,7 +33,31 @@ namespace SqlDatabase.Scripts.PowerShellInternal
             InstallationSeeker.TryFindOnDisk(out var path).ShouldBeTrue();
 
             Console.WriteLine(path);
-            InstallationSeeker.IsPowerShellCore(path).ShouldBeTrue();
+        }
+
+        [Test]
+        public void TryGetInfo()
+        {
+            using (var dir = new TempDirectory())
+            {
+                var root = Path.Combine(dir.Location, InstallationSeeker.RootAssemblyFileName);
+
+                InstallationSeeker.TryGetInfo(dir.Location, out _).ShouldBeFalse();
+
+                File.WriteAllText(Path.Combine(dir.Location, "pwsh.dll"), "dummy");
+                File.WriteAllText(root, "dummy");
+
+                InstallationSeeker.TryGetInfo(dir.Location, out _).ShouldBeFalse();
+
+                File.Delete(root);
+                File.Copy(GetType().Assembly.Location, root);
+
+                InstallationSeeker.TryGetInfo(dir.Location, out var actual).ShouldBeTrue();
+
+                actual.Location.ShouldBe(dir.Location);
+                actual.Version.ShouldBe(GetType().Assembly.GetName().Version);
+                actual.ProductVersion.ShouldBe(actual.Version.ToString());
+            }
         }
 
         [Test]

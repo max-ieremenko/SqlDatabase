@@ -8,7 +8,7 @@ namespace SqlDatabase.Scripts.PowerShellInternal
     internal static class InstallationSeeker
     {
         public const string RootAssemblyName = "System.Management.Automation";
-        private const string RootAssemblyFileName = RootAssemblyName + ".dll";
+        public const string RootAssemblyFileName = RootAssemblyName + ".dll";
 
         public static bool TryFindByParentProcess(out string installationPath)
         {
@@ -21,7 +21,9 @@ namespace SqlDatabase.Scripts.PowerShellInternal
             }
 
             installationPath = FindPowerShellProcess(processId, processStartTime);
-            return !string.IsNullOrEmpty(installationPath) && IsPowerShellCore(installationPath);
+            return !string.IsNullOrEmpty(installationPath)
+                   && TryGetInfo(installationPath, out var info)
+                   && IsCompatibleVersion(info.Version);
         }
 
         public static bool TryFindOnDisk(out string installationPath)
@@ -34,21 +36,14 @@ namespace SqlDatabase.Scripts.PowerShellInternal
             }
 
             var candidates = new List<InstallationInfo>();
+
             var directories = Directory.GetDirectories(root);
             for (var i = 0; i < directories.Length; i++)
             {
-                var directory = directories[i];
-                if (!IsPowerShellCore(directory))
+                if (TryGetInfo(directories[i], out var info)
+                    && IsCompatibleVersion(info.Version))
                 {
-                    continue;
-                }
-
-                var info = GetVersion(directory);
-                if (!string.IsNullOrEmpty(info.FileVersion)
-                    && Version.TryParse(info.FileVersion, out var version)
-                    && IsCompatibleVersion(version))
-                {
-                    candidates.Add(new InstallationInfo(directory, version, info.ProductVersion));
+                    candidates.Add(info);
                 }
             }
 
@@ -62,20 +57,27 @@ namespace SqlDatabase.Scripts.PowerShellInternal
             return true;
         }
 
-        public static FileVersionInfo GetVersion(string installationPath)
+        public static bool TryGetInfo(string installationPath, out InstallationInfo info)
         {
-            return FileVersionInfo.GetVersionInfo(GetRootAssemblyFileName(installationPath));
-        }
+            info = default;
 
-        public static bool IsPowerShellCore(string installationPath)
-        {
-            return File.Exists(GetRootAssemblyFileName(installationPath))
-                && File.Exists(Path.Combine(installationPath, "pwsh.dll"));
-        }
+            var root = Path.Combine(installationPath, RootAssemblyFileName);
+            if (!File.Exists(Path.Combine(installationPath, "pwsh.dll"))
+                || !File.Exists(root))
+            {
+                return false;
+            }
 
-        public static string GetRootAssemblyFileName(string installationPath)
-        {
-            return Path.Combine(installationPath, RootAssemblyFileName);
+            var fileInfo = FileVersionInfo.GetVersionInfo(root);
+            if (string.IsNullOrEmpty(fileInfo.FileVersion)
+                || string.IsNullOrEmpty(fileInfo.ProductVersion)
+                || !Version.TryParse(fileInfo.FileVersion, out var version))
+            {
+                return false;
+            }
+
+            info = new InstallationInfo(installationPath, version, fileInfo.ProductVersion);
+            return true;
         }
 
         private static string FindPowerShellProcess(int processId, DateTime processStartTime)
@@ -113,7 +115,7 @@ namespace SqlDatabase.Scripts.PowerShellInternal
                 return FindPowerShellProcess(parentId.Value, processStartTime);
             }
 
-            return Path.GetDirectoryName(fileName);
+            return Path.GetDirectoryName(parentLocation);
         }
 
         private static string GetDefaultInstallationRoot()

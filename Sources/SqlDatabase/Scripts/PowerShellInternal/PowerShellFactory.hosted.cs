@@ -31,12 +31,12 @@ namespace SqlDatabase.Scripts.PowerShellInternal
                 throw new InvalidOperationException("PowerShell Core installation not found, please provide installation path via command line options {0}{1}.".FormatWith(Arg.Sign, Arg.UsePowerShell));
             }
 
-            if (!InstallationSeeker.IsPowerShellCore(InstallationPath))
+            if (!InstallationSeeker.TryGetInfo(InstallationPath, out var info))
             {
                 throw new InvalidOperationException("PowerShell Core installation not found in {0}.".FormatWith(InstallationPath));
             }
 
-            logger.Info("host PowerShell from {0}, version {1}".FormatWith(InstallationPath, InstallationSeeker.GetVersion(InstallationPath).ProductVersion));
+            logger.Info("host PowerShell from {0}, version {1}".FormatWith(InstallationPath, info.ProductVersion));
 
             AssemblyLoadContext.Default.Resolving += AssemblyResolving;
             try
@@ -72,7 +72,7 @@ Write-Host ""OS:"" $PSVersionTable.OS";
         {
             if (InstallationSeeker.RootAssemblyName.Equals(assemblyName.Name, StringComparison.OrdinalIgnoreCase))
             {
-                var fileName = InstallationSeeker.GetRootAssemblyFileName(InstallationPath);
+                var fileName = Path.Combine(InstallationPath, InstallationSeeker.RootAssemblyFileName);
                 return context.LoadFromAssemblyPath(fileName);
             }
 
