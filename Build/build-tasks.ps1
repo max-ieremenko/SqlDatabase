@@ -7,6 +7,7 @@ Task UnitTest -Depends InitializeTests `
     , UnitTestcore22 `
     , UnitTestcore31 `
     , UnitTest50
+
 Task Test -Depends InitializeTests `
     , TestPublishModule `
     , TestPowerShellDesktop `
@@ -27,6 +28,9 @@ Task Test -Depends InitializeTests `
     , TestGlobalTool22 `
     , TestGlobalTool31 `
     , TestGlobalTool50 `
+    , TestNetCoreLinux22 `
+    , TestNetCoreLinux31 `
+    , TestNetLinux50 `
     , TestNetCore22 `
     , TestNetCore31 `
     , TestNet50
@@ -257,7 +261,7 @@ Task TestPowerShellDesktop {
     $builder["Data Source"] = "."
     $env:connectionString = $builder.ToString()
 
-    $testScript = Join-Path $moduleIntegrationTests "Test.ps1"
+    $testScript = Join-Path $moduleIntegrationTests "TestPowerShell.ps1"
 
     Test-PowerShellDesktop ". $testScript"
 }
@@ -272,6 +276,18 @@ Task TestGlobalTool31 {
 
 Task TestGlobalTool50 {
     Test-GlobalTool "sqldatabase/dotnet_pwsh:5.0-sdk"
+}
+
+Task TestNetCoreLinux22 {
+    Test-NetCoreLinux "netcoreapp2.2" "sqldatabase/dotnet_pwsh:2.2-runtime"
+}
+
+Task TestNetCoreLinux31 {
+    Test-NetCoreLinux "netcoreapp3.1" "sqldatabase/dotnet_pwsh:3.1-runtime"
+}
+
+Task TestNetLinux50 {
+    Test-NetCoreLinux "net5.0" "sqldatabase/dotnet_pwsh:5.0-runtime"
 }
 
 Task TestNetCore22 {
