@@ -108,9 +108,11 @@ namespace SqlDatabase.Scripts
         [Test]
         public void GetDependencies()
         {
-            _sut.ReadDescriptionContent = () => Encoding.Default.GetBytes(@"
+            var description = Encoding.Default.GetBytes(@"
 -- module dependency: a 1.0
 -- module dependency: b 1.0");
+
+            _sut.ReadDescriptionContent = () => new MemoryStream(description);
 
             var actual = _sut.GetDependencies();
 

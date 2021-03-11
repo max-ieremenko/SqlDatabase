@@ -37,7 +37,7 @@ namespace SqlDatabase.Scripts
         [TestCaseSource(nameof(GetExtractDependenciesTestCases))]
         public void ExtractDependencies(string sql, ScriptDependency[] expected)
         {
-            var actual = SqlBatchParser.ExtractDependencies(sql, "file name").ToArray();
+            var actual = SqlBatchParser.ExtractDependencies(new StringReader(sql), "file name").ToArray();
             actual.ShouldBe(expected);
         }
 
@@ -47,7 +47,7 @@ namespace SqlDatabase.Scripts
         public void ExtractDependenciesInvalidVersion(string versionText)
         {
             var input = "-- module dependency: moduleName " + versionText;
-            var ex = Assert.Throws<InvalidOperationException>(() => SqlBatchParser.ExtractDependencies(input, "file name").ToArray());
+            var ex = Assert.Throws<InvalidOperationException>(() => SqlBatchParser.ExtractDependencies(new StringReader(input), "file name").ToArray());
 
             ex.Message.ShouldContain("moduleName");
             ex.Message.ShouldContain(versionText);

@@ -7,6 +7,8 @@ namespace SqlDatabase.Commands
     {
         public ICreateScriptSequence ScriptSequence { get; set; }
 
+        public IPowerShellFactory PowerShellFactory { get; set; }
+
         protected override void Greet(string databaseLocation)
         {
             Log.Info("Execute script on {0}".FormatWith(databaseLocation));
@@ -15,6 +17,8 @@ namespace SqlDatabase.Commands
         protected override void ExecuteCore()
         {
             var sequences = ScriptSequence.BuildSequence();
+
+            PowerShellFactory.InitializeIfRequested(Log);
 
             foreach (var script in sequences)
             {

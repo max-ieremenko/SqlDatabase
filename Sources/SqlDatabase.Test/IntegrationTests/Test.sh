@@ -1,3 +1,4 @@
+set -e
 echo "----- create new database ---"
 dotnet SqlDatabase.dll create \
       "-database=$connectionString" \

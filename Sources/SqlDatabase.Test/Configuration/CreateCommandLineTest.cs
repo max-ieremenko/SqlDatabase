@@ -38,6 +38,9 @@ namespace SqlDatabase.Configuration
                 new Arg("varX", "1 2 3"),
                 new Arg("varY", "value"),
                 new Arg("configuration", "app.config"),
+#if !NET472
+                new Arg("usePowerShell", @"c:\PowerShell"),
+#endif
                 new Arg("whatIf")));
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
@@ -52,6 +55,10 @@ namespace SqlDatabase.Configuration
 
             _sut.ConfigurationFile.ShouldBe("app.config");
 
+#if !NET472
+            _sut.UsePowerShell.ShouldBe(@"c:\PowerShell");
+#endif
+
             _sut.WhatIf.ShouldBeTrue();
         }
 
@@ -60,6 +67,7 @@ namespace SqlDatabase.Configuration
         {
             _sut.WhatIf = true;
             _sut.Connection = new SqlConnectionStringBuilder();
+            _sut.UsePowerShell = @"c:\PowerShell";
 
             var actual = _sut
                 .CreateCommand(_log.Object)
@@ -69,7 +77,10 @@ namespace SqlDatabase.Configuration
             var database = actual.Database.ShouldBeOfType<Database>();
             database.WhatIf.ShouldBeTrue();
 
-            actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
+            var scriptFactory = actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>().ScriptFactory.ShouldBeOfType<ScriptFactory>();
+            scriptFactory.PowerShellFactory.InstallationPath.ShouldBe(@"c:\PowerShell");
+
+            actual.PowerShellFactory.ShouldBe(scriptFactory.PowerShellFactory);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SqlDatabase.Scripts
 
         public Func<byte[]> ReadAssemblyContent { get; set; }
 
-        public Func<byte[]> ReadDescriptionContent { get; set; }
+        public Func<Stream> ReadDescriptionContent { get; set; }
 
         public AssemblyScriptConfiguration Configuration { get; set; }
 
@@ -48,16 +48,17 @@ namespace SqlDatabase.Scripts
 
         public IList<ScriptDependency> GetDependencies()
         {
-            var description = ReadDescriptionContent();
-            if (description == null || description.Length == 0)
+            using (var description = ReadDescriptionContent())
             {
-                return new ScriptDependency[0];
-            }
+                if (description == null)
+                {
+                    return new ScriptDependency[0];
+                }
 
-            using (var stream = new MemoryStream(description))
-            using (var reader = new StreamReader(stream))
-            {
-                return SqlBatchParser.ExtractDependencies(reader.ReadToEnd(), DisplayName).ToArray();
+                using (var reader = new StreamReader(description))
+                {
+                    return SqlBatchParser.ExtractDependencies(reader, DisplayName).ToArray();
+                }
             }
         }
 

@@ -44,7 +44,7 @@ function Test-PowerShellCore($image) {
             --env connectionString=$connectionString `
             --env test=/test `
             $image `
-            pwsh -Command ./test/Test.ps1
+            pwsh -Command ./test/TestPowerShell.ps1
     }
 }
 
@@ -82,7 +82,7 @@ function Test-GlobalTool($image) {
     }
 }
 
-function Test-NetCore($targetFramework, $image) {
+function Test-NetCoreLinux($targetFramework, $image) {
     $bin = Join-Path $binDir "SqlDatabase\$targetFramework\publish"
     $app = $bin + ":/app"
     $test = $moduleIntegrationTests + ":/test"
@@ -97,6 +97,17 @@ function Test-NetCore($targetFramework, $image) {
             $image `
             bash /test/Test.sh
     }
+}
+
+function Test-NetCore($targetFramework, $image) {
+    $bin = Join-Path $binDir "SqlDatabase\$targetFramework\publish"
+    $script = Join-Path $moduleIntegrationTests "Test.ps1"
+
+    $builder = New-Object -TypeName System.Data.SqlClient.SqlConnectionStringBuilder -ArgumentList $connectionString
+    $builder["Data Source"] = "."
+    $cs = $builder.ToString()
+
+    & $script $bin $cs
 }
 
 function Test-Unit($targetFramework) {

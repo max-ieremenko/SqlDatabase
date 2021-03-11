@@ -70,7 +70,7 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        private struct VariableValue
+        private readonly struct VariableValue
         {
             public VariableValue(VariableSource source, string value)
             {

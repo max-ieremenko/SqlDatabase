@@ -33,19 +33,19 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="Configuration\CommandLine.create.txt" />
-    <None Remove="Configuration\CommandLine.execute.txt" />
-    <None Remove="Configuration\CommandLine.export.txt" />
-    <None Remove="Configuration\CommandLine.txt" />
-    <None Remove="Configuration\CommandLine.upgrade.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
     <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+    <EmbeddedResource Include="Configuration\CommandLine.export.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.net452.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.txt" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
     <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
@@ -56,6 +56,25 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management.Automation">
+      <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="6.2.7" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">

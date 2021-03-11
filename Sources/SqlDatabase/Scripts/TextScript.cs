@@ -48,7 +48,12 @@ namespace SqlDatabase.Scripts
                 batch = SqlBatchParser.SplitByGo(sql).FirstOrDefault();
             }
 
-            return SqlBatchParser.ExtractDependencies(batch, DisplayName).ToArray();
+            if (string.IsNullOrWhiteSpace(batch))
+            {
+                return new ScriptDependency[0];
+            }
+
+            return SqlBatchParser.ExtractDependencies(new StringReader(batch), DisplayName).ToArray();
         }
 
         private IEnumerable<string> ResolveBatches(IVariables variables, ILogger logger)

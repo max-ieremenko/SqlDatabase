@@ -1,35 +1,56 @@
+param (
+    $bin,
+    $connectionString
+)
+
 $ErrorActionPreference = "Stop"
 
-$connectionString = $env:connectionString
-$test = $env:test
-
-Import-Module "SqlDatabase"
+$app = Join-Path $bin "SqlDatabase.dll"
+$scripts = Join-Path $PSScriptRoot "New"
 
 Write-Host "----- create new database ---"
-Create-SqlDatabase `
-    -database $connectionString `
-    -from (Join-Path $test "New") `
-    -var JohnCity=London,MariaCity=Paris
+$scripts = Join-Path $PSScriptRoot "New"
+Exec {
+    dotnet $app create `
+        "-database=$connectionString" `
+        "-from=$scripts" `
+        -varJohnCity=London `
+        -varMariaCity=Paris
+}
 
 Write-Host "----- update database ---"
-Upgrade-SqlDatabase `
-    -database $connectionString `
-    -from (Join-Path $test "Upgrade") `
-    -var JohnSecondName=Smitt,MariaSecondName=X 
+$scripts = Join-Path $PSScriptRoot "Upgrade"
+Exec {
+    dotnet $app upgrade `
+        "-database=$connectionString" `
+        "-from=$scripts" `
+        -varJohnSecondName=Smitt `
+        -varMariaSecondName=X
+}
 
 Write-Host "----- update database (modularity) ---"
-Upgrade-SqlDatabase `
-    -database $connectionString `
-    -from (Join-Path $test "UpgradeModularity") `
-    -configuration (Join-Path $test "UpgradeModularity/SqlDatabase.exe.config")
+$scripts = Join-Path $PSScriptRoot "UpgradeModularity"
+$configuration = (Join-Path $scripts "SqlDatabase.exe.config")
+Exec {
+    dotnet $app upgrade  `
+        "-database=$connectionString"  `
+        "-from=$scripts" `
+        "-configuration=$configuration"
+}
 
 Write-Host "----- export data ---"
-Export-SqlDatabase `
-    -database $connectionString `
-    -from (Join-Path $test "Export/export.sql") `
-    -toTable "dbo.ExportedData1"
+$scripts = Join-Path $PSScriptRoot "Export/export.sql"
+Exec {
+    dotnet $app export  `
+        "-database=$connectionString"  `
+        "-from=$scripts" `
+        "-toTable=dbo.ExportedData1"
+}
 
 Write-Host "----- execute script ---"
-Execute-SqlDatabase `
-    -database $connectionString `
-    -from (Join-Path $test "execute/drop.database.sql") 
+$scripts = Join-Path $PSScriptRoot "execute/drop.database.sql"
+Exec {
+    dotnet $app execute  `
+        "-database=$connectionString"  `
+        "-from=$scripts"
+}

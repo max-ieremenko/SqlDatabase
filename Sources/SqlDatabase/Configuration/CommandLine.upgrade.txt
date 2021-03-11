@@ -20,6 +20,9 @@ Upgrade an existing database
   -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
+  -usePowerShell: a path to installation of PowerShell Core. PowerShell Core is required in case of running .ps1 scripts.
+        -usePowerShell=C:\Program Files\PowerShell\7
+
   -whatIf: shows what would happen if the command runs. The command is not run.
 
 exit codes:
@@ -28,7 +31,7 @@ exit codes:
   2 - errors during execution
 
 example: upgrade "MyDatabase" on "server", migration steps from "C:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
-> SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2
+> SqlDatabase upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2
 
 example: use previous example with -whatIf options to show steps without execution
-> SqlDatabase.exe upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2 -whatIf
+> SqlDatabase upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2 -whatIf

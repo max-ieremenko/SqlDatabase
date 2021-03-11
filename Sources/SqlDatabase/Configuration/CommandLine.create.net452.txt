@@ -1,0 +1,34 @@
+﻿Usage:  SqlDatabase create [options]...
+
+Create a database
+
+[options]
+  -database: connection string to target database
+        "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True"
+
+  -from: a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.
+        -from=C:\MyDatabase\CreateScripts - create a new database from script files in CreateScripts folder
+        -from=C:\MyDatabase\CreateScripts.zip - create a new database from script files in CreateScripts.zip archive
+        -from=C:\MyDatabase.zip\CreateScripts - create a new database from script files in CreateScripts folder in MyDatabase.zip archive
+        -from=C:\MyDatabase\CreateScript.sql - create a new database from scripts in file CreateScript.sql
+        -from=C:\MyDatabase.zip\CreateScript.sql - create a new database from scripts in file CreateScript.sql in MyDatabase.zip archive
+
+  -var: set a variable in format "-var[name of variable]=[value of variable]"
+        -varRecoveryModel=FULL - usage: ALTER DATABASE [{{NewDatabase}}] SET RECOVERY {{RecoveryModel}} WITH NO_WAIT
+
+  -configuration: a path to application configuration file. Default is current SqlDatabase.exe.config.
+        -configuration=C:\MyDatabase\sql-database.config
+
+  -whatIf: shows what would happen if the command runs. The command is not run.
+
+exit codes:
+  0 - OK
+  1 - invalid command line
+  2 - errors during execution
+
+example:
+create new "NewDatabase" on "server" based on scripts from "C:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
+> SqlDatabase create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2
+
+example: use previous example with -whatIf options to show steps without execution
+> SqlDatabase create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2 -whatIf

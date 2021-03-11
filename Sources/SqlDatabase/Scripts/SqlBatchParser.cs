@@ -41,27 +41,19 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        public static IEnumerable<ScriptDependency> ExtractDependencies(string sql, string scriptName)
+        public static IEnumerable<ScriptDependency> ExtractDependencies(TextReader reader, string scriptName)
         {
-            if (string.IsNullOrWhiteSpace(sql))
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-                yield break;
-            }
-
-            using (var reader = new StringReader(sql))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                if (TryParseDependencyLine(line, out var moduleName, out var versionText))
                 {
-                    if (TryParseDependencyLine(line, out var moduleName, out var versionText))
+                    if (!Version.TryParse(versionText, out var version))
                     {
-                        if (!Version.TryParse(versionText, out var version))
-                        {
-                            throw new InvalidOperationException("The current version value [{0}] of module [{1}] is invalid, script {2}.".FormatWith(versionText, moduleName, scriptName));
-                        }
-
-                        yield return new ScriptDependency(moduleName, version);
+                        throw new InvalidOperationException("The current version value [{0}] of module [{1}] is invalid, script {2}.".FormatWith(versionText, moduleName, scriptName));
                     }
+
+                    yield return new ScriptDependency(moduleName, version);
                 }
             }
         }

@@ -10,6 +10,8 @@ namespace SqlDatabase.Commands
     {
         public IUpgradeScriptSequence ScriptSequence { get; set; }
 
+        public IPowerShellFactory PowerShellFactory { get; set; }
+
         protected override void Greet(string databaseLocation)
         {
             Log.Info("Upgrade {0}".FormatWith(databaseLocation));
@@ -32,6 +34,8 @@ namespace SqlDatabase.Commands
             {
                 ShowMigrationSequenceFull(sequence);
             }
+
+            PowerShellFactory.InitializeIfRequested(Log);
 
             foreach (var step in sequence)
             {

@@ -2,6 +2,7 @@
 using System.Linq;
 using SqlDatabase.Commands;
 using SqlDatabase.Scripts;
+using SqlDatabase.Scripts.PowerShellInternal;
 using SqlDatabase.Scripts.UpgradeInternal;
 
 namespace SqlDatabase.Configuration
@@ -9,6 +10,8 @@ namespace SqlDatabase.Configuration
     internal sealed class UpgradeCommandLine : CommandLineBase
     {
         public TransactionMode Transaction { get; set; }
+
+        public string UsePowerShell { get; set; }
 
         public bool FolderAsModuleName { get; set; }
 
@@ -20,10 +23,15 @@ namespace SqlDatabase.Configuration
             configuration.LoadFrom(ConfigurationFile);
 
             var database = CreateDatabase(logger, configuration, Transaction, WhatIf);
+            var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
 
             var sequence = new UpgradeScriptSequence
             {
-                ScriptFactory = new ScriptFactory { Configuration = configuration.SqlDatabase },
+                ScriptFactory = new ScriptFactory
+                {
+                    Configuration = configuration.SqlDatabase,
+                    PowerShellFactory = powerShellFactory
+                },
                 VersionResolver = new ModuleVersionResolver { Database = database, Log = logger },
                 Sources = Scripts.ToArray(),
                 Log = logger,
@@ -35,7 +43,8 @@ namespace SqlDatabase.Configuration
             {
                 Log = logger,
                 Database = database,
-                ScriptSequence = sequence
+                ScriptSequence = sequence,
+                PowerShellFactory = powerShellFactory
             };
         }
 
@@ -52,6 +61,14 @@ namespace SqlDatabase.Configuration
                 WhatIf = value;
                 return true;
             }
+
+#if NETCOREAPP || NET5_0
+            if (Arg.UsePowerShell.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                UsePowerShell = arg.Value;
+                return true;
+            }
+#endif
 
             if (TryParseSwitchParameter(arg, Arg.FolderAsModuleName, out value))
             {

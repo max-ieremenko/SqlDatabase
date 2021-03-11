@@ -12,6 +12,8 @@ namespace SqlDatabase.Commands
         private DatabaseCreateCommand _sut;
         private Mock<IDatabase> _database;
         private Mock<ICreateScriptSequence> _scriptSequence;
+        private Mock<IPowerShellFactory> _powerShellFactory;
+        private Mock<ILogger> _log;
 
         [SetUp]
         public void BeforeEachTest()
@@ -22,15 +24,17 @@ namespace SqlDatabase.Commands
 
             _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-            var log = new Mock<ILogger>(MockBehavior.Strict);
-            log.Setup(l => l.Indent()).Returns((IDisposable)null);
-            log
+            _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
+
+            _log = new Mock<ILogger>(MockBehavior.Strict);
+            _log.Setup(l => l.Indent()).Returns((IDisposable)null);
+            _log
                 .Setup(l => l.Error(It.IsAny<string>()))
                 .Callback<string>(m =>
                 {
                     Console.WriteLine("Error: {0}", m);
                 });
-            log
+            _log
                 .Setup(l => l.Info(It.IsAny<string>()))
                 .Callback<string>(m =>
                 {
@@ -40,8 +44,9 @@ namespace SqlDatabase.Commands
             _sut = new DatabaseCreateCommand
             {
                 Database = _database.Object,
-                Log = log.Object,
-                ScriptSequence = _scriptSequence.Object
+                Log = _log.Object,
+                ScriptSequence = _scriptSequence.Object,
+                PowerShellFactory = _powerShellFactory.Object
             };
         }
 
@@ -64,6 +69,9 @@ namespace SqlDatabase.Commands
             var step2 = new Mock<IScript>(MockBehavior.Strict);
             step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
+            _powerShellFactory
+                .Setup(f => f.InitializeIfRequested(_log.Object));
+
             _database
                 .Setup(d => d.Execute(step1.Object))
                 .Callback(() => _database.Setup(d => d.Execute(step2.Object)));
@@ -74,6 +82,7 @@ namespace SqlDatabase.Commands
 
             _database.VerifyAll();
             _scriptSequence.VerifyAll();
+            _powerShellFactory.VerifyAll();
         }
 
         [Test]
@@ -85,6 +94,9 @@ namespace SqlDatabase.Commands
             var step2 = new Mock<IScript>(MockBehavior.Strict);
             step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
+            _powerShellFactory
+                .Setup(f => f.InitializeIfRequested(_log.Object));
+
             _database
                 .Setup(d => d.Execute(step1.Object))
                 .Throws<InvalidOperationException>();
@@ -95,6 +107,7 @@ namespace SqlDatabase.Commands
 
             _database.VerifyAll();
             _scriptSequence.VerifyAll();
+            _powerShellFactory.VerifyAll();
         }
     }
 }
