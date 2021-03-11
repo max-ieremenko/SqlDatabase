@@ -157,6 +157,7 @@ Scripts
 -------
 
 - *.sql* a text file with Sql Server scripts
+- *.ps1* a text file with PowerShell script, details are [here](Examples/PowerShellScript)
 - *.dll* or *.exe* an .NET assembly with a script implementation, details are [here](Examples/CSharpMirationStep)
 
 [Back to ToC](#table-of-contents)

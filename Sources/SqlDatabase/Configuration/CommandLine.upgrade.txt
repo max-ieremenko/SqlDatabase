@@ -20,7 +20,7 @@ Upgrade an existing database
   -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
-  -usePowerShell: a path to installation of PowerShell Core, required in case of running .ps1 scripts. Default is location of pwsh procees, if SqlDatabase is running by PowerShell Core.
+  -usePowerShell: a path to installation of PowerShell Core. PowerShell Core is required in case of running .ps1 scripts.
         -usePowerShell=C:\Program Files\PowerShell\7
 
   -whatIf: shows what would happen if the command runs. The command is not run.
