@@ -62,19 +62,19 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="All" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="6.2.7" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="6.2.7" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.5" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
