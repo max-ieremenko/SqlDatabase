@@ -29,99 +29,61 @@ function Get-RepositoryCommitId {
     return $response.sha
 }
 
-function Resolve-SqlServerIp ($containerName) {
-    return Exec { docker inspect --format='{{.NetworkSettings.Networks.docker_default.Gateway}}' $containerName }
-}
+function Start-Mssql {
+    # https://github.com/docker/for-win/issues/3171
+    $containerId = exec { 
+        docker run `
+            -d `
+            -p 1433 `
+            sqldatabase/mssql:2017
+    }
+    
+    $ip = exec { 
+        docker inspect `
+            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
+            $containerId
+    }
 
-function Test-PowerShellCore($image) {
-    $app = $moduleBin + ":/root/.local/share/powershell/Modules/SqlDatabase"
-    $test = $moduleIntegrationTests + ":/test"
+    $port = exec { 
+        docker inspect `
+            --format "{{(index (index .NetworkSettings.Ports \""1433/tcp\"") 0).HostPort}}"  `
+            $containerId
+    }
 
-    Exec {
-        docker run --rm `
-            -v $app `
-            -v $test `
-            --env connectionString=$connectionString `
-            --env test=/test `
-            $image `
-            pwsh -Command ./test/TestPowerShell.ps1
+    $builder = New-Object -TypeName System.Data.SqlClient.SqlConnectionStringBuilder
+    $builder["Initial Catalog"] = "SqlDatabaseTest"
+    $builder["User Id"] = "sa"
+    $builder["Password"] = "P@ssw0rd"
+    $builder["Connect Timeout"] = 5
+
+    $builder["Data Source"] = ".,$port"
+    $connectionString = $builder.ToString()
+    
+    $builder["Data Source"] = $ip
+    $remoteConnectionString = $builder.ToString()
+
+    return @{
+        containerId            = $containerId
+        connectionString       = $connectionString
+        remoteConnectionString = $remoteConnectionString
     }
 }
 
-function Test-PowerShellDesktop($command) {
-    $app = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "WindowsPowerShell\modules\SqlDatabase"
-
-    if (Test-Path $app) {
-        Remove-Item -Path $app -Force -Recurse
-    }
-
+function Wait-Mssql($connectionString) {
+    $connection = New-Object -TypeName System.Data.SqlClient.SqlConnection -ArgumentList $connectionString
     try {
-        Copy-Item -Path $moduleBin -Destination $app -Force -Recurse
-        Exec { powershell -NoLogo -Command "$command" }
+        for ($i = 0; $i -lt 20; $i++) {
+            try {
+                $connection.Open()
+                return
+            }
+            catch {
+                Start-Sleep -Seconds 1
+            }
+        }
     }
     finally {
-        Remove-Item -Path $app -Force -Recurse
+        $connection.Dispose()
     }
 }
 
-function Test-GlobalTool($image) {
-    $packageName = "SqlDatabase.GlobalTool.$packageVersion.nupkg"
-    $app = (Join-Path $binNugetDir $packageName) + ":/app/$packageName"
-    $test = $moduleIntegrationTests + ":/test"
-
-    Exec {
-        docker run --rm `
-            -v $app `
-            -v $test `
-            --env connectionString=$connectionString `
-            --env test=/test `
-            --env app=/app `
-            --env packageVersion=$packageVersion `
-            $image `
-            bash /test/TestGlobalTool.sh
-    }
-}
-
-function Test-NetCoreLinux($targetFramework, $image) {
-    $bin = Join-Path $binDir "SqlDatabase\$targetFramework\publish"
-    $app = $bin + ":/app"
-    $test = $moduleIntegrationTests + ":/test"
-
-    Exec {
-        docker run --rm `
-            -v $app `
-            -v $test `
-            --env connectionString=$connectionString `
-            --env test=/test `
-            -w "/app" `
-            $image `
-            bash /test/Test.sh
-    }
-}
-
-function Test-NetCore($targetFramework, $image) {
-    $bin = Join-Path $binDir "SqlDatabase\$targetFramework\publish"
-    $script = Join-Path $moduleIntegrationTests "Test.ps1"
-
-    $builder = New-Object -TypeName System.Data.SqlClient.SqlConnectionStringBuilder -ArgumentList $connectionString
-    $builder["Data Source"] = "."
-    $cs = $builder.ToString()
-
-    & $script $bin $cs
-}
-
-function Test-Unit($targetFramework) {
-    $sourceDir = Join-Path $binDir "Tests"
-    $sourceDir = Join-Path $sourceDir $targetFramework
-
-    $testList = Get-ChildItem -Path $sourceDir -Recurse -Filter *.Test.dll `
-        | Where-Object FullName -NotMatch \\ref\\ `
-        | ForEach-Object {$_.FullName}    
-    
-    if (-not $testList.Count) {
-        throw ($Framework + " test list is empty.")
-    }
-    
-    $testList
-    Exec { dotnet vstest $testList }
-}

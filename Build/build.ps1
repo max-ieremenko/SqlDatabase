@@ -1,5 +1,6 @@
-#Install-Module -Name psake
-#Requires -Modules @{ModuleName='psake'; RequiredVersion='4.9.0'}
+#Requires -Modules @{ModuleName='InvokeBuild'; RequiredVersion='5.7.2'}
 
-$psakeMain = Join-Path $PSScriptRoot "build-tasks.ps1"
-Invoke-psake $psakeMain
+Set-StrictMode -Version Latest
+
+$file = Join-Path $PSScriptRoot "build-tasks.ps1"
+Invoke-Build -File $file
