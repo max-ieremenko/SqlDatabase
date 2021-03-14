@@ -257,6 +257,7 @@ Parameters *-from* and *-configuration* in the command line interpret .zip files
 Examples
 --------
 
+* [create ms sql server linux docker image](Examples/SqlServerDockerImage)
 * [execute script(s)](Examples/ExecuteScriptsFolder)
 * [export data](Examples/ExportData)
 * [create a database](Examples/CreateDatabaseFolder)
