@@ -18,10 +18,9 @@ RUN dotnet tool install --global SqlDatabase.GlobalTool
 # 2. upgrade database
 # 3. shatdown mssql server
 RUN /opt/mssql/bin/sqlservr & \
-   sleep 20 && \
    export PATH="$PATH:/root/.dotnet/tools" && \
    SqlDatabase upgrade  \
-      "-database=Data Source=.;Initial Catalog=SqlDatabaseDemo;User Id=sa;Password=P@ssw0rd;"  \
+      "-database=Data Source=.;Initial Catalog=SqlDatabaseDemo;User Id=sa;Password=P@ssw0rd;ConnectRetryCount=20;ConnectRetryInterval=1"  \
       -from=/sql-scripts && \
    pkill sqlservr
 
