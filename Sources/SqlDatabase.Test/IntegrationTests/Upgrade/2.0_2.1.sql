@@ -7,3 +7,5 @@ UPDATE demo.Person
 SET SecondName = '{{MariaSecondName}}'
 WHERE Name = 'Maria'
 GO
+
+SELECT * FROM demo.Person
