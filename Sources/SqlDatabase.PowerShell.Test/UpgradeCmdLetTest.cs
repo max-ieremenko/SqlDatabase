@@ -25,6 +25,7 @@ namespace SqlDatabase.PowerShell
                     c.Parameters.Add(nameof(UpgradeCmdLet.Var), new[] { "x=1", "y=2" });
                     c.Parameters.Add(nameof(UpgradeCmdLet.WhatIf));
                     c.Parameters.Add(nameof(UpgradeCmdLet.FolderAsModuleName));
+                    c.Parameters.Add(nameof(CreateCmdLet.Log), "log.txt");
                 });
 
             commandLines.Length.ShouldBe(1);
@@ -43,6 +44,9 @@ namespace SqlDatabase.PowerShell
 
             Path.IsPathRooted(commandLine.ConfigurationFile).ShouldBeTrue();
             Path.GetFileName(commandLine.ConfigurationFile).ShouldBe("app.config");
+
+            Path.IsPathRooted(commandLine.LogFileName).ShouldBeTrue();
+            Path.GetFileName(commandLine.LogFileName).ShouldBe("log.txt");
 
             commandLine.WhatIf.ShouldBeTrue();
             commandLine.FolderAsModuleName.ShouldBeTrue();

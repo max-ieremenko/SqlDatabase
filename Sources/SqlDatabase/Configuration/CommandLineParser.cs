@@ -8,9 +8,9 @@ namespace SqlDatabase.Configuration
     {
         public static bool PreFormatOutputLogs(IList<string> args)
         {
-            foreach (var arg in args)
+            for (var i = 0; i < args.Count; i++)
             {
-                if (ParseArg(arg, out var value)
+                if (ParseArg(args[i], out var value)
                     && IsPreFormatOutputLogs(value))
                 {
                     return string.IsNullOrEmpty(value.Value) || bool.Parse(value.Value);
@@ -18,6 +18,20 @@ namespace SqlDatabase.Configuration
             }
 
             return false;
+        }
+
+        public static string GetLogFileName(IList<string> args)
+        {
+            for (var i = 0; i < args.Count; i++)
+            {
+                if (ParseArg(args[i], out var value)
+                    && IsLog(value))
+                {
+                    return value.Value;
+                }
+            }
+
+            return null;
         }
 
         public CommandLine Parse(params string[] args)
@@ -31,7 +45,7 @@ namespace SqlDatabase.Configuration
                     throw new InvalidCommandLineException("Invalid option [{0}].".FormatWith(arg));
                 }
 
-                if (!IsPreFormatOutputLogs(value))
+                if (!IsPreFormatOutputLogs(value) && !IsLog(value))
                 {
                     result.Add(value);
                 }
@@ -42,7 +56,7 @@ namespace SqlDatabase.Configuration
 
         internal static bool ParseArg(string input, out Arg arg)
         {
-            arg = default(Arg);
+            arg = default;
 
             if (string.IsNullOrEmpty(input))
             {
@@ -130,6 +144,13 @@ namespace SqlDatabase.Configuration
         private static bool IsPreFormatOutputLogs(Arg arg)
         {
             return arg.IsPair && Arg.PreFormatOutputLogs.Equals(arg.Key, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsLog(Arg arg)
+        {
+            return arg.IsPair
+                   && Arg.Log.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)
+                   && !string.IsNullOrWhiteSpace(arg.Value);
         }
     }
 }

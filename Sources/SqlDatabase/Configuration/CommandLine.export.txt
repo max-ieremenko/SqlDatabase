@@ -28,6 +28,9 @@ Export data from a database to sql script file
   -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
+  -log: optional path to log file.
+        -log=C:\Temp\sql-database.log
+
 exit codes:
   0 - OK
   1 - invalid command line

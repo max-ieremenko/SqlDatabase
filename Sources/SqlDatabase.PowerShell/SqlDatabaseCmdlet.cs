@@ -21,6 +21,9 @@ namespace SqlDatabase.PowerShell
         [Alias("v")]
         public string[] Var { get; set; }
 
+        [Parameter(HelpMessage = "Optional path to log file.")]
+        public string Log { get; set; }
+
         // only for tests
         internal static ISqlDatabaseProgram Program { get; set; }
 
@@ -40,7 +43,8 @@ namespace SqlDatabase.PowerShell
         {
             var cmd = new GenericCommandLineBuilder()
                 .SetCommand(_command)
-                .SetConnection(Database);
+                .SetConnection(Database)
+                .SetLogFileName(this.RootPath(Log));
 
             if (Var != null && Var.Length > 0)
             {

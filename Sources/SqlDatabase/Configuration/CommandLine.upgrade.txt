@@ -20,6 +20,9 @@ Upgrade an existing database
   -configuration: path to application configuration file. Default is current SqlDatabase.exe.config.
         -configuration=C:\MyDatabase\sql-database.config
 
+  -log: optional path to log file.
+        -log=C:\Temp\sql-database.log
+
   -usePowerShell: a path to installation of PowerShell Core. PowerShell Core is required in case of running .ps1 scripts.
         -usePowerShell=C:\Program Files\PowerShell\7
 

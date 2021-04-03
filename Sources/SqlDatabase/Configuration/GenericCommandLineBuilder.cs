@@ -115,6 +115,12 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
+        public GenericCommandLineBuilder SetLogFileName(string fileName)
+        {
+            Line.LogFileName = fileName;
+            return this;
+        }
+
         public GenericCommandLine Build()
         {
             return Line;
@@ -178,6 +184,11 @@ namespace SqlDatabase.Configuration
             if (cmd.FolderAsModuleName)
             {
                 result.Add(CombineArg(Arg.FolderAsModuleName, cmd.FolderAsModuleName.ToString(), false));
+            }
+
+            if (!string.IsNullOrEmpty(cmd.LogFileName))
+            {
+                result.Add(CombineArg(Arg.Log, cmd.LogFileName, escaped));
             }
 
             return result.ToArray();
