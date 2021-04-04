@@ -107,26 +107,62 @@ Predefined variables
 |:--|:----------|
 |DatabaseName|the target database name|
 
-
 Sql script example
 =============================
+
+File name 02_demo.Department.sql
+
 ```sql
--- 2.0_2.1.sql
-PRINT 'create table Demo'
+PRINT 'create table demo.Department'
 GO
 
-CREATE TABLE dbo.Demo
+CREATE TABLE demo.Department
 (
-	Id INT NOT NULL
+	Id INT NOT NULL IDENTITY(1, 1)
+	,Name NVARCHAR(300) NOT NULL
 )
 GO
 
-ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
+ALTER TABLE demo.Department ADD CONSTRAINT PK_Department PRIMARY KEY CLUSTERED (Id)
 GO
+
+CREATE NONCLUSTERED INDEX IX_Department_Name ON demo.Department	(Name)
+GO
+```
+
+.ps1 script example
+=============================
+
+File name 02_demo.Department.ps1, see details [here](../PowerShellScript).
+
+```powershell
+param (
+    $Command,
+    $Variables
+)
+
+Write-Information "create table demo.Department"
+
+$Command.CommandText = @"
+CREATE TABLE demo.Department
+(
+	Id INT NOT NULL IDENTITY(1, 1)
+	,Name NVARCHAR(300) NOT NULL
+)
+"@
+$Command.ExecuteNonQuery()
+
+$Command.CommandText = "ALTER TABLE demo.Department ADD CONSTRAINT PK_Department PRIMARY KEY CLUSTERED (Id)"
+$Command.ExecuteNonQuery()
+
+$Command.CommandText = "CREATE NONCLUSTERED INDEX IX_Department_Name ON demo.Department	(Name)"
+$Command.ExecuteNonQuery()
 ```
 
 Assembly script example
 =======================
+
+File name 02_demo.Department.dll, see details [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>
@@ -135,23 +171,22 @@ namespace <any namespace name>
     {
         public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
         {
-            // write a message to an migration log
-            Console.WriteLine("start execution");
+            Console.WriteLine("create table demo.Department");
 
-            // execute a query
-            command.CommandText = "create table Demo");
+            command.CommandText = @"
+CREATE TABLE demo.Department
+(
+	Id INT NOT NULL IDENTITY(1, 1)
+	,Name NVARCHAR(300) NOT NULL
+)
+            ";
             command.ExecuteNonQuery();
-
-            // execute a query
-            command.CommandText = 'CREATE TABLE dbo.Demo ( Id INT NOT NULL )';
+            
+            command.CommandText = 'ALTER TABLE demo.Department ADD CONSTRAINT PK_Department PRIMARY KEY CLUSTERED (Id)';
             command.ExecuteNonQuery();
-
-            // execute a query
-            command.CommandText = 'ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)';
+            
+            command.CommandText = 'CREATE NONCLUSTERED INDEX IX_Department_Name ON demo.Department	(Name)';
             command.ExecuteNonQuery();
-
-            // write a message to a log
-            Console.WriteLine("finish execution");
         }
     }
 }
