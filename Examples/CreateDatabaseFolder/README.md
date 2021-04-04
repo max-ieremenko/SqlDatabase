@@ -152,6 +152,8 @@ param (
 
 Write-Information "start execution"
 
+$Command.Connection.ChangeDatabase("master")
+
 $Command.CommandText = ("CREATE DATABASE [{0}]" -f $Variables.DatabaseName)
 $Command.ExecuteNonQuery()
 
@@ -178,7 +180,7 @@ namespace <any namespace name>
         {
             Console.WriteLine("start execution");
 
-            command.Connection.ChangeDatabase("master")
+            command.Connection.ChangeDatabase("master");
 
             command.CommandText = string.Format("CREATE DATABASE [{0}]", variables["DatabaseName"]);
             command.ExecuteNonQuery();
