@@ -3,7 +3,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Dapper;
-using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
@@ -18,9 +17,9 @@ namespace SqlDatabase.IntegrationTests
     {
         private readonly string _connectionString = new SqlConnectionStringBuilder(Query.ConnectionString) { InitialCatalog = "SqlDatabaseIT" }.ToString();
 
-        private Mock<ILogger> _log;
         private string _scriptsLocation;
         private AppConfiguration _configuration;
+        private TempFile _logFile;
 
         [SetUp]
         public void BeforeEachTest()
@@ -35,19 +34,17 @@ namespace SqlDatabase.IntegrationTests
 
             _configuration = new AppConfiguration();
 
-            _log = new Mock<ILogger>(MockBehavior.Strict);
-            _log
-                .Setup(l => l.Error(It.IsAny<string>()))
-                .Callback<string>(m =>
-                {
-                    Console.WriteLine("Error: {0}", m);
-                });
-            _log
-                .Setup(l => l.Info(It.IsAny<string>()))
-                .Callback<string>(m =>
-                {
-                    Console.WriteLine("Info: {0}", m);
-                });
+            _logFile = new TempFile(".log");
+        }
+
+        [TearDown]
+        public void AfterEachTest()
+        {
+            FileAssert.Exists(_logFile.Location);
+            var fileContent = File.ReadAllLines(_logFile.Location);
+            _logFile.Dispose();
+
+            fileContent.ShouldNotBeEmpty();
         }
 
         [Test]
@@ -61,6 +58,7 @@ namespace SqlDatabase.IntegrationTests
                 .SetScripts(Path.Combine(_scriptsLocation, "new"))
                 .SetVariable("JohnCity", "London")
                 .SetVariable("MariaCity", "Paris")
+                .SetLogFileName(_logFile.Location)
                 .BuildArray(false);
 
             Assert.AreEqual(0, Program.Main(args));
@@ -104,6 +102,7 @@ ORDER BY Person.Id";
                 .SetScripts(Path.Combine(_scriptsLocation, "upgrade"))
                 .SetVariable("JohnSecondName", "Smitt")
                 .SetVariable("MariaSecondName", "X")
+                .SetLogFileName(_logFile.Location)
                 .BuildArray(false);
 
             Assert.AreEqual(0, Program.Main(args));
@@ -142,7 +141,8 @@ ORDER BY Person.Id";
                 .SetCommand(CommandLineFactory.CommandUpgrade)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, "UpgradeModularity"))
-                .SetConfigurationFile(Path.Combine(_scriptsLocation, "UpgradeModularity", "SqlDatabase.exe.config"));
+                .SetConfigurationFile(Path.Combine(_scriptsLocation, "UpgradeModularity", "SqlDatabase.exe.config"))
+                .SetLogFileName(_logFile.Location);
 
             Program.Main(args.BuildArray(false)).ShouldBe(0);
 
@@ -268,7 +268,8 @@ ORDER BY p.Name";
         {
             var cmd = new GenericCommandLineBuilder()
                 .SetCommand(CommandLineFactory.CommandExecute)
-                .SetConnection(_connectionString);
+                .SetConnection(_connectionString)
+                .SetLogFileName(_logFile.Location);
 
             builder(cmd);
             var args = cmd.BuildArray(false);

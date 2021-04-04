@@ -28,5 +28,7 @@ namespace SqlDatabase.Configuration
         public bool WhatIf { get; set; }
 
         public bool FolderAsModuleName { get; set; }
+
+        public string LogFileName { get; set; }
     }
 }

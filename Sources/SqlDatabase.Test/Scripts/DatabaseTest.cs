@@ -121,6 +121,7 @@ namespace SqlDatabase.Scripts
                 });
 
             _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0"));
+
             script.VerifyAll();
         }
 
@@ -254,6 +255,78 @@ namespace SqlDatabase.Scripts
             _sut.Execute(script.Object, null, new Version("1.0"), new Version("2.0"));
 
             script.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteNoTransactionValidateCommand()
+        {
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
+                {
+                    cmd.CommandTimeout.ShouldBe(0);
+                    cmd.Transaction.ShouldBeNull();
+                    cmd.CommandType.ShouldBe(CommandType.Text);
+                    cmd.Connection.ShouldNotBeNull();
+                    cmd.Connection.State.ShouldBe(ConnectionState.Open);
+
+                    cmd.CommandText = "select DB_NAME()";
+                    cmd.ExecuteScalar().ShouldBeOfType<string>().ShouldBe(Query.DatabaseName, StringCompareShould.IgnoreCase);
+                });
+
+            _sut.Execute(script.Object);
+
+            script.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteTransactionPerStepValidateCommand()
+        {
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
+                {
+                    cmd.CommandTimeout.ShouldBe(0);
+                    cmd.Transaction.ShouldNotBeNull();
+                    cmd.CommandType.ShouldBe(CommandType.Text);
+                    cmd.Connection.ShouldNotBeNull();
+                    cmd.Connection.State.ShouldBe(ConnectionState.Open);
+
+                    cmd.CommandText = "select DB_NAME()";
+                    cmd.ExecuteScalar().ShouldBeOfType<string>().ShouldBe(Query.DatabaseName, StringCompareShould.IgnoreCase);
+                });
+
+            _sut.Transaction = TransactionMode.PerStep;
+            _sut.Execute(script.Object);
+
+            script.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteTransactionPerStepRollbackOnError()
+        {
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
+                {
+                    cmd.CommandText = "create table dbo.t1( Id INT )";
+                    cmd.ExecuteNonQuery();
+
+                    throw new InvalidOperationException();
+                });
+
+            _sut.Transaction = TransactionMode.PerStep;
+            Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object));
+
+            script.VerifyAll();
+
+            using (var c = Query.Open())
+            {
+                Assert.IsNull(c.ExecuteScalar<string>("select OBJECT_ID('dbo.t1')"));
+            }
         }
 
         [Test]

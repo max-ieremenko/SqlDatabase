@@ -9,3 +9,5 @@ SELECT Person.Id, '{{MariaCity}}'
 FROM demo.Person Person
 WHERE Person.Name = 'Maria'
 GO
+
+SELECT * FROM demo.PersonAddress

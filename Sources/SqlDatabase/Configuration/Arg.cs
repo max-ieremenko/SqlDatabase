@@ -22,6 +22,7 @@
         internal const string HelpShort = "h";
 
         internal const string PreFormatOutputLogs = "preFormatOutputLogs";
+        internal const string Log = "log";
 
         public Arg(string key, string value)
         {

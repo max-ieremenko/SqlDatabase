@@ -16,6 +16,23 @@ namespace SqlDatabase
 
         internal static int Run(ILogger logger, string[] args)
         {
+            if (!TryWrapWithUsersLogger(logger, args, out var userLogger))
+            {
+                return ExitCode.InvalidCommandLine;
+            }
+
+            try
+            {
+                return MainCore(userLogger ?? logger, args);
+            }
+            finally
+            {
+                userLogger?.Dispose();
+            }
+        }
+
+        private static int MainCore(ILogger logger, string[] args)
+        {
             var factory = ResolveFactory(args, logger);
             if (factory == null)
             {
@@ -93,6 +110,30 @@ namespace SqlDatabase
             return CommandLineParser.PreFormatOutputLogs(args) ?
                 LoggerFactory.CreatePreFormatted() :
                 LoggerFactory.CreateDefault();
+        }
+
+        private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger combined)
+        {
+            combined = null;
+            var fileName = CommandLineParser.GetLogFileName(args);
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return true;
+            }
+
+            ILogger fileLogger;
+            try
+            {
+                fileLogger = new FileLogger(fileName);
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Fail to create file log.", ex);
+                return false;
+            }
+
+            combined = new CombinedLogger(logger, false, fileLogger, true);
+            return true;
         }
 
         private static string GetHelpFileName(string commandName)

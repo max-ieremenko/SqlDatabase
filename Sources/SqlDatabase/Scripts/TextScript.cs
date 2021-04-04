@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -16,12 +17,36 @@ namespace SqlDatabase.Scripts
         {
             var batches = ResolveBatches(variables, logger);
 
-            if (command != null)
+            if (command == null)
             {
                 foreach (var batch in batches)
                 {
-                    command.CommandText = batch;
-                    command.ExecuteNonQuery();
+                    // what-if: just read to the end
+                }
+
+                return;
+            }
+
+            foreach (var batch in batches)
+            {
+                command.CommandText = batch;
+                using (var reader = command.ExecuteReader())
+                {
+                    var identOutput = false;
+                    do
+                    {
+                        var columns = GetReaderColumns(reader);
+                        if (columns == null)
+                        {
+                            ReadEmpty(reader);
+                        }
+                        else
+                        {
+                            ReadWithOutput(reader, columns, logger, identOutput);
+                            identOutput = true;
+                        }
+                    }
+                    while (reader.NextResult());
                 }
             }
         }
@@ -54,6 +79,76 @@ namespace SqlDatabase.Scripts
             }
 
             return SqlBatchParser.ExtractDependencies(new StringReader(batch), DisplayName).ToArray();
+        }
+
+        private static string[] GetReaderColumns(IDataReader reader)
+        {
+            using (var metadata = reader.GetSchemaTable())
+            {
+                return metadata
+                    ?.Rows
+                    .Cast<DataRow>()
+                    .OrderBy(i => (int)i["ColumnOrdinal"])
+                    .Select(i => (string)i["ColumnName"])
+                    .ToArray();
+            }
+        }
+
+        private static void ReadEmpty(IDataReader reader)
+        {
+            while (reader.Read())
+            {
+            }
+        }
+
+        private static void ReadWithOutput(IDataReader reader, string[] columns, ILogger logger, bool identOutput)
+        {
+            if (identOutput)
+            {
+                logger.Info(string.Empty);
+            }
+
+            var maxNameLength = 0;
+            for (var i = 0; i < columns.Length; i++)
+            {
+                var columnName = columns[i];
+                if (string.IsNullOrEmpty(columnName))
+                {
+                    columnName = "(no name)";
+                }
+
+                columns[i] = columnName;
+                maxNameLength = Math.Max(maxNameLength, columnName.Length);
+            }
+
+            logger.Info("output: " + string.Join("; ", columns));
+
+            for (var i = 0; i < columns.Length; i++)
+            {
+                var name = columns[i];
+                var spaces = maxNameLength - name.Length + 1;
+                columns[i] = name + new string(' ', spaces) + ": ";
+            }
+
+            var rowsCount = 0;
+            while (reader.Read())
+            {
+                rowsCount++;
+
+                logger.Info("row " + rowsCount.ToString(CultureInfo.CurrentCulture));
+                using (logger.Indent())
+                {
+                    for (var i = 0; i < columns.Length; i++)
+                    {
+                        var value = reader.IsDBNull(i) ? "NULL" : Convert.ToString(reader.GetValue(i), CultureInfo.CurrentCulture);
+                        logger.Info(columns[i] + value);
+                    }
+                }
+            }
+
+            logger.Info("{0} row{1} selected".FormatWith(
+                rowsCount.ToString(CultureInfo.CurrentCulture),
+                rowsCount == 1 ? null : "s"));
         }
 
         private IEnumerable<string> ResolveBatches(IVariables variables, ILogger logger)

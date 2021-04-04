@@ -7,6 +7,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
 {
@@ -40,12 +41,11 @@ namespace SqlDatabase.Scripts
             _executedScripts = new List<string>();
             _command = new Mock<IDbCommand>(MockBehavior.Strict);
             _command.SetupProperty(c => c.CommandText);
-            _command
-                .Setup(c => c.ExecuteNonQuery())
-                .Callback(() => _executedScripts.Add(_command.Object.CommandText))
-                .Returns(0);
 
             _executedReader = new Mock<IDataReader>(MockBehavior.Strict);
+            _executedReader
+                .Setup(r => r.Dispose());
+
             _command
                 .Setup(c => c.ExecuteReader())
                 .Callback(() => _executedScripts.Add(_command.Object.CommandText))
@@ -58,30 +58,55 @@ namespace SqlDatabase.Scripts
         [Test]
         public void ExecuteShowVariableReplacement()
         {
-            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("{{var1}} {{var1}}"));
+            _sut.ReadSqlContent = "{{var1}} {{var1}}".AsFuncStream();
+
+            _executedReader
+                .Setup(r => r.GetSchemaTable())
+                .Returns((DataTable)null);
+            _executedReader
+                .Setup(r => r.Read())
+                .Returns(false);
+            _executedReader
+                .Setup(r => r.NextResult())
+                .Returns(false);
 
             _sut.Execute(_command.Object, _variables, _logger.Object);
 
-            Assert.AreEqual(1, _executedScripts.Count);
-            Assert.AreEqual("[some value] [some value]", _executedScripts[0]);
+            _executedScripts.Count.ShouldBe(1);
+            _executedScripts[0].ShouldBe("[some value] [some value]");
 
-            Assert.IsNotNull(_logOutput.Where(i => i.Contains("var1") && i.Contains("[some value]")));
+            _logOutput.FirstOrDefault(i => i.Contains("var1") && i.Contains("[some value]")).ShouldNotBeNull();
+
+            _executedReader.VerifyAll();
         }
 
         [Test]
         public void Execute()
         {
-            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
+            _sut.ReadSqlContent = @"
 {{var1}}
 go
 text2
-go"));
+go"
+                .AsFuncStream();
+
+            _executedReader
+                .Setup(r => r.GetSchemaTable())
+                .Returns((DataTable)null);
+            _executedReader
+                .Setup(r => r.Read())
+                .Returns(false);
+            _executedReader
+                .Setup(r => r.NextResult())
+                .Returns(false);
 
             _sut.Execute(_command.Object, _variables, _logger.Object);
 
-            Assert.AreEqual(2, _executedScripts.Count);
-            Assert.AreEqual("[some value]", _executedScripts[0]);
-            Assert.AreEqual("text2", _executedScripts[1]);
+            _executedScripts.Count.ShouldBe(2);
+            _executedScripts[0].ShouldBe("[some value]");
+            _executedScripts[1].ShouldBe("text2");
+
+            _executedReader.VerifyAll();
         }
 
         [Test]
@@ -95,14 +120,13 @@ go"));
 
             _sut.Execute(null, _variables, _logger.Object);
 
-            Assert.AreEqual(0, _executedScripts.Count);
+            _executedScripts.ShouldBeEmpty();
         }
 
         [Test]
         public void ExecuteReader()
         {
-            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes("select {{var1}}"));
-            _executedReader.Setup(r => r.Dispose());
+            _sut.ReadSqlContent = "select {{var1}}".AsFuncStream();
 
             var actual = _sut.ExecuteReader(_command.Object, _variables, _logger.Object).ToList();
 
@@ -111,16 +135,19 @@ go"));
 
             actual.Count.ShouldBe(1);
             actual[0].ShouldBe(_executedReader.Object);
+
+            _executedReader.VerifyAll();
         }
 
         [Test]
         public void GetDependencies()
         {
-            _sut.ReadSqlContent = () => new MemoryStream(Encoding.Default.GetBytes(@"
+            _sut.ReadSqlContent = @"
 -- module dependency: a 1.0
 go
 -- module dependency: b 1.0
-go"));
+go"
+                .AsFuncStream();
 
             var actual = _sut.GetDependencies();
 

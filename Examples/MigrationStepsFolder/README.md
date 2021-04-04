@@ -27,6 +27,7 @@ CLI
 |-from|a path to a folder or zip archive with migration steps. Repeat -from to setup several sources.|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
 |-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 |-whatIf|shows what would happen if the command runs. The command is not run|
 
@@ -95,11 +96,12 @@ Predefined variables
 |TargetVersion|the database version after execution of current migration step|
 |ModuleName|the module name of current migration step, empty string in case of straight forward upgrade|
 
-
 Migration .sql step example
 =============================
+
+File name 2.0_2.1.sql
+
 ```sql
--- 2.0_2.1.sql
 PRINT 'create table Demo'
 GO
 
@@ -109,12 +111,45 @@ CREATE TABLE dbo.Demo
 )
 GO
 
+PRINT 'create primary key PK_Demo'
+GO
+
 ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
 GO
 ```
 
+Migration .ps1 step example
+=============================
+
+File name 2.0_2.1.ps1, see details [here](../PowerShellScript).
+
+```powershell
+param (
+    $Command,
+    $Variables
+)
+
+Write-Information "create table Demo"
+
+$Command.CommandText = @"
+CREATE TABLE dbo.Demo
+(
+	Id INT NOT NULL
+)
+"@
+$Command.ExecuteNonQuery()
+
+Write-Information "create primary key PK_Demo"
+
+$Command.CommandText = "ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)"
+$Command.ExecuteNonQuery()
+
+```
+
 Migration .dll step example
 =======================
+
+File name 2.1_2.2.dll, see details [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>
@@ -123,23 +158,20 @@ namespace <any namespace name>
     {
         public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
         {
-            // write a message to an migration log
-            Console.WriteLine("start execution");
+            Console.WriteLine("create table Demo");
 
-            // execute a query
-            command.CommandText = "create table Demo");
+            command.CommandText = @"
+CREATE TABLE dbo.Demo
+(
+	Id INT NOT NULL
+)            
+            ";
             command.ExecuteNonQuery();
+            
+            Console.WriteLine("create primary key PK_Demo");
 
-            // execute a query
             command.CommandText = 'CREATE TABLE dbo.Demo ( Id INT NOT NULL )';
             command.ExecuteNonQuery();
-
-            // execute a query
-            command.CommandText = 'ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)';
-            command.ExecuteNonQuery();
-
-            // write a message to a log
-            Console.WriteLine("finish execution");
         }
     }
 }

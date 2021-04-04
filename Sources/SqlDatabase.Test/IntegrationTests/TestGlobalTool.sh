@@ -7,28 +7,33 @@ SqlDatabase create \
       "-database=$connectionString" \
       -from=$test/New \
       -varJohnCity=London \
-      -varMariaCity=Paris
+      -varMariaCity=Paris \
+      -log=/create.log
 
 echo "----- update database ---"
 SqlDatabase upgrade \
       "-database=$connectionString" \
       -from=$test/Upgrade \
       -varJohnSecondName=Smitt \
-      -varMariaSecondName=X
+      -varMariaSecondName=X \
+      -log=/upgrade.log
 
 echo "----- update database (modularity) ---"
 SqlDatabase upgrade \
       "-database=$connectionString" \
       -from=$test/UpgradeModularity \
-      -configuration=$test/UpgradeModularity/SqlDatabase.exe.config
+      -configuration=$test/UpgradeModularity/SqlDatabase.exe.config \
+      -log=/upgrade.log
 
 echo "----- export data ---"
 SqlDatabase export \
       "-database=$connectionString" \
       -from=$test/Export/export.sql \
-      -toTable=dbo.ExportedData1
+      -toTable=dbo.ExportedData1 \
+      -log=/export.log
 
 echo "----- execute script ---"
 SqlDatabase execute \
       "-database=$connectionString" \
-      -from=$test/execute/drop.database.sql
+      -from=$test/execute/drop.database.sql \
+      -log=/execute.log

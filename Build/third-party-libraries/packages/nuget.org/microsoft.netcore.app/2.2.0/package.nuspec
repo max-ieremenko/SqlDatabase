@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="2.12">
+    <id>Microsoft.NETCore.App</id>
+    <version>2.2.0</version>
+    <title>Microsoft.NETCore.App</title>
+    <authors>Microsoft</authors>
+    <owners>microsoft,dotnetframework</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/dotnet/core-setup/blob/master/LICENSE.TXT</licenseUrl>
+    <projectUrl>https://dot.net/</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <description>A set of .NET API's that are included in the default .NET Core application model. 
+1249f08feda72b116c7e6e4e9a390671883c797d 
+When using NuGet 3.x this package requires at least version 3.4.</description>
+    <releaseNotes>https://go.microsoft.com/fwlink/?LinkID=799417</releaseNotes>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <serviceable>true</serviceable>
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.2">
+        <dependency id="Microsoft.NETCore.DotNetHostPolicy" version="2.2.0" />
+        <dependency id="Microsoft.NETCore.Platforms" version="2.2.0" />
+        <dependency id="Microsoft.NETCore.Targets" version="2.0.0" />
+        <dependency id="NETStandard.Library" version="2.0.3" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

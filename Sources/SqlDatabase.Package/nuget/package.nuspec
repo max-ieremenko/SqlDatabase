@@ -26,6 +26,8 @@
           target="LICENSE.md"/>
     <file src="..\..\..\icon-32.png"
           target="icon-32.png"/>
+    <file src="..\..\..\bin\ThirdPartyNotices.txt"
+          target="ThirdPartyNotices.txt"/>
 
     <file src="$bin$**\*"
           target="tools/" />

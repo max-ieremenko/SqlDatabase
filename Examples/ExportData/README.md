@@ -59,6 +59,7 @@ CLI
 |-toTable|setup "INSERT INTO" table name. Default is dbo.SqlDatabaseExport.|
 |-toFile|write sql scripts into a file. By default write into standard output (console/information stream).|
 |-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 
 #### -from

@@ -24,6 +24,7 @@ CLI
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.|
 |-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 |-whatIf|shows what would happen if the command runs. The command is not run|
 
@@ -104,12 +105,12 @@ Predefined variables
 |:--|:----------|
 |DatabaseName|the target database name|
 
-
 Sql script example
 ==================
 
+File name 01_database/02_Create.sql
+
 ```sql
--- 01_database/02_Create.sql
 USE master
 GO
 
@@ -138,8 +139,37 @@ ALTER DATABASE [MyDatabase] SET ALLOW_SNAPSHOT_ISOLATION ON
 GO
 ```
 
+.ps1 script example
+=============================
+
+File name 01_database/02_Create.ps1, see details [here](../PowerShellScript).
+
+```powershell
+param (
+    $Command,
+    $Variables
+)
+
+Write-Information "start execution"
+
+$Command.Connection.ChangeDatabase("master")
+
+$Command.CommandText = ("CREATE DATABASE [{0}]" -f $Variables.DatabaseName)
+$Command.ExecuteNonQuery()
+
+$Command.CommandText = ("ALTER DATABASE [{0}] SET RECOVERY SIMPLE WITH NO_WAIT" -f $Variables.DatabaseName)
+$Command.ExecuteNonQuery()
+
+$Command.CommandText = ("ALTER DATABASE [{0}] SET ALLOW_SNAPSHOT_ISOLATION ON" -f $Variables.DatabaseName)
+$Command.ExecuteNonQuery()
+
+Write-Information "finish execution"
+```
+
 Assembly script example
 =======================
+
+File name 01_database/02_Create.dll, see details [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>
@@ -148,22 +178,19 @@ namespace <any namespace name>
     {
         public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
         {
-            // write a message to an migration log
             Console.WriteLine("start execution");
 
-            // execute a query
+            command.Connection.ChangeDatabase("master");
+
             command.CommandText = string.Format("CREATE DATABASE [{0}]", variables["DatabaseName"]);
             command.ExecuteNonQuery();
 
-            // execute a query
             command.CommandText = string.Format("ALTER DATABASE [{0}] SET RECOVERY SIMPLE WITH NO_WAIT", variables["DatabaseName"]);
             command.ExecuteNonQuery();
 
-            // execute a query
             command.CommandText = string.Format("ALTER DATABASE [{0}] SET ALLOW_SNAPSHOT_ISOLATION ON", variables["DatabaseName"]);
             command.ExecuteNonQuery();
 
-            // write a message to a log
             Console.WriteLine("finish execution");
         }
     }

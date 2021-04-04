@@ -229,6 +229,7 @@ namespace SqlDatabase.Scripts
                 {
                     using (var command = connection.CreateCommand())
                     {
+                        command.Transaction = transaction;
                         command.CommandTimeout = 0;
                         script.Execute(command, Variables, Log);
                     }

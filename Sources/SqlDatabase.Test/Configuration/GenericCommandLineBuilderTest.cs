@@ -29,6 +29,7 @@ namespace SqlDatabase.Configuration
                 .SetWhatIf(true)
                 .SetFolderAsModuleName(true)
                 .SetPreFormatOutputLogs(true)
+                .SetLogFileName("log file")
                 .BuildArray(true);
 
             foreach (var arg in escapedArgs)
@@ -37,7 +38,10 @@ namespace SqlDatabase.Configuration
             }
 
             CommandLineParser.PreFormatOutputLogs(escapedArgs).ShouldBeTrue();
+            CommandLineParser.GetLogFileName(escapedArgs).ShouldBe("log file");
             var actual = new CommandLineParser().Parse(escapedArgs);
+
+            actual.Args.Count.ShouldBe(9);
 
             actual.Args[0].IsPair.ShouldBe(false);
             actual.Args[0].Value.ShouldBe("some command");
