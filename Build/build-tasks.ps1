@@ -175,6 +175,7 @@ task IntegrationTest {
         @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; image = "mcr.microsoft.com/powershell:7.1.0-ubuntu-18.04" }
         @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; image = "mcr.microsoft.com/powershell:7.1.2-ubuntu-20.04" }
         @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; image = "mcr.microsoft.com/powershell:7.2.0-preview.2-ubuntu-20.04" }
+        @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; image = "mcr.microsoft.com/powershell:7.2.0-preview.4-ubuntu-20.04" }
 
         @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; image = "sqldatabase/dotnet_pwsh:2.2-sdk" }
         @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; image = "sqldatabase/dotnet_pwsh:3.1-sdk" }
