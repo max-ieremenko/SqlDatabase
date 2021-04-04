@@ -1,10 +1,10 @@
-task Default Initialize, Clean, Build, Pack, UnitTest, InitializeIntegrationTest, IntegrationTest
+task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, InitializeIntegrationTest, IntegrationTest
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget452, PackManualDownload
 
 . .\build-scripts.ps1
 
 task Initialize {
-    $sources = Join-Path $PSScriptRoot "..\Sources"
+    $sources = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
     $bin = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\bin"))
     $artifacts = Join-Path $bin "artifacts"
 
@@ -37,6 +37,10 @@ task Build {
     exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Release }
 }
 
+task ThirdPartyNotices {
+    Invoke-Build -File build-tasks.third-party.ps1 -Task "ThirdParty" -settings $settings
+}
+
 task PackGlobalTool {
     $projectFile = Join-Path $settings.sources "SqlDatabase\SqlDatabase.csproj"
 
@@ -62,8 +66,13 @@ task PackPoweShellModule {
     $psdFile = Join-Path $dest "SqlDatabase.psd1"
     ((Get-Content -Path $psdFile -Raw) -replace '{{ModuleVersion}}', $settings.version) | Set-Content -Path $psdFile
 
-    # copy to powershell
+    # copy license
     Copy-Item -Path (Join-Path $settings.sources "..\LICENSE.md") -Destination $dest
+
+    # copy ThirdPartyNotices
+    Copy-Item -Path (Join-Path $settings.bin "ThirdPartyNotices.txt") -Destination $dest
+
+    # copy net452
     $net45Dest = Join-Path $dest "net452"
     $net45Source = Join-Path $settings.bin "SqlDatabase\net452"
     New-Item -Path $net45Dest -ItemType Directory  | Out-Null
@@ -94,11 +103,12 @@ task PackNuget452 PackPoweShellModule, {
 task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $out = $settings.artifacts
     $lic = Join-Path $settings.sources "..\LICENSE.md"
+    $thirdParty = Join-Path $settings.bin "ThirdPartyNotices.txt"
     $packageVersion = $settings.version
-    
+
     $destination = Join-Path $out "SqlDatabase.$packageVersion-net452.zip"
     $source = Join-Path $settings.bin "SqlDatabase\net452\*"
-    Compress-Archive -Path $source, $lic -DestinationPath $destination
+    Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-PowerShell.zip"
     $source = Join-Path $settings.artifactsPowerShell "*"
@@ -108,15 +118,15 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $exe = Join-Path $settings.bin "SqlDatabase\netcoreapp3.1\publish\SqlDatabase.exe"
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore22.zip"
     $source = Join-Path $settings.bin "SqlDatabase\netcoreapp2.2\publish\*"
-    Compress-Archive -Path $source, $exe, $lic -DestinationPath $destination
+    Compress-Archive -Path $source, $exe, $lic, $thirdParty -DestinationPath $destination
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore31.zip"
     $source = Join-Path $settings.bin "SqlDatabase\netcoreapp3.1\publish\*"
-    Compress-Archive -Path $source, $lic -DestinationPath $destination
+    Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-net50.zip"
     $source = Join-Path $settings.bin "SqlDatabase\net5.0\publish\*"
-    Compress-Archive -Path $source, $lic -DestinationPath $destination
+    Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
 }
 
 task UnitTest {
