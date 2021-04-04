@@ -42,6 +42,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
 
         public void Unload()
         {
+            _appAgent?.BeforeUnload();
+
             if (_app != null)
             {
                 AppDomain.Unload(_app);

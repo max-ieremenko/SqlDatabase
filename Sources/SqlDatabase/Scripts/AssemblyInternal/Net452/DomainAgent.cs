@@ -53,6 +53,11 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
             return EntryPoint.Execute(command, variables);
         }
 
+        public void BeforeUnload()
+        {
+            _consoleRedirect?.Dispose();
+        }
+
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
         {
             var sqlDataBase = GetType().Assembly;
