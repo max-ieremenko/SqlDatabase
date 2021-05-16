@@ -1,4 +1,4 @@
-﻿#if NET452
+﻿#if NET472
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -58,7 +58,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
         [Test]
         public void ValidateScriptDomainAppBase()
         {
-            _sut.ResolveScriptExecutor(typeof(StepWithSubDomain).Name, nameof(StepWithSubDomain.ShowAppBase));
+            _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowAppBase));
             _sut.Execute(new DbCommandStub(_command.Object), _variables);
             _sut.Unload();
             _sut.Dispose();
@@ -77,7 +77,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
         [Test]
         public void ValidateScriptDomainConfiguration()
         {
-            _sut.ResolveScriptExecutor(typeof(StepWithSubDomain).Name, nameof(StepWithSubDomain.ShowConfiguration));
+            _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowConfiguration));
             _sut.Execute(new DbCommandStub(_command.Object), _variables);
             _sut.Unload();
             _sut.Dispose();
@@ -88,13 +88,13 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
             configurationFile.ShouldBe(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
 
             var connectionString = _executedScripts[1];
-            connectionString.ShouldBe(Query.ConnectionString);
+            connectionString.ShouldBe(MsSqlQuery.ConnectionString);
         }
 
         [Test]
         public void ValidateScriptDomainCreateSubDomain()
         {
-            _sut.ResolveScriptExecutor(typeof(StepWithSubDomain).Name, nameof(StepWithSubDomain.Execute));
+            _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.Execute));
             _sut.Execute(new DbCommandStub(_command.Object), _variables);
 
             _executedScripts.Count.ShouldBe(1);

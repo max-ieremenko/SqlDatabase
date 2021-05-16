@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using SqlDatabase.Commands;
 using SqlDatabase.IO;
@@ -10,7 +9,7 @@ namespace SqlDatabase.Configuration
 {
     internal abstract class CommandLineBase : ICommandLine
     {
-        public SqlConnectionStringBuilder Connection { get; set; }
+        public string ConnectionString { get; set; }
 
         public IList<IFileSystemInfo> Scripts { get; } = new List<IFileSystemInfo>();
 
@@ -27,7 +26,7 @@ namespace SqlDatabase.Configuration
                 ApplyArg(arg);
             }
 
-            if (Connection == null)
+            if (string.IsNullOrWhiteSpace(ConnectionString))
             {
                 throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Database));
             }
@@ -44,11 +43,20 @@ namespace SqlDatabase.Configuration
 
         internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration, TransactionMode transaction, bool whatIf)
         {
+            IDatabaseAdapter adapter;
+            try
+            {
+                adapter = DatabaseAdapterFactory.CreateAdapter(ConnectionString, configuration.SqlDatabase, logger);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidCommandLineException(Arg.Database, "Invalid connection string value.", ex);
+            }
+
             var database = new Database
             {
-                ConnectionString = Connection.ToString(),
+                Adapter = adapter,
                 Log = logger,
-                Configuration = configuration.SqlDatabase,
                 Transaction = transaction,
                 WhatIf = whatIf
             };
@@ -148,7 +156,7 @@ namespace SqlDatabase.Configuration
         {
             if (Arg.Database.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
-                SetConnection(arg.Value);
+                ConnectionString = arg.Value;
                 return true;
             }
 
@@ -171,18 +179,6 @@ namespace SqlDatabase.Configuration
             }
 
             return false;
-        }
-
-        private void SetConnection(string connectionString)
-        {
-            try
-            {
-                Connection = new SqlConnectionStringBuilder(connectionString);
-            }
-            catch (ArgumentException ex)
-            {
-                throw new InvalidCommandLineException(Arg.Database, "Invalid connection string value.", ex);
-            }
         }
 
         private void SetScripts(string value)

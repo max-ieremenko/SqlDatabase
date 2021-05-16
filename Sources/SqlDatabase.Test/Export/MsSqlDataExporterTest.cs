@@ -6,12 +6,13 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Export
 {
     [TestFixture]
-    public class DataExporterTest
+    public class MsSqlDataExporterTest
     {
         private StringBuilder _output;
         private DataExporter _sut;
@@ -29,7 +30,7 @@ namespace SqlDatabase.Export
             _sut = new DataExporter
             {
                 Log = log.Object,
-                Output = new SqlWriter(new StringWriter(_output))
+                Output = new MsSqlWriter(new StringWriter(_output))
             };
         }
 
@@ -38,7 +39,7 @@ namespace SqlDatabase.Export
         public void Export(string dataType, object minValue, object maxValue)
         {
             var sql = new StringBuilder();
-            var script = new SqlWriter(new StringWriter(sql))
+            var script = new MsSqlWriter(new StringWriter(sql))
                 .TextFormat("DECLARE @input TABLE(Value {0} NULL)", dataType)
                 .Line()
                 .Line("INSERT INTO @input VALUES");
@@ -49,7 +50,7 @@ namespace SqlDatabase.Export
 
             script.Text("SELECT * FROM @input");
 
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = sql.ToString();
@@ -66,7 +67,7 @@ namespace SqlDatabase.Export
 
             exportSql.ShouldContain(" " + dataType + " ");
 
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = exportSql.Replace("GO", string.Empty) + "\r\n\r\nSELECT * FROM #tmp";
@@ -89,7 +90,7 @@ namespace SqlDatabase.Export
         [Test]
         public void ExportReplaceRowVersionWithVarbinary()
         {
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = @"
@@ -100,7 +101,7 @@ select * from @x";
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var table = _sut.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
+                    var table = _sut.Output.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
                     table.Columns[1].SqlDataTypeName.ShouldBe("VARBINARY");
                     table.Columns[1].Size.ShouldBe(8);
 
@@ -111,7 +112,7 @@ select * from @x";
             var exportSql = _output.ToString();
             Console.WriteLine(exportSql);
 
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = exportSql.Replace("GO", string.Empty) + "\r\n\r\nSELECT * FROM #tmp";
@@ -128,7 +129,7 @@ select * from @x";
         [Test]
         public void ExportHierarchyId()
         {
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = @"
@@ -139,7 +140,7 @@ select * from @x";
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    Assert.Throws<NotSupportedException>(() => _sut.ReadSchemaTable(reader.GetSchemaTable(), "#tmp"));
+                    Assert.Throws<NotSupportedException>(() => _sut.Output.ReadSchemaTable(reader.GetSchemaTable(), "#tmp"));
                 }
             }
         }
@@ -149,7 +150,7 @@ select * from @x";
         {
             ExportTable actual;
 
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = "select 1, N'2' x, NULL";
@@ -157,7 +158,7 @@ select * from @x";
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    actual = _sut.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
+                    actual = _sut.Output.ReadSchemaTable(reader.GetSchemaTable(), "#tmp");
                 }
             }
 
@@ -182,7 +183,7 @@ select * from @x";
             string slq500;
             string slq2;
 
-            using (var connection = new SqlConnection(Query.ConnectionString))
+            using (var connection = new SqlConnection(MsSqlQuery.ConnectionString))
             using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = "select * from sys.databases";

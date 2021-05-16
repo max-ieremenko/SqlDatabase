@@ -38,7 +38,7 @@ namespace SqlDatabase.Scripts
 
         public string ApplyVariables(string script)
         {
-            if (string.IsNullOrEmpty(script))
+            if (string.IsNullOrWhiteSpace(script))
             {
                 return script;
             }

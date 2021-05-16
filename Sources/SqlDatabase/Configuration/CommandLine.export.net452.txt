@@ -36,5 +36,8 @@ exit codes:
   1 - invalid command line
   2 - errors during execution
 
-example: export data from sys.tables view into "c:\databases.sql" from "master" database on "server"
+example: export data from sys.tables view into "c:\tables.sql" from "master" database on MSSQL "server"
 > SqlDatabase export "-database=Data Source=server;Initial Catalog=master;Integrated Security=True" "-fromSql=SELECT * FROM sys.tables" -toFile=c:\tables.sql
+
+example: export data from information_schema.tables view into "c:\tables.sql" from "postgres" database on PostgreSQL "server"
+> SqlDatabase export "-database=Host=localhost;Username=postgres;Database=postgres" "-fromSql=SELECT * FROM information_schema.tables" -toFile=c:\tables.sql

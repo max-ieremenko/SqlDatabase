@@ -18,8 +18,13 @@ namespace SqlDatabase.Commands
         [SetUp]
         public void BeforeEachTest()
         {
+            var adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
+            adapter
+                .Setup(a => a.GetUserFriendlyConnectionString())
+                .Returns("greet");
+
             _database = new Mock<IDatabase>(MockBehavior.Strict);
-            _database.SetupGet(d => d.ConnectionString).Returns(@"Data Source=unknownServer;Initial Catalog=unknownDatabase");
+            _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
             _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
 
             _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);

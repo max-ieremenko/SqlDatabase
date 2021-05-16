@@ -1,51 +1,21 @@
 ﻿using System;
+using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
+using SqlDatabase.Export;
 
-namespace SqlDatabase.Export
+namespace SqlDatabase.Scripts.MsSql
 {
-    internal sealed class SqlWriter : IDisposable
+    internal sealed class MsSqlWriter : SqlWriterBase
     {
-        private const char Q = '\'';
-
-        public SqlWriter(TextWriter output)
+        public MsSqlWriter(TextWriter output)
+            : base(output)
         {
-            Output = output;
         }
 
-        public TextWriter Output { get; }
-
-        public void Dispose()
-        {
-            Output.Dispose();
-        }
-
-        public SqlWriter Line(string value = null)
-        {
-            Output.WriteLine(value);
-            return this;
-        }
-
-        public SqlWriter Go()
-        {
-            Output.WriteLine("GO");
-            return this;
-        }
-
-        public SqlWriter Text(string value)
-        {
-            Output.Write(value);
-            return this;
-        }
-
-        public SqlWriter TextFormat(string format, params object[] args)
-        {
-            Output.Write(format, args);
-            return this;
-        }
-
-        public SqlWriter Name(string value)
+        public override SqlWriterBase Name(string value)
         {
             const char OpenBracket = '[';
             const char CloseBracket = ']';
@@ -65,7 +35,13 @@ namespace SqlDatabase.Export
             return this;
         }
 
-        public SqlWriter DataType(string typeName, int size, int precision, int scale)
+        public override SqlWriterBase BatchSeparator()
+        {
+            Output.WriteLine("GO");
+            return this;
+        }
+
+        public override SqlWriterBase DataType(string typeName, int size, int precision, int scale)
         {
             var name = typeName.ToUpperInvariant();
             string sizeText = null;
@@ -122,30 +98,55 @@ namespace SqlDatabase.Export
             return this;
         }
 
-        public SqlWriter Null()
+        public override ExportTable ReadSchemaTable(DataTable metadata, string tableName)
         {
-            Output.Write("NULL");
-            return this;
-        }
+            var result = new ExportTable { Name = tableName };
 
-        public SqlWriter Value(object value)
-        {
-            value = DataReaderTools.CleanValue(value);
-            if (value == null)
+            const string GeneratedName = "GeneratedName";
+            var generatedIndex = 0;
+
+            var rows = metadata.Rows.Cast<DataRow>().OrderBy(i => (int)i["ColumnOrdinal"]);
+            foreach (var row in rows)
             {
-                Null();
-                return this;
+                var name = (string)row["ColumnName"];
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    generatedIndex++;
+                    name = GeneratedName + generatedIndex;
+                }
+
+                var typeName = (string)row["DataTypeName"];
+                var size = (int)row["ColumnSize"];
+
+                if ("timestamp".Equals(typeName, StringComparison.OrdinalIgnoreCase)
+                    || "RowVersion".Equals(typeName, StringComparison.OrdinalIgnoreCase))
+                {
+                    typeName = "VARBINARY";
+                    size = 8;
+                }
+                else if (typeName.EndsWith("sys.HIERARCHYID", StringComparison.OrdinalIgnoreCase))
+                {
+                    // System.IO.FileNotFoundException : Could not load file or assembly 'Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91' or one of its dependencies
+                    throw new NotSupportedException("Data type hierarchyid is not supported, to export data convert value to NVARCHAR: SELECT CAST([{0}] AND NVARCHAR(100)) [{0}]".FormatWith(name));
+                }
+
+                result.Columns.Add(new ExportTableColumn
+                {
+                    Name = name,
+                    SqlDataTypeName = typeName,
+                    Size = size,
+                    NumericPrecision = (short?)DataReaderTools.CleanValue(row["NumericPrecision"]),
+                    NumericScale = (short?)DataReaderTools.CleanValue(row["NumericScale"]),
+                    AllowNull = (bool)row["AllowDBNull"]
+                });
             }
 
-            if (!TryWriteValue(value))
-            {
-                throw new NotSupportedException("Type [{0}] is not supported.".FormatWith(value.GetType()));
-            }
-
-            return this;
+            return result;
         }
 
-        private bool TryWriteValue(object value)
+        public override string GetDefaultTableName() => "dbo.SqlDatabaseExport";
+
+        protected override bool TryWriteValue(object value, string typeNameHint)
         {
             var type = value.GetType();
 
@@ -179,6 +180,7 @@ namespace SqlDatabase.Export
                     return true;
 
                 case TypeCode.String:
+                    Output.Write('N');
                     ValueString((string)value);
                     return true;
             }
@@ -210,24 +212,6 @@ namespace SqlDatabase.Export
             return false;
         }
 
-        private void ValueString(string value)
-        {
-            Output.Write('N');
-            Output.Write(Q);
-            for (var i = 0; i < value.Length; i++)
-            {
-                var c = value[i];
-                Output.Write(c);
-
-                if (c == '\'')
-                {
-                    Output.Write(Q);
-                }
-            }
-
-            Output.Write(Q);
-        }
-
         private void ValueDate(DateTime value)
         {
             Output.Write(Q);
@@ -244,7 +228,7 @@ namespace SqlDatabase.Export
 
         private void ValueByteArray(byte[] value)
         {
-            var buff = new StringBuilder(value.Length * 2);
+            var buff = new StringBuilder((value.Length * 2) + 2);
             buff.Append("0x");
             for (var i = 0; i < value.Length; i++)
             {

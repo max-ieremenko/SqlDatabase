@@ -4,7 +4,7 @@ namespace SqlDatabase.Export
 {
     internal interface IDataExporter
     {
-        SqlWriter Output { get; set; }
+        SqlWriterBase Output { get; set; }
 
         ILogger Log { get; set; }
 

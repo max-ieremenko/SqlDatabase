@@ -10,15 +10,17 @@ namespace SqlDatabase.Configuration
         private const string PropertySetCurrentVersionScript = "setCurrentVersion";
         private const string PropertyAssemblyScript = "assemblyScript";
         private const string PropertyVariables = "variables";
+        private const string PropertyMsSql = "mssql";
+        private const string PropertyPgSql = "pgsql";
 
-        [ConfigurationProperty(PropertyGetCurrentVersionScript, DefaultValue = "SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)")]
+        [ConfigurationProperty(PropertyGetCurrentVersionScript)]
         public string GetCurrentVersionScript
         {
             get => (string)this[PropertyGetCurrentVersionScript];
             set => this[PropertyGetCurrentVersionScript] = value;
         }
 
-        [ConfigurationProperty(PropertySetCurrentVersionScript, DefaultValue = "EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'")]
+        [ConfigurationProperty(PropertySetCurrentVersionScript)]
         public string SetCurrentVersionScript
         {
             get => (string)this[PropertySetCurrentVersionScript];
@@ -30,5 +32,11 @@ namespace SqlDatabase.Configuration
 
         [ConfigurationProperty(PropertyVariables)]
         public NameValueConfigurationCollection Variables => (NameValueConfigurationCollection)this[PropertyVariables];
+
+        [ConfigurationProperty(PropertyMsSql)]
+        public DatabaseConfiguration MsSql => (DatabaseConfiguration)this[PropertyMsSql];
+
+        [ConfigurationProperty(PropertyPgSql)]
+        public DatabaseConfiguration PgSql => (DatabaseConfiguration)this[PropertyPgSql];
     }
 }

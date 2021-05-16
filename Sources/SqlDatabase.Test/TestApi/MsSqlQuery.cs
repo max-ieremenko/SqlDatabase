@@ -3,9 +3,9 @@ using System.Data.SqlClient;
 
 namespace SqlDatabase.TestApi
 {
-    internal static class Query
+    internal static class MsSqlQuery
     {
-        public static string ConnectionString => ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+        public static string ConnectionString => ConfigurationManager.ConnectionStrings["mssql"].ConnectionString;
 
         public static string DatabaseName => new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
 

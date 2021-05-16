@@ -15,5 +15,21 @@
       <add name="y"
            value="2" />
     </variables>
+
+    <mssql getCurrentVersion="get-mssql-version"
+           setCurrentVersion="set-mssql-version">
+      <variables>
+        <add name="mssql1"
+             value="10" />
+      </variables>
+    </mssql>
+
+    <pgsql getCurrentVersion="get-pgsql-version"
+           setCurrentVersion="set-pgsql-version">
+      <variables>
+        <add name="pgsql1"
+             value="20" />
+      </variables>
+    </pgsql>
   </sqlDatabase>
 </configuration>

@@ -17,13 +17,15 @@ namespace SqlDatabase.Configuration
             configuration.LoadFrom(ConfigurationFile);
 
             var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
+            var database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf);
 
             var sequence = new CreateScriptSequence
             {
                 ScriptFactory = new ScriptFactory
                 {
-                    Configuration = configuration.SqlDatabase,
-                    PowerShellFactory = powerShellFactory
+                    AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
+                    PowerShellFactory = powerShellFactory,
+                    TextReader = database.Adapter.CreateSqlTextReader()
                 },
                 Sources = Scripts.ToArray()
             };
@@ -31,7 +33,7 @@ namespace SqlDatabase.Configuration
             return new DatabaseCreateCommand
             {
                 Log = logger,
-                Database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf),
+                Database = database,
                 ScriptSequence = sequence,
                 PowerShellFactory = powerShellFactory
             };

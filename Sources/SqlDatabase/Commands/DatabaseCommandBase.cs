@@ -1,5 +1,4 @@
-﻿using System.Data.SqlClient;
-using SqlDatabase.Scripts;
+﻿using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands
 {
@@ -11,10 +10,7 @@ namespace SqlDatabase.Commands
 
         public void Execute()
         {
-            var cs = new SqlConnectionStringBuilder(Database.ConnectionString);
-            var databaseLocation = "database [{0}] on [{1}]".FormatWith(cs.InitialCatalog, cs.DataSource);
-
-            Greet(databaseLocation);
+            Greet(Database.Adapter.GetUserFriendlyConnectionString());
             Log.Info(Database.GetServerVersion());
 
             ExecuteCore();

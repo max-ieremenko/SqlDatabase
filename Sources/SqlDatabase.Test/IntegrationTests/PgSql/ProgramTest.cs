@@ -1,21 +1,23 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Dapper;
+using Moq;
+using Npgsql;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
+using SqlDatabase.Scripts.PgSql;
 using SqlDatabase.TestApi;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 
-namespace SqlDatabase.IntegrationTests
+namespace SqlDatabase.IntegrationTests.PgSql
 {
     [TestFixture]
     public class ProgramTest
     {
-        private readonly string _connectionString = new SqlConnectionStringBuilder(Query.ConnectionString) { InitialCatalog = "SqlDatabaseIT" }.ToString();
+        private readonly string _connectionString = new NpgsqlConnectionStringBuilder(PgSqlQuery.ConnectionString) { Database = "sqldatabasetest_it" }.ToString();
 
         private string _scriptsLocation;
         private AppConfiguration _configuration;
@@ -26,7 +28,7 @@ namespace SqlDatabase.IntegrationTests
         {
             TestPowerShellHost.GetOrCreateFactory();
 
-            _scriptsLocation = ConfigurationManager.AppSettings["IntegrationTestsScriptsLocation"];
+            _scriptsLocation = ConfigurationManager.AppSettings["PgSql.IntegrationTestsScriptsLocation"];
             if (!Path.IsPathRooted(_scriptsLocation))
             {
                 _scriptsLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsLocation);
@@ -61,34 +63,30 @@ namespace SqlDatabase.IntegrationTests
                 .SetLogFileName(_logFile.Location)
                 .BuildArray(false);
 
-            Assert.AreEqual(0, Program.Main(args));
+            Program.Main(args).ShouldBe(0);
 
             const string Sql = @"
-SELECT Person.Id, Person.Name, PersonAddress.City
-FROM demo.Person Person
-     INNER JOIN demo.PersonAddress PersonAddress ON (PersonAddress.PersonId = Person.Id)
-ORDER BY Person.Id";
+SELECT person.id, person.name, person_address.city
+FROM demo.person person
+     INNER JOIN demo.person_address person_address ON (person_address.person_id = person.id)
+ORDER BY person.id";
 
-            var db = new Database
-            {
-                ConnectionString = _connectionString,
-                Configuration = _configuration
-            };
-            Assert.AreEqual(new Version("1.2"), db.GetCurrentVersion(null));
+            CreateDatabaseObject().GetCurrentVersion(null).ShouldBe(new Version("1.2"));
 
-            using (var c = new SqlConnection(_connectionString))
+            using (var c = new NpgsqlConnection(_connectionString))
             {
                 c.Open();
+
                 var rows = c.Query(Sql).ToList();
                 Assert.AreEqual(2, rows.Count);
 
-                Assert.AreEqual(1, rows[0].Id);
-                Assert.AreEqual("John", rows[0].Name);
-                Assert.AreEqual("London", rows[0].City);
+                Assert.AreEqual(1, rows[0].id);
+                Assert.AreEqual("John", rows[0].name);
+                Assert.AreEqual("London", rows[0].city);
 
-                Assert.AreEqual(2, rows[1].Id);
-                Assert.AreEqual("Maria", rows[1].Name);
-                Assert.AreEqual("Paris", rows[1].City);
+                Assert.AreEqual(2, rows[1].id);
+                Assert.AreEqual("Maria", rows[1].name);
+                Assert.AreEqual("Paris", rows[1].city);
             }
         }
 
@@ -105,31 +103,26 @@ ORDER BY Person.Id";
                 .SetLogFileName(_logFile.Location)
                 .BuildArray(false);
 
-            Assert.AreEqual(0, Program.Main(args));
+            Program.Main(args).ShouldBe(0);
 
             const string Sql = @"
-SELECT Person.Id, Person.SecondName
-FROM demo.Person Person
-ORDER BY Person.Id";
+SELECT person.id, person.second_name
+FROM demo.person person
+ORDER BY person.id";
 
-            var db = new Database
-            {
-                ConnectionString = _connectionString,
-                Configuration = _configuration
-            };
-            Assert.AreEqual(new Version("2.1"), db.GetCurrentVersion(null));
+            CreateDatabaseObject().GetCurrentVersion(null).ShouldBe(new Version("2.1"));
 
-            using (var c = new SqlConnection(_connectionString))
+            using (var c = new NpgsqlConnection(_connectionString))
             {
                 c.Open();
                 var rows = c.Query(Sql).ToList();
                 Assert.AreEqual(2, rows.Count);
 
-                Assert.AreEqual(1, rows[0].Id);
-                Assert.AreEqual("Smitt", rows[0].SecondName);
+                Assert.AreEqual(1, rows[0].id);
+                Assert.AreEqual("Smitt", rows[0].second_name);
 
-                Assert.AreEqual(2, rows[1].Id);
-                Assert.AreEqual("X", rows[1].SecondName);
+                Assert.AreEqual(2, rows[1].id);
+                Assert.AreEqual("X", rows[1].second_name);
             }
         }
 
@@ -147,34 +140,30 @@ ORDER BY Person.Id";
             Program.Main(args.BuildArray(false)).ShouldBe(0);
 
             const string Sql = @"
-SELECT p.Name, a.City
-FROM moduleA.Person p
-     LEFT JOIN moduleB.PersonAddress a ON a.PersonId = p.Id
-ORDER BY p.Name";
+SELECT p.name, a.city
+FROM module_a.person p
+     LEFT JOIN module_b.person_address a ON a.person_id = p.id
+ORDER BY p.name";
 
             var configuration = new SqlDatabase.Configuration.ConfigurationManager();
             configuration.LoadFrom(args.Line.ConfigurationFile);
 
-            var db = new Database
-            {
-                ConnectionString = _connectionString,
-                Configuration = configuration.SqlDatabase
-            };
+            var db = CreateDatabaseObject(configuration.SqlDatabase);
             db.GetCurrentVersion("ModuleA").ShouldBe(new Version("2.0"));
             db.GetCurrentVersion("ModuleB").ShouldBe(new Version("1.1"));
             db.GetCurrentVersion("ModuleC").ShouldBe(new Version("2.0"));
 
-            using (var c = new SqlConnection(_connectionString))
+            using (var c = new NpgsqlConnection(_connectionString))
             {
                 c.Open();
                 var rows = c.Query(Sql).ToList();
                 rows.Count.ShouldBe(2);
 
-                Assert.AreEqual("John", rows[0].Name);
-                Assert.AreEqual("London", rows[0].City);
+                Assert.AreEqual("John", rows[0].name);
+                Assert.AreEqual("London", rows[0].city);
 
-                Assert.AreEqual("Maria", rows[1].Name);
-                Assert.IsNull(rows[1].City);
+                Assert.AreEqual("Maria", rows[1].name);
+                Assert.IsNull(rows[1].city);
             }
         }
 
@@ -187,7 +176,7 @@ ORDER BY p.Name";
                 .SetCommand(CommandLineFactory.CommandExport)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
-                .SetExportToTable("dbo.ExportedData1")
+                .SetExportToTable("public.exported_data1")
                 .BuildArray(false);
 
             int exitCode;
@@ -205,11 +194,11 @@ ORDER BY p.Name";
             InvokeExecuteCommand(b => b.SetInLineScript(output));
 
             // test
-            using (var c = new SqlConnection(_connectionString))
+            using (var c = new NpgsqlConnection(_connectionString))
             {
                 c.Open();
 
-                var test = c.ExecuteScalar("SELECT COUNT(1) FROM dbo.ExportedData1");
+                var test = c.ExecuteScalar("SELECT COUNT(1) FROM public.exported_data1");
                 test.ShouldBe(2);
             }
         }
@@ -225,7 +214,7 @@ ORDER BY p.Name";
                     .SetCommand(CommandLineFactory.CommandExport)
                     .SetConnection(_connectionString)
                     .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
-                    .SetExportToTable("dbo.ExportedData2")
+                    .SetExportToTable("public.exported_data2")
                     .SetExportToFile(output.Location)
                     .BuildArray(false);
 
@@ -237,11 +226,11 @@ ORDER BY p.Name";
             }
 
             // test
-            using (var c = new SqlConnection(_connectionString))
+            using (var c = new NpgsqlConnection(_connectionString))
             {
                 c.Open();
 
-                var test = c.ExecuteScalar("SELECT COUNT(1) FROM dbo.ExportedData2");
+                var test = c.ExecuteScalar("SELECT COUNT(1) FROM public.exported_data1");
                 test.ShouldBe(2);
             }
         }
@@ -251,11 +240,11 @@ ORDER BY p.Name";
         public void ExecuteScript()
         {
             InvokeExecuteCommand(b =>
-                b.SetScripts(Path.Combine(_scriptsLocation, "execute", "drop.database.sql")));
+                b.SetScripts(Path.Combine(_scriptsLocation, "execute", "drop.database.ps1")));
 
-            var sql = "SELECT DB_ID('{0}')".FormatWith(new SqlConnectionStringBuilder(_connectionString).InitialCatalog);
+            var sql = "SELECT 1 FROM PG_DATABASE WHERE LOWER(DATNAME) = LOWER('{0}')".FormatWith(new NpgsqlConnectionStringBuilder(_connectionString).Database);
 
-            using (var c = new SqlConnection(Query.ConnectionString))
+            using (var c = new NpgsqlConnection(PgSqlQuery.ConnectionString))
             {
                 c.Open();
 
@@ -275,6 +264,14 @@ ORDER BY p.Name";
             var args = cmd.BuildArray(false);
 
             Program.Main(args).ShouldBe(0);
+        }
+
+        private IDatabase CreateDatabaseObject(AppConfiguration configuration = null)
+        {
+            return new Database
+            {
+                Adapter = new PgSqlDatabaseAdapter(_connectionString, configuration ?? _configuration, new Mock<ILogger>(MockBehavior.Strict).Object)
+            };
         }
     }
 }

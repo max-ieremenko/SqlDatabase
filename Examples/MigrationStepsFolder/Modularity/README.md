@@ -59,7 +59,7 @@ GO
 ...
 ```
 
-#### .dll or .exe step
+#### .dll, .exe or .ps1 step
 Dependencies for this step can be defined in a separate text file with the same name. The text file must be the next to step file.
 
 Step moduleA_2.1_2.2.exe, text file moduleA_2.1_2.2.txt

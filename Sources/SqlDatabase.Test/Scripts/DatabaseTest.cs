@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using Dapper;
+using System.Data.Common;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
-using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
 {
     [TestFixture]
     public class DatabaseTest
     {
-        private const string ModuleName = "SomeModuleName";
-        private const string SelectModuleVersion = "SELECT value from sys.fn_listextendedproperty('version-{{ModuleName}}', default, default, default, default, default, default)";
-        private const string UpdateModuleVersion = "EXEC sys.sp_updateextendedproperty @name=N'version-{{ModuleName}}', @value=N'{{TargetVersion}}'";
-
         private Database _sut;
+        private Mock<IDatabaseAdapter> _adapter;
+        private Mock<IDbCommand> _command;
+        private Mock<IDbConnection> _connection;
+        private Mock<IDbTransaction> _transaction;
         private IList<string> _logOutput;
 
         [SetUp]
@@ -41,344 +40,440 @@ namespace SqlDatabase.Scripts
                     _logOutput.Add(m);
                 });
 
+            _transaction = new Mock<IDbTransaction>(MockBehavior.Strict);
+            _transaction
+                .Setup(t => t.Dispose());
+            _transaction
+                .Setup(t => t.Commit());
+
+            _command = new Mock<IDbCommand>(MockBehavior.Strict);
+            _command
+                .SetupProperty(c => c.CommandText);
+            _command
+                .Setup(c => c.Dispose());
+
+            _connection = new Mock<IDbConnection>(MockBehavior.Strict);
+            _connection
+                .Setup(c => c.Open());
+            _connection
+                .Setup(c => c.CreateCommand())
+                .Returns(_command.Object);
+            _connection
+                .Setup(c => c.Dispose());
+
+            _adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
+
             _sut = new Database
             {
-                ConnectionString = Query.ConnectionString,
-                Log = log.Object,
-                Configuration = new AppConfiguration()
+                Adapter = _adapter.Object,
+                Log = log.Object
             };
         }
 
         [Test]
-        public void GetCurrentVersionDefault()
+        public void GetCurrentVersion()
         {
-            string expected;
-            using (var c = Query.Open())
-            {
-                expected = c.ExecuteScalar<string>(new AppConfiguration().GetCurrentVersionScript);
-            }
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Callback(() =>
+                {
+                    _command.Object.CommandTimeout.ShouldBe(0);
+                    _command.Object.CommandText.ShouldBe("select 1");
+                })
+                .Returns("1.1");
+
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+            _adapter
+                .Setup(a => a.GetVersionSelectScript())
+                .Returns("select 1");
 
             var actual = _sut.GetCurrentVersion(null);
-            Assert.AreEqual(new Version(expected), actual);
+
+            actual.ShouldBe(new Version("1.1"));
+
+            _adapter.VerifyAll();
+            _connection.VerifyAll();
+            _command.VerifyAll();
         }
 
         [Test]
         public void GetCurrentVersionModuleName()
         {
-            _sut.Configuration.GetCurrentVersionScript = SelectModuleVersion;
-            _sut.Configuration.SetCurrentVersionScript = UpdateModuleVersion;
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Callback(() =>
+                {
+                    _command.Object.CommandTimeout.ShouldBe(0);
+                    _command.Object.CommandText.ShouldBe("select 'my module name'");
+                })
+                .Returns("1.1");
 
-            string expected;
-            using (var c = Query.Open())
-            {
-                expected = c.ExecuteScalar<string>(SelectModuleVersion.Replace("{{ModuleName}}", ModuleName));
-            }
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+            _adapter
+                .Setup(a => a.GetVersionSelectScript())
+                .Returns("select '{{ModuleName}}'");
 
-            var actual = _sut.GetCurrentVersion(ModuleName);
-            Assert.AreEqual(new Version(expected), actual);
+            var actual = _sut.GetCurrentVersion("my module name");
+
+            actual.ShouldBe(new Version("1.1"));
+
+            _adapter.VerifyAll();
+            _connection.VerifyAll();
+            _command.VerifyAll();
         }
 
         [Test]
-        public void ExecuteUpgradeNoTransactionValidateCommand()
+        public void GetCurrentVersionInvalidScript()
         {
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
-                {
-                    Assert.AreEqual(0, cmd.CommandTimeout);
-                    Assert.IsNull(cmd.Transaction);
-                    Assert.AreEqual(CommandType.Text, cmd.CommandType);
-                    Assert.IsNotNull(cmd.Connection);
-                    Assert.AreEqual(ConnectionState.Open, cmd.Connection.State);
+            var ex = new Mock<DbException>();
 
-                    cmd.CommandText = "select DB_NAME()";
-                    StringAssert.AreEqualIgnoringCase(Query.DatabaseName, (string)cmd.ExecuteScalar());
-                });
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Throws(ex.Object);
 
-            _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0"));
-            script.VerifyAll();
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+            _adapter
+                .Setup(a => a.GetVersionSelectScript())
+                .Returns("select 1");
+
+            var actual = Assert.Throws<InvalidOperationException>(() => _sut.GetCurrentVersion(null));
+
+            actual.InnerException.ShouldBe(ex.Object);
+            actual.Message.ShouldContain("select 1");
         }
 
         [Test]
-        public void ExecuteUpgradeTransactionPerStepValidateCommand()
+        public void GetCurrentVersionInvalidVersion()
         {
-            _sut.Transaction = TransactionMode.PerStep;
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Returns("abc");
 
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
-                {
-                    Assert.AreEqual(0, cmd.CommandTimeout);
-                    Assert.IsNotNull(cmd.Transaction);
-                    Assert.AreEqual(CommandType.Text, cmd.CommandType);
-                    Assert.IsNotNull(cmd.Connection);
-                    Assert.AreEqual(ConnectionState.Open, cmd.Connection.State);
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+            _adapter
+                .Setup(a => a.GetVersionSelectScript())
+                .Returns("select 1");
 
-                    cmd.CommandText = "select DB_NAME()";
-                    StringAssert.AreEqualIgnoringCase(Query.DatabaseName, (string)cmd.ExecuteScalar());
-                });
+            var actual = Assert.Throws<InvalidOperationException>(() => _sut.GetCurrentVersion(null));
 
-            _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0"));
-
-            script.VerifyAll();
+            actual.Message.ShouldContain("abc");
         }
 
         [Test]
-        public void ExecuteUpgradeTransactionPerStepRollbackOnError()
+        public void GetCurrentVersionModuleNameInvalidVersion()
         {
-            _sut.Transaction = TransactionMode.PerStep;
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Returns("abc");
 
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
-                {
-                    cmd.CommandText = "create table dbo.t1( Id INT )";
-                    cmd.ExecuteNonQuery();
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+            _adapter
+                .Setup(a => a.GetVersionSelectScript())
+                .Returns("select 1");
 
-                    throw new InvalidOperationException();
-                });
+            var actual = Assert.Throws<InvalidOperationException>(() => _sut.GetCurrentVersion("my module-name"));
 
-            Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object, string.Empty, new Version("1.0"), new Version("1.0")));
-            script.VerifyAll();
-
-            using (var c = Query.Open())
-            {
-                Assert.IsNull(c.ExecuteScalar<string>("select OBJECT_ID('dbo.t1')"));
-            }
+            actual.Message.ShouldContain("abc");
+            actual.Message.ShouldContain("my module-name");
         }
 
         [Test]
-        public void ExecuteUpgradeValidateVariables()
+        public void GetServerVersion()
         {
+            _adapter
+                .Setup(a => a.GetServerVersionSelectScript())
+                .Returns("select server version");
+            _adapter
+                .Setup(a => a.CreateConnection(true))
+                .Returns(_connection.Object);
+
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Callback(() =>
+                {
+                    _command.Object.CommandText.ShouldBe("select server version");
+                })
+                .Returns("server version");
+
+            var actual = _sut.GetServerVersion();
+
+            actual.ShouldBe("server version");
+        }
+
+        [Test]
+        [TestCase(TransactionMode.None)]
+        [TestCase(TransactionMode.PerStep)]
+        public void ExecuteUpgrade(TransactionMode transaction)
+        {
+            _sut.Transaction = transaction;
+
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .SetupProperty(c => c.Transaction);
+
+            _connection
+                .Setup(c => c.BeginTransaction(IsolationLevel.ReadCommitted))
+                .Returns(_transaction.Object);
+
+            _adapter
+                .SetupGet(a => a.DatabaseName)
+                .Returns("database-name");
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+
             var script = new Mock<IScript>(MockBehavior.Strict);
             script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((_, vars, s) =>
+                .Setup(s => s.Execute(_command.Object, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, variables, s) =>
                 {
-                    StringAssert.AreEqualIgnoringCase(Query.DatabaseName, vars.GetValue("DatabaseName"));
-                    Assert.AreEqual("module name", vars.GetValue("ModuleName"));
-                    Assert.AreEqual("1.0", vars.GetValue("CurrentVersion"));
-                    Assert.AreEqual("2.0", vars.GetValue("TargetVersion"));
+                    cmd.CommandTimeout.ShouldBe(0);
+
+                    if (transaction == TransactionMode.PerStep)
+                    {
+                        cmd.Transaction.ShouldBe(_transaction.Object);
+                    }
+                    else
+                    {
+                        cmd.Transaction.ShouldBeNull();
+                    }
+
+                    variables.GetValue("DatabaseName").ShouldBe("database-name");
+                    variables.GetValue("CurrentVersion").ShouldBe("1.0");
+                    variables.GetValue("TargetVersion").ShouldBe("2.0");
+                    variables.GetValue("ModuleName").ShouldBe("my module");
+
+                    _adapter
+                        .Setup(a => a.GetVersionUpdateScript())
+                        .Returns("update version");
+                    _adapter
+                        .Setup(a => a.GetVersionSelectScript())
+                        .Returns("select version");
+
+                    _command
+                        .Setup(c => c.ExecuteNonQuery())
+                        .Callback(() => _command.Object.CommandText.ShouldBe("update version"))
+                        .Returns(0);
+                    _command
+                        .Setup(c => c.ExecuteScalar())
+                        .Callback(() => _command.Object.CommandText.ShouldBe("select version"))
+                        .Returns("2.0");
                 });
 
-            _sut.Execute(script.Object, "module name", new Version("1.0"), new Version("2.0"));
+            _sut.Execute(script.Object, "my module", new Version("1.0"), new Version("2.0"));
+
             script.VerifyAll();
+            _command.VerifyAll();
         }
 
         [Test]
         public void ExecuteUpgradeWhatIf()
         {
+            _adapter
+                .SetupGet(a => a.DatabaseName)
+                .Returns("database-name");
+
             var script = new Mock<IScript>(MockBehavior.Strict);
             script
-                .Setup(s => s.Execute(null, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
-
-            _sut.WhatIf = true;
-            _sut.Execute(script.Object, "module name", new Version("1.0"), new Version("2.0"));
-            script.VerifyAll();
-        }
-
-        [Test]
-        public void ExecuteUpgradeChangeDatabaseVersionNoModules()
-        {
-            var versionFrom = _sut.GetCurrentVersion(null);
-            var versionTo = new Version(versionFrom.Major + 1, 0);
-
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
-
-            _sut.Execute(script.Object, null, versionFrom, versionTo);
-            script.VerifyAll();
-
-            Assert.AreEqual(versionTo, _sut.GetCurrentVersion(null));
-        }
-
-        [Test]
-        public void ExecuteUpgradeChangeDatabaseVersionModuleName()
-        {
-            _sut.Configuration.GetCurrentVersionScript = SelectModuleVersion;
-            _sut.Configuration.SetCurrentVersionScript = UpdateModuleVersion;
-
-            var versionFrom = _sut.GetCurrentVersion(ModuleName);
-            var versionTo = new Version(versionFrom.Major + 1, 0);
-
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
-
-            _sut.Execute(script.Object, ModuleName, versionFrom, versionTo);
-            script.VerifyAll();
-
-            Assert.AreEqual(versionTo, _sut.GetCurrentVersion(ModuleName));
-        }
-
-        [Test]
-        public void ExecuteUpgradeChangeDatabaseVersionValidateVersion()
-        {
-            _sut.Configuration.GetCurrentVersionScript = "SELECT '3.0'";
-            _sut.Configuration.SetCurrentVersionScript = "SELECT 1";
-
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script.Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
-
-            var ex = Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object, null, new Version("1.0"), new Version("2.0")));
-            script.VerifyAll();
-
-            ex.Message.ShouldContain("3.0");
-            ex.Message.ShouldContain("2.0");
-        }
-
-        [Test]
-        public void SqlOutputIntoLog()
-        {
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, l) =>
+                .Setup(s => s.Execute(null, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, variables, s) =>
                 {
-                    _logOutput.Clear();
-                    cmd.CommandText = "print 'xx1xx'";
-                    cmd.ExecuteNonQuery();
-
-                    Assert.AreEqual(1, _logOutput.Count);
-                    StringAssert.Contains("xx1xx", _logOutput[0]);
-
-                    _logOutput.Clear();
-                    cmd.CommandText = "use master";
-                    cmd.ExecuteNonQuery();
-
-                    Assert.AreEqual(1, _logOutput.Count);
-                    StringAssert.Contains("master", _logOutput[0]);
+                    variables.GetValue("DatabaseName").ShouldBe("database-name");
+                    variables.GetValue("CurrentVersion").ShouldBe("1.0");
+                    variables.GetValue("TargetVersion").ShouldBe("2.0");
+                    variables.GetValue("ModuleName").ShouldBe("my module");
                 });
 
-            _sut.Execute(script.Object, null, new Version("1.0"), new Version("2.0"));
+            _sut.WhatIf = true;
+
+            _sut.Execute(script.Object, "my module", new Version("1.0"), new Version("2.0"));
 
             script.VerifyAll();
+
+            _logOutput.Count.ShouldBe(1);
+            _logOutput[0].ShouldBe("what-if mode");
         }
 
         [Test]
-        public void ExecuteNoTransactionValidateCommand()
+        [TestCase(TransactionMode.None)]
+        [TestCase(TransactionMode.PerStep)]
+        public void Execute(TransactionMode transaction)
         {
+            _sut.Transaction = transaction;
+
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+            _command
+                .SetupProperty(c => c.Transaction);
+
+            _connection
+                .Setup(c => c.BeginTransaction(IsolationLevel.ReadCommitted))
+                .Returns(_transaction.Object);
+
+            _adapter
+                .SetupGet(a => a.DatabaseName)
+                .Returns("database-name");
+            _adapter
+                .Setup(a => a.GetDatabaseExistsScript("database-name"))
+                .Returns("database exits");
+            _adapter
+                .Setup(a => a.CreateConnection(true))
+                .Returns(_connection.Object);
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Callback(() => _command.Object.CommandText.ShouldBe("database exits"))
+                .Returns("true");
+
             var script = new Mock<IScript>(MockBehavior.Strict);
             script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
+                .Setup(s => s.Execute(_command.Object, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, variables, s) =>
+                {
+                    cmd.CommandTimeout.ShouldBe(0);
+
+                    if (transaction == TransactionMode.PerStep)
+                    {
+                        cmd.Transaction.ShouldBe(_transaction.Object);
+                    }
+                    else
+                    {
+                        cmd.Transaction.ShouldBeNull();
+                    }
+
+                    variables.GetValue("DatabaseName").ShouldBe("database-name");
+                    variables.GetValue("CurrentVersion").ShouldBeNullOrEmpty();
+                    variables.GetValue("TargetVersion").ShouldBeNullOrEmpty();
+                    variables.GetValue("ModuleName").ShouldBeNullOrEmpty();
+                });
+
+            _sut.Execute(script.Object);
+
+            script.VerifyAll();
+            _command.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteDatabaseNotFound()
+        {
+            _command
+                .SetupProperty(c => c.Transaction);
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+
+            _adapter
+                .SetupGet(a => a.DatabaseName)
+                .Returns("database-name");
+            _adapter
+                .Setup(a => a.GetDatabaseExistsScript("database-name"))
+                .Returns("database exits");
+            _adapter
+                .Setup(a => a.CreateConnection(true))
+                .Returns(_connection.Object);
+
+            _command
+                .Setup(c => c.ExecuteScalar())
+                .Callback(() => _command.Object.CommandText.ShouldBe("database exits"))
+                .Returns(DBNull.Value);
+
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.Execute(_command.Object, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, v, s) =>
                 {
                     cmd.CommandTimeout.ShouldBe(0);
                     cmd.Transaction.ShouldBeNull();
-                    cmd.CommandType.ShouldBe(CommandType.Text);
-                    cmd.Connection.ShouldNotBeNull();
-                    cmd.Connection.State.ShouldBe(ConnectionState.Open);
-
-                    cmd.CommandText = "select DB_NAME()";
-                    cmd.ExecuteScalar().ShouldBeOfType<string>().ShouldBe(Query.DatabaseName, StringCompareShould.IgnoreCase);
                 });
 
             _sut.Execute(script.Object);
 
             script.VerifyAll();
-        }
-
-        [Test]
-        public void ExecuteTransactionPerStepValidateCommand()
-        {
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
-                {
-                    cmd.CommandTimeout.ShouldBe(0);
-                    cmd.Transaction.ShouldNotBeNull();
-                    cmd.CommandType.ShouldBe(CommandType.Text);
-                    cmd.Connection.ShouldNotBeNull();
-                    cmd.Connection.State.ShouldBe(ConnectionState.Open);
-
-                    cmd.CommandText = "select DB_NAME()";
-                    cmd.ExecuteScalar().ShouldBeOfType<string>().ShouldBe(Query.DatabaseName, StringCompareShould.IgnoreCase);
-                });
-
-            _sut.Transaction = TransactionMode.PerStep;
-            _sut.Execute(script.Object);
-
-            script.VerifyAll();
-        }
-
-        [Test]
-        public void ExecuteTransactionPerStepRollbackOnError()
-        {
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, _, s) =>
-                {
-                    cmd.CommandText = "create table dbo.t1( Id INT )";
-                    cmd.ExecuteNonQuery();
-
-                    throw new InvalidOperationException();
-                });
-
-            _sut.Transaction = TransactionMode.PerStep;
-            Assert.Throws<InvalidOperationException>(() => _sut.Execute(script.Object));
-
-            script.VerifyAll();
-
-            using (var c = Query.Open())
-            {
-                Assert.IsNull(c.ExecuteScalar<string>("select OBJECT_ID('dbo.t1')"));
-            }
-        }
-
-        [Test]
-        public void ExecuteSetTargetDatabase()
-        {
-            var currentDatabaseName = new SqlConnectionStringBuilder(_sut.ConnectionString).InitialCatalog;
-
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, vars, s) =>
-                {
-                    cmd.CommandText = "select db_name()";
-                    StringAssert.AreEqualIgnoringCase(currentDatabaseName, (string)cmd.ExecuteScalar());
-                });
-
-            _sut.Execute(script.Object);
-            script.VerifyAll();
-        }
-
-        [Test]
-        public void ExecuteSetMasterDatabase()
-        {
-            var builder = new SqlConnectionStringBuilder(_sut.ConnectionString)
-            {
-                InitialCatalog = Guid.NewGuid().ToString()
-            };
-
-            _sut.ConnectionString = builder.ToString();
-
-            var script = new Mock<IScript>(MockBehavior.Strict);
-            script
-                .Setup(s => s.Execute(It.IsNotNull<IDbCommand>(), It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
-                .Callback<IDbCommand, IVariables, ILogger>((cmd, vars, s) =>
-                {
-                    cmd.CommandText = "select db_name()";
-                    StringAssert.AreEqualIgnoringCase("master", (string)cmd.ExecuteScalar());
-                });
-
-            _sut.Execute(script.Object);
-            script.VerifyAll();
+            _command.VerifyAll();
+            _adapter.VerifyAll();
         }
 
         [Test]
         public void ExecuteWhatIf()
         {
+            _adapter
+                .SetupGet(a => a.DatabaseName)
+                .Returns("database-name");
+
             var script = new Mock<IScript>(MockBehavior.Strict);
             script
-                .Setup(s => s.Execute(null, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()));
+                .Setup(s => s.Execute(null, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, variables, s) =>
+                {
+                    variables.GetValue("DatabaseName").ShouldBe("database-name");
+                    variables.GetValue("CurrentVersion").ShouldBeNullOrEmpty();
+                    variables.GetValue("TargetVersion").ShouldBeNullOrEmpty();
+                    variables.GetValue("ModuleName").ShouldBeNullOrEmpty();
+                });
 
             _sut.WhatIf = true;
+
             _sut.Execute(script.Object);
+
+            script.VerifyAll();
+
+            _logOutput.Count.ShouldBe(1);
+            _logOutput[0].ShouldBe("what-if mode");
+        }
+
+        [Test]
+        public void ExecuteReader()
+        {
+            _command
+                .SetupProperty(c => c.CommandTimeout, 30);
+
+            _adapter
+                .SetupGet(a => a.DatabaseName)
+                .Returns("database-name");
+            _adapter
+                .Setup(a => a.CreateConnection(false))
+                .Returns(_connection.Object);
+
+            var reader1 = new Mock<IDataReader>(MockBehavior.Strict);
+            var reader2 = new Mock<IDataReader>(MockBehavior.Strict);
+
+            var script = new Mock<IScript>(MockBehavior.Strict);
+            script
+                .Setup(s => s.ExecuteReader(_command.Object, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+                .Callback<IDbCommand, IVariables, ILogger>((cmd, variables, s) =>
+                {
+                    cmd.CommandTimeout.ShouldBe(0);
+                    variables.GetValue("DatabaseName").ShouldBe("database-name");
+                })
+                .Returns(new[] { reader1.Object, reader2.Object });
+
+            var actual = _sut.ExecuteReader(script.Object).ToArray();
+
+            actual.ShouldBe(new[] { reader1.Object, reader2.Object });
+
             script.VerifyAll();
         }
     }

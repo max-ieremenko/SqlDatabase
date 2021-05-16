@@ -1,9 +1,8 @@
 version: "3"
 services:
-  database:
+  mssql:
     image: microsoft/mssql-server-linux:latest
     restart: always
-    container_name: mssql
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=P@ssw0rd
@@ -13,4 +12,14 @@ services:
     ports:
       - 1433:1433
     working_dir: /usr/src/app 
-    command: bash -c ' chmod +x ./entrypoint.sh; ./entrypoint.sh & /opt/mssql/bin/sqlservr;'
+    command: bash -c ' chmod +x ./mssql.entrypoint.sh; ./mssql.entrypoint.sh & /opt/mssql/bin/sqlservr;'
+
+  pgsql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: qwerty
+    volumes:
+      - ./pgsql.create-database.sql:/docker-entrypoint-initdb.d/pgsql.create-database.sql
+    ports:
+      - 5432:5432

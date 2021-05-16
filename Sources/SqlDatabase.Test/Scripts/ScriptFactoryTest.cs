@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
-using SqlDatabase.Scripts.PowerShellInternal;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
@@ -15,18 +13,21 @@ namespace SqlDatabase.Scripts
     {
         private ScriptFactory _sut;
         private Mock<IPowerShellFactory> _powerShellFactory;
-        private AppConfiguration _configuration;
+        private AssemblyScriptConfiguration _configuration;
+        private Mock<ISqlTextReader> _textReader;
 
         [SetUp]
         public void BeforeEachTest()
         {
-            _configuration = new AppConfiguration();
+            _configuration = new AssemblyScriptConfiguration();
             _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
+            _textReader = new Mock<ISqlTextReader>(MockBehavior.Strict);
 
             _sut = new ScriptFactory
             {
-                Configuration = _configuration,
-                PowerShellFactory = _powerShellFactory.Object
+                AssemblyScriptConfiguration = _configuration,
+                PowerShellFactory = _powerShellFactory.Object,
+                TextReader = _textReader.Object
             };
         }
 
@@ -40,6 +41,7 @@ namespace SqlDatabase.Scripts
             var script = _sut.FromFile(file).ShouldBeOfType<TextScript>();
 
             script.DisplayName.ShouldBe("11.sql");
+            script.TextReader.ShouldBe(_textReader.Object);
             new StreamReader(script.ReadSqlContent()).ReadToEnd().ShouldBe("some script");
         }
 
@@ -56,6 +58,7 @@ namespace SqlDatabase.Scripts
             var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
 
             script.DisplayName.ShouldBe("11.dll");
+            script.Configuration.ShouldBe(_configuration);
             script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
             new StreamReader(script.ReadDescriptionContent()).ReadToEnd().ShouldBe("3, 2, 1");
         }
@@ -73,6 +76,7 @@ namespace SqlDatabase.Scripts
             var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
 
             script.DisplayName.ShouldBe("11.exe");
+            script.Configuration.ShouldBe(_configuration);
             script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
             script.ReadDescriptionContent().ShouldBeNull();
         }

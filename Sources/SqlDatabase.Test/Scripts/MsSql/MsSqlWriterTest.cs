@@ -5,19 +5,19 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Export
+namespace SqlDatabase.Scripts.MsSql
 {
     [TestFixture]
-    public class SqlWriterTest
+    public class MsSqlWriterTest
     {
         private StringBuilder _output;
-        private SqlWriter _sut;
+        private MsSqlWriter _sut;
 
         [SetUp]
         public void BeforeEachTest()
         {
             _output = new StringBuilder();
-            _sut = new SqlWriter(new StringWriter(_output));
+            _sut = new MsSqlWriter(new StringWriter(_output));
         }
 
         [TearDown]
@@ -54,7 +54,7 @@ namespace SqlDatabase.Export
         {
             _sut.Text("SELECT ").Value(input);
 
-            Query.ExecuteScalar(_output.ToString()).ShouldBe(input);
+            MsSqlQuery.ExecuteScalar(_output.ToString()).ShouldBe(input);
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace SqlDatabase.Export
                 .Value(value)
                 .Text(" AS DATETIME2)");
 
-            Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
+            MsSqlQuery.ExecuteScalar(_output.ToString()).ShouldBe(value);
         }
 
         [Test]
@@ -80,31 +80,19 @@ namespace SqlDatabase.Export
                 .Value(value)
                 .Text(" AS UNIQUEIDENTIFIER)");
 
-            Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
+            MsSqlQuery.ExecuteScalar(_output.ToString()).ShouldBe(value);
         }
 
         [Test]
-        public void ValueByteArray()
+        [TestCase(new byte[0])]
+        [TestCase(new byte[] { 1, 2, 3 })]
+        public void ValueByteArray(byte[] value)
         {
-            var value = new byte[0];
-
             _sut
                 .Text("SELECT ")
                 .Value(value);
 
-            Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
-        }
-
-        [Test]
-        public void ValueEmptyByteArray()
-        {
-            var value = new byte[0];
-
-            _sut
-                .Text("SELECT ")
-                .Value(value);
-
-            Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
+            MsSqlQuery.ExecuteScalar(_output.ToString()).ShouldBe(value);
         }
 
         [Test]
@@ -117,7 +105,7 @@ namespace SqlDatabase.Export
                 .Value(value)
                 .Text(" AS DATETIMEOFFSET)");
 
-            Query.ExecuteScalar(_output.ToString()).ShouldBe(value);
+            MsSqlQuery.ExecuteScalar(_output.ToString()).ShouldBe(value);
         }
     }
 }

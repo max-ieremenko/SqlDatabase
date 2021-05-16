@@ -1,5 +1,4 @@
-﻿using System.Data.SqlClient;
-using System.IO;
+﻿using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -50,8 +49,7 @@ namespace SqlDatabase.Configuration
             _sut.Scripts[0].ShouldBe(sql.Object);
             _sut.Scripts[1].ShouldBe(folder.Object);
 
-            _sut.Connection?.DataSource.ShouldBe(".");
-            _sut.Connection?.InitialCatalog.ShouldBe("test");
+            _sut.ConnectionString.ShouldBe("Data Source=.;Initial Catalog=test");
             _sut.DestinationTableName.ShouldBe("dbo.ExportedData");
             _sut.DestinationFileName.ShouldBe("file path");
         }
@@ -59,7 +57,7 @@ namespace SqlDatabase.Configuration
         [Test]
         public void CreateCommand()
         {
-            _sut.Connection = new SqlConnectionStringBuilder();
+            _sut.ConnectionString = MsSqlQuery.ConnectionString;
             _sut.DestinationTableName = "table 1";
 
             var actual = _sut

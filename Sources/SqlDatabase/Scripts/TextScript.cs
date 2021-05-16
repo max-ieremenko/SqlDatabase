@@ -13,6 +13,8 @@ namespace SqlDatabase.Scripts
 
         public Func<Stream> ReadSqlContent { get; set; }
 
+        public ISqlTextReader TextReader { get; set; }
+
         public void Execute(IDbCommand command, IVariables variables, ILogger logger)
         {
             var batches = ResolveBatches(variables, logger);
@@ -70,7 +72,7 @@ namespace SqlDatabase.Scripts
             string batch;
             using (var sql = ReadSqlContent())
             {
-                batch = SqlBatchParser.SplitByGo(sql).FirstOrDefault();
+                batch = TextReader.Read(sql).FirstOrDefault();
             }
 
             if (string.IsNullOrWhiteSpace(batch))
@@ -78,18 +80,20 @@ namespace SqlDatabase.Scripts
                 return new ScriptDependency[0];
             }
 
-            return SqlBatchParser.ExtractDependencies(new StringReader(batch), DisplayName).ToArray();
+            return DependencyParser.ExtractDependencies(new StringReader(batch), DisplayName).ToArray();
         }
 
         private static string[] GetReaderColumns(IDataReader reader)
         {
             using (var metadata = reader.GetSchemaTable())
             {
+                // mssql: ColumnName is string.Empty if not defined
+                // pgsql: ColumnName is DbNull if not defined
                 return metadata
                     ?.Rows
                     .Cast<DataRow>()
                     .OrderBy(i => (int)i["ColumnOrdinal"])
-                    .Select(i => (string)i["ColumnName"])
+                    .Select(i => i["ColumnName"]?.ToString())
                     .ToArray();
             }
         }
@@ -158,10 +162,10 @@ namespace SqlDatabase.Scripts
             var batches = new List<string>();
             using (var sql = ReadSqlContent())
             {
-                foreach (var batch in SqlBatchParser.SplitByGo(sql))
+                foreach (var batch in TextReader.Read(sql))
                 {
                     var script = scriptParser.ApplyVariables(batch);
-                    if (!string.IsNullOrEmpty(script))
+                    if (!string.IsNullOrWhiteSpace(script))
                     {
                         batches.Add(script);
                     }

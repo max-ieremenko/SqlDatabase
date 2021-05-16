@@ -1,10 +1,10 @@
-﻿using System.Data.SqlClient;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Commands;
 using SqlDatabase.IO;
 using SqlDatabase.Scripts;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration
 {
@@ -45,9 +45,7 @@ namespace SqlDatabase.Configuration
 
             _sut.Scripts.ShouldBe(new[] { folder.Object });
 
-            _sut.Connection.ShouldNotBeNull();
-            _sut.Connection.DataSource.ShouldBe(".");
-            _sut.Connection.InitialCatalog.ShouldBe("test");
+            _sut.ConnectionString.ShouldBe("Data Source=.;Initial Catalog=test");
 
             _sut.Variables.Keys.ShouldBe(new[] { "X", "Y" });
             _sut.Variables["x"].ShouldBe("1 2 3");
@@ -66,7 +64,7 @@ namespace SqlDatabase.Configuration
         public void CreateCommand()
         {
             _sut.WhatIf = true;
-            _sut.Connection = new SqlConnectionStringBuilder();
+            _sut.ConnectionString = MsSqlQuery.ConnectionString;
             _sut.UsePowerShell = @"c:\PowerShell";
 
             var actual = _sut
