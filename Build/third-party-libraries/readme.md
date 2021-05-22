@@ -6,12 +6,13 @@ Licenses
 |[Apache-2.0](licenses/apache-2.0)|no|no|3|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
-|[MIT](licenses/mit)|no|no|36|
+|[MIT](licenses/mit)|no|no|38|
 |[ms-net-library](licenses/ms-net-library)|no|no|22|
+|[PostgreSQL](licenses/postgresql)|no|no|1|
 
 
 
-Packages 63
+Packages 66
 --------
 
 |Name|Version|Source|License|Used by|
@@ -33,6 +34,7 @@ Packages 63
 |[Moq](packages/nuget.org/moq/4.16.1)|4.16.1|[nuget.org](https://www.nuget.org/packages/Moq/4.16.1)|[BSD-3-Clause](licenses/bsd-3-clause)|SqlDatabase internal|
 |[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|SqlDatabase|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.1)|13.0.1|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.1)|[MIT](licenses/mit)|SqlDatabase internal|
+|[Npgsql](packages/nuget.org/npgsql/4.0.11)|4.0.11|[nuget.org](https://www.nuget.org/packages/Npgsql/4.0.11)|[PostgreSQL](licenses/postgresql)|SqlDatabase|
 |[NuGet.Frameworks](packages/nuget.org/nuget.frameworks/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/NuGet.Frameworks/5.0.0%2b42a8779499c1d1ed2488c2e6b9e2ee6ff6107766)|[Apache-2.0](licenses/apache-2.0)|SqlDatabase internal|
 |[NUnit](packages/nuget.org/nunit/3.13.1)|3.13.1|[nuget.org](https://www.nuget.org/packages/NUnit/3.13.1)|[MIT](licenses/mit)|SqlDatabase internal|
 |[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/3.17.0)|3.17.0|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/3.17.0)|[MIT](licenses/mit)|SqlDatabase internal|
@@ -55,14 +57,14 @@ Packages 63
 |[System.IO.FileSystem.Primitives](packages/nuget.org/system.io.filesystem.primitives/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.IO.FileSystem.Primitives/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Linq](packages/nuget.org/system.linq/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Linq.Expressions](packages/nuget.org/system.linq.expressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Linq.Expressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
-|[System.Memory](packages/nuget.org/system.memory/4.5.1)|4.5.1|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.1)|[MIT](licenses/mit)|SqlDatabase|
+|[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Memory](packages/nuget.org/system.memory/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.4.0)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Numerics.Vectors](packages/nuget.org/system.numerics.vectors/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Numerics.Vectors/4.5.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.ObjectModel](packages/nuget.org/system.objectmodel/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.ObjectModel/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Reflection.Metadata](packages/nuget.org/system.reflection.metadata/1.6.0)|1.6.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.Metadata/1.6.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Reflection.TypeExtensions](packages/nuget.org/system.reflection.typeextensions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Reflection.TypeExtensions/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
-|[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.0)|[MIT](licenses/mit)|SqlDatabase|
+|[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.2)|4.5.2|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.2)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Runtime.CompilerServices.Unsafe](packages/nuget.org/system.runtime.compilerservices.unsafe/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/4.5.3)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Runtime.InteropServices.RuntimeInformation](packages/nuget.org/system.runtime.interopservices.runtimeinformation/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.InteropServices.RuntimeInformation/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Runtime.Loader](packages/nuget.org/system.runtime.loader/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Runtime.Loader/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase|
@@ -73,8 +75,10 @@ Packages 63
 |[System.Text.Encoding.CodePages](packages/nuget.org/system.text.encoding.codepages/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Text.Encoding.CodePages/4.5.0)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Text.RegularExpressions](packages/nuget.org/system.text.regularexpressions/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Text.RegularExpressions/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Threading](packages/nuget.org/system.threading/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
+|[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.5.2)|4.5.2|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.2)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Threading.Tasks.Extensions](packages/nuget.org/system.threading.tasks.extensions/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Threading.Tasks.Extensions/4.5.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Threading.Thread](packages/nuget.org/system.threading.thread/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Threading.Thread/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
+|[System.ValueTuple](packages/nuget.org/system.valuetuple/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.ValueTuple/4.5.0)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Xml.ReaderWriter](packages/nuget.org/system.xml.readerwriter/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.ReaderWriter/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Xml.XmlDocument](packages/nuget.org/system.xml.xmldocument/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XmlDocument/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[System.Xml.XPath](packages/nuget.org/system.xml.xpath/4.3.0)|4.3.0|[nuget.org](https://www.nuget.org/packages/System.Xml.XPath/4.3.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|

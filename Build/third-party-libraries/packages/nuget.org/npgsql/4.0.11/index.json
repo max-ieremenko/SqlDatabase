@@ -1,6 +1,6 @@
 {
   "License": {
-    "Code": "MIT",
+    "Code": "PostgreSQL",
     "Status": "AutomaticallyApproved"
   },
   "UsedBy": [
@@ -25,15 +25,21 @@
   "Licenses": [
     {
       "Subject": "package",
-      "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
+      "Code": "PostgreSQL",
+      "HRef": "https://licenses.nuget.org/PostgreSQL",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "PostgreSQL",
+      "HRef": "git://github.com/npgsql/npgsql",
       "Description": null
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/",
-      "Description": "License should be verified on https://dot.net/"
+      "HRef": "http://www.npgsql.org/",
+      "Description": "License should be verified on http://www.npgsql.org/"
     }
   ]
 }

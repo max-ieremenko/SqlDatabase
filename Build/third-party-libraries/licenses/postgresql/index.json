@@ -1,0 +1,9 @@
+{
+  "Code": "PostgreSQL",
+  "FullName": "PostgreSQL License",
+  "RequiresApproval": false,
+  "RequiresThirdPartyNotices": false,
+  "HRef": "https://spdx.org/licenses/PostgreSQL",
+  "FileName": "license.txt",
+  "Dependencies": []
+}
