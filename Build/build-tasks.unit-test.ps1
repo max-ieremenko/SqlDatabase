@@ -3,35 +3,50 @@ param(
     $targetFramework
 )
 
-task Test RunMssql, UpdateConfig, RunTests
+task Test RunContainers, UpdateConfig, RunTests
 
 . .\build-scripts.ps1
 
 $mssqlContainerId = "empty"
-$connectionString = "empty"
+$mssqlConnectionString = "empty"
+$pgsqlContainerId = "empty"
+$pgsqlConnectionString = "empty"
 $testDir = Join-Path (Join-Path $settings.bin "Tests") $targetFramework
 
 Enter-Build {
     Write-Output "$testDir"
 }
 
-task RunMssql {
+task RunContainers {
     $info = Start-Mssql
-
     $script:mssqlContainerId = $info.containerId
-    $script:connectionString = $info.connectionString
+    $script:mssqlConnectionString = $info.connectionString
+    Write-Output $mssqlConnectionString
 
-    Write-Output $connectionString
-    Wait-Mssql $connectionString
+    $info = Start-Pgsql
+    $script:pgsqlContainerId = $info.containerId
+    $script:pgsqlConnectionString = $info.connectionString
+    Write-Output $pgsqlConnectionString
+
+    Wait-Mssql $mssqlConnectionString
+    Wait-Pgsql $pgsqlConnectionString
 }
+
 
 task UpdateConfig {
     $configFiles = Get-ChildItem -Path $testDir -Filter *.dll.config
     foreach ($configFile in $configFiles) {
         [xml]$config = Get-Content $configFile
-        $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'test']")
+
+        $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'mssql']")
         if ($node) {
-            $node.Attributes["connectionString"].InnerText = $connectionString
+            $node.Attributes["connectionString"].InnerText = $mssqlConnectionString
+            $config.Save($configFile)
+        }
+
+        $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'pgsql']")
+        if ($node) {
+            $node.Attributes["connectionString"].InnerText = $pgsqlConnectionString
             $config.Save($configFile)
         }
     }
@@ -52,5 +67,5 @@ task RunTests {
 
 
 Exit-Build {
-    exec { docker container rm -f $mssqlContainerId } | Out-Null
+    exec { docker container rm -f $mssqlContainerId $pgsqlContainerId } | Out-Null
 }

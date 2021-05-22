@@ -1,32 +1,33 @@
 param(
-    $settings,
-    $image
+    $settings
+    , $database
+    , $image
 )
 
-task Test RunMssql, RunTest
+task Test StartDatabase, RunTest
 
 . .\build-scripts.ps1
 
-$mssqlContainerId = ""
+$containerId = ""
 $connectionString = ""
 
 Enter-Build {
-    Write-Output "$image"
+    Write-Output "$database on $image"
 }
 
-task RunMssql {
-    $info = Start-Mssql
+task StartDatabase {
+    $info = & "Start-$database"
 
-    $script:mssqlContainerId = $info.containerId
+    $script:containerId = $info.containerId
     $script:connectionString = $info.remoteConnectionString
 
     Write-Output $connectionString
-    Wait-Mssql $info.connectionString
+    & "Wait-$database" $info.connectionString
 }
 
 task RunTest {
     $app = $settings.artifactsPowerShell + ":/root/.local/share/powershell/Modules/SqlDatabase"
-    $test = $settings.integrationTests + ":/test"
+    $test = (Join-Path $settings.integrationTests $database) + ":/test"
 
     exec {
         docker run --rm `
@@ -39,7 +40,7 @@ task RunTest {
 }
 
 Exit-Build {
-    if ($mssqlContainerId) {
-        exec { docker container rm -f $mssqlContainerId } | Out-Null
+    if ($containerId) {
+        exec { docker container rm -f $containerId } | Out-Null
     }
 }

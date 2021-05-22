@@ -81,9 +81,74 @@ function Wait-Mssql($connectionString) {
                 Start-Sleep -Seconds 1
             }
         }
+
+        $connection.Open()
     }
     finally {
         $connection.Dispose()
     }
 }
 
+function Start-Pgsql {
+    $npgsqldll = Join-Path $env:USERPROFILE ".nuget\packages\npgsql\4.0.11\lib\netstandard2.0\Npgsql.dll"
+    Add-Type -Path $npgsqldll
+
+    $containerId = exec { 
+        docker run `
+            -d `
+            -p 5432 `
+            sqldatabase/postgres:13.3
+    }
+    
+    $ip = exec { 
+        docker inspect `
+            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
+            $containerId
+    }
+
+    $port = exec { 
+        docker inspect `
+            --format "{{(index (index .NetworkSettings.Ports \""5432/tcp\"") 0).HostPort}}"  `
+            $containerId
+    }
+
+    $builder = New-Object -TypeName Npgsql.NpgsqlConnectionStringBuilder
+    $builder["Database"] = "sqldatabasetest"
+    $builder["Username"] = "postgres"
+    $builder["Password"] = "qwerty"
+    $builder["Timeout"] = 5
+
+    $builder.Host = "localhost"
+    $builder.Port = $port.ToString()
+    $connectionString = $builder.ToString()
+    
+    $builder.Host = $ip.ToString()
+    $builder.Port = 5432
+    $remoteConnectionString = $builder.ToString()
+
+    return @{
+        containerId            = $containerId
+        connectionString       = $connectionString
+        remoteConnectionString = $remoteConnectionString
+    }
+}
+
+function Wait-Pgsql($connectionString) {
+    $connection = New-Object -TypeName Npgsql.NpgsqlConnection -ArgumentList $connectionString
+    try {
+        for ($i = 0; $i -lt 20; $i++) {
+            try {
+                $connection.Open()
+                return
+            }
+            catch {
+                Start-Sleep -Seconds 1
+            }
+        }
+
+        $connection.Open()
+    }
+    finally {
+        $connection.Dispose()
+    }
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace SqlDatabase.Scripts.AssemblyInternal.Net452
@@ -60,12 +61,18 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
         {
-            var sqlDataBase = GetType().Assembly;
             var argName = new AssemblyName(args.Name).Name;
 
+            var sqlDataBase = GetType().Assembly;
             if (sqlDataBase.GetName().Name.Equals(argName, StringComparison.OrdinalIgnoreCase))
             {
                 return sqlDataBase;
+            }
+
+            var fileName = Path.Combine(Path.GetDirectoryName(sqlDataBase.Location), argName + ".dll");
+            if (File.Exists(fileName))
+            {
+                return Assembly.LoadFrom(fileName);
             }
 
             return null;

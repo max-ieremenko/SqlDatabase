@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.Loader;
 using SqlDatabase.Configuration;
@@ -8,10 +10,12 @@ namespace SqlDatabase.PowerShell
     internal sealed class SqlDatabaseProgramNetCore : ISqlDatabaseProgram
     {
         private readonly ICmdlet _owner;
+        private readonly string _powerShellLocation;
 
         public SqlDatabaseProgramNetCore(ICmdlet owner)
         {
             _owner = owner;
+            _powerShellLocation = Path.GetDirectoryName(typeof(PSCmdlet).Assembly.Location);
         }
 
         public void ExecuteCommand(GenericCommandLine command)
@@ -43,6 +47,12 @@ namespace SqlDatabase.PowerShell
                 {
                     return sqlDatabase;
                 }
+            }
+
+            var fileName = Path.Combine(_powerShellLocation, assemblyName.Name + ".dll");
+            if (File.Exists(fileName))
+            {
+                return context.LoadFromAssemblyPath(fileName);
             }
 
             return null;

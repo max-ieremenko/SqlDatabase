@@ -1,13 +1,14 @@
 param(
-    $settings,
-    $targetFramework
+    $settings
+    , $targetFramework
+    , $database
 )
 
-task Test RunMssql, UnZip, RunTest
+task Test StartDatabase, UnZip, RunTest
 
 . .\build-scripts.ps1
 
-$mssqlContainerId = ""
+$containerId = ""
 $connectionString = ""
 $tempDir = Join-Path $settings.bin ([Guid]::NewGuid().ToString())
 
@@ -22,20 +23,21 @@ task UnZip {
     Expand-Archive -Path $package -DestinationPath $tempDir
 }
 
-task RunMssql {
-    $info = Start-Mssql
+task StartDatabase {
+    $info = & "Start-$database"
 
-    $script:mssqlContainerId = $info.containerId
+    $script:containerId = $info.containerId
     $script:connectionString = $info.connectionString
 
     Write-Output $connectionString
 }
 
 task RunTest {
-    Wait-Mssql $info.connectionString
+    & "Wait-$database" $connectionString
 
     $app = Join-Path $tempDir "SqlDatabase.exe"
-    $script = Join-Path $settings.integrationTests "Test.ps1"
+    $script = (Join-Path $settings.integrationTests $database)
+    $script = Join-Path $script "Test.ps1"
 
     & $script $app $connectionString
 }
@@ -45,7 +47,7 @@ Exit-Build {
         Remove-Item -Path $tempDir -Force -Recurse
     }
 
-    if ($mssqlContainerId) {
-        exec { docker container rm -f $mssqlContainerId } | Out-Null
+    if ($containerId) {
+        exec { docker container rm -f $containerId } | Out-Null
     }
 }

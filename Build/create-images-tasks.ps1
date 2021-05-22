@@ -4,14 +4,25 @@ task Default BuildDotnetSdk22 `
      , BuildDotnetRuntime31 `
      , BuildDotnetSdk50 `
      , BuildDotnetRuntime50 `
-     , BuildDatabase
+     , BuildMsSqlDatabase `
+     , BuildPgSqlDatabase
 
-task BuildDatabase {
+task BuildMsSqlDatabase {
     $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
     exec {
         docker build `
             -f image-mssql-2017.dockerfile `
             -t sqldatabase/mssql:2017 `
+            $context
+    }
+}
+
+task BuildPgSqlDatabase {
+    $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
+    exec {
+        docker build `
+            -f image-postgres-133.dockerfile `
+            -t sqldatabase/postgres:13.3 `
             $context
     }
 }
