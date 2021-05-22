@@ -45,7 +45,7 @@ namespace SqlDatabase.Commands
 
             _exporter = new Mock<IDataExporter>(MockBehavior.Strict);
             _exporter
-                .SetupSet(e => e.Output = It.IsNotNull<SqlWriterBase>());
+                .SetupProperty(e => e.Output);
             _exporter
                 .SetupSet(e => e.Log = log.Object);
 
