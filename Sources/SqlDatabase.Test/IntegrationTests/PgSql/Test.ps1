@@ -17,10 +17,12 @@ exec {
 
 Write-Host "----- update database ---"
 $scripts = Join-Path $PSScriptRoot "Upgrade"
+$configuration = (Join-Path $scripts "SqlDatabase.exe.config")
 exec {
     & $app upgrade `
         "-database=$connectionString" `
         "-from=$scripts" `
+        "-configuration=$configuration" `
         -varJohnSecondName=Smitt `
         -varMariaSecondName=X
 }
@@ -41,11 +43,11 @@ exec {
     & $app export  `
         "-database=$connectionString"  `
         "-from=$scripts" `
-        "-toTable=dbo.ExportedData1"
+        "-toTable=public.sqldatabase_export1"
 }
 
 Write-Host "----- execute script ---"
-$scripts = Join-Path $PSScriptRoot "execute/drop.database.sql"
+$scripts = Join-Path $PSScriptRoot "execute/drop.database.ps1"
 exec {
     & $app execute  `
         "-database=$connectionString"  `

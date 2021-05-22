@@ -11,6 +11,7 @@ echo "----- update database ---"
 dotnet SqlDatabase.dll upgrade \
       "-database=$connectionString" \
       -from=$test/Upgrade \
+      -configuration=$test/Upgrade/SqlDatabase.exe.config \
       -varJohnSecondName=Smitt \
       -varMariaSecondName=X \
       -log=/upgrade.log
@@ -26,11 +27,11 @@ echo "----- export data ---"
 dotnet SqlDatabase.dll export \
       "-database=$connectionString" \
       -from=$test/Export/export.sql \
-      -toTable=dbo.ExportedData1 \
+      -toTable=public.sqldatabase_export1 \
       -log=/export.log
 
 echo "----- execute script ---"
 dotnet SqlDatabase.dll execute \
       "-database=$connectionString" \
-      -from=$test/execute/drop.database.sql \
+      -from=$test/execute/drop.database.ps1 \
       -log=/execute.log

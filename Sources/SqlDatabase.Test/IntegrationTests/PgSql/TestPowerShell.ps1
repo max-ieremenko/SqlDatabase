@@ -14,7 +14,8 @@ Write-Host "----- update database ---"
 Upgrade-SqlDatabase `
     -database $connectionString `
     -from "Upgrade" `
-    -var JohnSecondName=Smitt,MariaSecondName=X
+    -var JohnSecondName=Smitt,MariaSecondName=X `
+    -configuration "Upgrade/SqlDatabase.exe.config"
 
 Write-Host "----- update database (modularity) ---"
 Upgrade-SqlDatabase `
@@ -26,9 +27,9 @@ Write-Host "----- export data ---"
 Export-SqlDatabase `
     -database $connectionString `
     -from "Export/export.sql" `
-    -toTable "dbo.ExportedData1"
+    -toTable "public.sqldatabase_export1"
 
 Write-Host "----- execute script ---"
 Execute-SqlDatabase `
     -database $connectionString `
-    -from "execute/drop.database.sql"
+    -from "execute/drop.database.ps1"

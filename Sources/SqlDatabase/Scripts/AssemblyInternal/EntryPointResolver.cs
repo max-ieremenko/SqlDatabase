@@ -69,12 +69,20 @@ namespace SqlDatabase.Scripts.AssemblyInternal
 
         private Type ResolveClass(Assembly assembly)
         {
-            var candidates = assembly
+            var filter = assembly
                 .GetExportedTypes()
-                .Where(i => i.IsClass)
-                .Where(i => ExecutorClassName.Equals(i.Name, StringComparison.Ordinal))
-                .ToList();
+                .Where(i => i.IsClass && !i.IsAbstract && !i.IsGenericTypeDefinition);
 
+            if (ExecutorClassName.IndexOf('.') >= 0 || ExecutorClassName.IndexOf('+') >= 0)
+            {
+                filter = filter.Where(i => i.FullName?.EndsWith(ExecutorClassName, StringComparison.OrdinalIgnoreCase) == true);
+            }
+            else
+            {
+                filter = filter.Where(i => ExecutorClassName.Equals(i.Name, StringComparison.Ordinal));
+            }
+
+            var candidates = filter.ToList();
             if (candidates.Count == 0)
             {
                 Log.Error("public class {0} not found.".FormatWith(ExecutorClassName));

@@ -46,8 +46,10 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
-        public void ExecuteExample()
+        public void ExecuteExampleMsSql()
         {
+            _sut.Configuration.ClassName = "MsSql.SqlDatabaseScript";
+
             _variables.DatabaseName = "dbName";
             _variables.CurrentVersion = "1.0";
             _variables.TargetVersion = "2.0";
@@ -64,13 +66,41 @@ namespace SqlDatabase.Scripts
 
             _logOutput.ShouldContain("start execution");
 
-            _executedScripts.ShouldContain("print 'current database name is dbName'");
-            _executedScripts.ShouldContain("print 'version from 1.0'");
-            _executedScripts.ShouldContain("print 'version to 2.0'");
+            _executedScripts.ShouldContain("print 'upgrade database dbName from version 1.0 to 2.0'");
 
             _executedScripts.ShouldContain("create table dbo.DemoTable (Id INT)");
             _executedScripts.ShouldContain("print 'drop table DemoTable'");
             _executedScripts.ShouldContain("drop table dbo.DemoTable");
+
+            _logOutput.ShouldContain("finish execution");
+        }
+
+        [Test]
+        public void ExecuteExamplePgSql()
+        {
+            _sut.Configuration.ClassName = "PgSql.SqlDatabaseScript";
+
+            _variables.DatabaseName = "dbName";
+            _variables.CurrentVersion = "1.0";
+            _variables.TargetVersion = "2.0";
+
+            _sut.DisplayName = "2.1_2.2.dll";
+            _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
+
+#if !NET452
+            using (new ConsoleListener(_log.Object))
+#endif
+            {
+                _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
+            }
+
+            _logOutput.ShouldContain("start execution");
+
+            _executedScripts.Count.ShouldBe(4);
+            _executedScripts[0].ShouldContain("upgrade database dbName from version 1.0 to 2.0");
+            _executedScripts[1].ShouldContain("create table public.demo_table (id integer)");
+            _executedScripts[2].ShouldContain("'drop table demo_table'");
+            _executedScripts[3].ShouldContain("drop table public.demo_table");
 
             _logOutput.ShouldContain("finish execution");
         }

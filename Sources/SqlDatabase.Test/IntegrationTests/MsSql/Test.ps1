@@ -17,10 +17,12 @@ exec {
 
 Write-Host "----- update database ---"
 $scripts = Join-Path $PSScriptRoot "Upgrade"
+$configuration = (Join-Path $scripts "SqlDatabase.exe.config")
 exec {
     & $app upgrade `
         "-database=$connectionString" `
         "-from=$scripts" `
+        "-configuration=$configuration" `
         -varJohnSecondName=Smitt `
         -varMariaSecondName=X
 }

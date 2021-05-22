@@ -97,6 +97,7 @@ ORDER BY Person.Id";
                 .SetCommand(CommandLineFactory.CommandUpgrade)
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, "upgrade"))
+                .SetConfigurationFile(Path.Combine(_scriptsLocation, "Upgrade", "SqlDatabase.exe.config"))
                 .SetVariable("JohnSecondName", "Smitt")
                 .SetVariable("MariaSecondName", "X")
                 .SetLogFileName(_logFile.Location)

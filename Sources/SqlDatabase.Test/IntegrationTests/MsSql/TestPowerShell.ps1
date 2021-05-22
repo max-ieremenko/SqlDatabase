@@ -14,7 +14,8 @@ Write-Host "----- update database ---"
 Upgrade-SqlDatabase `
     -database $connectionString `
     -from "Upgrade" `
-    -var JohnSecondName=Smitt,MariaSecondName=X
+    -var JohnSecondName=Smitt,MariaSecondName=X `
+    -configuration "Upgrade/SqlDatabase.exe.config"
 
 Write-Host "----- update database (modularity) ---"
 Upgrade-SqlDatabase `

@@ -14,6 +14,7 @@ echo "----- update database ---"
 SqlDatabase upgrade \
       "-database=$connectionString" \
       -from=$test/Upgrade \
+      -configuration=$test/Upgrade/SqlDatabase.exe.config \
       -varJohnSecondName=Smitt \
       -varMariaSecondName=X \
       -log=/upgrade.log
