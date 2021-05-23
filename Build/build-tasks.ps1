@@ -110,8 +110,8 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
 
     # netcoreapp2.2 build does not create .exe, copy it from netcoreapp3.1
     $exe = Join-Path $settings.bin "SqlDatabase\netcoreapp3.1\publish\SqlDatabase.exe"
-    $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore22.zip"
-    $source = Join-Path $settings.bin "SqlDatabase\netcoreapp2.2\publish\*"
+    $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore21.zip"
+    $source = Join-Path $settings.bin "SqlDatabase\netcoreapp2.1\publish\*"
     Compress-Archive -Path $source, $exe, $lic, $thirdParty -DestinationPath $destination
 
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore31.zip"
@@ -126,7 +126,7 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
 task UnitTest {
     $builds = @(
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net472" }
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp2.2" }
+        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp2.1" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp3.1" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net5.0" }
     )
@@ -184,7 +184,7 @@ task IntegrationTest {
 
     # sdk tool
     $testCases = $(
-        "sqldatabase/dotnet_pwsh:2.2-sdk"
+        "sqldatabase/dotnet_pwsh:2.1-sdk"
         , "sqldatabase/dotnet_pwsh:3.1-sdk"
         , "sqldatabase/dotnet_pwsh:5.0-sdk")
     foreach ($case in $testCases) {
@@ -194,7 +194,7 @@ task IntegrationTest {
 
     # .net runtime linux
     $testCases = $(
-        @{ targetFramework = "netcore22"; image = "sqldatabase/dotnet_pwsh:2.2-runtime" }
+        @{ targetFramework = "netcore21"; image = "sqldatabase/dotnet_pwsh:2.1-runtime" }
         , @{ targetFramework = "netcore31"; image = "sqldatabase/dotnet_pwsh:3.1-runtime" }
         , @{ targetFramework = "net50"; image = "sqldatabase/dotnet_pwsh:5.0-runtime" }
     )
@@ -206,7 +206,7 @@ task IntegrationTest {
     # .net runtime windows
     $testCases = $(
         "net452"
-        , "netcore22"
+        , "netcore21"
         , "netcore31"
         , "net50"
     )

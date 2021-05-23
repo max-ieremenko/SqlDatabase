@@ -1,5 +1,5 @@
-task Default BuildDotnetSdk22 `
-     , BuildDotnetRuntime22 `
+task Default BuildDotnetSdk21 `
+     , BuildDotnetRuntime21 `
      , BuildDotnetSdk31 `
      , BuildDotnetRuntime31 `
      , BuildDotnetSdk50 `
@@ -27,20 +27,20 @@ task BuildPgSqlDatabase {
     }
 }
 
-task BuildDotnetSdk22 {
+task BuildDotnetSdk21 {
     exec {
         docker build `
-            -f image-dotnet-sdk-2.2.dockerfile `
-            -t sqldatabase/dotnet_pwsh:2.2-sdk `
+            -f image-dotnet-sdk-2.1.dockerfile `
+            -t sqldatabase/dotnet_pwsh:2.1-sdk `
             .
     }
 }
 
-task BuildDotnetRuntime22 {
+task BuildDotnetRuntime21 {
     exec {
         docker build `
-            -f image-dotnet-runtime-2.2.dockerfile `
-            -t sqldatabase/dotnet_pwsh:2.2-runtime `
+            -f image-dotnet-runtime-2.1.dockerfile `
+            -t sqldatabase/dotnet_pwsh:2.1-runtime `
             .
     }
 }
