@@ -1,4 +1,3 @@
-#task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, InitializeIntegrationTest, IntegrationTest
 task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, InitializeIntegrationTest, IntegrationTest
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget452, PackManualDownload
 
@@ -73,23 +72,7 @@ task PackPoweShellModule {
     # copy ThirdPartyNotices
     Copy-Item -Path (Join-Path $settings.bin "ThirdPartyNotices.txt") -Destination $dest
 
-    # copy net452
-    $net45Dest = Join-Path $dest "net452"
-    $net45Source = Join-Path $settings.bin "SqlDatabase\net452"
-    New-Item -Path $net45Dest -ItemType Directory  | Out-Null
-    
-    $files = @(
-        "SqlDatabase.exe"
-        , "SqlDatabase.pdb"
-        , "System.Management.Automation.dll"
-        , "Npgsql.dll"
-        , "System.Threading.Tasks.Extensions.dll"
-        , "System.Runtime.CompilerServices.Unsafe.dll"
-        , "System.Memory.dll"
-    )    
-    foreach ($file in $files) {
-        Copy-Item -Path (Join-Path $net45Source $file) -Destination $net45Dest
-    }
+    Get-ChildItem $dest -Include *.pdb -Recurse | Remove-Item
 }
 
 task PackNuget452 PackPoweShellModule, {
