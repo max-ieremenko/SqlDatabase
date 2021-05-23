@@ -61,7 +61,7 @@ namespace SqlDatabase.IntegrationTests.PgSql
                 .SetVariable("JohnCity", "London")
                 .SetVariable("MariaCity", "Paris")
                 .SetLogFileName(_logFile.Location)
-                .BuildArray(false);
+                .BuildArray();
 
             Program.Main(args).ShouldBe(0);
 
@@ -102,7 +102,7 @@ ORDER BY person.id";
                 .SetVariable("JohnSecondName", "Smitt")
                 .SetVariable("MariaSecondName", "X")
                 .SetLogFileName(_logFile.Location)
-                .BuildArray(false);
+                .BuildArray();
 
             Program.Main(args).ShouldBe(0);
 
@@ -138,7 +138,7 @@ ORDER BY person.id";
                 .SetConfigurationFile(Path.Combine(_scriptsLocation, "UpgradeModularity", "SqlDatabase.exe.config"))
                 .SetLogFileName(_logFile.Location);
 
-            Program.Main(args.BuildArray(false)).ShouldBe(0);
+            Program.Main(args.BuildArray()).ShouldBe(0);
 
             const string Sql = @"
 SELECT p.name, a.city
@@ -178,7 +178,7 @@ ORDER BY p.name";
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
                 .SetExportToTable("public.exported_data1")
-                .BuildArray(false);
+                .BuildArray();
 
             int exitCode;
             string output;
@@ -217,7 +217,7 @@ ORDER BY p.name";
                     .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
                     .SetExportToTable("public.exported_data2")
                     .SetExportToFile(output.Location)
-                    .BuildArray(false);
+                    .BuildArray();
 
                 Program.Main(args).ShouldBe(0);
                 Console.WriteLine(File.ReadAllText(output.Location));
@@ -262,7 +262,7 @@ ORDER BY p.name";
                 .SetLogFileName(_logFile.Location);
 
             builder(cmd);
-            var args = cmd.BuildArray(false);
+            var args = cmd.BuildArray();
 
             Program.Main(args).ShouldBe(0);
         }

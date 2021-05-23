@@ -10,7 +10,7 @@ namespace SqlDatabase
     {
         public static int Main(string[] args)
         {
-            var logger = CreateLogger(args);
+            var logger = LoggerFactory.CreateDefault();
             return Run(logger, args);
         }
 
@@ -103,13 +103,6 @@ namespace SqlDatabase
             }
 
             return null;
-        }
-
-        private static ILogger CreateLogger(string[] args)
-        {
-            return CommandLineParser.PreFormatOutputLogs(args) ?
-                LoggerFactory.CreatePreFormatted() :
-                LoggerFactory.CreateDefault();
         }
 
         private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger combined)

@@ -6,10 +6,5 @@
         {
             return new ConsoleLogger();
         }
-
-        public static ILogger CreatePreFormatted()
-        {
-            return new RedirectedConsoleLogger();
-        }
     }
 }

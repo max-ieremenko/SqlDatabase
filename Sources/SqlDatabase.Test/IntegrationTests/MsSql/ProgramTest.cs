@@ -61,7 +61,7 @@ namespace SqlDatabase.IntegrationTests.MsSql
                 .SetVariable("JohnCity", "London")
                 .SetVariable("MariaCity", "Paris")
                 .SetLogFileName(_logFile.Location)
-                .BuildArray(false);
+                .BuildArray();
 
             Assert.AreEqual(0, Program.Main(args));
 
@@ -101,7 +101,7 @@ ORDER BY Person.Id";
                 .SetVariable("JohnSecondName", "Smitt")
                 .SetVariable("MariaSecondName", "X")
                 .SetLogFileName(_logFile.Location)
-                .BuildArray(false);
+                .BuildArray();
 
             Assert.AreEqual(0, Program.Main(args));
 
@@ -137,7 +137,7 @@ ORDER BY Person.Id";
                 .SetConfigurationFile(Path.Combine(_scriptsLocation, "UpgradeModularity", "SqlDatabase.exe.config"))
                 .SetLogFileName(_logFile.Location);
 
-            Program.Main(args.BuildArray(false)).ShouldBe(0);
+            Program.Main(args.BuildArray()).ShouldBe(0);
 
             const string Sql = @"
 SELECT p.Name, a.City
@@ -177,7 +177,7 @@ ORDER BY p.Name";
                 .SetConnection(_connectionString)
                 .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
                 .SetExportToTable("dbo.ExportedData1")
-                .BuildArray(false);
+                .BuildArray();
 
             int exitCode;
             string output;
@@ -216,7 +216,7 @@ ORDER BY p.Name";
                     .SetScripts(Path.Combine(_scriptsLocation, @"Export\export.sql"))
                     .SetExportToTable("dbo.ExportedData2")
                     .SetExportToFile(output.Location)
-                    .BuildArray(false);
+                    .BuildArray();
 
                 Program.Main(args).ShouldBe(0);
                 Console.WriteLine(File.ReadAllText(output.Location));
@@ -261,7 +261,7 @@ ORDER BY p.Name";
                 .SetLogFileName(_logFile.Location);
 
             builder(cmd);
-            var args = cmd.BuildArray(false);
+            var args = cmd.BuildArray();
 
             Program.Main(args).ShouldBe(0);
         }

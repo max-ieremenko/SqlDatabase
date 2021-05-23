@@ -15,29 +15,13 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        [TestCase("-preFormatOutputLogs", true)]
-        [TestCase("-preFormatOutputLogs=true", true)]
-        [TestCase("-preFormatOutputLogs=false", false)]
-        [TestCase("preFormatOutputLogs", false)]
-        [TestCase("preFormatOutputLogs=true", false)]
-        public void PreFormatOutputLogs(string input, bool expected)
-        {
-            CommandLineParser.PreFormatOutputLogs(new[] { input }).ShouldBe(expected);
-        }
-
-        [Test]
         [TestCase("-x=y", "x", "y", true)]
-        [TestCase("+-x=eQ==", "x", "y", true)]
         [TestCase("x=y", null, "x=y", true)]
         [TestCase("-x", "x", null, true)]
         [TestCase("-x=", "x", null, true)]
         [TestCase("-=x", null, null, false)]
         [TestCase("-=", null, null, false)]
         [TestCase("-", null, null, false)]
-        [TestCase("+-", null, null, false)]
-        [TestCase("+", null, null, false)]
-        [TestCase("+x=y", null, null, false)]
-        [TestCase("+-x=y", null, null, false)]
         public void SplitArg(string keyValue, string expectedKey, string expectedValue, bool isValid)
         {
             CommandLineParser.ParseArg(keyValue, out var actual).ShouldBe(isValid);
@@ -93,24 +77,9 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        public void ParseRemovePreFormatOutputLogs()
-        {
-            var actual = _sut
-                .Parse(
-                    "execute",
-                    "-preFormatOutputLogs")
-                .Args;
-
-            actual.Count.ShouldBe(1);
-
-            actual[0].IsPair.ShouldBeFalse();
-            actual[0].Value.ShouldBe("execute");
-        }
-
-        [Test]
         public void ParseFail()
         {
-            Assert.Throws<InvalidCommandLineException>(() => _sut.Parse("+"));
+            Assert.Throws<InvalidCommandLineException>(() => _sut.Parse("-"));
         }
     }
 }

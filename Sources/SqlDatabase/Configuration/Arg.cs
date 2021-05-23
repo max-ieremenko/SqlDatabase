@@ -2,7 +2,6 @@
 {
     internal readonly struct Arg
     {
-        internal const string Base64Sign = "+";
         internal const string Sign = "-";
 
         internal const string Database = "database";
@@ -21,7 +20,6 @@
         internal const string Help = "help";
         internal const string HelpShort = "h";
 
-        internal const string PreFormatOutputLogs = "preFormatOutputLogs";
         internal const string Log = "log";
 
         public Arg(string key, string value)
