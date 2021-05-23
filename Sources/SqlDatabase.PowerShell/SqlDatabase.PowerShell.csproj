@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>..\..\bin\SqlDatabase.PowerShell</OutputPath>
-    <!--<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>-->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="All" />
-    <PackageReference Include="Npgsql" Version="4.0.11" GeneratePathProperty="true" />
+    <PackageReference Include="Npgsql" Version="4.0.11" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
 
@@ -26,7 +26,22 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="$(PKGNpgsql)\lib\netstandard2.0\Npgsql.dll" DestinationFolder="$(OutDir)" />
+    <MakeDir Directories="$(OutDir)ps-core" />
+    <Move SourceFiles="$(OutDir)SqlDatabase.dll" DestinationFolder="$(OutDir)ps-core" />
+    <Move SourceFiles="$(OutDir)SqlDatabase.pdb" DestinationFolder="$(OutDir)ps-core" />
+    <Move SourceFiles="$(OutDir)SqlDatabase.deps.json" DestinationFolder="$(OutDir)ps-core" />
+    
+    <MakeDir Directories="$(OutDir)ps-desktop" />
+    <Copy SourceFiles="$(OutDir)..\..\SqlDatabase\net452\SqlDatabase.exe" DestinationFiles="$(OutDir)ps-desktop\SqlDatabase.dll"/>
+    <Move SourceFiles="$(OutDir)System.Memory.dll" DestinationFiles="$(OutDir)ps-desktop\System.Memory.dll"/>
+    <Move SourceFiles="$(OutDir)System.Runtime.CompilerServices.Unsafe.dll" DestinationFiles="$(OutDir)ps-desktop\System.Runtime.CompilerServices.Unsafe.dll"/>
+    <Move SourceFiles="$(OutDir)System.Threading.Tasks.Extensions.dll" DestinationFiles="$(OutDir)ps-desktop\System.Threading.Tasks.Extensions.dll"/>
+
+    <ItemGroup>
+      <FilesToDelete Include="$(OutDir)System*.*"/>
+      <FilesToDelete Include="$(OutDir)Microsoft*.*"/>
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" />
   </Target>
 
  </Project>

@@ -1,17 +1,17 @@
 ﻿using NUnit.Framework;
 using SqlDatabase.Configuration;
 
-namespace SqlDatabase.PowerShell
+namespace SqlDatabase.PowerShell.Internal
 {
     [TestFixture]
-    public class SqlDatabaseCmdLetTest
+    public class PowerShellCommandBaseTest
     {
         [Test]
         public void AppendDefaultConfiguration()
         {
             var command = new GenericCommandLine();
 
-            SqlDatabaseCmdLet.AppendDefaultConfiguration(command);
+            PowerShellCommandBase.AppendDefaultConfiguration(command);
 
             FileAssert.Exists(command.ConfigurationFile);
         }

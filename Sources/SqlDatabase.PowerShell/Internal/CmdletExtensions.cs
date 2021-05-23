@@ -2,7 +2,7 @@
 using System.Management.Automation;
 using SqlDatabase.Configuration;
 
-namespace SqlDatabase.PowerShell
+namespace SqlDatabase.PowerShell.Internal
 {
     internal static class CmdletExtensions
     {

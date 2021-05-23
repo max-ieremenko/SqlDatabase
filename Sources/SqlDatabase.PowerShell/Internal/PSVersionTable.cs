@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 
-namespace SqlDatabase.PowerShell
+namespace SqlDatabase.PowerShell.Internal
 {
     internal readonly ref struct PSVersionTable
     {

@@ -1,6 +1,6 @@
 ﻿using SqlDatabase.Configuration;
 
-namespace SqlDatabase.PowerShell
+namespace SqlDatabase.PowerShell.Internal
 {
     internal interface ISqlDatabaseProgram
     {

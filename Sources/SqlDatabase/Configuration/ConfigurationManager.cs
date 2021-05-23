@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using SqlDatabase.IO;
 using Manager = System.Configuration.ConfigurationManager;
 
@@ -11,12 +12,11 @@ namespace SqlDatabase.Configuration
     {
         public AppConfiguration SqlDatabase { get; private set; }
 
-        public static string ResolveDefaultConfigurationFile()
+        public static string ResolveDefaultConfigurationFile(string probingPath)
         {
-            var currentLocation = Path.GetDirectoryName(typeof(ConfigurationManager).Assembly.Location);
-            var fileName = ResolveFile(new FileSystemFolder(currentLocation)).Name;
+            var fileName = ResolveFile(new FileSystemFolder(probingPath)).Name;
 
-            return Path.Combine(currentLocation, fileName);
+            return Path.Combine(probingPath, fileName);
         }
 
         public void LoadFrom(string configurationFile)

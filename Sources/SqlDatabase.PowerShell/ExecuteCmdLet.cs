@@ -1,16 +1,16 @@
 ﻿using System.Management.Automation;
 using SqlDatabase.Configuration;
+using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell
 {
     [Cmdlet(VerbsLifecycle.Invoke, "SqlDatabase")]
     [Alias(CommandLineFactory.CommandExecute + "-SqlDatabase")]
-    public sealed class ExecuteCmdLet : SqlDatabaseCmdLet
+    public sealed class ExecuteCmdLet : PSCmdlet
     {
-        public ExecuteCmdLet()
-            : base(CommandLineFactory.CommandExecute)
-        {
-        }
+        [Parameter(Mandatory = true, Position = 1, HelpMessage = "Connection string to target database.")]
+        [Alias("d")]
+        public string Database { get; set; }
 
         [Parameter(Position = 2, ValueFromPipeline = true, HelpMessage = "A path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.")]
         [Alias("f")]
@@ -22,7 +22,7 @@ namespace SqlDatabase.PowerShell
 
         [Parameter(Position = 3, HelpMessage = "Transaction mode. Possible values: none, perStep. Default is none.")]
         [Alias("t")]
-        public TransactionMode Transaction { get; set; }
+        public PSTransactionMode Transaction { get; set; }
 
         [Parameter(Position = 4, HelpMessage = "A path to application configuration file. Default is current SqlDatabase.exe.config.")]
         [Alias("c")]
@@ -31,22 +31,16 @@ namespace SqlDatabase.PowerShell
         [Parameter(Position = 5, HelpMessage = "Shows what would happen if the command runs. The command is not run.")]
         public SwitchParameter WhatIf { get; set; }
 
-        internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
+        [Parameter(ValueFromRemainingArguments = true, HelpMessage = "Set a variable in format \"[name of variable]=[value of variable]\".")]
+        [Alias("v")]
+        public string[] Var { get; set; }
+
+        [Parameter(HelpMessage = "Optional path to log file.")]
+        public string Log { get; set; }
+
+        protected override void ProcessRecord()
         {
-            this.AppendFrom(From, cmd);
-
-            if (FromSql != null && FromSql.Length > 0)
-            {
-                foreach (var from in FromSql)
-                {
-                    cmd.SetInLineScript(from);
-                }
-            }
-
-            cmd
-                .SetTransaction(Transaction)
-                .SetConfigurationFile(this.RootPath(Configuration))
-                .SetWhatIf(WhatIf);
+            new ExecutePowerShellCommand(this).Execute();
         }
     }
 }
