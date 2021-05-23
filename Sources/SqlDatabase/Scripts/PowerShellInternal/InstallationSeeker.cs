@@ -134,7 +134,7 @@ namespace SqlDatabase.Scripts.PowerShellInternal
             return version < new Version("7.2");
 #elif NETCOREAPP3_1_OR_GREATER
             return version < new Version("7.1");
-#elif NETCOREAPP2_2_OR_GREATER
+#elif NETCOREAPP2_1_OR_GREATER
             return version < new Version("7.0");
 #else
             return false;
