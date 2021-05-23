@@ -57,6 +57,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
         public void BeforeUnload()
         {
             _consoleRedirect?.Dispose();
+            AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
         }
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
