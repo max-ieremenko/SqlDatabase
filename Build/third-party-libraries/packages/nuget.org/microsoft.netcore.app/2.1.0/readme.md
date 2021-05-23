@@ -1,9 +1,9 @@
-Microsoft.NETCore.App [2.2.0](https://www.nuget.org/packages/Microsoft.NETCore.App/2.2.0)
+Microsoft.NETCore.App [2.1.0](https://www.nuget.org/packages/Microsoft.NETCore.App/2.1.0)
 --------------------
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net472, net5.0, netcoreapp2.2, netcoreapp3.1, netstandard2.0
+Target frameworks: net452, net472, net5.0, netcoreapp2.1, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -13,7 +13,7 @@ License: [MIT](../../../../licenses/mit)
 Description
 -----------
 A set of .NET API's that are included in the default .NET Core application model. 
-1249f08feda72b116c7e6e4e9a390671883c797d 
+caa7b7e2bad98e56a687fb5cbaf60825500800f7 
 When using NuGet 3.x this package requires at least version 3.4.
 
 Remarks

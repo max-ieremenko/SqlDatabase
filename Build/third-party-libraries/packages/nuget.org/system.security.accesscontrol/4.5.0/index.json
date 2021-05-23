@@ -8,7 +8,7 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp2.2",
+        "netcoreapp2.1",
         "netcoreapp3.1",
         "net5.0",
         "net452",

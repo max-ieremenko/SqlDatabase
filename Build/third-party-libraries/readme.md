@@ -24,7 +24,7 @@ Packages 66
 |[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.DotNet.InternalAbstractions](packages/nuget.org/microsoft.dotnet.internalabstractions/1.0.0)|1.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.DotNet.InternalAbstractions/1.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
-|[Microsoft.NETCore.App](packages/nuget.org/microsoft.netcore.app/2.2.0)|2.2.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NETCore.App/2.2.0)|[MIT](licenses/mit)|SqlDatabase|
+|[Microsoft.NETCore.App](packages/nuget.org/microsoft.netcore.app/2.1.0)|2.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NETCore.App/2.1.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Win32.Registry](packages/nuget.org/microsoft.win32.registry/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.Registry/4.5.0)|[MIT](licenses/mit)|SqlDatabase|
