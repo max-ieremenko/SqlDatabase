@@ -4,6 +4,9 @@ $connectionString = $env:connectionString
 
 Import-Module "SqlDatabase"
 
+Write-Host "----- info ---"
+Show-SqlDatabaseInfo
+
 Write-Host "----- create new database ---"
 Create-SqlDatabase `
     -database $connectionString `
