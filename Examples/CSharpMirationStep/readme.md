@@ -52,7 +52,7 @@ Use
 ## Runtime .NET desktop
 At runtime the assembly will be loaded into private application domain with
 * ApplicationBase: temporary directory
-* ConfigurationFile: current [SqlDatabase.exe.config](../ConfigurationFile)
+* ConfigurationFile: current [one](../ConfigurationFile)
 * Location of assembly: ApplicationBase, temporary directory
 ```C#
     public class SqlDatabaseScript
@@ -76,7 +76,7 @@ After the migration step is finished or failed
 ## Runtime .NET Core
 At runtime the assembly will be loaded into the current application domain.
 * ApplicationBase: is a directory of SqlDatabase
-* ConfigurationFile: current [SqlDatabase.exe.config](../ConfigurationFile)
+* ConfigurationFile: current [one](../ConfigurationFile)
 * Script assembly has no location:
 ```C#
     public class SqlDatabaseScript
@@ -108,7 +108,7 @@ Supported signatures of Execute method
 Names *SqlDatabaseScript* and *Execute* are configurable.
 
 ## Configuration
-name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](../ConfigurationFile):
+name of class SqlDatabaseScript and method Execute can be changed in the [one](../ConfigurationFile):
 ```xml
 <configuration>
   <configSections>

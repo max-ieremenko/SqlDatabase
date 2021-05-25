@@ -84,8 +84,6 @@ $ SqlDatabase [command] "-database=Host=server;Username=postgres;Password=qwerty
 PS> *-SqlDatabase -database "Host=server;Username=postgres;Password=qwerty;Database=database"
 ```
 
-See more details [here](Examples/ExecuteScriptsFolder).
-
 [Back to ToC](#table-of-contents)
 
 Execute script(s) <a name="execute-script"></a>

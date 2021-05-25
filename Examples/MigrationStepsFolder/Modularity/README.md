@@ -20,18 +20,20 @@ A file name must be in the format "[module name]\_[version from]\_[version to].[
 
 |File|Module name|Version from|Version to|Extension|
 |:--|:----------|:----------|:----------|:----------|
-|moduleA_1.0_2.0.sql|moduleA|1.0|2.0|.sql|
-|moduleA_2.1_2.2.exe|moduleA|2.1|2.2|.exe|
-|moduleB_1.0_2.0.dll|moduleB|1.0|2.0|.dll|
+|moduleA_1.0_2.0.sql|moduleA|1.0|2.0|.sql (text file with sql scripts)|
+|moduleA_2.1_2.2.exe|moduleA|2.1|2.2|.exe (.net assembly with a script implementation)|
+|moduleB_1.0_2.0.dll|moduleB|1.0|2.0|.dll (.net assembly with a script implementation)|
+|moduleB_2.0_2.1.ps1|moduleB|2.0|2.1|.ps1 (text file with powershell script)|
 
 [Back to ToC](#table-of-contents)
 
-Step dependencies <a name="dependencies"></a>
+Step`s dependencies <a name="dependencies"></a>
 ===
 Dependencies are optional. They are written as a special type of comment in the form "module dependency: [module name] [module version]". Module names are not case-sensitive.
 
-#### .sql step
-Once GO instruction has been processed, SqlDatabase no longer looks for dependencies. Therefore, all dependencies must be at the very top of a script.
+#### MSSQL Server .sql step
+
+Once `GO` instruction has been processed, SqlDatabase no longer looks for dependencies. Therefore, all dependencies must be at the very top of a script.
 
 The following step depends on module A version 2.0 and module B version 1.0.
 ```sql
@@ -56,6 +58,35 @@ The following example is invalid:
 module dependency: a 2.0
 */
 GO
+...
+```
+
+#### PostgreSQL .sql step
+
+Once a line `;` has been processed, SqlDatabase no longer looks for dependencies. Therefore, all dependencies must be at the very top of a script.
+
+The following step depends on module A version 2.0 and module B version 1.0.
+```sql
+/*
+* module dependency: a 2.0
+* module dependency: b 1.0
+*/
+;
+...
+```
+
+The following step depends on module A version 2.0.
+```sql
+-- module dependency: a 2.0
+;
+...
+```
+
+The following example is invalid:
+```sql
+/*
+module dependency: a 2.0
+*/
 ...
 ```
 
@@ -84,13 +115,54 @@ Select/update a module version <a name="module-version"></a>
 ===
 Scripts for resolving and updating a module version are defined in the [configuration file](../../ConfigurationFile).
 
-Default scripts must be changed in order to support modularity. Here is one possible example
+Default scripts must be changed in order to support modularity. Here are some examples
+
+#### MSSQL Server, store versions in the database properties
+
 ```sql
 -- select current version
 SELECT value from sys.fn_listextendedproperty('version-{{ModuleName}}', default, default, default, default, default, default)
 
 -- update current version
 EXEC sys.sp_updateextendedproperty @name=N'version-{{ModuleName}}', @value=N'{{TargetVersion}}'
+```
+
+#### MSSQL Server, store versions in a specific table
+
+```sql
+-- a table
+CREATE TABLE dbo.Version
+(
+    ModuleName NVARCHAR(100) NOT NULL
+    , Version NVARCHAR(20) NOT NULL
+)
+GO
+ALTER TABLE dbo.Version ADD CONSTRAINT PK_dbo_Version PRIMARY KEY CLUSTERED (ModuleName);
+
+-- select current version
+SELECT Version FROM dbo.Version WHERE ModuleName = N'{{ModuleName}}'
+
+-- update current version
+UPDATE dbo.Version SET Version = N'{{TargetVersion}}' WHERE ModuleName = N'{{ModuleName}}'
+```
+
+#### PostgreSQL, store versions in a specific table
+
+```sql
+-- a table
+CREATE TABLE public.version
+(
+    module_name public.citext NOT NULL
+    , version varchar(20) NOT NULL
+);
+
+ALTER TABLE public.version ADD CONSTRAINT pk_version PRIMARY KEY (module_name);
+
+-- select current version
+SELECT version FROM public.version WHERE module_name = '{{ModuleName}}'
+
+-- update current version
+UPDATE public.version SET version = '{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'
 ```
 
 [Back to ToC](#table-of-contents)
@@ -114,18 +186,18 @@ The folder structure does not matter, SqlDatabase analyzes all files and folders
 ```sql
 /* person 1.0 => 2.0 */
 execute person_1.0_2.0.sql
--- update author`s version
-EXEC sys.sp_updateextendedproperty @name=N'version-person', @value=N'2.0'
+execute "update person version to 2.0"
+execute "check that person version is 2.0"
 
 /* book 1.0 => 2.0 */
 execute book_1.0_2.0.sql
--- update book`s version
-EXEC sys.sp_updateextendedproperty @name=N'version-book', @value=N'2.0'
+execute "update book version to 2.0"
+execute "check that book version is 2.0"
 
 /* reader 1.0 => 2.0 */
 execute reader_1.0_2.0.sql
--- update reader`s version
-EXEC sys.sp_updateextendedproperty @name=N'version-reader', @value=N'2.0'
+execute "update reader version to 2.0"
+execute "check that reader version is 2.0"
 ```
 
 -whatIf option <a name="whatIf"></a>

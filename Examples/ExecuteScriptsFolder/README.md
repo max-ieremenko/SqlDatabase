@@ -4,18 +4,18 @@
 ```bash
 $ SqlDatabase execute ^
       "-database=Data Source=server;Initial Catalog=database;Integrated Security=True" ^
-      -from=c:\Scripts\script.sql ^
+      -from=c:\SqlDatabase\Examples\ExecuteScriptsFolder ^
       -varVariable1=value1 ^
       -varVariable2=value2
 
 PS> Execute-SqlDatabase `
       -database "Data Source=server;Initial Catalog=database;Integrated Security=True" `
-      -from c:\Scripts\script.sql `
+      -from c:\SqlDatabase\Examples\ExecuteScriptsFolder `
       -var Variable1=value1,Variable2=value2 `
       -InformationAction Continue
 ```
 
-execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
+execute script from folder "c:\SqlDatabase\Examples\ExecuteScriptsFolder" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
 
 CLI
 ===
@@ -25,7 +25,7 @@ CLI
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.|
 |-fromSql|an sql script text. Repeat -fromSql to setup several scripts.|
-|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-configuration|a path to application [configuration file](../ConfigurationFile).|
 |-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 |-whatIf|shows what would happen if the command runs. The command is not run|
