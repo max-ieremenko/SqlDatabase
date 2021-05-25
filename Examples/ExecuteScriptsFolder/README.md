@@ -107,7 +107,7 @@ Predefined variables
 |:--|:----------|
 |DatabaseName|the target database name|
 
-Sql script example
+MSSQL Server script example
 =============================
 
 File name 02_demo.Department.sql
@@ -128,6 +128,27 @@ GO
 
 CREATE NONCLUSTERED INDEX IX_Department_Name ON demo.Department	(Name)
 GO
+```
+
+PostgreSQL script example
+=============================
+
+```sql
+DO $$
+BEGIN
+RAISE NOTICE 'create table demo.department';
+END
+$$;
+
+CREATE TABLE demo.department
+(
+	id serial
+	,name varchar(300) NOT NULL
+);
+
+ALTER TABLE demo.department ADD CONSTRAINT pk_department PRIMARY KEY (Id);
+
+CREATE INDEX ix_department_name ON demo.department (name);
 ```
 
 .ps1 script example

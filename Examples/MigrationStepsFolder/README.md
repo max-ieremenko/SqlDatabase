@@ -96,7 +96,7 @@ Predefined variables
 |TargetVersion|the database version after execution of current migration step|
 |ModuleName|the module name of current migration step, empty string in case of straight forward upgrade|
 
-Migration .sql step example
+Migration MSSQL Server .sql step example
 =============================
 
 File name 2.0_2.1.sql
@@ -116,6 +116,30 @@ GO
 
 ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
 GO
+```
+
+Migration PostgreSQL .sql step example
+=============================
+
+```sql
+DO $$
+BEGIN
+RAISE NOTICE 'create table demo';
+END
+$$;
+
+CREATE TABLE public.demo
+(
+	id integer NOT NULL
+);
+
+DO $$
+BEGIN
+RAISE NOTICE 'create primary key pk_demo';
+END
+$$;
+
+ALTER TABLE public.demo ADD CONSTRAINT pk_demo PRIMARY KEY (id);
 ```
 
 Migration .ps1 step example

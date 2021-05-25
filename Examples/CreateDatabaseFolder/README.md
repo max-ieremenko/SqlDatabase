@@ -105,7 +105,7 @@ Predefined variables
 |:--|:----------|
 |DatabaseName|the target database name|
 
-Sql script example
+MSSQL Server script example
 ==================
 
 File name 01_database/02_Create.sql
@@ -139,6 +139,21 @@ ALTER DATABASE [MyDatabase] SET ALLOW_SNAPSHOT_ISOLATION ON
 GO
 ```
 
+PostgreSQL script example
+==================
+
+Extract database creation into separate file:
+
+```sql
+CREATE DATABASE {{DatabaseName}};
+```
+
+Database properties into a second file:
+
+```sql
+CREATE EXTENSION citext;
+```
+
 .ps1 script example
 =============================
 
@@ -164,6 +179,23 @@ $Command.CommandText = ("ALTER DATABASE [{0}] SET ALLOW_SNAPSHOT_ISOLATION ON" -
 $Command.ExecuteNonQuery()
 
 Write-Information "finish execution"
+```
+
+.ps1 script example how to drop existing database on PostgreSQL
+=============================
+
+```powershell
+param (
+    $Command,
+    $Variables
+)
+
+$Command.Connection.ChangeDatabase("postgres");
+
+Write-Information ("drop " + $Variables.DatabaseName)
+
+$Command.CommandText = ("DROP DATABASE {0} WITH (FORCE)" -f $Variables.DatabaseName)
+$Command.ExecuteNonQuery()
 ```
 
 Assembly script example

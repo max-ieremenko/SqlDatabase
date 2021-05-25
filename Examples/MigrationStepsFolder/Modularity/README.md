@@ -28,7 +28,7 @@ A file name must be in the format "[module name]\_[version from]\_[version to].[
 
 Step dependencies <a name="dependencies"></a>
 ===
-Dependencies are optional. They are are written as a special type of comment in the form "module dependency: [module name] [module version]". Module names are not case-sensitive.
+Dependencies are optional. They are written as a special type of comment in the form "module dependency: [module name] [module version]". Module names are not case-sensitive.
 
 #### .sql step
 Once GO instruction has been processed, SqlDatabase no longer looks for dependencies. Therefore, all dependencies must be at the very top of a script.
