@@ -261,14 +261,6 @@ The variable value is resolved in the following order:
 
 [Back to ToC](#table-of-contents)
 
-Open connection on non-existing database
----------
-
-In a sql text file any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with a value before script execution.
-The variable name is
-
-[Back to ToC](#table-of-contents)
-
 *.zip files <a name="zip-files"></a>
 ------------------------------------
 

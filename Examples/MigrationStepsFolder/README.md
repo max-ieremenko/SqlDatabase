@@ -96,6 +96,11 @@ Predefined variables
 |TargetVersion|the database version after execution of current migration step|
 |ModuleName|the module name of current migration step, empty string in case of straight forward upgrade|
 
+Opening a connection
+========================
+
+Before starting any step SqlDatabase checks if a database, provided in the connection string, exists. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
+
 Migration MSSQL Server .sql step example
 =============================
 

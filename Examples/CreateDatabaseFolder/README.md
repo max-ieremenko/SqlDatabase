@@ -108,7 +108,7 @@ Predefined variables
 Opening a connection
 ========================
 
-Before running any step SqlDatabase checks if a database, provided in the connection string, exist. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
+Before starting any step SqlDatabase checks if a database, provided in the connection string, exists. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
 
 MSSQL Server script example
 ==================

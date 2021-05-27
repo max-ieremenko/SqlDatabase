@@ -9,7 +9,6 @@ Table of Contents
 - [Step file name](#file-name)
 - [Step dependencies](#dependencies)
 - [Select/update a module version](#module-version)
-- [Opening a connection](#connection)
 - [Execution](#execution)
 - [SqlDatabase.exe -whatIf](#whatIf)
 
@@ -176,13 +175,6 @@ UPDATE public.version SET version = '{{TargetVersion}}' WHERE module_name = '{{M
 ```
 
 Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
-
-[Back to ToC](#table-of-contents)
-
-Opening a connection <a name="connection"></a>
-========================
-
-Before running any step SqlDatabase checks if a database, provided in the connection string, exist. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
 
 [Back to ToC](#table-of-contents)
 
