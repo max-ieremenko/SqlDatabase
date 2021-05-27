@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Configuration;
-using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.IO;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration
 {
@@ -32,7 +32,7 @@ namespace SqlDatabase.Configuration
             _fs = new Mock<IFileSystemFactory>(MockBehavior.Strict);
 
             _sut = new Mock<CommandLineBase> { CallBase = true }.Object;
-            _sut.Connection = new SqlConnectionStringBuilder();
+            _sut.ConnectionString = MsSqlQuery.ConnectionString;
             _sut.FileSystemFactory = _fs.Object;
         }
 
@@ -42,8 +42,7 @@ namespace SqlDatabase.Configuration
             var actual = _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.PerStep, true);
 
             actual.Log.ShouldBe(_log.Object);
-            actual.ConnectionString.ShouldNotBeNull();
-            actual.Configuration.ShouldBe(_configuration);
+            actual.Adapter.ShouldNotBeNull();
             actual.Transaction.ShouldBe(TransactionMode.PerStep);
             actual.WhatIf.ShouldBeTrue();
         }

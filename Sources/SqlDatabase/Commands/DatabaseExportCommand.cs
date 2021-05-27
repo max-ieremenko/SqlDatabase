@@ -31,8 +31,13 @@ namespace SqlDatabase.Commands
                 var readerIndex = 0;
 
                 var exporter = ExporterFactory();
-                exporter.Output = new SqlWriter(output);
+                exporter.Output = Database.Adapter.CreateSqlWriter(output);
                 exporter.Log = Log;
+
+                if (string.IsNullOrWhiteSpace(DestinationTableName))
+                {
+                    DestinationTableName = exporter.Output.GetDefaultTableName();
+                }
 
                 foreach (var script in sequences)
                 {

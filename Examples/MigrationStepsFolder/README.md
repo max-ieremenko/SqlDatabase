@@ -26,7 +26,7 @@ CLI
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with migration steps. Repeat -from to setup several sources.|
 |-transaction|set transaction mode (none, perStep). Option [none] is default, means no transactions. Option [perStep] means to use one transaction per each migration step|
-|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-configuration|a path to application [configuration file](../ConfigurationFile).|
 |-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 |-whatIf|shows what would happen if the command runs. The command is not run|
@@ -96,7 +96,12 @@ Predefined variables
 |TargetVersion|the database version after execution of current migration step|
 |ModuleName|the module name of current migration step, empty string in case of straight forward upgrade|
 
-Migration .sql step example
+Opening a connection
+========================
+
+Before starting any step SqlDatabase checks if a database, provided in the connection string, exists. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
+
+Migration MSSQL Server .sql step example
 =============================
 
 File name 2.0_2.1.sql
@@ -118,10 +123,34 @@ ALTER TABLE dbo.Demo ADD CONSTRAINT PK_Demo PRIMARY KEY CLUSTERED (Id)
 GO
 ```
 
+Migration PostgreSQL .sql step example
+=============================
+
+```sql
+DO $$
+BEGIN
+RAISE NOTICE 'create table demo';
+END
+$$;
+
+CREATE TABLE public.demo
+(
+	id integer NOT NULL
+);
+
+DO $$
+BEGIN
+RAISE NOTICE 'create primary key pk_demo';
+END
+$$;
+
+ALTER TABLE public.demo ADD CONSTRAINT pk_demo PRIMARY KEY (id);
+```
+
 Migration .ps1 step example
 =============================
 
-File name 2.0_2.1.ps1, see details [here](../PowerShellScript).
+File name 2.0_2.1.ps1, see details about powershell scripts [here](../PowerShellScript).
 
 ```powershell
 param (
@@ -149,7 +178,7 @@ $Command.ExecuteNonQuery()
 Migration .dll step example
 =======================
 
-File name 2.1_2.2.dll, see details [here](../CSharpMirationStep).
+File name 2.1_2.2.dll, see details about assembly scripts [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>

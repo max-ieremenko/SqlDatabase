@@ -1,12 +1,10 @@
-﻿using System;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 
 namespace SqlDatabase.Export
 {
     internal sealed class DataExporter : IDataExporter
     {
-        public SqlWriter Output { get; set; }
+        public SqlWriterBase Output { get; set; }
 
         public int MaxInsertBatchSize { get; set; } = 500;
 
@@ -17,7 +15,7 @@ namespace SqlDatabase.Export
             ExportTable table;
             using (var metadata = source.GetSchemaTable())
             {
-                table = ReadSchemaTable(metadata, tableName);
+                table = Output.ReadSchemaTable(metadata, tableName);
             }
 
             CreateTable(table);
@@ -32,7 +30,7 @@ namespace SqlDatabase.Export
                 {
                     if (batchNum > 0)
                     {
-                        Output.Go().Line();
+                        Output.BatchSeparator().Line();
                     }
 
                     WriteInsertHeader(table);
@@ -51,7 +49,7 @@ namespace SqlDatabase.Export
                         Output.Text(", ");
                     }
 
-                    Output.Value(source[i]);
+                    Output.Value(source[i], table.Columns[i].SqlDataTypeName);
                 }
 
                 Output.Line(")");
@@ -66,57 +64,11 @@ namespace SqlDatabase.Export
                 }
             }
 
-            Output.Go();
+            Output.BatchSeparator();
             if (rowNum > 0)
             {
                 Log.Info("{0} rows".FormatWith((batchNum * MaxInsertBatchSize) + rowNum));
             }
-        }
-
-        internal ExportTable ReadSchemaTable(DataTable metadata, string tableName)
-        {
-            var result = new ExportTable { Name = tableName };
-
-            const string GeneratedName = "GeneratedName";
-            var generatedIndex = 0;
-
-            var rows = metadata.Rows.Cast<DataRow>().OrderBy(i => (int)i["ColumnOrdinal"]);
-            foreach (var row in rows)
-            {
-                var name = (string)row["ColumnName"];
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    generatedIndex++;
-                    name = GeneratedName + generatedIndex;
-                }
-
-                var typeName = (string)row["DataTypeName"];
-                var size = (int)row["ColumnSize"];
-
-                if ("timestamp".Equals(typeName, StringComparison.OrdinalIgnoreCase)
-                    || "RowVersion".Equals(typeName, StringComparison.OrdinalIgnoreCase))
-                {
-                    typeName = "VARBINARY";
-                    size = 8;
-                }
-                else if (typeName.EndsWith("sys.HIERARCHYID", StringComparison.OrdinalIgnoreCase))
-                {
-                    // System.IO.FileNotFoundException : Could not load file or assembly 'Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91' or one of its dependencies
-                    throw new NotSupportedException("Data type hierarchyid is not supported, to export data convert value to NVARCHAR: SELECT CAST([{0}] AND NVARCHAR(100)) [{0}]".FormatWith(name));
-                }
-
-                result.Columns.Add(new ExportTableColumn
-                {
-                    Name = name,
-                    SqlDataTypeName = typeName,
-                    Size = size,
-                    NumericPrecision = (short?)DataReaderTools.CleanValue(row["NumericPrecision"]),
-                    NumericScale = (short?)DataReaderTools.CleanValue(row["NumericScale"]),
-                    AllowNull = (bool)row["AllowDBNull"]
-                });
-            }
-
-            return result;
         }
 
         private void CreateTable(ExportTable table)
@@ -155,7 +107,7 @@ namespace SqlDatabase.Export
 
             Output
                 .Line(")")
-                .Go();
+                .BatchSeparator();
         }
 
         private void WriteInsertHeader(ExportTable table)

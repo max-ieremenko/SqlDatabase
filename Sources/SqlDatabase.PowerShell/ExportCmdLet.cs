@@ -1,15 +1,14 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.Configuration;
+using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell
 {
     [Cmdlet(VerbsData.Export, "SqlDatabase")]
-    public sealed class ExportCmdLet : SqlDatabaseCmdLet
+    public sealed class ExportCmdLet : PSCmdlet
     {
-        public ExportCmdLet()
-            : base(CommandLineFactory.CommandExport)
-        {
-        }
+        [Parameter(Mandatory = true, Position = 1, HelpMessage = "Connection string to target database.")]
+        [Alias("d")]
+        public string Database { get; set; }
 
         [Parameter(Position = 2, HelpMessage = "An sql script to select export data. Repeat -fromSql to setup several scripts.")]
         [Alias("s")]
@@ -29,22 +28,16 @@ namespace SqlDatabase.PowerShell
         [Parameter(HelpMessage = "Setup \"INSERT INTO\" table name. Default is dbo.SqlDatabaseExport.")]
         public string ToTable { get; set; }
 
-        internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
+        [Parameter(ValueFromRemainingArguments = true, HelpMessage = "Set a variable in format \"[name of variable]=[value of variable]\".")]
+        [Alias("v")]
+        public string[] Var { get; set; }
+
+        [Parameter(HelpMessage = "Optional path to log file.")]
+        public string Log { get; set; }
+
+        protected override void ProcessRecord()
         {
-            this.AppendFrom(From, cmd);
-
-            if (FromSql != null && FromSql.Length > 0)
-            {
-                foreach (var from in FromSql)
-                {
-                    cmd.SetInLineScript(from);
-                }
-            }
-
-            cmd
-                .SetConfigurationFile(this.RootPath(Configuration))
-                .SetExportToTable(ToTable)
-                .SetExportToFile(ToFile);
+            new ExportPowerShellCommand(this).Execute();
         }
     }
 }

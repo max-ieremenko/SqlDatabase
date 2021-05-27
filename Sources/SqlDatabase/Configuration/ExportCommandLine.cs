@@ -18,9 +18,15 @@ namespace SqlDatabase.Configuration
             var configuration = new ConfigurationManager();
             configuration.LoadFrom(ConfigurationFile);
 
+            var database = CreateDatabase(logger, configuration, TransactionMode.None, false);
+
             var sequence = new CreateScriptSequence
             {
-                ScriptFactory = new ScriptFactory { Configuration = configuration.SqlDatabase },
+                ScriptFactory = new ScriptFactory
+                {
+                    AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
+                    TextReader = database.Adapter.CreateSqlTextReader()
+                },
                 Sources = Scripts.ToArray()
             };
 
@@ -28,7 +34,7 @@ namespace SqlDatabase.Configuration
             {
                 Log = WrapLogger(logger),
                 OpenOutput = CreateOutput(),
-                Database = CreateDatabase(logger, configuration, TransactionMode.None, false),
+                Database = database,
                 ScriptSequence = sequence,
                 DestinationTableName = DestinationTableName
             };

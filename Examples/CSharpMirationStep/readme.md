@@ -2,16 +2,19 @@
 ==========================================
 
 Any assembly script is
+
 - .exe or .dll for target framework is 4.5.2+
-- .dll for .net core 2.2/3.1 or .net5.0
+- .dll for .net core 2.1/3.1 or .net5.0
 - has exactly one class with script implementation
 
 This project is an example of script implementation.
 The build output is 2.1_2.2.dll with target framework 4.5.2.
-Due to the current dependencies, 2.1_2.2.dll works well on .net core 2.2/3.1 and .net 5.0.
+Due to the current dependencies, 2.1_2.2.dll works well on .net core 2.1/3.1 and .net 5.0.
 
 ## Script source
+
 Method [SqlDatabaseScript.Execute](SqlDatabaseScript.cs) implements a logic of script
+
 ```C#
 namespace SqlDatabaseCustomScript
 {
@@ -46,14 +49,17 @@ namespace SqlDatabaseCustomScript
 ```
 
 Use
-* method`s parameter "IDbCommand command" to affect database
-* Console.WriteLine() to write something into output/log
+
+- method`s parameter "IDbCommand command" to affect database
+- Console.WriteLine() to write something into output/log
 
 ## Runtime .NET desktop
-At runtime the assembly will be loaded into private application domain with
-* ApplicationBase: temporary directory
-* ConfigurationFile: current [SqlDatabase.exe.config](../ConfigurationFile)
-* Location of assembly: ApplicationBase, temporary directory
+
+At runtime the assembly will be loaded into A private application domain with
+
+- ApplicationBase: temporary directory
+- Location of assembly: ApplicationBase, temporary directory
+
 ```C#
     public class SqlDatabaseScript
     {
@@ -66,18 +72,22 @@ At runtime the assembly will be loaded into private application domain with
         }
     }
 ```
-Instance of migration step will be resolved via reflection: Activator.CreateInstance(typeof(SqlDatabaseScript))
+
+Instance of migration step will be resolved via reflection: `Activator.CreateInstance(typeof(SqlDatabaseScript))`
 
 After the migration step is finished or failed
-- instance of SqlDatabaseScript will be disposed (if IDisposable)
+
+- instance of SqlDatabaseScript will be disposed (if `IDisposable`)
 - the domain will be unloaded
 - temporary directory will be deleted
 
 ## Runtime .NET Core
-At runtime the assembly will be loaded into the current application domain.
-* ApplicationBase: is a directory of SqlDatabase
-* ConfigurationFile: current [SqlDatabase.exe.config](../ConfigurationFile)
-* Script assembly has no location:
+
+At runtime the assembly will be loaded into the current application domain (`AssemblyLoadContext.Default`).
+
+- ApplicationBase: is a directory of SqlDatabase
+- Script assembly has no location:
+
 ```C#
     public class SqlDatabaseScript
     {
@@ -90,25 +100,31 @@ At runtime the assembly will be loaded into the current application domain.
         }
     }
 ```
-Instance of migration step will be resolved via reflection: Activator.CreateInstance(typeof(SqlDatabaseScript))
+
+Instance of migration step will be resolved via reflection: `Activator.CreateInstance(typeof(SqlDatabaseScript))`
 
 After the migration step is finished or failed
-- instance of SqlDatabaseScript will be disposed (if IDisposable)
+
+- instance of SqlDatabaseScript will be disposed (if `IDisposable`)
 
 ## Resolving SqlDatabaseScript.Execute
-The assembly must contain exactly one "public class SqlDatabaseScript", namespace doesn't matter.
-Class SqlDatabaseScript must contain instance method "public void Execute(...)".
+
+The assembly must contain exactly one `public class SqlDatabaseScript`, namespace doesn't matter.
+Class `SqlDatabaseScript` must contain instance method `public void Execute(...)`.
 
 Supported signatures of Execute method
-* void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
-* void Execute(IReadOnlyDictionary<string, string> variables, IDbCommand command)
-* void Execute(IDbCommand command)
-* void Execute(IDbConnection connection)
+
+- void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+- void Execute(IReadOnlyDictionary<string, string> variables, IDbCommand command)
+- void Execute(IDbCommand command)
+- void Execute(IDbConnection connection)
 
 Names *SqlDatabaseScript* and *Execute* are configurable.
 
 ## Configuration
-name of class SqlDatabaseScript and method Execute can be changed in the [SqlDatabase.exe.config](../ConfigurationFile):
+
+name of class `SqlDatabaseScript` and method `Execute` can be changed in the [configuration file](../ConfigurationFile):
+
 ```xml
 <configuration>
   <configSections>

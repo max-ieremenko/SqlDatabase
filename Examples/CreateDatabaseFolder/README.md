@@ -23,7 +23,7 @@ CLI
 |:--|:----------|
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.|
-|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-configuration|a path to application [configuration file](../ConfigurationFile).|
 |-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 |-whatIf|shows what would happen if the command runs. The command is not run|
@@ -105,7 +105,12 @@ Predefined variables
 |:--|:----------|
 |DatabaseName|the target database name|
 
-Sql script example
+Opening a connection
+========================
+
+Before starting any step SqlDatabase checks if a database, provided in the connection string, exists. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
+
+MSSQL Server script example
 ==================
 
 File name 01_database/02_Create.sql
@@ -139,10 +144,25 @@ ALTER DATABASE [MyDatabase] SET ALLOW_SNAPSHOT_ISOLATION ON
 GO
 ```
 
+PostgreSQL script example
+==================
+
+Extract database creation into separate file:
+
+```sql
+CREATE DATABASE {{DatabaseName}};
+```
+
+Database properties into a second file:
+
+```sql
+CREATE EXTENSION citext;
+```
+
 .ps1 script example
 =============================
 
-File name 01_database/02_Create.ps1, see details [here](../PowerShellScript).
+File name 01_database/02_Create.ps1, see details about powershell scripts [here](../PowerShellScript).
 
 ```powershell
 param (
@@ -166,10 +186,27 @@ $Command.ExecuteNonQuery()
 Write-Information "finish execution"
 ```
 
+.ps1 script example how to drop existing database on PostgreSQL
+=============================
+
+```powershell
+param (
+    $Command,
+    $Variables
+)
+
+$Command.Connection.ChangeDatabase("postgres");
+
+Write-Information ("drop " + $Variables.DatabaseName)
+
+$Command.CommandText = ("DROP DATABASE {0} WITH (FORCE)" -f $Variables.DatabaseName)
+$Command.ExecuteNonQuery()
+```
+
 Assembly script example
 =======================
 
-File name 01_database/02_Create.dll, see details [here](../CSharpMirationStep).
+File name 01_database/02_Create.dll, see details about assembly scripts [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>

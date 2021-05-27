@@ -6,7 +6,7 @@ SqlDatabase
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlDatabase.svg?style=flat-square)](https://www.powershellgallery.com/packages/SqlDatabase)
 [![GitHub release](https://img.shields.io/github/release/max-ieremenko/SqlDatabase.svg?style=flat-square&label=manual%20download)](https://github.com/max-ieremenko/SqlDatabase/releases)
 
-Command-line tool and PowerShell module for SQL Server allows to execute scripts, database migrations and export data.
+Command-line tool and PowerShell module for MSSQL Server and PostgreSQL allows to execute scripts, database migrations and export data.
 
 Table of Contents
 -----------------
@@ -14,14 +14,15 @@ Table of Contents
 <!-- toc -->
 
 - [Installation](#installation)
+- [Target database type](#database-selection)
 - [Execute script(s) (file)](#execute-script)
 - [Export data from a database to sql script (file)](#export-data)
 - [Create a database](#create-database)
 - [Migrate an existing database](#upgrade-database)
 - [Scripts](#scripts)
 - [Variables](#variables)
-- [VS Package manager console](#console)
 - [*.zip files](#zip-files)
+- [VS Package manager console](#console)
 - [Examples](#examples)
 - [License](#license)
 
@@ -32,9 +33,9 @@ Installation
 
 PowerShell module is compatible with Powershell Core 6.1+ and PowerShell Desktop 5.1.
 
-Dotnet tool requires SDK .Net 5.0 or .Net Core 2.2/3.1.
+.net tool requires SDK .Net 5.0 or .Net Core 2.1/3.1.
 
-Command-line tool is compatible with .Net runtime 5.0, .Net Core runtime 2.2/3.1 and .Net Framework 4.5.2+.
+Command-line tool is compatible with .net runtime 5.0, .net Core runtime 2.1/3.1 and .net Framework 4.5.2+.
 
 ### PowerShell, from gallery
 
@@ -52,7 +53,7 @@ PS> Install-Module -Name SqlDatabase
 PS> Import-Module .\SqlDatabase.psm1
 ```
 
-### Dotnet tool
+### Dotnet sdk tool
 
 [![NuGet](https://img.shields.io/nuget/v/SqlDatabase.GlobalTool.svg?style=flat-square&label=nuget%20dotnet%20tool)](https://www.nuget.org/packages/SqlDatabase.GlobalTool/)
 
@@ -62,7 +63,30 @@ $ dotnet tool install --global SqlDatabase.GlobalTool
 
 [Back to ToC](#table-of-contents)
 
-Execute script(s) (file) <a name="execute-script"></a>
+Target database type selection <a name="database-selection"></a>
+--------------
+
+The target database/server type is recognized automatically from provided connection string:
+
+here is target MSSQL Server:
+
+```bash
+$ SqlDatabase [command] "-database=Data Source=server;Initial Catalog=database;Integrated Security=True"
+
+PS> *-SqlDatabase -database "Data Source=server;Initial Catalog=database;Integrated Security=True"
+```
+
+here is target PostgreSQL:
+
+```bash
+$ SqlDatabase [command] "-database=Host=server;Username=postgres;Password=qwerty;Database=database"
+
+PS> *-SqlDatabase -database "Host=server;Username=postgres;Password=qwerty;Database=database"
+```
+
+[Back to ToC](#table-of-contents)
+
+Execute script(s) <a name="execute-script"></a>
 --------------
 
 execute script from file "c:\Scripts\script.sql" on *[MyDatabase]* on server *[MyServer]* with "Variable1=value1" and "Variable2=value2"
@@ -156,7 +180,7 @@ PS> Upgrade-SqlDatabase `
 Scripts
 -------
 
-- *.sql* a text file with Sql Server scripts
+- *.sql* a text file with sql scripts
 - *.ps1* a text file with PowerShell script, details are [here](Examples/PowerShellScript)
 - *.dll* or *.exe* an .NET assembly with a script implementation, details are [here](Examples/CSharpMirationStep)
 
@@ -167,6 +191,7 @@ Variables
 
 In a sql text file any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with a value before script execution.
 The variable name is
+
 - a word from characters a-z, A-Z, 0-9, including the _ (underscore) character
 - case insensitive
 
@@ -183,7 +208,7 @@ DROP TABLE [{{Schema}}].[{{Table}}]
 $ SqlDatabase execute -from=script.sql -varSchema=dbo -varTable=Person
 PS> Execute-SqlDatabase -from script.sql -var Schema=dbo,Table=Person -InformationAction Continue
 
-# output
+# log output
 script.sql ...
    variable Schema was replaced with dbo
    variable Table was replaced with Person
@@ -209,7 +234,7 @@ ALTER LOGIN [sa] WITH PASSWORD=N'{{_Password}}'
 $ SqlDatabase execute -from=script.sql -var_Password=P@ssw0rd
 PS> Execute-SqlDatabase -from script.sql -var _Password=P@ssw0rd -InformationAction Continue
 
-# output
+# log output
 script.sql ...
    variable _Password was replaced with [value is hidden]
 ```
@@ -221,25 +246,18 @@ ALTER LOGIN [sa] WITH PASSWORD=N'{{P@ssw0rd}}'
 
 A non defined variable`s value leads to an error and stops script execution process.
 
-The variable value is resolving in the following order:
+The variable value is resolved in the following order:
 
 1. check command line
-2. check environment variable (Environment.GetEnvironmentVariable())
+2. check environment variables (Environment.GetEnvironmentVariable())
 3. check [configuration file](Examples/ConfigurationFile)
 
 ### Predefined variables
 
-- *DatabaseName* - the target database name (-database=...Initial Catalog=MyDatabase...)
+- *DatabaseName* - the target database name, see connection string (-database=...Initial Catalog=MyDatabase...)
 - *CurrentVersion* - the database/module version before execution of a [migration step](Examples/MigrationStepsFolder)
 - *TargetVersion* - the database/module version after execution of a [migration step](Examples/MigrationStepsFolder)
 - *ModuleName* - the module name of current [migration step](Examples/MigrationStepsFolder), empty string in case of straight forward upgrade
-
-[Back to ToC](#table-of-contents)
-
-VS Package manager console <a name="console"></a>
-------------------------------------------------
-
-To integrate SqlDatabase into the Visual studio package manager console please check this [example](Examples/PackageManagerConsole).
 
 [Back to ToC](#table-of-contents)
 
@@ -248,29 +266,37 @@ To integrate SqlDatabase into the Visual studio package manager console please c
 
 Parameters *-from* and *-configuration* in the command line interpret .zip files in the path as folders, for example
 
-* -from=c:\scripts.zip\archive\tables.zip\demo
-* -from=c:\scripts.zip\archive\tables.zip\table1.sql
-* -configuration=c:\scripts.zip\app.config
+- -from=c:\scripts.zip\archive\tables.zip\demo
+- -from=c:\scripts.zip\archive\tables.zip\table1.sql
+- -configuration=c:\scripts.zip\app.config
+
+[Back to ToC](#table-of-contents)
+
+
+VS Package manager console <a name="console"></a>
+------------------------------------------------
+
+For integrating SqlDatabase into the Visual studio package manager console please check this [example](Examples/PackageManagerConsole).
 
 [Back to ToC](#table-of-contents)
 
 Examples
 --------
 
-* [create ms sql server linux docker image](Examples/SqlServerDockerImage)
-* [execute script(s)](Examples/ExecuteScriptsFolder)
-* [export data](Examples/ExportData)
-* [create a database](Examples/CreateDatabaseFolder)
-* [upgrade an existing database](Examples/MigrationStepsFolder)
-* [how to use SqlDatabase in the VS Package manager console](Examples/PackageManagerConsole)
-* [configuration file](Examples/ConfigurationFile)
-* [assembly script](Examples/CSharpMirationStep)
+- [create ms sql server linux docker image](Examples/SqlServerDockerImage)
+- [execute script(s)](Examples/ExecuteScriptsFolder)
+- [export data](Examples/ExportData)
+- [create a database](Examples/CreateDatabaseFolder)
+- [upgrade an existing database](Examples/MigrationStepsFolder)
+- [how to use SqlDatabase in the VS Package manager console](Examples/PackageManagerConsole)
+- [configuration file](Examples/ConfigurationFile)
+- [assembly script](Examples/CSharpMirationStep)
 
 [Back to ToC](#table-of-contents)
 
 License
 -------
 
-This tool is distributed under the [MIT](LICENSE) license.
+This tool is distributed under the [MIT](LICENSE.md) license.
 
 [Back to ToC](#table-of-contents)

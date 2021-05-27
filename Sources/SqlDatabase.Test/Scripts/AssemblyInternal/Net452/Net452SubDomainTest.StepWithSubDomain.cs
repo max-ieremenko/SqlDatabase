@@ -1,4 +1,4 @@
-﻿#if NET452
+﻿#if NET472
 using System;
 using System.Data;
 using System.IO;
@@ -26,7 +26,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
                 command.CommandText = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
                 command.ExecuteNonQuery();
 
-                command.CommandText = Query.ConnectionString;
+                command.CommandText = MsSqlQuery.ConnectionString;
                 command.ExecuteNonQuery();
             }
 

@@ -1,16 +1,16 @@
 ﻿using System.Management.Automation;
 using SqlDatabase.Configuration;
+using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell
 {
     [Cmdlet(VerbsCommon.New, "SqlDatabase")]
     [Alias(CommandLineFactory.CommandCreate + "-SqlDatabase")]
-    public sealed class CreateCmdLet : SqlDatabaseCmdLet
+    public sealed class CreateCmdLet : PSCmdlet
     {
-        public CreateCmdLet()
-            : base(CommandLineFactory.CommandCreate)
-        {
-        }
+        [Parameter(Mandatory = true, Position = 1, HelpMessage = "Connection string to target database.")]
+        [Alias("d")]
+        public string Database { get; set; }
 
         [Parameter(Mandatory = true, Position = 2, ValueFromPipeline = true, HelpMessage = "A path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.")]
         [Alias("f")]
@@ -23,13 +23,16 @@ namespace SqlDatabase.PowerShell
         [Parameter(Position = 4, HelpMessage = "Shows what would happen if the command runs. The command is not run.")]
         public SwitchParameter WhatIf { get; set; }
 
-        internal override void BuildCommandLine(GenericCommandLineBuilder cmd)
-        {
-            this.AppendFrom(From, cmd);
+        [Parameter(ValueFromRemainingArguments = true, HelpMessage = "Set a variable in format \"[name of variable]=[value of variable]\".")]
+        [Alias("v")]
+        public string[] Var { get; set; }
 
-            cmd
-                .SetConfigurationFile(this.RootPath(Configuration))
-                .SetWhatIf(WhatIf);
+        [Parameter(HelpMessage = "Optional path to log file.")]
+        public string Log { get; set; }
+
+        protected override void ProcessRecord()
+        {
+            new CreatePowerShellCommand(this).Execute();
         }
     }
 }

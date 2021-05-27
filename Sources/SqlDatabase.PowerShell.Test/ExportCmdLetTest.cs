@@ -12,7 +12,7 @@ namespace SqlDatabase.PowerShell
         [Test]
         public void BuildCommandLine()
         {
-            var commandLines = InvokeCommand(
+            var commandLines = InvokeSqlDatabase(
                 "Export-SqlDatabase",
                 c =>
                 {

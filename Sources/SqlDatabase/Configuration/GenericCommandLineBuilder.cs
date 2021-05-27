@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace SqlDatabase.Configuration
@@ -97,12 +96,6 @@ namespace SqlDatabase.Configuration
             return this;
         }
 
-        public GenericCommandLineBuilder SetPreFormatOutputLogs(bool value)
-        {
-            Line.PreFormatOutputLogs = value;
-            return this;
-        }
-
         public GenericCommandLineBuilder SetWhatIf(bool value)
         {
             Line.WhatIf = value;
@@ -126,96 +119,76 @@ namespace SqlDatabase.Configuration
             return Line;
         }
 
-        public string[] BuildArray(bool escaped)
+        public string[] BuildArray()
         {
             var cmd = Build();
 
             var result = new List<string>
             {
                 cmd.Command,
-                CombineArg(Arg.Database, cmd.Connection, escaped)
+                CombineArg(Arg.Database, cmd.Connection)
             };
 
             foreach (var script in cmd.Scripts)
             {
-                result.Add(CombineArg(Arg.Scripts, script, escaped));
+                result.Add(CombineArg(Arg.Scripts, script));
             }
 
             foreach (var script in cmd.InLineScript)
             {
-                result.Add(CombineArg(Arg.InLineScript, script, escaped));
+                result.Add(CombineArg(Arg.InLineScript, script));
             }
 
             if (cmd.Transaction != default(TransactionMode))
             {
-                result.Add(CombineArg(Arg.Transaction, cmd.Transaction.ToString(), escaped));
+                result.Add(CombineArg(Arg.Transaction, cmd.Transaction.ToString()));
             }
 
             if (!string.IsNullOrEmpty(cmd.ConfigurationFile))
             {
-                result.Add(CombineArg(Arg.Configuration, cmd.ConfigurationFile, escaped));
+                result.Add(CombineArg(Arg.Configuration, cmd.ConfigurationFile));
             }
 
             if (!string.IsNullOrEmpty(cmd.ExportToTable))
             {
-                result.Add(CombineArg(Arg.ExportToTable, cmd.ExportToTable, escaped));
+                result.Add(CombineArg(Arg.ExportToTable, cmd.ExportToTable));
             }
 
             if (!string.IsNullOrEmpty(cmd.ExportToFile))
             {
-                result.Add(CombineArg(Arg.ExportToFile, cmd.ExportToFile, escaped));
+                result.Add(CombineArg(Arg.ExportToFile, cmd.ExportToFile));
             }
 
             foreach (var entry in cmd.Variables)
             {
-                result.Add(CombineArg(Arg.Variable + entry.Key, entry.Value, escaped));
-            }
-
-            if (cmd.PreFormatOutputLogs)
-            {
-                result.Add(CombineArg(Arg.PreFormatOutputLogs, cmd.PreFormatOutputLogs.ToString(), false));
+                result.Add(CombineArg(Arg.Variable + entry.Key, entry.Value));
             }
 
             if (cmd.WhatIf)
             {
-                result.Add(CombineArg(Arg.WhatIf, cmd.WhatIf.ToString(), false));
+                result.Add(CombineArg(Arg.WhatIf, cmd.WhatIf.ToString()));
             }
 
             if (cmd.FolderAsModuleName)
             {
-                result.Add(CombineArg(Arg.FolderAsModuleName, cmd.FolderAsModuleName.ToString(), false));
+                result.Add(CombineArg(Arg.FolderAsModuleName, cmd.FolderAsModuleName.ToString()));
             }
 
             if (!string.IsNullOrEmpty(cmd.LogFileName))
             {
-                result.Add(CombineArg(Arg.Log, cmd.LogFileName, escaped));
+                result.Add(CombineArg(Arg.Log, cmd.LogFileName));
             }
 
             return result.ToArray();
         }
 
-        private static string CombineArg(string key, string value, bool escaped)
+        private static string CombineArg(string key, string value)
         {
-            var result = new StringBuilder();
-
-            if (escaped && !string.IsNullOrEmpty(value))
-            {
-                result.Append(Arg.Base64Sign);
-            }
-
-            result
+            var result = new StringBuilder()
                 .Append(Arg.Sign)
                 .Append(key)
-                .Append("=");
-
-            if (escaped && !string.IsNullOrEmpty(value))
-            {
-                result.Append(Convert.ToBase64String(Encoding.UTF8.GetBytes(value)));
-            }
-            else
-            {
-                result.Append(value);
-            }
+                .Append("=")
+                .Append(value);
 
             return result.ToString();
         }

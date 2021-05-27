@@ -56,9 +56,9 @@ CLI
 |-database|set connection string to target database|
 |-from|a path to a folder or zip archive with sql scripts or path to a sql script file. Repeat -from to setup several sources.|
 |-fromSql|an sql script to select export data. Repeat -fromSql to setup several scripts.|
-|-toTable|setup "INSERT INTO" table name. Default is dbo.SqlDatabaseExport.|
+|-toTable|setup "INSERT INTO" table name. Default is dbo.SqlDatabaseExport for MSSQL and public.sqldatabase_export for PostgreSQL.|
 |-toFile|write sql scripts into a file. By default write into standard output (console/information stream).|
-|-configuration|a path to application configuration file. Default is current [SqlDatabase.exe.config](../ConfigurationFile)|
+|-configuration|a path to application [configuration file](../ConfigurationFile).|
 |-log|optional path to log file|
 |-var|set a variable in format "=var[name of variable]=[value of variable]"|
 

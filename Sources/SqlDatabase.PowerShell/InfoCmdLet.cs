@@ -2,6 +2,7 @@
 using System.Management.Automation;
 using System.Runtime.InteropServices;
 using SqlDatabase.Configuration;
+using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell
 {
@@ -10,7 +11,17 @@ namespace SqlDatabase.PowerShell
     {
         protected override void ProcessRecord()
         {
+            using (var resolver = DependencyResolverFactory.Create(this))
+            {
+                resolver.Initialize();
+                WriteInfo();
+            }
+        }
+
+        private void WriteInfo()
+        {
             var assembly = GetType().Assembly;
+            var location = Path.GetDirectoryName(assembly.Location);
 
             this.TryGetPSVersionTable(out var psVersionTable);
 
@@ -23,9 +34,9 @@ namespace SqlDatabase.PowerShell
                 RuntimeInformation.OSDescription,
                 RuntimeInformation.OSArchitecture,
                 RuntimeInformation.ProcessArchitecture,
-                Location = Path.GetDirectoryName(assembly.Location),
+                Location = location,
                 WorkingDirectory = this.GetWorkingDirectory(),
-                DefaultConfigurationFile = ConfigurationManager.ResolveDefaultConfigurationFile()
+                DefaultConfigurationFile = ConfigurationManager.ResolveDefaultConfigurationFile(location)
             });
         }
     }

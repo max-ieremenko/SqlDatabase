@@ -1,12 +1,13 @@
-task Default BuildDotnetSdk22 `
-     , BuildDotnetRuntime22 `
+task Default BuildDotnetSdk21 `
+     , BuildDotnetRuntime21 `
      , BuildDotnetSdk31 `
      , BuildDotnetRuntime31 `
      , BuildDotnetSdk50 `
      , BuildDotnetRuntime50 `
-     , BuildDatabase
+     , BuildMsSqlDatabase `
+     , BuildPgSqlDatabase
 
-task BuildDatabase {
+task BuildMsSqlDatabase {
     $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
     exec {
         docker build `
@@ -16,20 +17,30 @@ task BuildDatabase {
     }
 }
 
-task BuildDotnetSdk22 {
+task BuildPgSqlDatabase {
+    $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
     exec {
         docker build `
-            -f image-dotnet-sdk-2.2.dockerfile `
-            -t sqldatabase/dotnet_pwsh:2.2-sdk `
+            -f image-postgres-133.dockerfile `
+            -t sqldatabase/postgres:13.3 `
+            $context
+    }
+}
+
+task BuildDotnetSdk21 {
+    exec {
+        docker build `
+            -f image-dotnet-sdk-2.1.dockerfile `
+            -t sqldatabase/dotnet_pwsh:2.1-sdk `
             .
     }
 }
 
-task BuildDotnetRuntime22 {
+task BuildDotnetRuntime21 {
     exec {
         docker build `
-            -f image-dotnet-runtime-2.2.dockerfile `
-            -t sqldatabase/dotnet_pwsh:2.2-runtime `
+            -f image-dotnet-runtime-2.1.dockerfile `
+            -t sqldatabase/dotnet_pwsh:2.1-runtime `
             .
     }
 }

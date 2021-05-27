@@ -3,7 +3,7 @@ System.Xml.ReaderWriter [4.3.0](https://www.nuget.org/packages/System.Xml.Reader
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, netcoreapp2.2, netcoreapp3.1
+Target frameworks: net472, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

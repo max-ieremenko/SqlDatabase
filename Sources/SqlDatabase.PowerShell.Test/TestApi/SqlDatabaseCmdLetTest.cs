@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -8,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
+using SqlDatabase.PowerShell.Internal;
 using Command = System.Management.Automation.Runspaces.Command;
 
 namespace SqlDatabase.PowerShell.TestApi
@@ -40,13 +42,13 @@ namespace SqlDatabase.PowerShell.TestApi
                 .Callback<GenericCommandLine>(cmd => _commandLines.Add(cmd));
 
             _commandLines.Clear();
-            SqlDatabaseCmdLet.Program = program.Object;
+            PowerShellCommandBase.Program = program.Object;
         }
 
         [TearDown]
         public void AfterEachTest()
         {
-            SqlDatabaseCmdLet.Program = null;
+            PowerShellCommandBase.Program = null;
 
             foreach (var row in _powerShell.Streams.Information)
             {
@@ -57,12 +59,20 @@ namespace SqlDatabase.PowerShell.TestApi
             _runSpace?.Dispose();
         }
 
-        protected GenericCommandLine[] InvokeCommand(string name, Action<Command> builder)
+        protected Collection<PSObject> InvokeCommand(string name)
         {
-            return InvokeCommandPipeLine(name, builder);
+            var command = new Command(name);
+            _powerShell.Commands.AddCommand(command);
+
+            return _powerShell.Invoke();
         }
 
-        protected GenericCommandLine[] InvokeCommandPipeLine(string name, Action<Command> builder, params object[] args)
+        protected GenericCommandLine[] InvokeSqlDatabase(string name, Action<Command> builder)
+        {
+            return InvokeInvokeSqlDatabasePipeLine(name, builder);
+        }
+
+        protected GenericCommandLine[] InvokeInvokeSqlDatabasePipeLine(string name, Action<Command> builder, params object[] args)
         {
             _commandLines.Clear();
 

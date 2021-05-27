@@ -1,0 +1,45 @@
+{
+  "License": {
+    "Code": "PostgreSQL",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netcoreapp2.1",
+        "netcoreapp3.1",
+        "net5.0",
+        "net452",
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "4.5.2"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "PostgreSQL",
+      "HRef": "https://licenses.nuget.org/PostgreSQL",
+      "Description": null
+    },
+    {
+      "Subject": "repository",
+      "Code": "PostgreSQL",
+      "HRef": "git://github.com/npgsql/npgsql",
+      "Description": null
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "http://www.npgsql.org/",
+      "Description": "License should be verified on http://www.npgsql.org/"
+    }
+  ]
+}

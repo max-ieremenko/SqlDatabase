@@ -29,8 +29,9 @@ namespace SqlDatabase.Configuration
             {
                 ScriptFactory = new ScriptFactory
                 {
-                    Configuration = configuration.SqlDatabase,
-                    PowerShellFactory = powerShellFactory
+                    AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
+                    PowerShellFactory = powerShellFactory,
+                    TextReader = database.Adapter.CreateSqlTextReader()
                 },
                 VersionResolver = new ModuleVersionResolver { Database = database, Log = logger },
                 Sources = Scripts.ToArray(),

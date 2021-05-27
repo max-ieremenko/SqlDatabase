@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Scripts.AssemblyInternal
 {
@@ -35,9 +36,14 @@ namespace SqlDatabase.Scripts.AssemblyInternal
         }
 
         [Test]
-        public void ResolveFromExample()
+        [TestCase(nameof(ExampleSqlDatabaseScript))]
+        [TestCase(nameof(EntryPointResolverTest) + "+" + nameof(ExampleSqlDatabaseScript))]
+        [TestCase("AssemblyInternal." + nameof(EntryPointResolverTest) + "+" + nameof(ExampleSqlDatabaseScript))]
+        [TestCase("Scripts.AssemblyInternal." + nameof(EntryPointResolverTest) + "+" + nameof(ExampleSqlDatabaseScript))]
+        [TestCase("SqlDatabase.Scripts.AssemblyInternal." + nameof(EntryPointResolverTest) + "+" + nameof(ExampleSqlDatabaseScript))]
+        public void ResolveFromExample(string className)
         {
-            _sut.ExecutorClassName = nameof(ExampleSqlDatabaseScript);
+            _sut.ExecutorClassName = className;
             _sut.ExecutorMethodName = nameof(ExampleSqlDatabaseScript.Execute);
 
             var actual = _sut.Resolve(GetType().Assembly);
@@ -45,9 +51,9 @@ namespace SqlDatabase.Scripts.AssemblyInternal
             Assert.IsInstanceOf<DefaultEntryPoint>(actual);
 
             var entryPoint = (DefaultEntryPoint)actual;
-            Assert.IsNotNull(entryPoint.Log);
-            Assert.IsInstanceOf<ExampleSqlDatabaseScript>(entryPoint.ScriptInstance);
-            Assert.AreEqual(nameof(ExampleSqlDatabaseScript.Execute), entryPoint.Method.Method.Name);
+            entryPoint.Log.ShouldNotBeNull();
+            entryPoint.ScriptInstance.ShouldBeOfType<ExampleSqlDatabaseScript>();
+            entryPoint.Method.Method.Name.ShouldBe(nameof(ExampleSqlDatabaseScript.Execute));
         }
 
         [Test]

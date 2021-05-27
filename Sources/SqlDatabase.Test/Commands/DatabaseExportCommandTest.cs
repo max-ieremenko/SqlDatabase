@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using Moq;
 using NUnit.Framework;
 using SqlDatabase.Export;
 using SqlDatabase.Scripts;
+using SqlDatabase.Scripts.MsSql;
 
 namespace SqlDatabase.Commands
 {
@@ -18,8 +20,16 @@ namespace SqlDatabase.Commands
         [SetUp]
         public void BeforeEachTest()
         {
+            var adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
+            adapter
+                .Setup(a => a.GetUserFriendlyConnectionString())
+                .Returns("host; database");
+            adapter
+                .Setup(a => a.CreateSqlWriter(It.IsAny<TextWriter>()))
+                .Returns<TextWriter>(output => new MsSqlWriter(output));
+
             _database = new Mock<IDatabase>(MockBehavior.Strict);
-            _database.SetupGet(d => d.ConnectionString).Returns(@"Data Source=unknownServer;Initial Catalog=unknownDatabase");
+            _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
             _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
 
             _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
@@ -35,7 +45,7 @@ namespace SqlDatabase.Commands
 
             _exporter = new Mock<IDataExporter>(MockBehavior.Strict);
             _exporter
-                .SetupSet(e => e.Output = It.IsNotNull<SqlWriter>());
+                .SetupProperty(e => e.Output);
             _exporter
                 .SetupSet(e => e.Log = log.Object);
 

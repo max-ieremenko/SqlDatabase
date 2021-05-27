@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts
@@ -14,9 +13,7 @@ namespace SqlDatabase.Scripts
             Variables = new Variables();
         }
 
-        public string ConnectionString { get; set; }
-
-        public AppConfiguration Configuration { get; set; }
+        public IDatabaseAdapter Adapter { get; set; }
 
         public ILogger Log { get; set; }
 
@@ -30,7 +27,7 @@ namespace SqlDatabase.Scripts
         {
             Variables.ModuleName = moduleName;
 
-            using (var connection = new SqlConnection(ConnectionString))
+            using (var connection = Adapter.CreateConnection(false))
             using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = 0;
@@ -42,10 +39,10 @@ namespace SqlDatabase.Scripts
 
         public string GetServerVersion()
         {
-            using (var connection = CreateConnection(true))
+            using (var connection = Adapter.CreateConnection(true))
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = "select @@version";
+                command.CommandText = Adapter.GetServerVersionSelectScript();
 
                 connection.Open();
                 return Convert.ToString(command.ExecuteScalar());
@@ -57,7 +54,7 @@ namespace SqlDatabase.Scripts
             Variables.ModuleName = moduleName;
             Variables.CurrentVersion = currentVersion.ToString();
             Variables.TargetVersion = targetVersion.ToString();
-            Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
+            Variables.DatabaseName = Adapter.DatabaseName;
 
             if (WhatIf)
             {
@@ -71,7 +68,7 @@ namespace SqlDatabase.Scripts
 
         public void Execute(IScript script)
         {
-            Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
+            Variables.DatabaseName = Adapter.DatabaseName;
 
             if (WhatIf)
             {
@@ -85,11 +82,10 @@ namespace SqlDatabase.Scripts
 
         public IEnumerable<IDataReader> ExecuteReader(IScript script)
         {
-            Variables.DatabaseName = new SqlConnectionStringBuilder(ConnectionString).InitialCatalog;
+            Variables.DatabaseName = Adapter.DatabaseName;
 
-            using (var connection = CreateConnection(false))
+            using (var connection = Adapter.CreateConnection(false))
             {
-                connection.InfoMessage += OnConnectionInfoMessage;
                 connection.Open();
 
                 using (var command = connection.CreateCommand())
@@ -104,28 +100,9 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        private void OnConnectionInfoMessage(object sender, SqlInfoMessageEventArgs e)
+        private void WriteCurrentVersion(IDbCommand command, Version targetVersion)
         {
-            Log.Info("output: {0}".FormatWith(e.ToString()));
-        }
-
-        private SqlConnection CreateConnection(bool switchToMaster = false)
-        {
-            var connectionString = ConnectionString;
-            if (switchToMaster)
-            {
-                var builder = new SqlConnectionStringBuilder(ConnectionString);
-                builder.InitialCatalog = "master";
-                connectionString = builder.ToString();
-            }
-
-            var connection = new SqlConnection(connectionString);
-            return connection;
-        }
-
-        private void WriteCurrentVersion(SqlCommand command, Version targetVersion)
-        {
-            var script = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.SetCurrentVersionScript);
+            var script = new SqlScriptVariableParser(Variables).ApplyVariables(Adapter.GetVersionUpdateScript());
             command.CommandText = script;
 
             try
@@ -147,9 +124,9 @@ namespace SqlDatabase.Scripts
             }
         }
 
-        private Version ReadCurrentVersion(SqlCommand command)
+        private Version ReadCurrentVersion(IDbCommand command)
         {
-            var script = new SqlScriptVariableParser(Variables).ApplyVariables(Configuration.GetCurrentVersionScript);
+            var script = new SqlScriptVariableParser(Variables).ApplyVariables(Adapter.GetVersionSelectScript());
             command.CommandText = script;
 
             string version;
@@ -177,11 +154,9 @@ namespace SqlDatabase.Scripts
 
         private void InvokeExecuteUpgrade(IScript script, Version targetVersion)
         {
-            using (var connection = CreateConnection())
+            using (var connection = Adapter.CreateConnection(false))
             using (var command = connection.CreateCommand())
             {
-                connection.InfoMessage += OnConnectionInfoMessage;
-
                 command.CommandTimeout = 0;
                 connection.Open();
 
@@ -190,12 +165,6 @@ namespace SqlDatabase.Scripts
                     command.Transaction = transaction;
 
                     script.Execute(command, Variables, Log);
-
-                    if (!Variables.DatabaseName.Equals(connection.Database, StringComparison.OrdinalIgnoreCase))
-                    {
-                        command.CommandText = "USE [{0}]".FormatWith(Variables.DatabaseName);
-                        command.ExecuteNonQuery();
-                    }
 
                     WriteCurrentVersion(command, targetVersion);
 
@@ -208,21 +177,20 @@ namespace SqlDatabase.Scripts
         {
             bool useMaster;
 
-            using (var connection = CreateConnection(true))
+            using (var connection = Adapter.CreateConnection(true))
             using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = 0;
                 connection.Open();
 
-                command.CommandText = "SELECT 1 FROM sys.databases WHERE Name=N'{0}'".FormatWith(Variables.DatabaseName);
+                command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName);
                 var value = command.ExecuteScalar();
 
                 useMaster = value == null || Convert.IsDBNull(value);
             }
 
-            using (var connection = CreateConnection(useMaster))
+            using (var connection = Adapter.CreateConnection(useMaster))
             {
-                connection.InfoMessage += OnConnectionInfoMessage;
                 connection.Open();
 
                 using (var transaction = Transaction == TransactionMode.PerStep ? connection.BeginTransaction(IsolationLevel.ReadCommitted) : null)

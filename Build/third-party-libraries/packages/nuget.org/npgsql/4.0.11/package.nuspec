@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Npgsql</id>
+    <version>4.0.11</version>
+    <authors>Shay Rojansky,Yoh Deadfall,Austin Drenski,Emil Lenngren,Francisco Figueiredo Jr.,Kenji Uno</authors>
+    <owners>Shay Rojansky,Yoh Deadfall,Austin Drenski,Emil Lenngren,Francisco Figueiredo Jr.,Kenji Uno</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">PostgreSQL</license>
+    <licenseUrl>https://licenses.nuget.org/PostgreSQL</licenseUrl>
+    <projectUrl>http://www.npgsql.org/</projectUrl>
+    <description>Npgsql is the open source .NET data provider for PostgreSQL.</description>
+    <copyright>Copyright 2019 © The Npgsql Development Team</copyright>
+    <tags>npgsql postgresql postgres ado ado.net database sql</tags>
+    <repository type="git" url="git://github.com/npgsql/npgsql" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.2" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.2" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.2" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.2" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.2" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.2" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

@@ -3,7 +3,7 @@ Microsoft.NET.Test.Sdk [16.9.4](https://www.nuget.org/packages/Microsoft.NET.Tes
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, netcoreapp2.2, netcoreapp3.1
+Target frameworks: net472, net5.0, netcoreapp2.1, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

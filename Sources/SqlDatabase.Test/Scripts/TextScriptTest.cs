@@ -7,6 +7,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts
@@ -51,7 +52,10 @@ namespace SqlDatabase.Scripts
                 .Callback(() => _executedScripts.Add(_command.Object.CommandText))
                 .Returns(_executedReader.Object);
 
-            _sut = new TextScript();
+            _sut = new TextScript
+            {
+                TextReader = new MsSqlTextReader()
+            };
             _variables.SetValue(VariableSource.CommandLine, "var1", "[some value]");
         }
 

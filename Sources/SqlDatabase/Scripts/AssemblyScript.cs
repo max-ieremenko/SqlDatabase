@@ -57,7 +57,7 @@ namespace SqlDatabase.Scripts
 
                 using (var reader = new StreamReader(description))
                 {
-                    return SqlBatchParser.ExtractDependencies(reader, DisplayName).ToArray();
+                    return DependencyParser.ExtractDependencies(reader, DisplayName).ToArray();
                 }
             }
         }

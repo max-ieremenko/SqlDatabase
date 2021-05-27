@@ -1,21 +1,13 @@
 Configuration file
 ==================
 
-By default the current configuration file is [SqlDatabase.exe.config](SqlDatabase.exe.config). It can be changed in a CLI
+By default the current configuration file is [SqlDatabase.dll.config](SqlDatabase.dll.config). The file is located in the installation folder. It can be changed in CLI
+
 ```bash
 $ SqlDatabase ... -configuration=path\to\sql-database.config
 ```
 
-
-<!-- toc -->
-- [getCurrentVersion](#getCurrentVersion)
-- [setCurrentVersion](#setCurrentVersion)
-- [Example (get/set)CurrentVersion](#Example-(get/set)CurrentVersion)
-- [assemblyScript](#assemblyScript)
-- [variables](#variables)
-
-<!-- tocstop -->
-
+## File example
 
 ```xml
 <configuration>
@@ -24,59 +16,93 @@ $ SqlDatabase ... -configuration=path\to\sql-database.config
              type="SqlDatabase.Configuration.AppConfiguration, SqlDatabase"/>
   </configSections>
 
-  <sqlDatabase getCurrentVersion="SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)"
-               setCurrentVersion="EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'">
+  <sqlDatabase>
                
     <assemblyScript className="SqlDatabaseScript"
                     methodName="Execute" />
-                    
+
+    <!-- variables applicable for mssql and pgsql -->
     <variables>
       <add name="Variable1"
            value="value1" />
       <add name="Variable2"
            value="value 2" />
     </variables>
+
+    <!-- mssql configuration:
+    - default scripts to read and update database version
+    - few predefined variables, applicable only for mssql  -->
+    <mssql getCurrentVersion="SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)"
+           setCurrentVersion="EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'">
+      <variables>
+        <add name="MsSqlVariable1"
+             value="value1" />
+        <add name="MsSqllVariable2"
+             value="value 2" />
+      </variables>
+    </mssql>
+
+    <!-- pgsql configuration:
+    - default scripts to read and update database version
+    - few predefined variables, applicable only for pgsql  -->
+    <pgsql getCurrentVersion="SELECT version FROM public.version WHERE module_name = 'database'"
+           setCurrentVersion="UPDATE public.version SET version='{{TargetVersion}}' WHERE module_name = 'database'">
+      <variables>
+        <add name="PgSqlVariable1"
+             value="value1" />
+        <add name="PgSqllVariable2"
+             value="value 2" />
+      </variables>
+    </pgsql>
   </sqlDatabase>
 </configuration>
 ```
 
 ## getCurrentVersion
+
 An sql script to determine the current version of database, see [database upgrade](../MigrationStepsFolder).
-Default value:
+
+Default value for MSSQL Server (sqlDatabase/mssql/@getCurrentVersion):
+
 ```sql
 SELECT value from sys.fn_listextendedproperty('version', default, default, default, default, default, default)
 ```
 
+Default value for PostgreSQL (sqlDatabase/pgsql/@getCurrentVersion):
+
+```sql
+SELECT version FROM public.version WHERE module_name = 'database'
+```
+
+Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
+
 ## setCurrentVersion
+
 An sql script to update the current version of database, see [database upgrade](../MigrationStepsFolder).
-Default value:
+
+Default value for MSSQL Server (sqlDatabase/mssql/@setCurrentVersion):
+
 ```sql
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'
 ```
 
-## Example (get/set)CurrentVersion
-The example shows an alternative how to store database version:
+Default value for PostgreSQL (sqlDatabase/pgsql/@setCurrentVersion):
+
 ```sql
-CREATE TABLE dbo.Version
-(
-    Name NVARCHAR(30) NOT NULL PRIMARY KEY
-    ,Version NVARCHAR(30) NOT NULL
-)
-GO
+UPDATE public.version SET version='{{TargetVersion}}' WHERE module_name = 'database'
 ```
 
-```xml
-<sqlDatabase getCurrentVersion="SELECT Version FROM dbo.Version WHERE Name = 'database'"
-              setCurrentVersion="UPDATE dbo.Version SET Version = N'{{TargetVersion}}'' WHERE Name = 'database'" />
-```
+Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
 
 ## assemblyScript
+
 A configuration of [.NET Assembly scripts](../CSharpMirationStep).
 
 * className - a script class name, default value is *SqlDatabaseScript*
-* methodName - a method, entry point of *SqlDatabaseScript*
+* methodName - a method, entry point of *SqlDatabaseScript*, default value is *Execute*
 
 example
+
 ```C#
 namespace <any namespace>
 {
@@ -90,6 +116,7 @@ namespace <any namespace>
     }
 }
 ```
+
 ```xml
 <sqlDatabase>
   <assemblyScript className="MyScript"
@@ -98,15 +125,25 @@ namespace <any namespace>
 ```
 
 ## variables
+
+sections
+
+* sqlDatabase/variables
+* sqlDatabase/mssql/variables
+* sqlDatabase/pgsql/variables
+
 A list of variables in format
+
 ```xml
 <add name="a name of variable" value="a value of variable" />
 <add name="a name of variable" value="a value of variable" />
 <add name="a name of variable" value="a value of variable" />
 ```
-by default the list is empty.
+
+by default all lists are empty.
 
 example
+
 ```xml
 <sqlDatabase>
   <variables>
@@ -117,6 +154,7 @@ example
   </variables>
 </sqlDatabase>
 ```
+
 ```sql
 -- script file *.sql
 PRINT 'drop table {{SchemaName}}.{{TableName}}'

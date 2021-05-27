@@ -4,9 +4,9 @@ using System.Data;
 
 namespace SqlDatabase.Scripts
 {
-    public interface IDatabase
+    internal interface IDatabase
     {
-        string ConnectionString { get; }
+        IDatabaseAdapter Adapter { get; }
 
         string GetServerVersion();
 

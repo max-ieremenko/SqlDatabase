@@ -16,9 +16,9 @@ namespace SqlDatabase.Configuration
         }
 
         [Test]
-        public void EscapedCommandLine()
+        public void BuildArray()
         {
-            var escapedArgs = _sut
+            var args = _sut
                 .SetCommand("some command")
                 .SetConnection("Data Source=.;Initial Catalog=SqlDatabaseTest")
                 .SetScripts("file1")
@@ -28,18 +28,16 @@ namespace SqlDatabase.Configuration
                 .SetVariable("var1", "value 1")
                 .SetWhatIf(true)
                 .SetFolderAsModuleName(true)
-                .SetPreFormatOutputLogs(true)
                 .SetLogFileName("log file")
-                .BuildArray(true);
+                .BuildArray();
 
-            foreach (var arg in escapedArgs)
+            foreach (var arg in args)
             {
                 Console.WriteLine(arg);
             }
 
-            CommandLineParser.PreFormatOutputLogs(escapedArgs).ShouldBeTrue();
-            CommandLineParser.GetLogFileName(escapedArgs).ShouldBe("log file");
-            var actual = new CommandLineParser().Parse(escapedArgs);
+            CommandLineParser.GetLogFileName(args).ShouldBe("log file");
+            var actual = new CommandLineParser().Parse(args);
 
             actual.Args.Count.ShouldBe(9);
 
@@ -77,7 +75,7 @@ namespace SqlDatabase.Configuration
             var actual = _sut
                 .SetScripts("file1")
                 .SetScripts("file2")
-                .BuildArray(false);
+                .BuildArray();
 
             actual.Length.ShouldBe(4);
             actual[2].ShouldBe("-from=file1");
@@ -90,7 +88,7 @@ namespace SqlDatabase.Configuration
             var actual = _sut
                 .SetInLineScript("file1")
                 .SetInLineScript("file2")
-                .BuildArray(false);
+                .BuildArray();
 
             actual.Length.ShouldBe(4);
             actual[2].ShouldBe("-fromSql=file1");
@@ -102,7 +100,7 @@ namespace SqlDatabase.Configuration
         {
             var actual = _sut
                 .SetExportToTable("name")
-                .BuildArray(false);
+                .BuildArray();
 
             actual.Length.ShouldBe(3);
             actual[2].ShouldBe("-toTable=name");
@@ -113,7 +111,7 @@ namespace SqlDatabase.Configuration
         {
             var actual = _sut
                 .SetExportToFile("file name")
-                .BuildArray(false);
+                .BuildArray();
 
             actual.Length.ShouldBe(3);
             actual[2].ShouldBe("-toFile=file name");

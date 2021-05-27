@@ -14,7 +14,7 @@ namespace SqlDatabase.PowerShell
         [TestCase("Execute-SqlDatabase")]
         public void BuildCommandLine(string commandName)
         {
-            var commandLines = InvokeCommand(
+            var commandLines = InvokeSqlDatabase(
                 commandName,
                 c =>
                 {
@@ -61,7 +61,7 @@ namespace SqlDatabase.PowerShell
         [TestCase("Execute-SqlDatabase")]
         public void BuildPipeCommandLine(string commandName)
         {
-            var commandLines = InvokeCommandPipeLine(
+            var commandLines = InvokeInvokeSqlDatabasePipeLine(
                 commandName,
                 c => c.Parameters.Add(nameof(ExecuteCmdLet.Database), "connection string"),
                 "file 1",

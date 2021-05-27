@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration
@@ -7,60 +8,74 @@ namespace SqlDatabase.Configuration
     [TestFixture]
     public class AppConfigurationTest
     {
-        private TempDirectory _temp;
-
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _temp = new TempDirectory();
-        }
-
-        [TearDown]
-        public void AfterEachTest()
-        {
-            _temp?.Dispose();
-        }
-
         [Test]
         public void LoadEmpty()
         {
             var configuration = LoadFromResource("AppConfiguration.empty.xml");
-            Assert.IsNull(configuration);
+
+            configuration.ShouldBeNull();
         }
 
         [Test]
         public void LoadDefault()
         {
             var configuration = LoadFromResource("AppConfiguration.default.xml");
-            Assert.IsNotNull(configuration);
 
-            Assert.That(configuration.GetCurrentVersionScript, Is.Not.Null.And.Not.Empty);
-            Assert.That(configuration.SetCurrentVersionScript, Is.Not.Null.And.Not.Empty);
-            Assert.That(configuration.AssemblyScript.ClassName, Is.Not.Null.And.Not.Empty);
-            Assert.That(configuration.AssemblyScript.MethodName, Is.Not.Null.And.Not.Empty);
+            configuration.ShouldNotBeNull();
+
+            configuration.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.SetCurrentVersionScript.ShouldBeNullOrEmpty();
+
+            configuration.AssemblyScript.ClassName.ShouldBe("SqlDatabaseScript");
+            configuration.AssemblyScript.MethodName.ShouldBe("Execute");
+
+            configuration.Variables.Count.ShouldBe(0);
+
+            configuration.MsSql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.MsSql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.MsSql.Variables.Count.ShouldBe(0);
+
+            configuration.PgSql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.PgSql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.PgSql.Variables.Count.ShouldBe(0);
         }
 
         [Test]
         public void LoadFull()
         {
             var configuration = LoadFromResource("AppConfiguration.full.xml");
-            Assert.IsNotNull(configuration);
 
-            Assert.AreEqual("get-version", configuration.GetCurrentVersionScript);
-            Assert.AreEqual("set-version", configuration.SetCurrentVersionScript);
-            Assert.AreEqual("method-name", configuration.AssemblyScript.MethodName);
-            Assert.AreEqual("class-name", configuration.AssemblyScript.ClassName);
+            configuration.ShouldNotBeNull();
 
-            CollectionAssert.AreEquivalent(
-                new[] { "x", "y" },
-                configuration.Variables.AllKeys);
+            configuration.GetCurrentVersionScript.ShouldBe("get-version");
+            configuration.SetCurrentVersionScript.ShouldBe("set-version");
+
+            configuration.AssemblyScript.ClassName.ShouldBe("class-name");
+            configuration.AssemblyScript.MethodName.ShouldBe("method-name");
+
+            configuration.Variables.AllKeys.ShouldBe(new[] { "x", "y" });
+            configuration.Variables["x"].Value.ShouldBe("1");
+            configuration.Variables["y"].Value.ShouldBe("2");
+
+            configuration.MsSql.GetCurrentVersionScript.ShouldBe("get-mssql-version");
+            configuration.MsSql.SetCurrentVersionScript.ShouldBe("set-mssql-version");
+            configuration.MsSql.Variables.AllKeys.ShouldBe(new[] { "mssql1" });
+            configuration.MsSql.Variables["mssql1"].Value.ShouldBe("10");
+
+            configuration.PgSql.GetCurrentVersionScript.ShouldBe("get-pgsql-version");
+            configuration.PgSql.SetCurrentVersionScript.ShouldBe("set-pgsql-version");
+            configuration.PgSql.Variables.AllKeys.ShouldBe(new[] { "pgsql1" });
+            configuration.PgSql.Variables["pgsql1"].Value.ShouldBe("20");
         }
 
-        private AppConfiguration LoadFromResource(string resourceName)
+        private static AppConfiguration LoadFromResource(string resourceName)
         {
-            var fileName = _temp.CopyFileFromResources(resourceName);
-            var configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(new ExeConfigurationFileMap { ExeConfigFilename = fileName }, ConfigurationUserLevel.None);
-            return (AppConfiguration)configuration.GetSection(AppConfiguration.SectionName);
+            using (var temp = new TempDirectory())
+            {
+                var fileName = temp.CopyFileFromResources(resourceName);
+                var configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(new ExeConfigurationFileMap { ExeConfigFilename = fileName }, ConfigurationUserLevel.None);
+                return (AppConfiguration)configuration.GetSection(AppConfiguration.SectionName);
+            }
         }
     }
 }

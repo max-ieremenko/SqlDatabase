@@ -8,9 +8,11 @@ namespace SqlDatabase.Scripts
 {
     internal sealed class ScriptFactory : IScriptFactory
     {
-        public AppConfiguration Configuration { get; set; }
+        public AssemblyScriptConfiguration AssemblyScriptConfiguration { get; set; }
 
         public IPowerShellFactory PowerShellFactory { get; set; }
+
+        public ISqlTextReader TextReader { get; set; }
 
         public bool IsSupported(string fileName)
         {
@@ -31,7 +33,8 @@ namespace SqlDatabase.Scripts
                 return new TextScript
                 {
                     DisplayName = file.Name,
-                    ReadSqlContent = file.OpenRead
+                    ReadSqlContent = file.OpenRead,
+                    TextReader = TextReader
                 };
             }
 
@@ -41,7 +44,7 @@ namespace SqlDatabase.Scripts
                 return new AssemblyScript
                 {
                     DisplayName = file.Name,
-                    Configuration = Configuration.AssemblyScript,
+                    Configuration = AssemblyScriptConfiguration,
                     ReadAssemblyContent = CreateBinaryReader(file),
                     ReadDescriptionContent = CreateScriptDescriptionReader(file)
                 };
