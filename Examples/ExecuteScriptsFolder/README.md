@@ -107,6 +107,11 @@ Predefined variables
 |:--|:----------|
 |DatabaseName|the target database name|
 
+Opening a connection
+========================
+
+Before running any step SqlDatabase checks if a database, provided in the connection string, exist. If database does not exists the connection will be targeted to `master` for MSSQL and `postgres` for PostgreSQL.
+
 MSSQL Server script example
 =============================
 
@@ -154,7 +159,7 @@ CREATE INDEX ix_department_name ON demo.department (name);
 .ps1 script example
 =============================
 
-File name 02_demo.Department.ps1, see details [here](../PowerShellScript).
+File name 02_demo.Department.ps1, see details about powershell scripts [here](../PowerShellScript).
 
 ```powershell
 param (
@@ -183,7 +188,7 @@ $Command.ExecuteNonQuery()
 Assembly script example
 =======================
 
-File name 02_demo.Department.dll, see details [here](../CSharpMirationStep).
+File name 02_demo.Department.dll, see details about assembly scripts [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>

@@ -16,13 +16,13 @@ Select/update a database version <a name="version"></a>
 ===
 Scripts for resolving and updating a database version are defined in the [configuration file](../../ConfigurationFile).
 
-#### MSSQL Server, store versions in the database properties (default)
+#### MSSQL Server, store versions in the database properties (default script)
 
 ```sql
--- select current version
+-- configuration: select current version
 SELECT value FROM sys.fn_listextendedproperty('version', default, default, default, default, default, default)
 
--- update current version
+-- configuration: update current version
 EXEC sys.sp_updateextendedproperty @name=N'version', @value=N'{{TargetVersion}}'
 ```
 
@@ -38,10 +38,10 @@ CREATE TABLE dbo.Version
 GO
 ALTER TABLE dbo.Version ADD CONSTRAINT PK_dbo_Version PRIMARY KEY CLUSTERED (ModuleName);
 
--- select current version
+-- configuration: select current version
 SELECT Version FROM dbo.Version WHERE ModuleName = N'database'
 
--- update current version
+-- configuration: update current version
 UPDATE dbo.Version SET Version = N'{{TargetVersion}}' WHERE ModuleName = N'database'
 ```
 
@@ -57,16 +57,20 @@ CREATE TABLE public.version
 
 ALTER TABLE public.version ADD CONSTRAINT pk_version PRIMARY KEY (module_name);
 
--- select current version
+-- configuration: select current version
 SELECT version FROM public.version WHERE module_name = 'database'
 
--- update current version
+-- configuration: update current version
 UPDATE public.version SET version = '{{TargetVersion}}' WHERE module_name = 'database'
 ```
 
+Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
+
 Execution
 ===
+
 In the current folder are migration steps
+
 - [1.0_1.1.sql](1.0_1.1.sql) - creates a table "dbo.Person"
 - [1.1_2.0.sql](1.1_2.0.sql) - creates a table "dbo.Book"
 - [2.0_3.0.sql](2.0_3.0.sql) - creates a table "dbo.BookComment"
@@ -74,10 +78,11 @@ In the current folder are migration steps
 The folder structure does not matter, SqlDatabase analyzes all files and folders recursively.
 
 #### runtime
-1. Load all migartion steps
-2. Resolve the current version of database: 1.0
-4. build migration sequence: 1.0 => 1.1; 1.1 => 2.0; 2.0 => 3.0
-5. Execute each step one by one:
+
+1. Load all migration steps
+2. Resolve the current version of database: imagine is 1.0
+3. build migration sequence: 1.0 => 1.1; 1.1 => 2.0; 2.0 => 3.0
+4. Execute each step one by one:
 
 ```sql
 /* 1.0 => 1.1 */

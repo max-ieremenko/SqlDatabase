@@ -145,7 +145,7 @@ ALTER TABLE public.demo ADD CONSTRAINT pk_demo PRIMARY KEY (id);
 Migration .ps1 step example
 =============================
 
-File name 2.0_2.1.ps1, see details [here](../PowerShellScript).
+File name 2.0_2.1.ps1, see details about powershell scripts [here](../PowerShellScript).
 
 ```powershell
 param (
@@ -173,7 +173,7 @@ $Command.ExecuteNonQuery()
 Migration .dll step example
 =======================
 
-File name 2.1_2.2.dll, see details [here](../CSharpMirationStep).
+File name 2.1_2.2.dll, see details about assembly scripts [here](../CSharpMirationStep).
 
 ```C#
 namespace <any namespace name>

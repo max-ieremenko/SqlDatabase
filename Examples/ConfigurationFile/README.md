@@ -1,7 +1,8 @@
 Configuration file
 ==================
 
-By default the current configuration file is [SqlDatabase.dll.config](SqlDatabase.dll.config). It can be changed in a CLI
+By default the current configuration file is [SqlDatabase.dll.config](SqlDatabase.dll.config). The file is located in the installation folder. It can be changed in CLI
+
 ```bash
 $ SqlDatabase ... -configuration=path\to\sql-database.config
 ```
@@ -73,6 +74,8 @@ Default value for PostgreSQL (sqlDatabase/pgsql/@getCurrentVersion):
 SELECT version FROM public.version WHERE module_name = 'database'
 ```
 
+Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
+
 ## setCurrentVersion
 
 An sql script to update the current version of database, see [database upgrade](../MigrationStepsFolder).
@@ -89,12 +92,14 @@ Default value for PostgreSQL (sqlDatabase/pgsql/@setCurrentVersion):
 UPDATE public.version SET version='{{TargetVersion}}' WHERE module_name = 'database'
 ```
 
+Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
+
 ## assemblyScript
 
 A configuration of [.NET Assembly scripts](../CSharpMirationStep).
 
 * className - a script class name, default value is *SqlDatabaseScript*
-* methodName - a method, entry point of *SqlDatabaseScript*
+* methodName - a method, entry point of *SqlDatabaseScript*, default value is *Execute*
 
 example
 

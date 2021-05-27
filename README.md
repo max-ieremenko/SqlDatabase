@@ -21,8 +21,8 @@ Table of Contents
 - [Migrate an existing database](#upgrade-database)
 - [Scripts](#scripts)
 - [Variables](#variables)
-- [VS Package manager console](#console)
 - [*.zip files](#zip-files)
+- [VS Package manager console](#console)
 - [Examples](#examples)
 - [License](#license)
 
@@ -261,10 +261,11 @@ The variable value is resolved in the following order:
 
 [Back to ToC](#table-of-contents)
 
-VS Package manager console <a name="console"></a>
-------------------------------------------------
+Open connection on non-existing database
+---------
 
-For integrating SqlDatabase into the Visual studio package manager console please check this [example](Examples/PackageManagerConsole).
+In a sql text file any entry like *{{VariableName}}* or *$(VariableName)* is interpreted as variable and has to be changed (text replacement) with a value before script execution.
+The variable name is
 
 [Back to ToC](#table-of-contents)
 
@@ -273,29 +274,37 @@ For integrating SqlDatabase into the Visual studio package manager console pleas
 
 Parameters *-from* and *-configuration* in the command line interpret .zip files in the path as folders, for example
 
-* -from=c:\scripts.zip\archive\tables.zip\demo
-* -from=c:\scripts.zip\archive\tables.zip\table1.sql
-* -configuration=c:\scripts.zip\app.config
+- -from=c:\scripts.zip\archive\tables.zip\demo
+- -from=c:\scripts.zip\archive\tables.zip\table1.sql
+- -configuration=c:\scripts.zip\app.config
+
+[Back to ToC](#table-of-contents)
+
+
+VS Package manager console <a name="console"></a>
+------------------------------------------------
+
+For integrating SqlDatabase into the Visual studio package manager console please check this [example](Examples/PackageManagerConsole).
 
 [Back to ToC](#table-of-contents)
 
 Examples
 --------
 
-* [create ms sql server linux docker image](Examples/SqlServerDockerImage)
-* [execute script(s)](Examples/ExecuteScriptsFolder)
-* [export data](Examples/ExportData)
-* [create a database](Examples/CreateDatabaseFolder)
-* [upgrade an existing database](Examples/MigrationStepsFolder)
-* [how to use SqlDatabase in the VS Package manager console](Examples/PackageManagerConsole)
-* [configuration file](Examples/ConfigurationFile)
-* [assembly script](Examples/CSharpMirationStep)
+- [create ms sql server linux docker image](Examples/SqlServerDockerImage)
+- [execute script(s)](Examples/ExecuteScriptsFolder)
+- [export data](Examples/ExportData)
+- [create a database](Examples/CreateDatabaseFolder)
+- [upgrade an existing database](Examples/MigrationStepsFolder)
+- [how to use SqlDatabase in the VS Package manager console](Examples/PackageManagerConsole)
+- [configuration file](Examples/ConfigurationFile)
+- [assembly script](Examples/CSharpMirationStep)
 
 [Back to ToC](#table-of-contents)
 
 License
 -------
 
-This tool is distributed under the [MIT](LICENSE) license.
+This tool is distributed under the [MIT](LICENSE.md) license.
 
 [Back to ToC](#table-of-contents)
