@@ -36,8 +36,13 @@ namespace SqlDatabase.Scripts.MsSql
         [TestCaseSource(nameof(GetSplitByGoTestCases))]
         public void SplitByGo(Stream input, string[] expected)
         {
-            var actual = _sut.Read(input);
-            actual.ShouldBe(expected);
+            var batches = _sut.ReadBatches(input);
+            batches.ShouldBe(expected);
+
+            input.Position = 0;
+
+            var first = _sut.ReadFirstBatch(input);
+            first.ShouldBe(expected[0]);
         }
 
         private static IEnumerable<TestCaseData> GetSplitByGoTestCases()

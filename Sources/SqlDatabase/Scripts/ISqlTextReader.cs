@@ -5,6 +5,8 @@ namespace SqlDatabase.Scripts
 {
     internal interface ISqlTextReader
     {
-        IEnumerable<string> Read(Stream sql);
+        string ReadFirstBatch(Stream sql);
+
+        IEnumerable<string> ReadBatches(Stream sql);
     }
 }

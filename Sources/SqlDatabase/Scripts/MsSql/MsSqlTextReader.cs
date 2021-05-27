@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,7 +10,12 @@ namespace SqlDatabase.Scripts.MsSql
     {
         private readonly Regex _goRegex = new Regex("^(\\s*(go)+\\s*)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public IEnumerable<string> Read(Stream sql)
+        public string ReadFirstBatch(Stream sql)
+        {
+            return ReadBatches(sql).FirstOrDefault();
+        }
+
+        public IEnumerable<string> ReadBatches(Stream sql)
         {
             var batch = new StringBuilder();
 

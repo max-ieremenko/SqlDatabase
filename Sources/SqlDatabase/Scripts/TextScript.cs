@@ -72,7 +72,7 @@ namespace SqlDatabase.Scripts
             string batch;
             using (var sql = ReadSqlContent())
             {
-                batch = TextReader.Read(sql).FirstOrDefault();
+                batch = TextReader.ReadFirstBatch(sql);
             }
 
             if (string.IsNullOrWhiteSpace(batch))
@@ -162,7 +162,7 @@ namespace SqlDatabase.Scripts
             var batches = new List<string>();
             using (var sql = ReadSqlContent())
             {
-                foreach (var batch in TextReader.Read(sql))
+                foreach (var batch in TextReader.ReadBatches(sql))
                 {
                     var script = scriptParser.ApplyVariables(batch);
                     if (!string.IsNullOrWhiteSpace(script))
