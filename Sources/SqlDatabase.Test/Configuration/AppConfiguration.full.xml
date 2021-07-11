@@ -31,5 +31,13 @@
              value="20" />
       </variables>
     </pgsql>
+
+    <mysql getCurrentVersion="get-mysql-version"
+           setCurrentVersion="set-mysql-version">
+      <variables>
+        <add name="mysql1"
+             value="30" />
+      </variables>
+    </mysql>
   </sqlDatabase>
 </configuration>

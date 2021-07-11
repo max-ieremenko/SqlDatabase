@@ -12,6 +12,7 @@ namespace SqlDatabase.Configuration
         private const string PropertyVariables = "variables";
         private const string PropertyMsSql = "mssql";
         private const string PropertyPgSql = "pgsql";
+        private const string PropertyMySql = "mysql";
 
         [ConfigurationProperty(PropertyGetCurrentVersionScript)]
         public string GetCurrentVersionScript
@@ -38,5 +39,8 @@ namespace SqlDatabase.Configuration
 
         [ConfigurationProperty(PropertyPgSql)]
         public DatabaseConfiguration PgSql => (DatabaseConfiguration)this[PropertyPgSql];
+
+        [ConfigurationProperty(PropertyMySql)]
+        public DatabaseConfiguration MySql => (DatabaseConfiguration)this[PropertyMySql];
     }
 }

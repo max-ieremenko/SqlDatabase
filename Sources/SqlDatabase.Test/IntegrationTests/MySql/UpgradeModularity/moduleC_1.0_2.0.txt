@@ -1,0 +1,2 @@
+-- module dependency: moduleA 2.0
+-- module dependency: moduleB 1.1

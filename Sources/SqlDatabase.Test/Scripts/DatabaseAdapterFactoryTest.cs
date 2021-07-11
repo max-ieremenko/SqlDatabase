@@ -1,10 +1,11 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
 using Moq;
-using Npgsql;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.MsSql;
+using SqlDatabase.Scripts.MySql;
 using SqlDatabase.Scripts.PgSql;
 using SqlDatabase.TestApi;
 
@@ -24,21 +25,40 @@ namespace SqlDatabase.Scripts
         }
 
         [Test]
-        public void CreateMsSqlAdapter()
+        [TestCaseSource(nameof(GetCreateAdapterCases))]
+        public void CreateAdapter(string connectionString, string databaseName, Type expected)
         {
-            var actual = DatabaseAdapterFactory.CreateAdapter(MsSqlQuery.ConnectionString, _configuration, _log);
+            var actual = DatabaseAdapterFactory.CreateAdapter(connectionString, _configuration, _log);
 
-            var adapter = actual.ShouldBeOfType<MsSqlDatabaseAdapter>();
-            adapter.DatabaseName.ShouldBe(new SqlConnectionStringBuilder(MsSqlQuery.ConnectionString).InitialCatalog);
+            actual.ShouldBeOfType(expected);
+            actual.DatabaseName.ShouldBe(databaseName);
         }
 
-        [Test]
-        public void CreatePgSqlAdapter()
+        private static IEnumerable<TestCaseData> GetCreateAdapterCases()
         {
-            var actual = DatabaseAdapterFactory.CreateAdapter(PgSqlQuery.ConnectionString, _configuration, _log);
+            yield return new TestCaseData(
+                MsSqlQuery.ConnectionString,
+                MsSqlQuery.DatabaseName,
+                typeof(MsSqlDatabaseAdapter))
+            {
+                TestName = "MsSql"
+            };
 
-            var adapter = actual.ShouldBeOfType<PgSqlDatabaseAdapter>();
-            adapter.DatabaseName.ShouldBe(new NpgsqlConnectionStringBuilder(PgSqlQuery.ConnectionString).Database);
+            yield return new TestCaseData(
+                PgSqlQuery.ConnectionString,
+                PgSqlQuery.DatabaseName,
+                typeof(PgSqlDatabaseAdapter))
+            {
+                TestName = "PgSql"
+            };
+
+            yield return new TestCaseData(
+                MySqlQuery.ConnectionString,
+                MySqlQuery.DatabaseName,
+                typeof(MySqlDatabaseAdapter))
+            {
+                TestName = "MySql"
+            };
         }
     }
 }

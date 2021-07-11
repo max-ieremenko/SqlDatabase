@@ -23,3 +23,13 @@ services:
       - ./pgsql.create-database.sql:/docker-entrypoint-initdb.d/pgsql.create-database.sql
     ports:
       - 5432:5432
+
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+    volumes:
+      - ./mysql.create-database.sql:/docker-entrypoint-initdb.d/mysql.create-database.sql
+    ports:
+      - 3306:3306
