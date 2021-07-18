@@ -177,15 +177,18 @@ task PsCoreTest {
         , "mcr.microsoft.com/powershell:6.1.3-alpine-3.8"
         , "mcr.microsoft.com/powershell:6.2.0-alpine-3.8"
         , "mcr.microsoft.com/powershell:6.2.1-alpine-3.8"
+        , "mcr.microsoft.com/powershell:6.2.2-alpine-3.8"
+        , "mcr.microsoft.com/powershell:6.2.3-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:6.2.4-alpine-3.8"
         , "mcr.microsoft.com/powershell:7.0.0-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:7.0.1-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:7.0.2-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:7.0.3-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:7.1.0-ubuntu-18.04"
+        , "mcr.microsoft.com/powershell:7.1.1-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.1.2-ubuntu-20.04"
-        , "mcr.microsoft.com/powershell:7.2.0-preview.2-ubuntu-20.04"
-        , "mcr.microsoft.com/powershell:7.2.0-preview.4-ubuntu-20.04")
+        , "mcr.microsoft.com/powershell:7.1.3-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:7.2.0-preview.7-ubuntu-20.04")
 
     $builds = @()
     foreach ($image in $images) {
