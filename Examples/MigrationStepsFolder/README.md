@@ -147,6 +147,19 @@ $$;
 ALTER TABLE public.demo ADD CONSTRAINT pk_demo PRIMARY KEY (id);
 ```
 
+Migration mySQL .sql step example
+=============================
+
+```sql
+SELECT 'create table demo' info;
+
+CREATE TABLE demo
+(
+	id INT NOT NULL AUTO_INCREMENT
+    ,PRIMARY KEY pk_demo (id)
+);
+```
+
 Migration .ps1 step example
 =============================
 

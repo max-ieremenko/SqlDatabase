@@ -64,7 +64,7 @@ GO
 ...
 ```
 
-#### PostgreSQL .sql step
+#### PostgreSQL and MySQL .sql step
 
 Once a line `;` has been processed, SqlDatabase no longer looks for dependencies. Therefore, all dependencies must be at the very top of a script.
 
@@ -172,6 +172,27 @@ SELECT version FROM public.version WHERE module_name = '{{ModuleName}}'
 
 -- configuration: update current version
 UPDATE public.version SET version = '{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'
+```
+
+Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
+
+#### MySQL, store versions in a specific table
+
+```sql
+-- a table
+CREATE TABLE version
+(
+	module_name VARCHAR(20) NOT NULL
+	,version VARCHAR(20) NOT NULL
+);
+
+ALTER TABLE version ADD CONSTRAINT pk_version PRIMARY KEY (module_name);
+
+-- configuration: select current version
+SELECT version FROM version WHERE module_name = '{{ModuleName}}'
+
+-- configuration: update current version
+UPDATE version SET version = '{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'
 ```
 
 Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.

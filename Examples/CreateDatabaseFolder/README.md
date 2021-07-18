@@ -159,6 +159,13 @@ Database properties into a second file:
 CREATE EXTENSION citext;
 ```
 
+MySQL script example
+==================
+
+```sql
+CREATE DATABASE {{DatabaseName}};
+```
+
 .ps1 script example
 =============================
 
