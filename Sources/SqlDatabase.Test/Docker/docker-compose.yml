@@ -1,7 +1,7 @@
 version: "3"
 services:
   mssql:
-    image: microsoft/mssql-server-linux:latest
+    image: mcr.microsoft.com/mssql/server:latest
     restart: always
     environment:
       - ACCEPT_EULA=Y
@@ -15,7 +15,7 @@ services:
     command: bash -c ' chmod +x ./mssql.entrypoint.sh; ./mssql.entrypoint.sh & /opt/mssql/bin/sqlservr;'
 
   pgsql:
-    image: postgres
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_PASSWORD: qwerty
@@ -25,7 +25,7 @@ services:
       - 5432:5432
 
   mysql:
-    image: mysql
+    image: mysql:latest
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: qwerty
