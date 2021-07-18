@@ -68,7 +68,7 @@ namespace SqlDatabase.Scripts.PgSql
                     break;
             }
 
-            Output.Write(name.ToUpperInvariant());
+            Output.Write(name);
             if (sizeText != null)
             {
                 Output.Write("(");

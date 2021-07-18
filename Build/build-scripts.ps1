@@ -30,25 +30,8 @@ function Get-RepositoryCommitId {
 }
 
 function Start-Mssql {
-    # https://github.com/docker/for-win/issues/3171
-    $containerId = exec { 
-        docker run `
-            -d `
-            -p 1433 `
-            sqldatabase/mssql:2017
-    }
-    
-    $ip = exec { 
-        docker inspect `
-            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
-            $containerId
-    }
-
-    $port = exec { 
-        docker inspect `
-            --format "{{(index (index .NetworkSettings.Ports \""1433/tcp\"") 0).HostPort}}"  `
-            $containerId
-    }
+    $container = Start-Container sqldatabase/mssql:2017 1433
+    $port = $container.port
 
     $builder = New-Object -TypeName System.Data.SqlClient.SqlConnectionStringBuilder
     $builder["Initial Catalog"] = "SqlDatabaseTest"
@@ -59,58 +42,25 @@ function Start-Mssql {
     $builder["Data Source"] = ".,$port"
     $connectionString = $builder.ToString()
     
-    $builder["Data Source"] = $ip
+    $builder["Data Source"] = $container.ip
     $remoteConnectionString = $builder.ToString()
 
     return @{
-        containerId            = $containerId
+        containerId            = $container.containerId
         connectionString       = $connectionString
         remoteConnectionString = $remoteConnectionString
     }
 }
 
 function Wait-Mssql($connectionString) {
-    $connection = New-Object -TypeName System.Data.SqlClient.SqlConnection -ArgumentList $connectionString
-    try {
-        for ($i = 0; $i -lt 20; $i++) {
-            try {
-                $connection.Open()
-                return
-            }
-            catch {
-                Start-Sleep -Seconds 1
-            }
-        }
-
-        $connection.Open()
-    }
-    finally {
-        $connection.Dispose()
-    }
+    Wait-Connection System.Data.SqlClient.SqlConnection $connectionString
 }
 
 function Start-Pgsql {
     $npgsqldll = Join-Path $env:USERPROFILE ".nuget\packages\npgsql\4.0.11\lib\netstandard2.0\Npgsql.dll"
     Add-Type -Path $npgsqldll
 
-    $containerId = exec { 
-        docker run `
-            -d `
-            -p 5432 `
-            sqldatabase/postgres:13.3
-    }
-    
-    $ip = exec { 
-        docker inspect `
-            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
-            $containerId
-    }
-
-    $port = exec { 
-        docker inspect `
-            --format "{{(index (index .NetworkSettings.Ports \""5432/tcp\"") 0).HostPort}}"  `
-            $containerId
-    }
+    $container = Start-Container sqldatabase/postgres:13.3 5432
 
     $builder = New-Object -TypeName Npgsql.NpgsqlConnectionStringBuilder
     $builder["Database"] = "sqldatabasetest"
@@ -119,24 +69,97 @@ function Start-Pgsql {
     $builder["Timeout"] = 5
 
     $builder.Host = "localhost"
-    $builder.Port = $port.ToString()
+    $builder.Port = $container.port.ToString()
     $connectionString = $builder.ToString()
     
-    $builder.Host = $ip.ToString()
+    $builder.Host = $container.ip.ToString()
     $builder.Port = 5432
     $remoteConnectionString = $builder.ToString()
 
     return @{
-        containerId            = $containerId
+        containerId            = $container.containerId
         connectionString       = $connectionString
         remoteConnectionString = $remoteConnectionString
     }
 }
 
 function Wait-Pgsql($connectionString) {
-    $connection = New-Object -TypeName Npgsql.NpgsqlConnection -ArgumentList $connectionString
+    Wait-Connection Npgsql.NpgsqlConnection $connectionString
+}
+
+function Start-Mysql {
+    $sqlConnectordll = Join-Path $env:USERPROFILE "\.nuget\packages\mysqlconnector\1.3.10\lib\netstandard2.0\MySqlConnector.dll"
+    Add-Type -Path $sqlConnectordll
+
+    $container = Start-Container sqldatabase/mysql:8.0.25 3306
+
+    $builder = New-Object -TypeName MySqlConnector.MySqlConnectionStringBuilder
+    $builder["Database"] = "sqldatabasetest"
+    $builder["User ID"] = "root"
+    $builder["Password"] = "qwerty"
+    $builder["ConnectionTimeout"] = 5
+
+    $builder.Server = "localhost"
+    $builder.Port = $container.port.ToString()
+    $connectionString = $builder.ToString()
+    
+    $builder.Server = $container.ip.ToString()
+    $builder.Port = 3306
+    $remoteConnectionString = $builder.ToString()
+
+    return @{
+        containerId            = $container.containerId
+        connectionString       = $connectionString
+        remoteConnectionString = $remoteConnectionString
+    }
+}
+
+function Wait-Mysql($connectionString) {
+    Wait-Connection MySqlConnector.MySqlConnection $connectionString
+}
+
+function Start-Container {
+    param (
+        $image,
+        $containerPort
+    )
+
+    $containerId = exec { 
+        docker run `
+            -d `
+            -p $containerPort `
+            $image
+    }
+    
+    $ip = exec { 
+        docker inspect `
+            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
+            $containerId
+    }
+
+    $hostPort = exec { 
+        docker inspect `
+            --format "{{(index (index .NetworkSettings.Ports \""$containerPort/tcp\"") 0).HostPort}}"  `
+            $containerId
+    }
+
+    return @{
+        containerId = $containerId
+        ip          = $ip
+        port        = $hostPort
+    }
+}
+
+function Wait-Connection {
+    param (
+        $connectionName,
+        $connectionString,
+        $timeout = 50
+    )
+
+    $connection = New-Object -TypeName $connectionName -ArgumentList $connectionString
     try {
-        for ($i = 0; $i -lt 20; $i++) {
+        for ($i = 0; $i -lt $timeout; $i++) {
             try {
                 $connection.Open()
                 return
@@ -146,7 +169,12 @@ function Wait-Pgsql($connectionString) {
             }
         }
 
-        $connection.Open()
+        try {
+            $connection.Open()
+        }
+        catch {
+            throw "$connectionName $connectionString"
+        }
     }
     finally {
         $connection.Dispose()

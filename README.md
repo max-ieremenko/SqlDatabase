@@ -6,7 +6,7 @@ SqlDatabase
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlDatabase.svg?style=flat-square)](https://www.powershellgallery.com/packages/SqlDatabase)
 [![GitHub release](https://img.shields.io/github/release/max-ieremenko/SqlDatabase.svg?style=flat-square&label=manual%20download)](https://github.com/max-ieremenko/SqlDatabase/releases)
 
-Command-line tool and PowerShell module for MSSQL Server and PostgreSQL allows to execute scripts, database migrations and export data.
+Command-line tool and PowerShell module for MSSQL Server, PostgreSQL and MySQL allows to execute scripts, database migrations and export data.
 
 Table of Contents
 -----------------
@@ -68,7 +68,7 @@ Target database type selection <a name="database-selection"></a>
 
 The target database/server type is recognized automatically from provided connection string:
 
-here is target MSSQL Server:
+here is target MSSQL Server (keywords `Data Source` and `Initial Catalog`):
 
 ```bash
 $ SqlDatabase [command] "-database=Data Source=server;Initial Catalog=database;Integrated Security=True"
@@ -76,12 +76,20 @@ $ SqlDatabase [command] "-database=Data Source=server;Initial Catalog=database;I
 PS> *-SqlDatabase -database "Data Source=server;Initial Catalog=database;Integrated Security=True"
 ```
 
-here is target PostgreSQL:
+here is target PostgreSQL (keywords `Host` and `Database`):
 
 ```bash
 $ SqlDatabase [command] "-database=Host=server;Username=postgres;Password=qwerty;Database=database"
 
 PS> *-SqlDatabase -database "Host=server;Username=postgres;Password=qwerty;Database=database"
+```
+
+here is target MySQL (keywords `Server` and `Database`):
+
+```bash
+$ SqlDatabase [command] "-database=Server=localhost;Database=database;User ID=root;Password=qwerty;"
+
+PS> *-SqlDatabase -database "Server=localhost;Database=database;User ID=root;Password=qwerty;"
 ```
 
 [Back to ToC](#table-of-contents)

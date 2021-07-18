@@ -156,6 +156,22 @@ ALTER TABLE demo.department ADD CONSTRAINT pk_department PRIMARY KEY (Id);
 CREATE INDEX ix_department_name ON demo.department (name);
 ```
 
+MySQL script example
+=============================
+
+```sql
+SELECT 'create table department' info;
+
+CREATE TABLE department
+(
+	id INT NOT NULL AUTO_INCREMENT
+	,name VARCHAR(300) NOT NULL
+    ,PRIMARY KEY pk_department (id)
+);
+
+CREATE INDEX ix_department_name ON department (name);
+```
+
 .ps1 script example
 =============================
 

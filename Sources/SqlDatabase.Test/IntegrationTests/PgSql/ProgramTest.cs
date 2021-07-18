@@ -231,7 +231,7 @@ ORDER BY p.name";
             {
                 c.Open();
 
-                var test = c.ExecuteScalar("SELECT COUNT(1) FROM public.exported_data1");
+                var test = c.ExecuteScalar("SELECT COUNT(1) FROM public.exported_data2");
                 test.ShouldBe(2);
             }
         }

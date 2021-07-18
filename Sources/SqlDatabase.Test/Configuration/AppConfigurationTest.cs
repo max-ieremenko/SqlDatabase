@@ -38,6 +38,10 @@ namespace SqlDatabase.Configuration
             configuration.PgSql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
             configuration.PgSql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
             configuration.PgSql.Variables.Count.ShouldBe(0);
+
+            configuration.MySql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.MySql.GetCurrentVersionScript.ShouldBeNullOrEmpty();
+            configuration.MySql.Variables.Count.ShouldBe(0);
         }
 
         [Test]

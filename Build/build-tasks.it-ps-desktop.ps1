@@ -1,15 +1,14 @@
 param(
     $settings
+    , $database
 )
 
 task Test RunContainers, CopyModule, PublishModule, RunTest
 
 . .\build-scripts.ps1
 
-$mssqlContainerId = ""
-$mssqlConnectionString = ""
-$pgsqlContainerId = ""
-$pgsqlConnectionString = ""
+$containerId = ""
+$connectionString = ""
 $testDir = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "WindowsPowerShell\modules\SqlDatabase"
 
 task CopyModule {
@@ -28,28 +27,17 @@ task PublishModule {
 }
 
 task RunContainers {
-    $info = Start-Mssql
-    $script:mssqlContainerId = $info.containerId
-    $script:mssqlConnectionString = $info.connectionString
-    Write-Output $mssqlConnectionString
-
-    $info = Start-Pgsql
-    $script:pgsqlContainerId = $info.containerId
-    $script:pgsqlConnectionString = $info.connectionString
-    Write-Output $pgsqlConnectionString
+    $info = & "Start-$database"
+    $script:containerId = $info.containerId
+    $script:connectionString = $info.connectionString
+    Write-Output $connectionString
 }
 
 task RunTest {
-    Wait-Mssql $mssqlConnectionString
-    Wait-Pgsql $pgsqlConnectionString
+    & "Wait-$database" $connectionString
 
-    $env:connectionString = $mssqlConnectionString
-    $testScript = Join-Path $settings.integrationTests "MsSql\TestPowerShell.ps1"
-    $command = ". $testScript"
-    exec { powershell -NoLogo -Command "$command" }
-
-    $env:connectionString = $pgsqlConnectionString
-    $testScript = Join-Path $settings.integrationTests "PgSql\TestPowerShell.ps1"
+    $env:connectionString = $connectionString
+    $testScript = Join-Path $settings.integrationTests "$database\TestPowerShell.ps1"
     $command = ". $testScript"
     exec { powershell -NoLogo -Command "$command" }
 }
@@ -59,5 +47,5 @@ Exit-Build {
         Remove-Item -Path $testDir -Force -Recurse
     }
 
-    exec { docker container rm -f $mssqlContainerId $pgsqlContainerId } | Out-Null
+    exec { docker container rm -f $containerId } | Out-Null
 }

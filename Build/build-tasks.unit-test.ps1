@@ -7,10 +7,12 @@ task Test RunContainers, UpdateConfig, RunTests
 
 . .\build-scripts.ps1
 
-$mssqlContainerId = "empty"
+$mssqlContainerId = ""
 $mssqlConnectionString = "empty"
-$pgsqlContainerId = "empty"
+$pgsqlContainerId = ""
 $pgsqlConnectionString = "empty"
+$mysqlContainerId = ""
+$mysqlConnectionString = "empty"
 $testDir = Join-Path (Join-Path $settings.bin "Tests") $targetFramework
 
 Enter-Build {
@@ -28,8 +30,14 @@ task RunContainers {
     $script:pgsqlConnectionString = $info.connectionString
     Write-Output $pgsqlConnectionString
 
+    $info = Start-Mysql
+    $script:mysqlContainerId = $info.containerId
+    $script:mysqlConnectionString = $info.connectionString
+    Write-Output $mysqlConnectionString
+
     Wait-Mssql $mssqlConnectionString
     Wait-Pgsql $pgsqlConnectionString
+    Wait-Mysql $mysqlConnectionString
 }
 
 
@@ -47,6 +55,12 @@ task UpdateConfig {
         $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'pgsql']")
         if ($node) {
             $node.Attributes["connectionString"].InnerText = $pgsqlConnectionString
+            $config.Save($configFile)
+        }
+
+        $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'mysql']")
+        if ($node) {
+            $node.Attributes["connectionString"].InnerText = $mysqlConnectionString
             $config.Save($configFile)
         }
     }
@@ -67,5 +81,5 @@ task RunTests {
 
 
 Exit-Build {
-    exec { docker container rm -f $mssqlContainerId $pgsqlContainerId } | Out-Null
+    exec { docker container rm -f $mssqlContainerId $pgsqlContainerId $mysqlContainerId } | Out-Null
 }
