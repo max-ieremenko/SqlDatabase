@@ -1,5 +1,6 @@
-task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, InitializeIntegrationTest, IntegrationTest
+task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, IntegrationTest
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget452, PackManualDownload
+task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
 
 . .\build-scripts.ps1
 
@@ -18,6 +19,8 @@ task Initialize {
         version             = Get-AssemblyVersion (Join-Path $sources "GlobalAssemblyInfo.cs");
         repositoryCommitId  = Get-RepositoryCommitId;
     }
+
+    $script:databases = $("MsSql", "PgSql", "MySql")
 
     Write-Output "PackageVersion: $($settings.version)"
     Write-Output "CommitId: $($settings.repositoryCommitId)"
@@ -141,8 +144,14 @@ task InitializeIntegrationTest {
     }
 
     Copy-Item -Path (Join-Path $settings.sources "SqlDatabase.Test\IntegrationTests") -Destination $dest -Force -Recurse
-    Copy-Item -Path (Join-Path $settings.bin "Tests\net472\2.1_2.2.*") -Destination (Join-Path $dest "MsSql\Upgrade") -Force
-    Copy-Item -Path (Join-Path $settings.bin "Tests\net472\2.1_2.2.*") -Destination (Join-Path $dest "PgSql\Upgrade") -Force
+    foreach ($database in $databases) {
+        Copy-Item -Path (Join-Path $settings.bin "Tests\net472\2.1_2.2.*") -Destination (Join-Path $dest "$database\Upgrade") -Force
+    }
+
+    $bashLine = "sed -i 's/\r//g'"
+    foreach ($database in $databases) {
+        $bashLine += " test/$database/TestGlobalTool.sh test/$database/Test.sh"
+    }
 
     # fix unix line endings
     $test = $dest + ":/test"
@@ -150,18 +159,18 @@ task InitializeIntegrationTest {
         docker run --rm `
             -v $test `
             mcr.microsoft.com/dotnet/core/sdk:3.1 `
-            bash -c "sed -i 's/\r//g' test/MsSql/TestGlobalTool.sh test/MsSql/Test.sh test/PgSql/TestGlobalTool.sh /test/PgSql/Test.sh"
+            bash -c $bashLine
     }
 }
 
-task IntegrationTest {
-    $builds = @(
-        # powershell desktop
-        @{ File = "build-tasks.it-ps-desktop.ps1"; Task = "Test"; settings = $settings }
-    )
-    
-    # powershell core
-    $testCases = $(
+task PsDesktopTest {
+    foreach ($database in $databases) {
+        Invoke-Build -File "build-tasks.it-ps-desktop.ps1" -Task "Test" -settings $settings -database $database
+    }
+}
+
+task PsCoreTest {
+    $images = $(
         "mcr.microsoft.com/powershell:6.1.0-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:6.1.1-alpine-3.8"
         , "mcr.microsoft.com/powershell:6.1.2-alpine-3.8"
@@ -177,42 +186,63 @@ task IntegrationTest {
         , "mcr.microsoft.com/powershell:7.1.2-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.2.0-preview.2-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.2.0-preview.4-ubuntu-20.04")
-    foreach ($case in $testCases) {
-        $builds += @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; database = "MsSql"; image = $case }
-        $builds += @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; database = "PgSql"; image = $case }
+
+    $builds = @()
+    foreach ($image in $images) {
+        foreach ($database in $databases) {
+            $builds += @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; database = $database; image = $image }
+        }
     }
 
-    # sdk tool
-    $testCases = $(
+    Build-Parallel $builds -MaximumBuilds 4
+}
+
+task SdkToolTest {
+    $images = $(
         "sqldatabase/dotnet_pwsh:2.1-sdk"
         , "sqldatabase/dotnet_pwsh:3.1-sdk"
         , "sqldatabase/dotnet_pwsh:5.0-sdk")
-    foreach ($case in $testCases) {
-        $builds += @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; database = "MsSql"; image = $case }
-        $builds += @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; database = "PgSql"; image = $case }
+
+    $builds = @()
+    foreach ($image in $images) {
+        foreach ($database in $databases) {
+            $builds += @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; database = $database; image = $image }
+        }
     }
 
-    # .net runtime linux
+    Build-Parallel $builds -MaximumBuilds 4
+}
+
+task NetRuntimeLinuxTest {
     $testCases = $(
         @{ targetFramework = "netcore21"; image = "sqldatabase/dotnet_pwsh:2.1-runtime" }
         , @{ targetFramework = "netcore31"; image = "sqldatabase/dotnet_pwsh:3.1-runtime" }
         , @{ targetFramework = "net50"; image = "sqldatabase/dotnet_pwsh:5.0-runtime" }
     )
+
+    $builds = @()
     foreach ($case in $testCases) {
-        $builds += @{ File = "build-tasks.it-linux.ps1"; Task = "Test"; settings = $settings; targetFramework = $case.targetFramework; database = "MsSql"; image = $case.image }
-        $builds += @{ File = "build-tasks.it-linux.ps1"; Task = "Test"; settings = $settings; targetFramework = $case.targetFramework; database = "PgSql"; image = $case.image }
+        foreach ($database in $databases) {
+            $builds += @{ File = "build-tasks.it-linux.ps1"; Task = "Test"; settings = $settings; targetFramework = $case.targetFramework; database = $database; image = $case.image }
+        }
     }
-    
-    # .net runtime windows
+
+    Build-Parallel $builds -MaximumBuilds 4
+}
+
+task NetRuntimeWindowsTest {
     $testCases = $(
         "net452"
         , "netcore21"
         , "netcore31"
         , "net50"
     )
+
+    $builds = @()
     foreach ($case in $testCases) {
-        $builds += @{ File = "build-tasks.it-win.ps1"; Task = "Test"; settings = $settings; targetFramework = $case; database = "MsSql" }
-        $builds += @{ File = "build-tasks.it-win.ps1"; Task = "Test"; settings = $settings; targetFramework = $case; database = "PgSql" }
+        foreach ($database in $databases) {
+            $builds += @{ File = "build-tasks.it-win.ps1"; Task = "Test"; settings = $settings; targetFramework = $case; database = $database }
+        }
     }
 
     Build-Parallel $builds -MaximumBuilds 4
