@@ -36,5 +36,8 @@ example: upgrade "MyDatabase" on MSSQL "server", migration steps from "C:\Migrat
 example: upgrade "MyDatabase" on PostgreSQL "server", migration steps from "C:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
 > SqlDatabase upgrade "-database=Host=localhost;Username=postgres;Database=MyDatabase" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2
 
+example: upgrade "MyDatabase" on MySQL "server", migration steps from "C:\MigrationSteps" with "Variable1=value1" and "Variable2=value2"
+> SqlDatabase upgrade "-database=Server=localhost;Database=NewDatabase;User ID=root;Password=qwerty;" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2
+
 example: use previous example with -whatIf options to show steps without execution
 > SqlDatabase upgrade "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=C:\MigrationSteps -varVariable1=value1 -varVariable2=value2 -whatIf

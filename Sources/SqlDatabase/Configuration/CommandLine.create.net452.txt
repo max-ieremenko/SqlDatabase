@@ -35,5 +35,8 @@ example: create new "NewDatabase" on MSSQL "server" based on scripts from "C:\Ne
 example: create new "NewDatabase" on PostgreSQL "server" based on scripts from "C:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
 > SqlDatabase create "-database=Host=localhost;Username=postgres;Database=NewDatabase" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2
 
+example: create new "NewDatabase" on MySQL "server" based on scripts from "C:\NewDatabase" with "Variable1=value1" and "Variable2=value2"
+> SqlDatabase create "-database=Server=localhost;Database=NewDatabase;User ID=root;Password=qwerty;" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2
+
 example: use previous example with -whatIf options to show steps without execution
 > SqlDatabase create "-database=Data Source=server;Initial Catalog=NewDatabase;Integrated Security=True" -from=C:\NewDatabase -varVariable1=value1 -varVariable2=value2 -whatIf

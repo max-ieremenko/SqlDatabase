@@ -42,5 +42,8 @@ example: execute scripts from "c:\Scripts\script.sql" on "MyDatabase" on MSSQL "
 example: execute scripts from "c:\Scripts\script.sql" on "MyDatabase" on PostgreSQL "server" with "Variable1=value1" and "Variable2=value2"
 > SqlDatabase execute "-database=Host=localhost;Username=postgres;Database=MyDatabase" -from=c:\Scripts\script.sql -varVariable1=value1 -varVariable2=value2
 
+example: execute scripts from "c:\Scripts\script.sql" on "MyDatabase" on MySQL "server" with "Variable1=value1" and "Variable2=value2"
+> SqlDatabase execute "-database=Server=localhost;Database=NewDatabase;User ID=root;Password=qwerty;" -from=c:\Scripts\script.sql -varVariable1=value1 -varVariable2=value2
+
 example: use previous example with -whatIf options to show steps without execution
 > SqlDatabase execute "-database=Data Source=server;Initial Catalog=MyDatabase;Integrated Security=True" -from=c:\Scripts\script.sql -varVariable1=value1 -varVariable2=value2 -whatIf

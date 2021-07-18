@@ -41,3 +41,6 @@ example: export data from sys.tables view into "c:\tables.sql" from "master" dat
 
 example: export data from information_schema.tables view into "c:\tables.sql" from "postgres" database on PostgreSQL "server"
 > SqlDatabase export "-database=Host=localhost;Username=postgres;Database=postgres" "-fromSql=SELECT * FROM information_schema.tables" -toFile=c:\tables.sql
+
+example: export data from information_schema.tables view into "c:\tables.sql" from "sys" database on MySQL "server"
+> SqlDatabase export "-database=Server=localhost;Database=sys;User ID=root;Password=qwerty;" "-fromSql=SELECT * FROM information_schema.tables" -toFile=c:\tables.sql
