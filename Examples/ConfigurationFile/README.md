@@ -21,7 +21,7 @@ $ SqlDatabase ... -configuration=path\to\sql-database.config
     <assemblyScript className="SqlDatabaseScript"
                     methodName="Execute" />
 
-    <!-- variables applicable for mssql and pgsql -->
+    <!-- global variables, by default the list is empty -->
     <variables>
       <add name="Variable1"
            value="value1" />
@@ -89,6 +89,12 @@ Default value for PostgreSQL (sqlDatabase/pgsql/@getCurrentVersion):
 SELECT version FROM public.version WHERE module_name = 'database'
 ```
 
+Default value for MySQL (sqlDatabase/mysql/@getCurrentVersion):
+
+```sql
+SELECT version FROM version WHERE module_name = 'database'
+```
+
 Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
 
 ## setCurrentVersion
@@ -105,6 +111,12 @@ Default value for PostgreSQL (sqlDatabase/pgsql/@setCurrentVersion):
 
 ```sql
 UPDATE public.version SET version='{{TargetVersion}}' WHERE module_name = 'database'
+```
+
+Default value for MySQL (sqlDatabase/mysql/@setCurrentVersion):
+
+```sql
+UPDATE version SET version='{{TargetVersion}}' WHERE module_name = 'database'
 ```
 
 Warn: SqlDatabase does not validate the provided script, please make sure that script is working before running SqlDatabase.
@@ -146,6 +158,7 @@ sections
 * sqlDatabase/variables
 * sqlDatabase/mssql/variables
 * sqlDatabase/pgsql/variables
+* sqlDatabase/mysql/variables
 
 A list of variables in format
 
