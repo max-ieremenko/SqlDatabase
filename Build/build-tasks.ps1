@@ -170,6 +170,7 @@ task PsDesktopTest {
 }
 
 task PsCoreTest {
+    # show-powershell-images.ps1
     $images = $(
         "mcr.microsoft.com/powershell:6.1.0-ubuntu-18.04"
         , "mcr.microsoft.com/powershell:6.1.1-alpine-3.8"
@@ -188,7 +189,8 @@ task PsCoreTest {
         , "mcr.microsoft.com/powershell:7.1.1-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.1.2-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.1.3-ubuntu-20.04"
-        , "mcr.microsoft.com/powershell:7.2.0-preview.7-ubuntu-20.04")
+        , "mcr.microsoft.com/powershell:7.1.4-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:7.2.0-preview.10-ubuntu-20.04")
 
     $builds = @()
     foreach ($image in $images) {
