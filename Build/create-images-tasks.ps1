@@ -1,12 +1,11 @@
-task Default BuildDotnetSdk21 `
-     , BuildDotnetRuntime21 `
-     , BuildDotnetSdk31 `
-     , BuildDotnetRuntime31 `
-     , BuildDotnetSdk50 `
-     , BuildDotnetRuntime50 `
-     , BuildMsSqlDatabase `
-     , BuildPgSqlDatabase `
-     , BuildMySqlDatabase
+task Default `
+    BuildDotnetSdk31 `
+    , BuildDotnetRuntime31 `
+    , BuildDotnetSdk50 `
+    , BuildDotnetRuntime50 `
+    , BuildMsSqlDatabase `
+    , BuildPgSqlDatabase `
+    , BuildMySqlDatabase
 
 task BuildMsSqlDatabase {
     $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
@@ -35,24 +34,6 @@ task BuildMySqlDatabase {
             -f image-mysql-8025.dockerfile `
             -t sqldatabase/mysql:8.0.25 `
             $context
-    }
-}
-
-task BuildDotnetSdk21 {
-    exec {
-        docker build `
-            -f image-dotnet-sdk-2.1.dockerfile `
-            -t sqldatabase/dotnet_pwsh:2.1-sdk `
-            .
-    }
-}
-
-task BuildDotnetRuntime21 {
-    exec {
-        docker build `
-            -f image-dotnet-runtime-2.1.dockerfile `
-            -t sqldatabase/dotnet_pwsh:2.1-runtime `
-            .
     }
 }
 

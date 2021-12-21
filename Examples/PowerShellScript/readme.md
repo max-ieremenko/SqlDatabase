@@ -67,7 +67,7 @@ The version with which you run the module.
 
 Installed Powershell Desktop version.
 
-### .net SDK tool for .net 5.0 or .net core 2.1/3.1
+### .net SDK tool for .net 5.0 or .net core 3.1
 
 [![NuGet](https://img.shields.io/nuget/v/SqlDatabase.GlobalTool.svg?style=flat-square&label=nuget%20dotnet%20tool)](https://www.nuget.org/packages/SqlDatabase.GlobalTool/)
 
@@ -75,7 +75,6 @@ Pre-installed Powershell Core is required, will be used by SqlDatabase as extern
 
 * SqlDatabase .net 5.0 can host Powershell Core versions below 7.2
 * .net core 3.1 below 7.1
-* .net core 2.1 below 7.0
 
 PowerShell location can be passed via command line:
 
