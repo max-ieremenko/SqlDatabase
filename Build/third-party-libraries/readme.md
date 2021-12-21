@@ -6,13 +6,13 @@ Licenses
 |[Apache-2.0](licenses/apache-2.0)|no|no|3|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
-|[MIT](licenses/mit)|no|no|39|
+|[MIT](licenses/mit)|no|no|37|
 |[ms-net-library](licenses/ms-net-library)|no|no|22|
 |[PostgreSQL](licenses/postgresql)|no|no|1|
 
 
 
-Packages 67
+Packages 65
 --------
 
 |Name|Version|Source|License|Used by|
@@ -24,11 +24,9 @@ Packages 67
 |[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.DotNet.InternalAbstractions](packages/nuget.org/microsoft.dotnet.internalabstractions/1.0.0)|1.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.DotNet.InternalAbstractions/1.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
-|[Microsoft.NETCore.App](packages/nuget.org/microsoft.netcore.app/2.1.0)|2.1.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NETCore.App/2.1.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/16.9.4)|16.9.4|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/16.9.4)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Win32.Registry](packages/nuget.org/microsoft.win32.registry/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.Registry/4.5.0)|[MIT](licenses/mit)|SqlDatabase|
-|[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/6.2.7)|6.2.7|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/6.2.7)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.0.5)|7.0.5|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.0.5)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.1.2)|[MIT](licenses/mit)|SqlDatabase|
 |[Moq](packages/nuget.org/moq/4.16.1)|4.16.1|[nuget.org](https://www.nuget.org/packages/Moq/4.16.1)|[BSD-3-Clause](licenses/bsd-3-clause)|SqlDatabase internal|
