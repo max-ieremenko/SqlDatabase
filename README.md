@@ -33,9 +33,9 @@ Installation
 
 PowerShell module is compatible with Powershell Core 6.1+ and PowerShell Desktop 5.1.
 
-.net tool requires SDK .Net 5.0 or .Net Core 3.1.
+.net tool requires SDK .Net 5.0/6.0 or .Net Core 3.1.
 
-Command-line tool is compatible with .net runtime 5.0, .net Core runtime 3.1 and .net Framework 4.5.2+.
+Command-line tool is compatible with .net runtime 5.0/6.0, .net Core runtime 3.1 and .net Framework 4.5.2+.
 
 ### PowerShell, from gallery
 
