@@ -3,7 +3,7 @@ System.AppContext [4.1.0](https://www.nuget.org/packages/System.AppContext/4.1.0
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, netcoreapp3.1
+Target frameworks: net472, net5.0, net6.0, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

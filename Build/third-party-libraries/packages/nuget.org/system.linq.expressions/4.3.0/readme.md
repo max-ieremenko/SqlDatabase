@@ -3,7 +3,7 @@ System.Linq.Expressions [4.3.0](https://www.nuget.org/packages/System.Linq.Expre
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, netcoreapp3.1
+Target frameworks: net472, net5.0, net6.0, netcoreapp3.1
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

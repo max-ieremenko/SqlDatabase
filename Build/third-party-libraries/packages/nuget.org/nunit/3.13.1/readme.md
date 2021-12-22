@@ -3,7 +3,7 @@ NUnit [3.13.1](https://www.nuget.org/packages/NUnit/3.13.1)
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, netcoreapp3.1
+Target frameworks: net472, net5.0, net6.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

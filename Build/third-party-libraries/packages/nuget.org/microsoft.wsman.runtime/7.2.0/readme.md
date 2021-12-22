@@ -1,4 +1,4 @@
-Microsoft.WSMan.Runtime [7.0.5](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.0.5)
+Microsoft.WSMan.Runtime [7.2.0](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.2.0)
 --------------------
 
 Used by: SqlDatabase
@@ -7,7 +7,7 @@ Target frameworks: net452, net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
-- package license: [MIT](https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt) 
+- package license: [MIT](https://licenses.nuget.org/MIT) 
 - project license: [MIT](https://github.com/PowerShell/PowerShell) 
 
 Description

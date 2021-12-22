@@ -3,7 +3,7 @@ System.Numerics.Vectors [4.4.0](https://www.nuget.org/packages/System.Numerics.V
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net5.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net452, net5.0, net6.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
