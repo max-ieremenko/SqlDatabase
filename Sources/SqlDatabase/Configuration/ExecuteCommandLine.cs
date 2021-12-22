@@ -56,7 +56,7 @@ namespace SqlDatabase.Configuration
                 return true;
             }
 
-#if NETCOREAPP || NET5_0
+#if NETCOREAPP || NET5_0_OR_GREATER
             if (Arg.UsePowerShell.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
             {
                 UsePowerShell = arg.Value;
