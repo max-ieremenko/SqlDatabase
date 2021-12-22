@@ -3,8 +3,9 @@
 build.ps1 is designed to run on windows
 
 - PowerShell Desktop 5.1
-- PowerShell [7.0.8](https://github.com/PowerShell/PowerShell/releases/tag/v7.0.8) for .net core 3.1 tests
+- PowerShell [7.2.1](https://github.com/PowerShell/PowerShell/releases/tag/v7.2.1) for .net 6.0 tests
 - PowerShell [7.1.5](https://github.com/PowerShell/PowerShell/releases/tag/v7.1.5) for .net 5.0 tests
+- PowerShell [7.0.8](https://github.com/PowerShell/PowerShell/releases/tag/v7.0.8) for .net core 3.1 tests
 - Install-Module -Name InvokeBuild -RequiredVersion 5.8.7
 - ThirdPartyLibraries https://www.nuget.org/packages/ThirdPartyLibraries.GlobalTool/
 - .net framework 4.7.2+ sdk
