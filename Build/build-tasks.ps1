@@ -118,6 +118,10 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $destination = Join-Path $out "SqlDatabase.$packageVersion-net50.zip"
     $source = Join-Path $settings.bin "SqlDatabase\net5.0\publish\*"
     Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
+
+    $destination = Join-Path $out "SqlDatabase.$packageVersion-net60.zip"
+    $source = Join-Path $settings.bin "SqlDatabase\net6.0\publish\*"
+    Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
 }
 
 task UnitTest {
@@ -125,6 +129,7 @@ task UnitTest {
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net472" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp3.1" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net5.0" }
+        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net6.0" }
     )
     
     Build-Parallel $builds -MaximumBuilds 4
@@ -198,7 +203,8 @@ task PsCoreTest {
 task SdkToolTest {
     $images = $(
         "sqldatabase/dotnet_pwsh:3.1-sdk"
-        , "sqldatabase/dotnet_pwsh:5.0-sdk")
+        , "sqldatabase/dotnet_pwsh:5.0-sdk"
+        , "sqldatabase/dotnet_pwsh:6.0-sdk")
 
     $builds = @()
     foreach ($image in $images) {
@@ -214,6 +220,7 @@ task NetRuntimeLinuxTest {
     $testCases = $(
         @{ targetFramework = "netcore31"; image = "sqldatabase/dotnet_pwsh:3.1-runtime" }
         , @{ targetFramework = "net50"; image = "sqldatabase/dotnet_pwsh:5.0-runtime" }
+        , @{ targetFramework = "net60"; image = "sqldatabase/dotnet_pwsh:6.0-runtime" }
     )
 
     $builds = @()
@@ -231,6 +238,7 @@ task NetRuntimeWindowsTest {
         "net452"
         , "netcore31"
         , "net50"
+        , "net60"
     )
 
     $builds = @()

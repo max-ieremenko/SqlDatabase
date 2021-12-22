@@ -3,6 +3,8 @@ task Default `
     , BuildDotnetRuntime31 `
     , BuildDotnetSdk50 `
     , BuildDotnetRuntime50 `
+    , BuildDotnetSdk60 `
+    , BuildDotnetRuntime60 `
     , BuildMsSqlDatabase `
     , BuildPgSqlDatabase `
     , BuildMySqlDatabase
@@ -69,6 +71,24 @@ task BuildDotnetRuntime50 {
         docker build `
             -f image-dotnet-runtime-5.0.dockerfile `
             -t sqldatabase/dotnet_pwsh:5.0-runtime `
+            .
+    }
+}
+
+task BuildDotnetSdk60 {
+    exec {
+        docker build `
+            -f image-dotnet-sdk-6.0.dockerfile `
+            -t sqldatabase/dotnet_pwsh:6.0-sdk `
+            .
+    }
+}
+
+task BuildDotnetRuntime60 {
+    exec {
+        docker build `
+            -f image-dotnet-runtime-6.0.dockerfile `
+            -t sqldatabase/dotnet_pwsh:6.0-runtime `
             .
     }
 }
