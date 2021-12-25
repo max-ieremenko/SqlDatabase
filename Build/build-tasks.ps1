@@ -132,7 +132,7 @@ task UnitTest {
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net6.0" }
     )
     
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter targetFramework -MaximumBuilds 4
 }
 
 task InitializeIntegrationTest {
@@ -162,9 +162,17 @@ task InitializeIntegrationTest {
 }
 
 task PsDesktopTest {
+    $builds = @()
     foreach ($database in $databases) {
-        Invoke-Build -File "build-tasks.it-ps-desktop.ps1" -Task "Test" -settings $settings -database $database
+        $builds += @{
+            File     = "build-tasks.it-ps-desktop.ps1";
+            Task     = "Test";
+            settings = $settings;
+            database = $database;
+        }
     }
+
+    Build-Parallel $builds -ShowParameter database -MaximumBuilds 1
 }
 
 task PsCoreTest {
@@ -193,11 +201,17 @@ task PsCoreTest {
     $builds = @()
     foreach ($image in $images) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; database = $database; image = $image }
+            $builds += @{
+                File     = "build-tasks.it-ps-core.ps1";
+                Task     = "Test";
+                settings = $settings;
+                database = $database;
+                image    = $image;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, image -MaximumBuilds 4
 }
 
 task SdkToolTest {
@@ -209,11 +223,17 @@ task SdkToolTest {
     $builds = @()
     foreach ($image in $images) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; database = $database; image = $image }
+            $builds += @{
+                File     = "build-tasks.it-tool-linux.ps1";
+                Task     = "Test";
+                settings = $settings;
+                database = $database;
+                image    = $image;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, image -MaximumBuilds 4
 }
 
 task NetRuntimeLinuxTest {
@@ -226,11 +246,18 @@ task NetRuntimeLinuxTest {
     $builds = @()
     foreach ($case in $testCases) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-linux.ps1"; Task = "Test"; settings = $settings; targetFramework = $case.targetFramework; database = $database; image = $case.image }
+            $builds += @{
+                File            = "build-tasks.it-linux.ps1";
+                Task            = "Test";
+                settings        = $settings;
+                targetFramework = $case.targetFramework;
+                database        = $database;
+                image           = $case.image;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, targetFramework, image -MaximumBuilds 4
 }
 
 task NetRuntimeWindowsTest {
@@ -244,9 +271,15 @@ task NetRuntimeWindowsTest {
     $builds = @()
     foreach ($case in $testCases) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-win.ps1"; Task = "Test"; settings = $settings; targetFramework = $case; database = $database }
+            $builds += @{
+                File            = "build-tasks.it-win.ps1";
+                Task            = "Test";
+                settings        = $settings;
+                targetFramework = $case;
+                database        = $database;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, targetFramework -MaximumBuilds 4
 }
