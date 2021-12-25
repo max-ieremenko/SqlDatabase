@@ -12,12 +12,6 @@
         "net5.0",
         "net6.0",
         "net472"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Threading",
-          "Version": "4.3.0"
-        }
       ]
     }
   ],
