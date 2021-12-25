@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup Condition="'$(GlobalTool)' != true">
-    <TargetFrameworks>net452;netcoreapp2.1;netcoreapp3.1;net5.0;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GlobalTool)' == true">
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
+  <PropertyGroup>
+    <TargetFrameworks Condition="'$(GlobalTool)' != true">net452;netcoreapp3.1;net5.0;net6.0;netstandard2.0</TargetFrameworks>
+	<TargetFrameworks Condition="'$(GlobalTool)' == true">netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,9 +24,9 @@
     <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
     <PackageIcon>icon-32.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>(C) 2018-2021 Max Ieremenko.</Copyright>
+    <Copyright>(C) 2018-2022 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>sqlserver postgresql mysql mysql-database sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</PackageTags>
+    <PackageTags>sqlserver database postgresql mysql mysql-database sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</PackageTags>
   </PropertyGroup>
   
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
@@ -66,16 +63,16 @@
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="6.2.7" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">

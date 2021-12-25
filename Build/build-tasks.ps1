@@ -111,12 +111,6 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $source = Join-Path $settings.artifactsPowerShell "*"
     Compress-Archive -Path $source -DestinationPath $destination
 
-    # netcoreapp2.2 build does not create .exe, copy it from netcoreapp3.1
-    $exe = Join-Path $settings.bin "SqlDatabase\netcoreapp3.1\publish\SqlDatabase.exe"
-    $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore21.zip"
-    $source = Join-Path $settings.bin "SqlDatabase\netcoreapp2.1\publish\*"
-    Compress-Archive -Path $source, $exe, $lic, $thirdParty -DestinationPath $destination
-
     $destination = Join-Path $out "SqlDatabase.$packageVersion-netcore31.zip"
     $source = Join-Path $settings.bin "SqlDatabase\netcoreapp3.1\publish\*"
     Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
@@ -124,17 +118,21 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $destination = Join-Path $out "SqlDatabase.$packageVersion-net50.zip"
     $source = Join-Path $settings.bin "SqlDatabase\net5.0\publish\*"
     Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
+
+    $destination = Join-Path $out "SqlDatabase.$packageVersion-net60.zip"
+    $source = Join-Path $settings.bin "SqlDatabase\net6.0\publish\*"
+    Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
 }
 
 task UnitTest {
     $builds = @(
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net472" }
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp2.1" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp3.1" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net5.0" }
+        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net6.0" }
     )
     
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter targetFramework -MaximumBuilds 4
 }
 
 task InitializeIntegrationTest {
@@ -164,9 +162,17 @@ task InitializeIntegrationTest {
 }
 
 task PsDesktopTest {
+    $builds = @()
     foreach ($database in $databases) {
-        Invoke-Build -File "build-tasks.it-ps-desktop.ps1" -Task "Test" -settings $settings -database $database
+        $builds += @{
+            File     = "build-tasks.it-ps-desktop.ps1";
+            Task     = "Test";
+            settings = $settings;
+            database = $database;
+        }
     }
+
+    Build-Parallel $builds -ShowParameter database -MaximumBuilds 1
 }
 
 task PsCoreTest {
@@ -190,65 +196,92 @@ task PsCoreTest {
         , "mcr.microsoft.com/powershell:7.1.2-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.1.3-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.1.4-ubuntu-20.04"
-        , "mcr.microsoft.com/powershell:7.2.0-preview.10-ubuntu-20.04")
+        , "mcr.microsoft.com/powershell:7.2.0-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:7.2.1-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:7.3.0-preview.1-ubuntu-20.04")
 
     $builds = @()
     foreach ($image in $images) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-ps-core.ps1"; Task = "Test"; settings = $settings; database = $database; image = $image }
+            $builds += @{
+                File     = "build-tasks.it-ps-core.ps1";
+                Task     = "Test";
+                settings = $settings;
+                database = $database;
+                image    = $image;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, image -MaximumBuilds 4
 }
 
 task SdkToolTest {
     $images = $(
-        "sqldatabase/dotnet_pwsh:2.1-sdk"
-        , "sqldatabase/dotnet_pwsh:3.1-sdk"
-        , "sqldatabase/dotnet_pwsh:5.0-sdk")
+        "sqldatabase/dotnet_pwsh:3.1-sdk"
+        , "sqldatabase/dotnet_pwsh:5.0-sdk"
+        , "sqldatabase/dotnet_pwsh:6.0-sdk")
 
     $builds = @()
     foreach ($image in $images) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-tool-linux.ps1"; Task = "Test"; settings = $settings; database = $database; image = $image }
+            $builds += @{
+                File     = "build-tasks.it-tool-linux.ps1";
+                Task     = "Test";
+                settings = $settings;
+                database = $database;
+                image    = $image;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, image -MaximumBuilds 4
 }
 
 task NetRuntimeLinuxTest {
     $testCases = $(
-        @{ targetFramework = "netcore21"; image = "sqldatabase/dotnet_pwsh:2.1-runtime" }
-        , @{ targetFramework = "netcore31"; image = "sqldatabase/dotnet_pwsh:3.1-runtime" }
+        @{ targetFramework = "netcore31"; image = "sqldatabase/dotnet_pwsh:3.1-runtime" }
         , @{ targetFramework = "net50"; image = "sqldatabase/dotnet_pwsh:5.0-runtime" }
+        , @{ targetFramework = "net60"; image = "sqldatabase/dotnet_pwsh:6.0-runtime" }
     )
 
     $builds = @()
     foreach ($case in $testCases) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-linux.ps1"; Task = "Test"; settings = $settings; targetFramework = $case.targetFramework; database = $database; image = $case.image }
+            $builds += @{
+                File            = "build-tasks.it-linux.ps1";
+                Task            = "Test";
+                settings        = $settings;
+                targetFramework = $case.targetFramework;
+                database        = $database;
+                image           = $case.image;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, targetFramework, image -MaximumBuilds 4
 }
 
 task NetRuntimeWindowsTest {
     $testCases = $(
         "net452"
-        , "netcore21"
         , "netcore31"
         , "net50"
+        , "net60"
     )
 
     $builds = @()
     foreach ($case in $testCases) {
         foreach ($database in $databases) {
-            $builds += @{ File = "build-tasks.it-win.ps1"; Task = "Test"; settings = $settings; targetFramework = $case; database = $database }
+            $builds += @{
+                File            = "build-tasks.it-win.ps1";
+                Task            = "Test";
+                settings        = $settings;
+                targetFramework = $case;
+                database        = $database;
+            }
         }
     }
 
-    Build-Parallel $builds -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter database, targetFramework -MaximumBuilds 4
 }

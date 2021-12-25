@@ -130,12 +130,12 @@ namespace SqlDatabase.Scripts.PowerShellInternal
 
         private static bool IsCompatibleVersion(Version version)
         {
-#if NET5_0
+#if NET6_0
+            return version < new Version("7.3.1");
+#elif NET5_0
             return version < new Version("7.2");
 #elif NETCOREAPP3_1_OR_GREATER
             return version < new Version("7.1");
-#elif NETCOREAPP2_1_OR_GREATER
-            return version < new Version("7.0");
 #else
             return false;
 #endif

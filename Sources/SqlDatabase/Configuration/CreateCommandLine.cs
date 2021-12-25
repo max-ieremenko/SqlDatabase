@@ -41,7 +41,7 @@ namespace SqlDatabase.Configuration
 
         protected override bool ParseArg(Arg arg)
         {
-#if NETCOREAPP || NET5_0
+#if NETCOREAPP || NET5_0_OR_GREATER
             if (Arg.UsePowerShell.Equals(arg.Key, System.StringComparison.OrdinalIgnoreCase))
             {
                 UsePowerShell = arg.Value;

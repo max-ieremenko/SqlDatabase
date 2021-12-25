@@ -3,7 +3,7 @@ Newtonsoft.Json [13.0.1](https://www.nuget.org/packages/Newtonsoft.Json/13.0.1)
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, netcoreapp2.1, netcoreapp3.1
+Target frameworks: net472, net5.0, net6.0, netcoreapp3.1
 
 License: [MIT](../../../../licenses/mit) 
 

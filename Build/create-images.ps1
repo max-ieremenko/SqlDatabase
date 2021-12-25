@@ -1,4 +1,4 @@
-#Requires -Modules @{ModuleName='InvokeBuild'; RequiredVersion='5.7.2'}
+#Requires -Modules @{ModuleName='InvokeBuild'; RequiredVersion='5.8.7'}
 
 Set-StrictMode -Version Latest
 
