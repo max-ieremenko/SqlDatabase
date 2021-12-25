@@ -9,16 +9,16 @@
     <licenseUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/max-ieremenko/SqlDatabase</projectUrl>
     <packageSourceUrl>https://github.com/max-ieremenko/SqlDatabase</packageSourceUrl>
-	<projectSourceUrl>https://github.com/max-ieremenko/SqlDatabase</projectSourceUrl>
+    <projectSourceUrl>https://github.com/max-ieremenko/SqlDatabase</projectSourceUrl>
     <docsUrl>https://github.com/max-ieremenko/SqlDatabase/blob/master/README.md</docsUrl>
-	<bugTrackerUrl>https://github.com/max-ieremenko/SqlDatabase/issues</bugTrackerUrl>
+    <bugTrackerUrl>https://github.com/max-ieremenko/SqlDatabase/issues</bugTrackerUrl>
     <iconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Command-line tool and PowerShell module for SQL Server.</summary>
     <description>SqlDatabase is a tool for SQL Server, allows to execute scripts, database migrations and export data.
 Requires Powershell Core 6.1+ or PowerShell Desktop 5.1.</description>
     <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
-    <copyright>(C) 2018-2021 Max Ieremenko.</copyright>
+    <copyright>(C) 2018-2022 Max Ieremenko.</copyright>
     <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</tags>
   </metadata>
 
