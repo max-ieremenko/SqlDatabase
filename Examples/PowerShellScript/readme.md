@@ -73,8 +73,8 @@ Installed Powershell Desktop version.
 
 Pre-installed Powershell Core is required, will be used by SqlDatabase as external component. Due to Powershell Core design,
 
-* SqlDatabase .net 5.0 can host Powershell Core versions below 7.3.1
-* .net 6.0 can host Powershell Core versions below 7.2
+* SqlDatabase .net 6.0 can host Powershell Core versions below 7.3.1
+* .net 5.0 can host Powershell Core versions below 7.2
 * .net core 3.1 below 7.1
 
 PowerShell location can be passed via command line:
