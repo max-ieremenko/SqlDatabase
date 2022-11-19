@@ -41,7 +41,7 @@ task Build {
 }
 
 task ThirdPartyNotices {
-    Invoke-Build -File build-tasks.third-party.ps1 -Task "ThirdParty" -settings $settings
+    Invoke-Build -File build-tasks.third-party.ps1 -settings $settings
 }
 
 task PackGlobalTool {
