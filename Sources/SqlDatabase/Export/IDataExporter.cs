@@ -1,13 +1,12 @@
 ﻿using System.Data;
 
-namespace SqlDatabase.Export
+namespace SqlDatabase.Export;
+
+internal interface IDataExporter
 {
-    internal interface IDataExporter
-    {
-        SqlWriterBase Output { get; set; }
+    SqlWriterBase Output { get; set; }
 
-        ILogger Log { get; set; }
+    ILogger Log { get; set; }
 
-        void Export(IDataReader source, string tableName);
-    }
+    void Export(IDataReader source, string tableName);
 }

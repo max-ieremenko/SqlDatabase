@@ -2,26 +2,25 @@
 using System.IO;
 using SqlDatabase.Export;
 
-namespace SqlDatabase.Scripts
+namespace SqlDatabase.Scripts;
+
+internal interface IDatabaseAdapter
 {
-    internal interface IDatabaseAdapter
-    {
-        string DatabaseName { get; }
+    string DatabaseName { get; }
 
-        string GetUserFriendlyConnectionString();
+    string GetUserFriendlyConnectionString();
 
-        ISqlTextReader CreateSqlTextReader();
+    ISqlTextReader CreateSqlTextReader();
 
-        SqlWriterBase CreateSqlWriter(TextWriter output);
+    SqlWriterBase CreateSqlWriter(TextWriter output);
 
-        IDbConnection CreateConnection(bool switchToMaster);
+    IDbConnection CreateConnection(bool switchToMaster);
 
-        string GetServerVersionSelectScript();
+    string GetServerVersionSelectScript();
 
-        string GetDatabaseExistsScript(string databaseName);
+    string GetDatabaseExistsScript(string databaseName);
 
-        string GetVersionSelectScript();
+    string GetVersionSelectScript();
 
-        string GetVersionUpdateScript();
-    }
+    string GetVersionUpdateScript();
 }

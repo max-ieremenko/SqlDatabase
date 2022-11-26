@@ -4,90 +4,89 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace SqlDatabase.Scripts.UpgradeInternal
+namespace SqlDatabase.Scripts.UpgradeInternal;
+
+[TestFixture]
+public class ModuleVersionResolverTest
 {
-    [TestFixture]
-    public class ModuleVersionResolverTest
+    private ModuleVersionResolver _sut;
+    private Mock<IDatabase> _database;
+    private IList<string> _logOutput;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private ModuleVersionResolver _sut;
-        private Mock<IDatabase> _database;
-        private IList<string> _logOutput;
+        _database = new Mock<IDatabase>(MockBehavior.Strict);
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _database = new Mock<IDatabase>(MockBehavior.Strict);
-
-            _logOutput = new List<string>();
-            var log = new Mock<ILogger>(MockBehavior.Strict);
-            log
-                .Setup(l => l.Info(It.IsAny<string>()))
-                .Callback<string>(m =>
-                {
-                    Console.WriteLine("Info: {0}", m);
-                    _logOutput.Add(m);
-                });
-
-            _sut = new ModuleVersionResolver
+        _logOutput = new List<string>();
+        var log = new Mock<ILogger>(MockBehavior.Strict);
+        log
+            .Setup(l => l.Info(It.IsAny<string>()))
+            .Callback<string>(m =>
             {
-                Database = _database.Object,
-                Log = log.Object
-            };
-        }
+                Console.WriteLine("Info: {0}", m);
+                _logOutput.Add(m);
+            });
 
-        [Test]
-        public void GetCurrentVersionModuleName()
+        _sut = new ModuleVersionResolver
         {
-            const string ModuleName = "the-module";
-            var moduleVersion = new Version("1.0");
+            Database = _database.Object,
+            Log = log.Object
+        };
+    }
 
-            _database
-                .Setup(d => d.GetCurrentVersion(ModuleName))
-                .Returns(moduleVersion);
+    [Test]
+    public void GetCurrentVersionModuleName()
+    {
+        const string ModuleName = "the-module";
+        var moduleVersion = new Version("1.0");
 
-            _sut.GetCurrentVersion(ModuleName).ShouldBe(moduleVersion);
+        _database
+            .Setup(d => d.GetCurrentVersion(ModuleName))
+            .Returns(moduleVersion);
 
-            _database.VerifyAll();
-            _logOutput.Count.ShouldBe(1);
-            _logOutput[0].ShouldContain(ModuleName);
-            _logOutput[0].ShouldContain(moduleVersion.ToString());
-        }
+        _sut.GetCurrentVersion(ModuleName).ShouldBe(moduleVersion);
 
-        [Test]
-        public void GetCurrentVersionNoModule()
-        {
-            var version = new Version("1.0");
+        _database.VerifyAll();
+        _logOutput.Count.ShouldBe(1);
+        _logOutput[0].ShouldContain(ModuleName);
+        _logOutput[0].ShouldContain(moduleVersion.ToString());
+    }
 
-            _database
-                .Setup(d => d.GetCurrentVersion(string.Empty))
-                .Returns(version);
+    [Test]
+    public void GetCurrentVersionNoModule()
+    {
+        var version = new Version("1.0");
 
-            _sut.GetCurrentVersion(null).ShouldBe(version);
+        _database
+            .Setup(d => d.GetCurrentVersion(string.Empty))
+            .Returns(version);
 
-            _database.VerifyAll();
-            _logOutput.Count.ShouldBe(1);
-            _logOutput[0].ShouldContain("database version");
-            _logOutput[0].ShouldContain(version.ToString());
-        }
+        _sut.GetCurrentVersion(null).ShouldBe(version);
 
-        [Test]
-        public void GetCurrentVersionCache()
-        {
-            var version = new Version("1.0");
+        _database.VerifyAll();
+        _logOutput.Count.ShouldBe(1);
+        _logOutput[0].ShouldContain("database version");
+        _logOutput[0].ShouldContain(version.ToString());
+    }
 
-            _database
-                .Setup(d => d.GetCurrentVersion(string.Empty))
-                .Returns(new Version("1.0"));
+    [Test]
+    public void GetCurrentVersionCache()
+    {
+        var version = new Version("1.0");
 
-            _sut.GetCurrentVersion(null).ShouldBe(version);
+        _database
+            .Setup(d => d.GetCurrentVersion(string.Empty))
+            .Returns(new Version("1.0"));
 
-            _logOutput.Clear();
-            _database
-                .Setup(d => d.GetCurrentVersion(string.Empty))
-                .Throws<NotSupportedException>();
+        _sut.GetCurrentVersion(null).ShouldBe(version);
 
-            _sut.GetCurrentVersion(null).ShouldBe(version);
-            _logOutput.ShouldBeEmpty();
-        }
+        _logOutput.Clear();
+        _database
+            .Setup(d => d.GetCurrentVersion(string.Empty))
+            .Throws<NotSupportedException>();
+
+        _sut.GetCurrentVersion(null).ShouldBe(version);
+        _logOutput.ShouldBeEmpty();
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace SqlDatabase.Configuration
+﻿namespace SqlDatabase.Configuration;
+
+public interface IConfigurationManager
 {
-    public interface IConfigurationManager
-    {
-        AppConfiguration SqlDatabase { get; }
-    }
+    AppConfiguration SqlDatabase { get; }
 }

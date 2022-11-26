@@ -1,10 +1,9 @@
-﻿namespace SqlDatabase.Log
+﻿namespace SqlDatabase.Log;
+
+internal static class LoggerFactory
 {
-    internal static class LoggerFactory
+    public static ILogger CreateDefault()
     {
-        public static ILogger CreateDefault()
-        {
-            return new ConsoleLogger();
-        }
+        return new ConsoleLogger();
     }
 }

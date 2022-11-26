@@ -1,13 +1,12 @@
-﻿namespace SqlDatabase.Scripts
+﻿namespace SqlDatabase.Scripts;
+
+public enum VariableSource
 {
-    public enum VariableSource
-    {
-        Runtime,
+    Runtime,
 
-        CommandLine,
+    CommandLine,
 
-        Environment,
+    Environment,
 
-        ConfigurationFile
-    }
+    ConfigurationFile
 }

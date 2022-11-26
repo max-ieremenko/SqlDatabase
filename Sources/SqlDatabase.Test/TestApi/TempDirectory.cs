@@ -3,45 +3,44 @@ using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 
-namespace SqlDatabase.TestApi
+namespace SqlDatabase.TestApi;
+
+internal sealed class TempDirectory : IDisposable
 {
-    internal sealed class TempDirectory : IDisposable
+    public TempDirectory(string name = null)
     {
-        public TempDirectory(string name = null)
+        Location = Path.Combine(Path.GetTempPath(), name ?? Guid.NewGuid().ToString());
+        Directory.CreateDirectory(Location);
+    }
+
+    public string Location { get; }
+
+    public string CopyFileFromResources(string resourceName, Type resourceAnchor = null)
+    {
+        if (resourceAnchor == null)
         {
-            Location = Path.Combine(Path.GetTempPath(), name ?? Guid.NewGuid().ToString());
-            Directory.CreateDirectory(Location);
+            resourceAnchor = new StackTrace().GetFrame(1).GetMethod().DeclaringType;
         }
 
-        public string Location { get; }
+        var source = resourceAnchor.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
+        Assert.IsNotNull(source, resourceName);
 
-        public string CopyFileFromResources(string resourceName, Type resourceAnchor = null)
+        var fileName = Path.Combine(Location, resourceName);
+
+        using (source)
+        using (var dest = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
         {
-            if (resourceAnchor == null)
-            {
-                resourceAnchor = new StackTrace().GetFrame(1).GetMethod().DeclaringType;
-            }
-
-            var source = resourceAnchor.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
-            Assert.IsNotNull(source, resourceName);
-
-            var fileName = Path.Combine(Location, resourceName);
-
-            using (source)
-            using (var dest = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
-            {
-                source.CopyTo(dest);
-            }
-
-            return fileName;
+            source.CopyTo(dest);
         }
 
-        public void Dispose()
+        return fileName;
+    }
+
+    public void Dispose()
+    {
+        if (Directory.Exists(Location))
         {
-            if (Directory.Exists(Location))
-            {
-                Directory.Delete(Location, true);
-            }
+            Directory.Delete(Location, true);
         }
     }
 }

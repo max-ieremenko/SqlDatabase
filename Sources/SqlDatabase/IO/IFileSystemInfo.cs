@@ -1,7 +1,6 @@
-﻿namespace SqlDatabase.IO
+﻿namespace SqlDatabase.IO;
+
+public interface IFileSystemInfo
 {
-    public interface IFileSystemInfo
-    {
-        string Name { get; }
-    }
+    string Name { get; }
 }

@@ -4,115 +4,114 @@ using Moq;
 using NUnit.Framework;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase.Commands
+namespace SqlDatabase.Commands;
+
+[TestFixture]
+public class DatabaseCreateCommandTest
 {
-    [TestFixture]
-    public class DatabaseCreateCommandTest
+    private DatabaseCreateCommand _sut;
+    private Mock<IDatabase> _database;
+    private Mock<ICreateScriptSequence> _scriptSequence;
+    private Mock<IPowerShellFactory> _powerShellFactory;
+    private Mock<ILogger> _log;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private DatabaseCreateCommand _sut;
-        private Mock<IDatabase> _database;
-        private Mock<ICreateScriptSequence> _scriptSequence;
-        private Mock<IPowerShellFactory> _powerShellFactory;
-        private Mock<ILogger> _log;
+        var adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
+        adapter
+            .Setup(a => a.GetUserFriendlyConnectionString())
+            .Returns("greet");
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            var adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
-            adapter
-                .Setup(a => a.GetUserFriendlyConnectionString())
-                .Returns("greet");
+        _database = new Mock<IDatabase>(MockBehavior.Strict);
+        _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
+        _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
 
-            _database = new Mock<IDatabase>(MockBehavior.Strict);
-            _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
-            _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
+        _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-            _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
+        _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
 
-            _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
-
-            _log = new Mock<ILogger>(MockBehavior.Strict);
-            _log.Setup(l => l.Indent()).Returns((IDisposable)null);
-            _log
-                .Setup(l => l.Error(It.IsAny<string>()))
-                .Callback<string>(m =>
-                {
-                    Console.WriteLine("Error: {0}", m);
-                });
-            _log
-                .Setup(l => l.Info(It.IsAny<string>()))
-                .Callback<string>(m =>
-                {
-                    Console.WriteLine("Info: {0}", m);
-                });
-
-            _sut = new DatabaseCreateCommand
+        _log = new Mock<ILogger>(MockBehavior.Strict);
+        _log.Setup(l => l.Indent()).Returns((IDisposable)null);
+        _log
+            .Setup(l => l.Error(It.IsAny<string>()))
+            .Callback<string>(m =>
             {
-                Database = _database.Object,
-                Log = _log.Object,
-                ScriptSequence = _scriptSequence.Object,
-                PowerShellFactory = _powerShellFactory.Object
-            };
-        }
+                Console.WriteLine("Error: {0}", m);
+            });
+        _log
+            .Setup(l => l.Info(It.IsAny<string>()))
+            .Callback<string>(m =>
+            {
+                Console.WriteLine("Info: {0}", m);
+            });
 
-        [Test]
-        public void ScriptsNotFound()
+        _sut = new DatabaseCreateCommand
         {
-            _scriptSequence.Setup(s => s.BuildSequence()).Returns(new IScript[0]);
+            Database = _database.Object,
+            Log = _log.Object,
+            ScriptSequence = _scriptSequence.Object,
+            PowerShellFactory = _powerShellFactory.Object
+        };
+    }
 
-            Assert.Throws<ConfigurationErrorsException>(_sut.Execute);
+    [Test]
+    public void ScriptsNotFound()
+    {
+        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new IScript[0]);
 
-            _scriptSequence.VerifyAll();
-        }
+        Assert.Throws<ConfigurationErrorsException>(_sut.Execute);
 
-        [Test]
-        public void ExecuteSequence()
-        {
-            var step1 = new Mock<IScript>(MockBehavior.Strict);
-            step1.SetupGet(s => s.DisplayName).Returns("step 1");
+        _scriptSequence.VerifyAll();
+    }
 
-            var step2 = new Mock<IScript>(MockBehavior.Strict);
-            step2.SetupGet(s => s.DisplayName).Returns("step 2");
+    [Test]
+    public void ExecuteSequence()
+    {
+        var step1 = new Mock<IScript>(MockBehavior.Strict);
+        step1.SetupGet(s => s.DisplayName).Returns("step 1");
 
-            _powerShellFactory
-                .Setup(f => f.InitializeIfRequested(_log.Object));
+        var step2 = new Mock<IScript>(MockBehavior.Strict);
+        step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-            _database
-                .Setup(d => d.Execute(step1.Object))
-                .Callback(() => _database.Setup(d => d.Execute(step2.Object)));
+        _powerShellFactory
+            .Setup(f => f.InitializeIfRequested(_log.Object));
 
-            _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { step1.Object, step2.Object });
+        _database
+            .Setup(d => d.Execute(step1.Object))
+            .Callback(() => _database.Setup(d => d.Execute(step2.Object)));
 
-            _sut.Execute();
+        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { step1.Object, step2.Object });
 
-            _database.VerifyAll();
-            _scriptSequence.VerifyAll();
-            _powerShellFactory.VerifyAll();
-        }
+        _sut.Execute();
 
-        [Test]
-        public void StopExecutionOnError()
-        {
-            var step1 = new Mock<IScript>(MockBehavior.Strict);
-            step1.SetupGet(s => s.DisplayName).Returns("step 1");
+        _database.VerifyAll();
+        _scriptSequence.VerifyAll();
+        _powerShellFactory.VerifyAll();
+    }
 
-            var step2 = new Mock<IScript>(MockBehavior.Strict);
-            step2.SetupGet(s => s.DisplayName).Returns("step 2");
+    [Test]
+    public void StopExecutionOnError()
+    {
+        var step1 = new Mock<IScript>(MockBehavior.Strict);
+        step1.SetupGet(s => s.DisplayName).Returns("step 1");
 
-            _powerShellFactory
-                .Setup(f => f.InitializeIfRequested(_log.Object));
+        var step2 = new Mock<IScript>(MockBehavior.Strict);
+        step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-            _database
-                .Setup(d => d.Execute(step1.Object))
-                .Throws<InvalidOperationException>();
+        _powerShellFactory
+            .Setup(f => f.InitializeIfRequested(_log.Object));
 
-            _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { step1.Object, step2.Object });
+        _database
+            .Setup(d => d.Execute(step1.Object))
+            .Throws<InvalidOperationException>();
 
-            Assert.Throws<InvalidOperationException>(_sut.Execute);
+        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { step1.Object, step2.Object });
 
-            _database.VerifyAll();
-            _scriptSequence.VerifyAll();
-            _powerShellFactory.VerifyAll();
-        }
+        Assert.Throws<InvalidOperationException>(_sut.Execute);
+
+        _database.VerifyAll();
+        _scriptSequence.VerifyAll();
+        _powerShellFactory.VerifyAll();
     }
 }

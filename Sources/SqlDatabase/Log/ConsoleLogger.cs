@@ -1,22 +1,21 @@
 ﻿using System;
 
-namespace SqlDatabase.Log
+namespace SqlDatabase.Log;
+
+internal sealed class ConsoleLogger : LoggerBase
 {
-    internal sealed class ConsoleLogger : LoggerBase
+    protected override void WriteError(string message)
     {
-        protected override void WriteError(string message)
-        {
-            var color = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
+        var color = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.WriteLine(message);
+        Console.WriteLine(message);
 
-            Console.ForegroundColor = color;
-        }
+        Console.ForegroundColor = color;
+    }
 
-        protected override void WriteInfo(string message)
-        {
-            Console.WriteLine(message);
-        }
+    protected override void WriteInfo(string message)
+    {
+        Console.WriteLine(message);
     }
 }

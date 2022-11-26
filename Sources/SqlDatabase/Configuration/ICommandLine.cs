@@ -1,11 +1,10 @@
 ﻿using SqlDatabase.Commands;
 
-namespace SqlDatabase.Configuration
-{
-    internal interface ICommandLine
-    {
-        void Parse(CommandLine args);
+namespace SqlDatabase.Configuration;
 
-        ICommand CreateCommand(ILogger logger);
-    }
+internal interface ICommandLine
+{
+    void Parse(CommandLine args);
+
+    ICommand CreateCommand(ILogger logger);
 }

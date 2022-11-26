@@ -5,12 +5,12 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Configuration
+namespace SqlDatabase.Configuration;
+
+[TestFixture]
+public class ConfigurationManagerTest
 {
-    [TestFixture]
-    public class ConfigurationManagerTest
-    {
-        public const string SomeConfiguration = @"
+    public const string SomeConfiguration = @"
 <configuration>
   <configSections>
     <section name='sqlDatabase'
@@ -22,82 +22,81 @@ namespace SqlDatabase.Configuration
 </configuration>
 ";
 
-        private ConfigurationManager _sut;
+    private ConfigurationManager _sut;
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new ConfigurationManager();
-        }
+    [SetUp]
+    public void BeforeEachTest()
+    {
+        _sut = new ConfigurationManager();
+    }
 
-        [Test]
-        public void LoadFromCurrentConfiguration()
-        {
-            _sut.LoadFrom((string)null);
+    [Test]
+    public void LoadFromCurrentConfiguration()
+    {
+        _sut.LoadFrom((string)null);
 
-            _sut.SqlDatabase.ShouldNotBeNull();
-            _sut.SqlDatabase.Variables.AllKeys.ShouldBe(new[] { nameof(ConfigurationManagerTest) });
-            _sut.SqlDatabase.Variables[nameof(ConfigurationManagerTest)].Value.ShouldBe(nameof(LoadFromCurrentConfiguration));
-        }
+        _sut.SqlDatabase.ShouldNotBeNull();
+        _sut.SqlDatabase.Variables.AllKeys.ShouldBe(new[] { nameof(ConfigurationManagerTest) });
+        _sut.SqlDatabase.Variables[nameof(ConfigurationManagerTest)].Value.ShouldBe(nameof(LoadFromCurrentConfiguration));
+    }
 
-        [Test]
-        public void LoadFromEmptyFile()
-        {
-            var file = FileFactory.File("app.config", "<configuration />");
+    [Test]
+    public void LoadFromEmptyFile()
+    {
+        var file = FileFactory.File("app.config", "<configuration />");
 
-            _sut.LoadFrom(file);
+        _sut.LoadFrom(file);
 
-            Assert.IsNotNull(_sut.SqlDatabase);
-            Assert.AreEqual(new AppConfiguration().GetCurrentVersionScript, _sut.SqlDatabase.GetCurrentVersionScript);
-        }
+        Assert.IsNotNull(_sut.SqlDatabase);
+        Assert.AreEqual(new AppConfiguration().GetCurrentVersionScript, _sut.SqlDatabase.GetCurrentVersionScript);
+    }
 
-        [Test]
-        public void LoadFromFile()
-        {
-            var file = FileFactory.File("app.config", SomeConfiguration);
+    [Test]
+    public void LoadFromFile()
+    {
+        var file = FileFactory.File("app.config", SomeConfiguration);
 
-            _sut.LoadFrom(file);
+        _sut.LoadFrom(file);
 
-            Assert.IsNotNull(_sut.SqlDatabase);
-            Assert.AreEqual("expected", _sut.SqlDatabase.GetCurrentVersionScript);
-        }
+        Assert.IsNotNull(_sut.SqlDatabase);
+        Assert.AreEqual("expected", _sut.SqlDatabase.GetCurrentVersionScript);
+    }
 
-        [Test]
-        public void LoadFromDirectory()
-        {
-            // SqlDatabase.exe.config or SqlDatabase.dll.config
-            var fileName = Path.GetFileName(_sut.GetType().Assembly.Location) + ".config";
-            var file = FileFactory.File(fileName, SomeConfiguration);
-            var folder = FileFactory.Folder("some folder", file);
+    [Test]
+    public void LoadFromDirectory()
+    {
+        // SqlDatabase.exe.config or SqlDatabase.dll.config
+        var fileName = Path.GetFileName(_sut.GetType().Assembly.Location) + ".config";
+        var file = FileFactory.File(fileName, SomeConfiguration);
+        var folder = FileFactory.Folder("some folder", file);
 
-            _sut.LoadFrom(folder);
+        _sut.LoadFrom(folder);
 
-            Assert.IsNotNull(_sut.SqlDatabase);
-            Assert.AreEqual("expected", _sut.SqlDatabase.GetCurrentVersionScript);
-        }
+        Assert.IsNotNull(_sut.SqlDatabase);
+        Assert.AreEqual("expected", _sut.SqlDatabase.GetCurrentVersionScript);
+    }
 
-        [Test]
-        public void NotFoundInDirectory()
-        {
-            var folder = FileFactory.Folder("some folder");
+    [Test]
+    public void NotFoundInDirectory()
+    {
+        var folder = FileFactory.Folder("some folder");
 
-            Assert.Throws<FileNotFoundException>(() => _sut.LoadFrom(folder));
-        }
+        Assert.Throws<FileNotFoundException>(() => _sut.LoadFrom(folder));
+    }
 
-        [Test]
-        public void FileNotFound()
-        {
-            var file = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+    [Test]
+    public void FileNotFound()
+    {
+        var file = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-            Assert.Throws<IOException>(() => _sut.LoadFrom(file));
-        }
+        Assert.Throws<IOException>(() => _sut.LoadFrom(file));
+    }
 
-        [Test]
-        public void LoadInvalidConfiguration()
-        {
-            var file = FileFactory.File("app.config", "<configuration>");
+    [Test]
+    public void LoadInvalidConfiguration()
+    {
+        var file = FileFactory.File("app.config", "<configuration>");
 
-            Assert.Throws<ConfigurationErrorsException>(() => _sut.LoadFrom(file));
-        }
+        Assert.Throws<ConfigurationErrorsException>(() => _sut.LoadFrom(file));
     }
 }

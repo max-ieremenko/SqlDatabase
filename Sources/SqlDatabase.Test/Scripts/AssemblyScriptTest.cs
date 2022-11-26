@@ -9,158 +9,157 @@ using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.AssemblyInternal;
 
-namespace SqlDatabase.Scripts
+namespace SqlDatabase.Scripts;
+
+[TestFixture]
+public class AssemblyScriptTest
 {
-    [TestFixture]
-    public class AssemblyScriptTest
+    private AssemblyScript _sut;
+    private Variables _variables;
+    private Mock<ILogger> _log;
+    private Mock<IDbCommand> _command;
+
+    private IList<string> _logOutput;
+    private IList<string> _executedScripts;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private AssemblyScript _sut;
-        private Variables _variables;
-        private Mock<ILogger> _log;
-        private Mock<IDbCommand> _command;
+        _variables = new Variables();
 
-        private IList<string> _logOutput;
-        private IList<string> _executedScripts;
+        _logOutput = new List<string>();
+        _log = new Mock<ILogger>(MockBehavior.Strict);
+        _log
+            .Setup(l => l.Info(It.IsAny<string>()))
+            .Callback<string>(_logOutput.Add);
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _variables = new Variables();
+        _executedScripts = new List<string>();
+        _command = new Mock<IDbCommand>(MockBehavior.Strict);
+        _command.SetupProperty(c => c.CommandText);
+        _command
+            .Setup(c => c.ExecuteNonQuery())
+            .Callback(() => _executedScripts.Add(_command.Object.CommandText))
+            .Returns(0);
 
-            _logOutput = new List<string>();
-            _log = new Mock<ILogger>(MockBehavior.Strict);
-            _log
-                .Setup(l => l.Info(It.IsAny<string>()))
-                .Callback<string>(_logOutput.Add);
+        _sut = new AssemblyScript();
+        _sut.Configuration = new AssemblyScriptConfiguration();
+    }
 
-            _executedScripts = new List<string>();
-            _command = new Mock<IDbCommand>(MockBehavior.Strict);
-            _command.SetupProperty(c => c.CommandText);
-            _command
-                .Setup(c => c.ExecuteNonQuery())
-                .Callback(() => _executedScripts.Add(_command.Object.CommandText))
-                .Returns(0);
+    [Test]
+    public void ExecuteExampleMsSql()
+    {
+        _sut.Configuration.ClassName = "MsSql.SqlDatabaseScript";
 
-            _sut = new AssemblyScript();
-            _sut.Configuration = new AssemblyScriptConfiguration();
-        }
+        _variables.DatabaseName = "dbName";
+        _variables.CurrentVersion = "1.0";
+        _variables.TargetVersion = "2.0";
 
-        [Test]
-        public void ExecuteExampleMsSql()
-        {
-            _sut.Configuration.ClassName = "MsSql.SqlDatabaseScript";
-
-            _variables.DatabaseName = "dbName";
-            _variables.CurrentVersion = "1.0";
-            _variables.TargetVersion = "2.0";
-
-            _sut.DisplayName = "2.1_2.2.dll";
-            _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
+        _sut.DisplayName = "2.1_2.2.dll";
+        _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
 #if !NET452
-            using (new ConsoleListener(_log.Object))
+        using (new ConsoleListener(_log.Object))
 #endif
-            {
-                _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
-            }
-
-            _logOutput.ShouldContain("start execution");
-
-            _executedScripts.ShouldContain("print 'upgrade database dbName from version 1.0 to 2.0'");
-
-            _executedScripts.ShouldContain("create table dbo.DemoTable (Id INT)");
-            _executedScripts.ShouldContain("print 'drop table DemoTable'");
-            _executedScripts.ShouldContain("drop table dbo.DemoTable");
-
-            _logOutput.ShouldContain("finish execution");
+        {
+            _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
         }
 
-        [Test]
-        public void ExecuteExamplePgSql()
-        {
-            _sut.Configuration.ClassName = "PgSql.SqlDatabaseScript";
+        _logOutput.ShouldContain("start execution");
 
-            _variables.DatabaseName = "dbName";
-            _variables.CurrentVersion = "1.0";
-            _variables.TargetVersion = "2.0";
+        _executedScripts.ShouldContain("print 'upgrade database dbName from version 1.0 to 2.0'");
 
-            _sut.DisplayName = "2.1_2.2.dll";
-            _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
+        _executedScripts.ShouldContain("create table dbo.DemoTable (Id INT)");
+        _executedScripts.ShouldContain("print 'drop table DemoTable'");
+        _executedScripts.ShouldContain("drop table dbo.DemoTable");
+
+        _logOutput.ShouldContain("finish execution");
+    }
+
+    [Test]
+    public void ExecuteExamplePgSql()
+    {
+        _sut.Configuration.ClassName = "PgSql.SqlDatabaseScript";
+
+        _variables.DatabaseName = "dbName";
+        _variables.CurrentVersion = "1.0";
+        _variables.TargetVersion = "2.0";
+
+        _sut.DisplayName = "2.1_2.2.dll";
+        _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
 #if !NET452
-            using (new ConsoleListener(_log.Object))
+        using (new ConsoleListener(_log.Object))
 #endif
-            {
-                _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
-            }
-
-            _logOutput.ShouldContain("start execution");
-
-            _executedScripts.Count.ShouldBe(4);
-            _executedScripts[0].ShouldContain("upgrade database dbName from version 1.0 to 2.0");
-            _executedScripts[1].ShouldContain("create table public.demo_table (id integer)");
-            _executedScripts[2].ShouldContain("'drop table demo_table'");
-            _executedScripts[3].ShouldContain("drop table public.demo_table");
-
-            _logOutput.ShouldContain("finish execution");
+        {
+            _sut.Execute(new DbCommandStub(_command.Object), _variables, _log.Object);
         }
 
-        [Test]
-        public void FailToResolveExecutor()
-        {
-            var domain = new Mock<ISubDomain>(MockBehavior.Strict);
-            domain
-                .Setup(d => d.ResolveScriptExecutor(_sut.Configuration.ClassName, _sut.Configuration.MethodName))
-                .Returns(false);
+        _logOutput.ShouldContain("start execution");
 
-            Assert.Throws<InvalidOperationException>(() => _sut.ResolveScriptExecutor(domain.Object));
-        }
+        _executedScripts.Count.ShouldBe(4);
+        _executedScripts[0].ShouldContain("upgrade database dbName from version 1.0 to 2.0");
+        _executedScripts[1].ShouldContain("create table public.demo_table (id integer)");
+        _executedScripts[2].ShouldContain("'drop table demo_table'");
+        _executedScripts[3].ShouldContain("drop table public.demo_table");
 
-        [Test]
-        public void FailOnExecute()
-        {
-            var domain = new Mock<ISubDomain>(MockBehavior.Strict);
-            domain
-                .Setup(d => d.Execute(_command.Object, _variables))
-                .Returns(false);
+        _logOutput.ShouldContain("finish execution");
+    }
 
-            Assert.Throws<InvalidOperationException>(() => _sut.Execute(domain.Object, _command.Object, _variables));
-        }
+    [Test]
+    public void FailToResolveExecutor()
+    {
+        var domain = new Mock<ISubDomain>(MockBehavior.Strict);
+        domain
+            .Setup(d => d.ResolveScriptExecutor(_sut.Configuration.ClassName, _sut.Configuration.MethodName))
+            .Returns(false);
 
-        [Test]
-        public void ExecuteWhatIf()
-        {
-            var domain = new Mock<ISubDomain>(MockBehavior.Strict);
+        Assert.Throws<InvalidOperationException>(() => _sut.ResolveScriptExecutor(domain.Object));
+    }
 
-            _sut.Execute(domain.Object, null, _variables);
-        }
+    [Test]
+    public void FailOnExecute()
+    {
+        var domain = new Mock<ISubDomain>(MockBehavior.Strict);
+        domain
+            .Setup(d => d.Execute(_command.Object, _variables))
+            .Returns(false);
 
-        [Test]
-        public void GetDependencies()
-        {
-            var description = Encoding.Default.GetBytes(@"
+        Assert.Throws<InvalidOperationException>(() => _sut.Execute(domain.Object, _command.Object, _variables));
+    }
+
+    [Test]
+    public void ExecuteWhatIf()
+    {
+        var domain = new Mock<ISubDomain>(MockBehavior.Strict);
+
+        _sut.Execute(domain.Object, null, _variables);
+    }
+
+    [Test]
+    public void GetDependencies()
+    {
+        var description = Encoding.Default.GetBytes(@"
 -- module dependency: a 1.0
 -- module dependency: b 1.0");
 
-            _sut.ReadDescriptionContent = () => new MemoryStream(description);
+        _sut.ReadDescriptionContent = () => new MemoryStream(description);
 
-            var actual = _sut.GetDependencies();
+        var actual = _sut.GetDependencies();
 
-            actual.ShouldBe(new[]
-            {
-                new ScriptDependency("a", new Version("1.0")),
-                new ScriptDependency("b", new Version("1.0"))
-            });
-        }
-
-        [Test]
-        public void GetDependenciesNoDescription()
+        actual.ShouldBe(new[]
         {
-            _sut.ReadDescriptionContent = () => null;
+            new ScriptDependency("a", new Version("1.0")),
+            new ScriptDependency("b", new Version("1.0"))
+        });
+    }
 
-            var actual = _sut.GetDependencies();
+    [Test]
+    public void GetDependenciesNoDescription()
+    {
+        _sut.ReadDescriptionContent = () => null;
 
-            actual.ShouldBeEmpty();
-        }
+        var actual = _sut.GetDependencies();
+
+        actual.ShouldBeEmpty();
     }
 }

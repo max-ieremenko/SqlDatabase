@@ -3,133 +3,133 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace SqlDatabase.Scripts.PowerShellInternal
+namespace SqlDatabase.Scripts.PowerShellInternal;
+
+internal static class InstallationSeeker
 {
-    internal static class InstallationSeeker
+    public const string RootAssemblyName = "System.Management.Automation";
+    public const string RootAssemblyFileName = RootAssemblyName + ".dll";
+
+    public static bool TryFindByParentProcess(out string installationPath)
     {
-        public const string RootAssemblyName = "System.Management.Automation";
-        public const string RootAssemblyFileName = RootAssemblyName + ".dll";
-
-        public static bool TryFindByParentProcess(out string installationPath)
+        int processId;
+        DateTime processStartTime;
+        using (var current = Process.GetCurrentProcess())
         {
-            int processId;
-            DateTime processStartTime;
-            using (var current = Process.GetCurrentProcess())
-            {
-                processId = current.Id;
-                processStartTime = current.StartTime;
-            }
-
-            installationPath = FindPowerShellProcess(processId, processStartTime);
-            return !string.IsNullOrEmpty(installationPath)
-                   && TryGetInfo(installationPath, out var info)
-                   && IsCompatibleVersion(info.Version);
+            processId = current.Id;
+            processStartTime = current.StartTime;
         }
 
-        public static bool TryFindOnDisk(out string installationPath)
+        installationPath = FindPowerShellProcess(processId, processStartTime);
+        return !string.IsNullOrEmpty(installationPath)
+               && TryGetInfo(installationPath, out var info)
+               && IsCompatibleVersion(info.Version);
+    }
+
+    public static bool TryFindOnDisk(out string installationPath)
+    {
+        installationPath = null;
+        var root = GetDefaultInstallationRoot();
+        if (!Directory.Exists(root))
         {
-            installationPath = null;
-            var root = GetDefaultInstallationRoot();
-            if (!Directory.Exists(root))
+            return false;
+        }
+
+        var candidates = new List<InstallationInfo>();
+
+        var directories = Directory.GetDirectories(root);
+        for (var i = 0; i < directories.Length; i++)
+        {
+            if (TryGetInfo(directories[i], out var info)
+                && IsCompatibleVersion(info.Version))
             {
-                return false;
+                candidates.Add(info);
             }
+        }
 
-            var candidates = new List<InstallationInfo>();
+        if (candidates.Count == 0)
+        {
+            return false;
+        }
 
-            var directories = Directory.GetDirectories(root);
-            for (var i = 0; i < directories.Length; i++)
+        candidates.Sort();
+        installationPath = candidates[candidates.Count - 1].Location;
+        return true;
+    }
+
+    public static bool TryGetInfo(string installationPath, out InstallationInfo info)
+    {
+        info = default;
+
+        var root = Path.Combine(installationPath, RootAssemblyFileName);
+        if (!File.Exists(Path.Combine(installationPath, "pwsh.dll"))
+            || !File.Exists(root))
+        {
+            return false;
+        }
+
+        var fileInfo = FileVersionInfo.GetVersionInfo(root);
+        if (string.IsNullOrEmpty(fileInfo.FileVersion)
+            || string.IsNullOrEmpty(fileInfo.ProductVersion)
+            || !Version.TryParse(fileInfo.FileVersion, out var version))
+        {
+            return false;
+        }
+
+        info = new InstallationInfo(installationPath, version, fileInfo.ProductVersion);
+        return true;
+    }
+
+    private static string FindPowerShellProcess(int processId, DateTime processStartTime)
+    {
+        var parentId = DiagnosticsTools.GetParentProcessId(processId);
+        if (!parentId.HasValue || parentId == processId)
+        {
+            return null;
+        }
+
+        string parentLocation = null;
+        try
+        {
+            using (var parent = Process.GetProcessById(parentId.Value))
             {
-                if (TryGetInfo(directories[i], out var info)
-                    && IsCompatibleVersion(info.Version))
+                if (parent.StartTime < processStartTime)
                 {
-                    candidates.Add(info);
+                    parentLocation = parent.MainModule?.FileName;
                 }
             }
-
-            if (candidates.Count == 0)
-            {
-                return false;
-            }
-
-            candidates.Sort();
-            installationPath = candidates[candidates.Count - 1].Location;
-            return true;
+        }
+        catch
+        {
         }
 
-        public static bool TryGetInfo(string installationPath, out InstallationInfo info)
+        if (string.IsNullOrWhiteSpace(parentLocation) || !File.Exists(parentLocation))
         {
-            info = default;
-
-            var root = Path.Combine(installationPath, RootAssemblyFileName);
-            if (!File.Exists(Path.Combine(installationPath, "pwsh.dll"))
-                || !File.Exists(root))
-            {
-                return false;
-            }
-
-            var fileInfo = FileVersionInfo.GetVersionInfo(root);
-            if (string.IsNullOrEmpty(fileInfo.FileVersion)
-                || string.IsNullOrEmpty(fileInfo.ProductVersion)
-                || !Version.TryParse(fileInfo.FileVersion, out var version))
-            {
-                return false;
-            }
-
-            info = new InstallationInfo(installationPath, version, fileInfo.ProductVersion);
-            return true;
+            return null;
         }
 
-        private static string FindPowerShellProcess(int processId, DateTime processStartTime)
+        var fileName = Path.GetFileName(parentLocation);
+        if (!"pwsh.exe".Equals(fileName, StringComparison.OrdinalIgnoreCase) && !"pwsh".Equals(fileName, StringComparison.OrdinalIgnoreCase))
         {
-            var parentId = DiagnosticsTools.GetParentProcessId(processId);
-            if (!parentId.HasValue || parentId == processId)
-            {
-                return null;
-            }
-
-            string parentLocation = null;
-            try
-            {
-                using (var parent = Process.GetProcessById(parentId.Value))
-                {
-                    if (parent.StartTime < processStartTime)
-                    {
-                        parentLocation = parent.MainModule?.FileName;
-                    }
-                }
-            }
-            catch
-            {
-            }
-
-            if (string.IsNullOrWhiteSpace(parentLocation) || !File.Exists(parentLocation))
-            {
-                return null;
-            }
-
-            var fileName = Path.GetFileName(parentLocation);
-            if (!"pwsh.exe".Equals(fileName, StringComparison.OrdinalIgnoreCase) && !"pwsh".Equals(fileName, StringComparison.OrdinalIgnoreCase))
-            {
-                // try parent
-                return FindPowerShellProcess(parentId.Value, processStartTime);
-            }
-
-            return Path.GetDirectoryName(parentLocation);
+            // try parent
+            return FindPowerShellProcess(parentId.Value, processStartTime);
         }
 
-        private static string GetDefaultInstallationRoot()
-        {
-            if (DiagnosticsTools.IsOSPlatformWindows())
-            {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PowerShell");
-            }
+        return Path.GetDirectoryName(parentLocation);
+    }
 
-            return "/opt/microsoft/powershell";
+    private static string GetDefaultInstallationRoot()
+    {
+        if (DiagnosticsTools.IsOSPlatformWindows())
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PowerShell");
         }
 
-        private static bool IsCompatibleVersion(Version version)
-        {
+        return "/opt/microsoft/powershell";
+    }
+
+    private static bool IsCompatibleVersion(Version version)
+    {
 #if NET6_0
             return version < new Version("7.3.1");
 #elif NET5_0
@@ -137,59 +137,58 @@ namespace SqlDatabase.Scripts.PowerShellInternal
 #elif NETCOREAPP3_1_OR_GREATER
             return version < new Version("7.1");
 #else
-            return false;
+        return false;
 #endif
+    }
+
+    [DebuggerDisplay("{Version}")]
+    internal readonly struct InstallationInfo : IComparable<InstallationInfo>
+    {
+        public InstallationInfo(string location, Version version, string productVersion)
+        {
+            Location = location;
+            Version = version;
+            ProductVersion = productVersion ?? string.Empty;
         }
 
-        [DebuggerDisplay("{Version}")]
-        internal readonly struct InstallationInfo : IComparable<InstallationInfo>
+        public string Location { get; }
+
+        public Version Version { get; }
+
+        public string ProductVersion { get; }
+
+        public int CompareTo(InstallationInfo other)
         {
-            public InstallationInfo(string location, Version version, string productVersion)
+            var result = Version.CompareTo(other.Version);
+            if (result != 0)
             {
-                Location = location;
-                Version = version;
-                ProductVersion = productVersion ?? string.Empty;
-            }
-
-            public string Location { get; }
-
-            public Version Version { get; }
-
-            public string ProductVersion { get; }
-
-            public int CompareTo(InstallationInfo other)
-            {
-                var result = Version.CompareTo(other.Version);
-                if (result != 0)
-                {
-                    return result;
-                }
-
-                var isPreview = IsPreview();
-                var otherIsPreview = other.IsPreview();
-                if (isPreview && !otherIsPreview)
-                {
-                    return -1;
-                }
-
-                if (!isPreview && otherIsPreview)
-                {
-                    return 1;
-                }
-
-                result = StringComparer.InvariantCultureIgnoreCase.Compare(ProductVersion, other.ProductVersion);
-                if (result == 0)
-                {
-                    result = StringComparer.InvariantCultureIgnoreCase.Compare(Location, other.Location);
-                }
-
                 return result;
             }
 
-            private bool IsPreview()
+            var isPreview = IsPreview();
+            var otherIsPreview = other.IsPreview();
+            if (isPreview && !otherIsPreview)
             {
-                return ProductVersion.IndexOf("preview", StringComparison.OrdinalIgnoreCase) > 0;
+                return -1;
             }
+
+            if (!isPreview && otherIsPreview)
+            {
+                return 1;
+            }
+
+            result = StringComparer.InvariantCultureIgnoreCase.Compare(ProductVersion, other.ProductVersion);
+            if (result == 0)
+            {
+                result = StringComparer.InvariantCultureIgnoreCase.Compare(Location, other.Location);
+            }
+
+            return result;
+        }
+
+        private bool IsPreview()
+        {
+            return ProductVersion.IndexOf("preview", StringComparison.OrdinalIgnoreCase) > 0;
         }
     }
 }

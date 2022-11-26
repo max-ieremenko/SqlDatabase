@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Data;
 
-namespace SqlDatabase.Scripts.AssemblyInternal
+namespace SqlDatabase.Scripts.AssemblyInternal;
+
+internal interface ISubDomain : IDisposable
 {
-    internal interface ISubDomain : IDisposable
-    {
-        ILogger Logger { get; set; }
+    ILogger Logger { get; set; }
 
-        string AssemblyFileName { get; set; }
+    string AssemblyFileName { get; set; }
 
-        Func<byte[]> ReadAssemblyContent { get; set; }
+    Func<byte[]> ReadAssemblyContent { get; set; }
 
-        void Initialize();
+    void Initialize();
 
-        void Unload();
+    void Unload();
 
-        bool ResolveScriptExecutor(string className, string methodName);
+    bool ResolveScriptExecutor(string className, string methodName);
 
-        bool Execute(IDbCommand command, IVariables variables);
-    }
+    bool Execute(IDbCommand command, IVariables variables);
 }

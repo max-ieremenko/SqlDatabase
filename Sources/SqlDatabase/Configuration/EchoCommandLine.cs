@@ -1,23 +1,22 @@
 ﻿using SqlDatabase.Commands;
 
-namespace SqlDatabase.Configuration
+namespace SqlDatabase.Configuration;
+
+internal sealed class EchoCommandLine : ICommandLine
 {
-    internal sealed class EchoCommandLine : ICommandLine
+    private CommandLine _args;
+
+    public void Parse(CommandLine args)
     {
-        private CommandLine _args;
+        _args = args;
+    }
 
-        public void Parse(CommandLine args)
+    public ICommand CreateCommand(ILogger logger)
+    {
+        return new EchoCommand
         {
-            _args = args;
-        }
-
-        public ICommand CreateCommand(ILogger logger)
-        {
-            return new EchoCommand
-            {
-                Logger = logger,
-                Args = _args
-            };
-        }
+            Logger = logger,
+            Args = _args
+        };
     }
 }

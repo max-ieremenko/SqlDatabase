@@ -1,51 +1,50 @@
 ﻿using System;
 using System.IO;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net452
+namespace SqlDatabase.Scripts.AssemblyInternal.Net452;
+
+internal sealed class DomainDirectory : IDisposable
 {
-    internal sealed class DomainDirectory : IDisposable
+    private readonly ILogger _logger;
+
+    public DomainDirectory(ILogger logger)
     {
-        private readonly ILogger _logger;
+        _logger = logger;
 
-        public DomainDirectory(ILogger logger)
+        Location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(Location);
+    }
+
+    public string Location { get; }
+
+    public string SaveFile(byte[] content, string fileName)
+    {
+        var location = Path.Combine(Location, fileName);
+        try
         {
-            _logger = logger;
-
-            Location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(Location);
+            File.WriteAllBytes(location, content);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Fail to copy content of [{0}]: {1}".FormatWith(fileName, ex.Message));
+            File.Delete(location);
+            throw;
         }
 
-        public string Location { get; }
+        return location;
+    }
 
-        public string SaveFile(byte[] content, string fileName)
+    public void Dispose()
+    {
+        if (Directory.Exists(Location))
         {
-            var location = Path.Combine(Location, fileName);
             try
             {
-                File.WriteAllBytes(location, content);
+                Directory.Delete(Location, true);
             }
             catch (Exception ex)
             {
-                _logger.Error("Fail to copy content of [{0}]: {1}".FormatWith(fileName, ex.Message));
-                File.Delete(location);
-                throw;
-            }
-
-            return location;
-        }
-
-        public void Dispose()
-        {
-            if (Directory.Exists(Location))
-            {
-                try
-                {
-                    Directory.Delete(Location, true);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Info("Fail to delete assembly content from {0}: {1}".FormatWith(Location, ex.Message));
-                }
+                _logger.Info("Fail to delete assembly content from {0}: {1}".FormatWith(Location, ex.Message));
             }
         }
     }

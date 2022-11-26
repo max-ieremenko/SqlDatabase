@@ -4,109 +4,108 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Log
+namespace SqlDatabase.Log;
+
+[TestFixture]
+public class FileLoggerTest
 {
-    [TestFixture]
-    public class FileLoggerTest
+    private TempFile _file;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private TempFile _file;
+        _file = new TempFile(".log");
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
+    [TearDown]
+    public void AfterEachTest()
+    {
+        _file?.Dispose();
+    }
+
+    [Test]
+    public void Info()
+    {
+        using (var sut = new FileLogger(_file.Location))
         {
-            _file = new TempFile(".log");
+            sut.Info("some message");
         }
 
-        [TearDown]
-        public void AfterEachTest()
+        var actual = File.ReadAllText(_file.Location);
+
+        Console.WriteLine(actual);
+        actual.ShouldContain(" INFO ");
+        actual.ShouldContain(" some message");
+    }
+
+    [Test]
+    public void Error()
+    {
+        using (var sut = new FileLogger(_file.Location))
         {
-            _file?.Dispose();
+            sut.Error("some message");
         }
 
-        [Test]
-        public void Info()
+        var actual = File.ReadAllText(_file.Location);
+
+        Console.WriteLine(actual);
+        actual.ShouldContain(" ERROR ");
+        actual.ShouldContain(" some message");
+    }
+
+    [Test]
+    public void Append()
+    {
+        File.WriteAllLines(_file.Location, new[] { "do not remove" });
+
+        using (var sut = new FileLogger(_file.Location))
         {
-            using (var sut = new FileLogger(_file.Location))
+            sut.Info("some message");
+            sut.Error("some error");
+        }
+
+        var actual = File.ReadAllText(_file.Location);
+
+        Console.WriteLine(actual);
+        actual.ShouldContain("do not remove");
+        actual.ShouldContain(" INFO ");
+        actual.ShouldContain(" some message");
+        actual.ShouldContain(" ERROR ");
+        actual.ShouldContain(" some error");
+    }
+
+    [Test]
+    public void FileIsAvailableForRead()
+    {
+        string actual;
+        using (var sut = new FileLogger(_file.Location))
+        {
+            sut.Info("some message");
+            sut.Flush();
+
+            using (var stream = new FileStream(_file.Location, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var reader = new StreamReader(stream))
             {
-                sut.Info("some message");
+                actual = reader.ReadToEnd();
             }
-
-            var actual = File.ReadAllText(_file.Location);
-
-            Console.WriteLine(actual);
-            actual.ShouldContain(" INFO ");
-            actual.ShouldContain(" some message");
         }
 
-        [Test]
-        public void Error()
+        Console.WriteLine(actual);
+        actual.ShouldContain(" INFO ");
+        actual.ShouldContain(" some message");
+    }
+
+    [Test]
+    public void WriteNull()
+    {
+        using (var sut = new FileLogger(_file.Location))
         {
-            using (var sut = new FileLogger(_file.Location))
-            {
-                sut.Error("some message");
-            }
-
-            var actual = File.ReadAllText(_file.Location);
-
-            Console.WriteLine(actual);
-            actual.ShouldContain(" ERROR ");
-            actual.ShouldContain(" some message");
+            sut.Info(null);
         }
 
-        [Test]
-        public void Append()
-        {
-            File.WriteAllLines(_file.Location, new[] { "do not remove" });
+        var actual = File.ReadAllText(_file.Location);
 
-            using (var sut = new FileLogger(_file.Location))
-            {
-                sut.Info("some message");
-                sut.Error("some error");
-            }
-
-            var actual = File.ReadAllText(_file.Location);
-
-            Console.WriteLine(actual);
-            actual.ShouldContain("do not remove");
-            actual.ShouldContain(" INFO ");
-            actual.ShouldContain(" some message");
-            actual.ShouldContain(" ERROR ");
-            actual.ShouldContain(" some error");
-        }
-
-        [Test]
-        public void FileIsAvailableForRead()
-        {
-            string actual;
-            using (var sut = new FileLogger(_file.Location))
-            {
-                sut.Info("some message");
-                sut.Flush();
-
-                using (var stream = new FileStream(_file.Location, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (var reader = new StreamReader(stream))
-                {
-                    actual = reader.ReadToEnd();
-                }
-            }
-
-            Console.WriteLine(actual);
-            actual.ShouldContain(" INFO ");
-            actual.ShouldContain(" some message");
-        }
-
-        [Test]
-        public void WriteNull()
-        {
-            using (var sut = new FileLogger(_file.Location))
-            {
-                sut.Info(null);
-            }
-
-            var actual = File.ReadAllText(_file.Location);
-
-            Console.WriteLine(actual);
-            actual.ShouldContain(" INFO ");
-        }
+        Console.WriteLine(actual);
+        actual.ShouldContain(" INFO ");
     }
 }

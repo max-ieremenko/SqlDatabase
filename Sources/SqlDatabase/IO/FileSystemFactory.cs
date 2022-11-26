@@ -3,99 +3,98 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SqlDatabase.IO
+namespace SqlDatabase.IO;
+
+internal sealed class FileSystemFactory : IFileSystemFactory
 {
-    internal sealed class FileSystemFactory : IFileSystemFactory
+    public static IFileSystemInfo FileSystemInfoFromPath(string path)
     {
-        public static IFileSystemInfo FileSystemInfoFromPath(string path)
+        path = FileTools.RootPath(path);
+
+        if (File.Exists(path))
         {
-            path = FileTools.RootPath(path);
+            return FileTools.IsZip(path) ? (IFileSystemInfo)new ZipFolder(path) : new FileSystemFile(path);
+        }
 
-            if (File.Exists(path))
+        if (Directory.Exists(path))
+        {
+            return new FileSystemFolder(path);
+        }
+
+        IFolder entryPoint = null;
+        var items = new List<string>();
+
+        while (!string.IsNullOrEmpty(path))
+        {
+            entryPoint = TryToResolveEntryPoint(path);
+            if (entryPoint != null)
             {
-                return FileTools.IsZip(path) ? (IFileSystemInfo)new ZipFolder(path) : new FileSystemFile(path);
+                break;
             }
 
-            if (Directory.Exists(path))
-            {
-                return new FileSystemFolder(path);
-            }
+            items.Insert(0, Path.GetFileName(path));
+            path = Path.GetDirectoryName(path);
+        }
 
-            IFolder entryPoint = null;
-            var items = new List<string>();
+        if (entryPoint == null)
+        {
+            throw new IOException("Directory {0} not found.".FormatWith(path));
+        }
 
-            while (!string.IsNullOrEmpty(path))
-            {
-                entryPoint = TryToResolveEntryPoint(path);
-                if (entryPoint != null)
-                {
-                    break;
-                }
+        for (var i = 0; i < items.Count - 1; i++)
+        {
+            var name = items[i];
+            path = Path.Combine(path, name);
 
-                items.Insert(0, Path.GetFileName(path));
-                path = Path.GetDirectoryName(path);
-            }
-
+            entryPoint = entryPoint.GetFolders().FirstOrDefault(f => name.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
             if (entryPoint == null)
             {
                 throw new IOException("Directory {0} not found.".FormatWith(path));
             }
-
-            for (var i = 0; i < items.Count - 1; i++)
-            {
-                var name = items[i];
-                path = Path.Combine(path, name);
-
-                entryPoint = entryPoint.GetFolders().FirstOrDefault(f => name.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
-                if (entryPoint == null)
-                {
-                    throw new IOException("Directory {0} not found.".FormatWith(path));
-                }
-            }
-
-            var resultName = items.Last();
-            path = Path.Combine(path, resultName);
-
-            var file = entryPoint.GetFiles().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
-            if (file != null)
-            {
-                return file;
-            }
-
-            var folder = entryPoint.GetFolders().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
-            if (folder == null)
-            {
-                throw new IOException("File or folder {0} not found.".FormatWith(path));
-            }
-
-            return folder;
         }
 
-        IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string path) => FileSystemInfoFromPath(path);
+        var resultName = items.Last();
+        path = Path.Combine(path, resultName);
 
-        public IFileSystemInfo FromContent(string name, string content)
+        var file = entryPoint.GetFiles().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
+        if (file != null)
         {
-            return new InLineScriptFile(name, content);
+            return file;
         }
 
-        private static IFolder TryToResolveEntryPoint(string path)
+        var folder = entryPoint.GetFolders().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
+        if (folder == null)
         {
-            if (Directory.Exists(path))
-            {
-                return new FileSystemFolder(path);
-            }
-
-            if (File.Exists(path))
-            {
-                if (!FileTools.IsZip(path))
-                {
-                    throw new NotSupportedException("File format [{0}] is not supported as .zip container.".FormatWith(Path.GetExtension(path)));
-                }
-
-                return new ZipFolder(path);
-            }
-
-            return null;
+            throw new IOException("File or folder {0} not found.".FormatWith(path));
         }
+
+        return folder;
+    }
+
+    IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string path) => FileSystemInfoFromPath(path);
+
+    public IFileSystemInfo FromContent(string name, string content)
+    {
+        return new InLineScriptFile(name, content);
+    }
+
+    private static IFolder TryToResolveEntryPoint(string path)
+    {
+        if (Directory.Exists(path))
+        {
+            return new FileSystemFolder(path);
+        }
+
+        if (File.Exists(path))
+        {
+            if (!FileTools.IsZip(path))
+            {
+                throw new NotSupportedException("File format [{0}] is not supported as .zip container.".FormatWith(Path.GetExtension(path)));
+            }
+
+            return new ZipFolder(path);
+        }
+
+        return null;
     }
 }
