@@ -1,7 +1,6 @@
-﻿namespace SqlDatabase.Scripts
+﻿namespace SqlDatabase.Scripts;
+
+public interface IVariables
 {
-    public interface IVariables
-    {
-        string GetValue(string name);
-    }
+    string GetValue(string name);
 }

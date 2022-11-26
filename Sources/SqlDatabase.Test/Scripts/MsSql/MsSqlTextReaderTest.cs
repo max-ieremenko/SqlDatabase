@@ -5,57 +5,56 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Scripts.SqlTestCases;
 
-namespace SqlDatabase.Scripts.MsSql
+namespace SqlDatabase.Scripts.MsSql;
+
+[TestFixture]
+public class MsSqlTextReaderTest
 {
-    [TestFixture]
-    public class MsSqlTextReaderTest
+    private MsSqlTextReader _sut;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private MsSqlTextReader _sut;
+        _sut = new MsSqlTextReader();
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
+    [Test]
+    [TestCase("go", true)]
+    [TestCase("go go", true)]
+    [TestCase(" go ", true)]
+    [TestCase(" \tGO \t", true)]
+    [TestCase("go\tgo go", true)]
+    [TestCase("o", false)]
+    [TestCase("fo", false)]
+    [TestCase("go pro", false)]
+    public void IsGo(string line, bool expected)
+    {
+        _sut.IsGo(line).ShouldBe(expected);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetSplitByGoTestCases))]
+    public void SplitByGo(Stream input, string[] expected)
+    {
+        var batches = _sut.ReadBatches(input);
+        batches.ShouldBe(expected);
+
+        input.Position = 0;
+
+        var first = _sut.ReadFirstBatch(input);
+        first.ShouldBe(expected[0]);
+    }
+
+    private static IEnumerable<TestCaseData> GetSplitByGoTestCases()
+    {
+        foreach (var testCase in ResourceReader.Read("Go"))
         {
-            _sut = new MsSqlTextReader();
-        }
-
-        [Test]
-        [TestCase("go", true)]
-        [TestCase("go go", true)]
-        [TestCase(" go ", true)]
-        [TestCase(" \tGO \t", true)]
-        [TestCase("go\tgo go", true)]
-        [TestCase("o", false)]
-        [TestCase("fo", false)]
-        [TestCase("go pro", false)]
-        public void IsGo(string line, bool expected)
-        {
-            _sut.IsGo(line).ShouldBe(expected);
-        }
-
-        [Test]
-        [TestCaseSource(nameof(GetSplitByGoTestCases))]
-        public void SplitByGo(Stream input, string[] expected)
-        {
-            var batches = _sut.ReadBatches(input);
-            batches.ShouldBe(expected);
-
-            input.Position = 0;
-
-            var first = _sut.ReadFirstBatch(input);
-            first.ShouldBe(expected[0]);
-        }
-
-        private static IEnumerable<TestCaseData> GetSplitByGoTestCases()
-        {
-            foreach (var testCase in ResourceReader.Read("Go"))
+            yield return new TestCaseData(
+                new MemoryStream(Encoding.Default.GetBytes(testCase.Input)),
+                testCase.Expected)
             {
-                yield return new TestCaseData(
-                    new MemoryStream(Encoding.Default.GetBytes(testCase.Input)),
-                    testCase.Expected)
-                {
-                    TestName = testCase.Name
-                };
-            }
+                TestName = testCase.Name
+            };
         }
     }
 }

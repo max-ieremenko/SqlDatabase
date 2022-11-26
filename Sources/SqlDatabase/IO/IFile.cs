@@ -1,11 +1,10 @@
 ﻿using System.IO;
 
-namespace SqlDatabase.IO
-{
-    public interface IFile : IFileSystemInfo
-    {
-        IFolder GetParent();
+namespace SqlDatabase.IO;
 
-        Stream OpenRead();
-    }
+public interface IFile : IFileSystemInfo
+{
+    IFolder GetParent();
+
+    Stream OpenRead();
 }

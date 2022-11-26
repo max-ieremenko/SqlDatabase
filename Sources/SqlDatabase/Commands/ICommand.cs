@@ -1,7 +1,6 @@
-﻿namespace SqlDatabase.Commands
+﻿namespace SqlDatabase.Commands;
+
+internal interface ICommand
 {
-    internal interface ICommand
-    {
-        void Execute();
-    }
+    void Execute();
 }

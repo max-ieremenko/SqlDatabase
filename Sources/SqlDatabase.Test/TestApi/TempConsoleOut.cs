@@ -1,37 +1,36 @@
 ﻿using System;
 using System.IO;
 
-namespace SqlDatabase.TestApi
+namespace SqlDatabase.TestApi;
+
+internal sealed class TempConsoleOut : IDisposable
 {
-    internal sealed class TempConsoleOut : IDisposable
+    private readonly TextWriter _originalOutput;
+    private readonly Buffer _buffer;
+
+    public TempConsoleOut()
     {
-        private readonly TextWriter _originalOutput;
-        private readonly Buffer _buffer;
+        _originalOutput = Console.Out;
+        _buffer = new Buffer();
+        Console.SetOut(_buffer);
+    }
 
-        public TempConsoleOut()
-        {
-            _originalOutput = Console.Out;
-            _buffer = new Buffer();
-            Console.SetOut(_buffer);
-        }
+    public string GetOutput()
+    {
+        _buffer.Flush();
+        return _buffer.ToString();
+    }
 
-        public string GetOutput()
-        {
-            _buffer.Flush();
-            return _buffer.ToString();
-        }
+    public void Dispose()
+    {
+        Console.SetOut(_originalOutput);
+    }
 
-        public void Dispose()
+    private sealed class Buffer : StringWriter, IDisposable
+    {
+        void IDisposable.Dispose()
         {
-            Console.SetOut(_originalOutput);
-        }
-
-        private sealed class Buffer : StringWriter, IDisposable
-        {
-            void IDisposable.Dispose()
-            {
-                Flush();
-            }
+            Flush();
         }
     }
 }

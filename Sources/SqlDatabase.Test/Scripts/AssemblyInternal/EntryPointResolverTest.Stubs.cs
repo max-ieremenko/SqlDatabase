@@ -3,45 +3,44 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace SqlDatabase.Scripts.AssemblyInternal
+namespace SqlDatabase.Scripts.AssemblyInternal;
+
+public partial class EntryPointResolverTest
 {
-    public partial class EntryPointResolverTest
+    public sealed class ExampleSqlDatabaseScript
     {
-        public sealed class ExampleSqlDatabaseScript
+        public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
         {
-            public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
+        }
+    }
+
+    public sealed class DatabaseScriptWithInvalidConstructor
+    {
+        public DatabaseScriptWithInvalidConstructor()
+        {
+            throw new NotSupportedException();
         }
 
-        public sealed class DatabaseScriptWithInvalidConstructor
+        public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
         {
-            public DatabaseScriptWithInvalidConstructor()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
+    }
 
-        public sealed class DatabaseScriptWithOneParameter
+    public sealed class DatabaseScriptWithOneParameter
+    {
+        public void ExecuteCommand(IDbCommand command)
         {
-            public void ExecuteCommand(IDbCommand command)
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
+    }
 
-        public sealed class DatabaseScriptWithConnection
+    public sealed class DatabaseScriptWithConnection
+    {
+        public void Run(SqlConnection connection)
         {
-            public void Run(SqlConnection connection)
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
     }
 }

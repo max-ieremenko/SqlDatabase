@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Management.Automation;
 
-namespace SqlDatabase.PowerShell.Internal
+namespace SqlDatabase.PowerShell.Internal;
+
+internal static class DependencyResolverFactory
 {
-    internal static class DependencyResolverFactory
+    public static IDependencyResolver Create(PSCmdlet cmdlet)
     {
-        public static IDependencyResolver Create(PSCmdlet cmdlet)
+        if (!cmdlet.TryGetPSVersionTable(out var psVersionTable))
         {
-            if (!cmdlet.TryGetPSVersionTable(out var psVersionTable))
-            {
-                throw new PlatformNotSupportedException("$PSVersionTable is not defined.");
-            }
-
-            return Create(psVersionTable);
+            throw new PlatformNotSupportedException("$PSVersionTable is not defined.");
         }
 
-        internal static IDependencyResolver Create(PSVersionTable psVersionTable)
-        {
-            // In PowerShell 4 and below, this variable does not exist
-            if (string.IsNullOrEmpty(psVersionTable.PSEdition) || "Desktop".Equals(psVersionTable.PSEdition, StringComparison.OrdinalIgnoreCase))
-            {
-                return new PowerShellDesktopDependencyResolver();
-            }
+        return Create(psVersionTable);
+    }
 
-            return new PowerShellCoreDependencyResolver();
+    internal static IDependencyResolver Create(PSVersionTable psVersionTable)
+    {
+        // In PowerShell 4 and below, this variable does not exist
+        if (string.IsNullOrEmpty(psVersionTable.PSEdition) || "Desktop".Equals(psVersionTable.PSEdition, StringComparison.OrdinalIgnoreCase))
+        {
+            return new PowerShellDesktopDependencyResolver();
         }
+
+        return new PowerShellCoreDependencyResolver();
     }
 }

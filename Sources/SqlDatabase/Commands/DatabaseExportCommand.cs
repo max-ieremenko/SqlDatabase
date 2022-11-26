@@ -5,95 +5,94 @@ using System.Text;
 using SqlDatabase.Export;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase.Commands
+namespace SqlDatabase.Commands;
+
+internal sealed class DatabaseExportCommand : DatabaseCommandBase
 {
-    internal sealed class DatabaseExportCommand : DatabaseCommandBase
+    public ICreateScriptSequence ScriptSequence { get; set; }
+
+    public Func<TextWriter> OpenOutput { get; set; }
+
+    public string DestinationTableName { get; set; }
+
+    internal Func<IDataExporter> ExporterFactory { get; set; } = () => new DataExporter();
+
+    protected override void Greet(string databaseLocation)
     {
-        public ICreateScriptSequence ScriptSequence { get; set; }
+        Log.Info("Export data from {0}".FormatWith(databaseLocation));
+    }
 
-        public Func<TextWriter> OpenOutput { get; set; }
+    protected override void ExecuteCore()
+    {
+        var sequences = ScriptSequence.BuildSequence();
 
-        public string DestinationTableName { get; set; }
-
-        internal Func<IDataExporter> ExporterFactory { get; set; } = () => new DataExporter();
-
-        protected override void Greet(string databaseLocation)
+        using (var output = OpenOutput())
         {
-            Log.Info("Export data from {0}".FormatWith(databaseLocation));
-        }
+            var readerIndex = 0;
 
-        protected override void ExecuteCore()
-        {
-            var sequences = ScriptSequence.BuildSequence();
+            var exporter = ExporterFactory();
+            exporter.Output = Database.Adapter.CreateSqlWriter(output);
+            exporter.Log = Log;
 
-            using (var output = OpenOutput())
+            if (string.IsNullOrWhiteSpace(DestinationTableName))
             {
-                var readerIndex = 0;
+                DestinationTableName = exporter.Output.GetDefaultTableName();
+            }
 
-                var exporter = ExporterFactory();
-                exporter.Output = Database.Adapter.CreateSqlWriter(output);
-                exporter.Log = Log;
+            foreach (var script in sequences)
+            {
+                var timer = Stopwatch.StartNew();
+                Log.Info("export {0} ...".FormatWith(script.DisplayName));
 
-                if (string.IsNullOrWhiteSpace(DestinationTableName))
+                using (Log.Indent())
                 {
-                    DestinationTableName = exporter.Output.GetDefaultTableName();
+                    ExportScript(exporter, script, ref readerIndex);
                 }
 
-                foreach (var script in sequences)
-                {
-                    var timer = Stopwatch.StartNew();
-                    Log.Info("export {0} ...".FormatWith(script.DisplayName));
-
-                    using (Log.Indent())
-                    {
-                        ExportScript(exporter, script, ref readerIndex);
-                    }
-
-                    Log.Info("done in {0}".FormatWith(timer.Elapsed));
-                }
+                Log.Info("done in {0}".FormatWith(timer.Elapsed));
             }
         }
+    }
 
-        private static string GetExportTableName(string name, int index, int subIndex)
+    private static string GetExportTableName(string name, int index, int subIndex)
+    {
+        var result = new StringBuilder(20);
+
+        if (string.IsNullOrWhiteSpace(name))
         {
-            var result = new StringBuilder(20);
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                result.Append("dbo.SqlDatabaseExport");
-            }
-            else
-            {
-                result.Append(name);
-            }
-
-            if (index > 1)
-            {
-                result.Append(index);
-            }
-
-            if (subIndex > 1)
-            {
-                result.Append('_').Append(subIndex);
-            }
-
-            return result.ToString();
+            result.Append("dbo.SqlDatabaseExport");
+        }
+        else
+        {
+            result.Append(name);
         }
 
-        private void ExportScript(IDataExporter exporter, IScript script, ref int readerIndex)
+        if (index > 1)
         {
-            foreach (var reader in Database.ExecuteReader(script))
-            {
-                readerIndex++;
-                var readerSubIndex = 0;
+            result.Append(index);
+        }
 
-                do
-                {
-                    readerSubIndex++;
-                    exporter.Export(reader, GetExportTableName(DestinationTableName, readerIndex, readerSubIndex));
-                }
-                while (reader.NextResult());
+        if (subIndex > 1)
+        {
+            result.Append('_').Append(subIndex);
+        }
+
+        return result.ToString();
+    }
+
+    private void ExportScript(IDataExporter exporter, IScript script, ref int readerIndex)
+    {
+        foreach (var reader in Database.ExecuteReader(script))
+        {
+            readerIndex++;
+            var readerSubIndex = 0;
+
+            do
+            {
+                readerSubIndex++;
+                exporter.Export(reader, GetExportTableName(DestinationTableName, readerIndex, readerSubIndex));
             }
+            while (reader.NextResult());
         }
     }
 }

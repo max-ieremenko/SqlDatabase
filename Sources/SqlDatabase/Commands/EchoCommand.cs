@@ -1,19 +1,18 @@
 ﻿using SqlDatabase.Configuration;
 
-namespace SqlDatabase.Commands
+namespace SqlDatabase.Commands;
+
+internal sealed class EchoCommand : ICommand
 {
-    internal sealed class EchoCommand : ICommand
+    public ILogger Logger { get; set; }
+
+    public CommandLine Args { get; set; }
+
+    public void Execute()
     {
-        public ILogger Logger { get; set; }
-
-        public CommandLine Args { get; set; }
-
-        public void Execute()
+        foreach (var arg in Args.Original)
         {
-            foreach (var arg in Args.Original)
-            {
-                Logger.Info(arg);
-            }
+            Logger.Info(arg);
         }
     }
 }

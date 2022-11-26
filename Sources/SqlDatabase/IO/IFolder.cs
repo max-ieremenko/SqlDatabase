@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace SqlDatabase.IO
-{
-    public interface IFolder : IFileSystemInfo
-    {
-        IEnumerable<IFolder> GetFolders();
+namespace SqlDatabase.IO;
 
-        IEnumerable<IFile> GetFiles();
-    }
+public interface IFolder : IFileSystemInfo
+{
+    IEnumerable<IFolder> GetFolders();
+
+    IEnumerable<IFile> GetFiles();
 }

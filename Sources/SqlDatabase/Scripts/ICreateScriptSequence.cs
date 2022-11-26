@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace SqlDatabase.Scripts
+namespace SqlDatabase.Scripts;
+
+public interface ICreateScriptSequence
 {
-    public interface ICreateScriptSequence
-    {
-        IList<IScript> BuildSequence();
-    }
+    IList<IScript> BuildSequence();
 }

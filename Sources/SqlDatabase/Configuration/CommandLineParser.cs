@@ -1,101 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SqlDatabase.Configuration
+namespace SqlDatabase.Configuration;
+
+internal sealed class CommandLineParser
 {
-    internal sealed class CommandLineParser
+    public static string GetLogFileName(IList<string> args)
     {
-        public static string GetLogFileName(IList<string> args)
+        for (var i = 0; i < args.Count; i++)
         {
-            for (var i = 0; i < args.Count; i++)
+            if (ParseArg(args[i], out var value)
+                && IsLog(value))
             {
-                if (ParseArg(args[i], out var value)
-                    && IsLog(value))
-                {
-                    return value.Value;
-                }
+                return value.Value;
             }
-
-            return null;
         }
 
-        public CommandLine Parse(params string[] args)
+        return null;
+    }
+
+    public CommandLine Parse(params string[] args)
+    {
+        var result = new List<Arg>(args.Length);
+
+        foreach (var arg in args)
         {
-            var result = new List<Arg>(args.Length);
-
-            foreach (var arg in args)
+            if (!ParseArg(arg, out var value))
             {
-                if (!ParseArg(arg, out var value))
-                {
-                    throw new InvalidCommandLineException("Invalid option [{0}].".FormatWith(arg));
-                }
-
-                if (!IsLog(value))
-                {
-                    result.Add(value);
-                }
+                throw new InvalidCommandLineException("Invalid option [{0}].".FormatWith(arg));
             }
 
-            return new CommandLine(result, args);
+            if (!IsLog(value))
+            {
+                result.Add(value);
+            }
         }
 
-        internal static bool ParseArg(string input, out Arg arg)
+        return new CommandLine(result, args);
+    }
+
+    internal static bool ParseArg(string input, out Arg arg)
+    {
+        arg = default;
+
+        if (string.IsNullOrEmpty(input))
         {
-            arg = default;
-
-            if (string.IsNullOrEmpty(input))
-            {
-                return false;
-            }
-
-            if (input.StartsWith(Arg.Sign, StringComparison.OrdinalIgnoreCase))
-            {
-                if (SplitKeyValue(input, 1, out var key, out var value))
-                {
-                    arg = new Arg(key, value);
-                    return true;
-                }
-
-                return false;
-            }
-
-            arg = new Arg(input);
-            return true;
+            return false;
         }
 
-        private static bool SplitKeyValue(string keyValue, int offset, out string key, out string value)
+        if (input.StartsWith(Arg.Sign, StringComparison.OrdinalIgnoreCase))
         {
-            keyValue = keyValue.Substring(offset);
-            key = keyValue;
-            value = null;
-
-            if (key.Length == 0)
+            if (SplitKeyValue(input, 1, out var key, out var value))
             {
-                return false;
-            }
-
-            var index = keyValue.IndexOf("=", StringComparison.OrdinalIgnoreCase);
-            if (index < 0)
-            {
+                arg = new Arg(key, value);
                 return true;
             }
 
-            if (index == 0)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            key = keyValue.Substring(0, index).Trim();
-            value = index == keyValue.Length - 1 ? null : keyValue.Substring(index + 1).Trim();
+        arg = new Arg(input);
+        return true;
+    }
 
+    private static bool SplitKeyValue(string keyValue, int offset, out string key, out string value)
+    {
+        keyValue = keyValue.Substring(offset);
+        key = keyValue;
+        value = null;
+
+        if (key.Length == 0)
+        {
+            return false;
+        }
+
+        var index = keyValue.IndexOf("=", StringComparison.OrdinalIgnoreCase);
+        if (index < 0)
+        {
             return true;
         }
 
-        private static bool IsLog(Arg arg)
+        if (index == 0)
         {
-            return arg.IsPair
-                   && Arg.Log.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)
-                   && !string.IsNullOrWhiteSpace(arg.Value);
+            return false;
         }
+
+        key = keyValue.Substring(0, index).Trim();
+        value = index == keyValue.Length - 1 ? null : keyValue.Substring(index + 1).Trim();
+
+        return true;
+    }
+
+    private static bool IsLog(Arg arg)
+    {
+        return arg.IsPair
+               && Arg.Log.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)
+               && !string.IsNullOrWhiteSpace(arg.Value);
     }
 }

@@ -2,23 +2,23 @@
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.MySql
+namespace SqlDatabase.Scripts.MySql;
+
+[TestFixture]
+public class MySqlTextReaderTest
 {
-    [TestFixture]
-    public class MySqlTextReaderTest
+    private MySqlTextReader _sut;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private MySqlTextReader _sut;
+        _sut = new MySqlTextReader();
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _sut = new MySqlTextReader();
-        }
-
-        [Test]
-        public void ReadFirstBatch()
-        {
-            const string Expected = @"
+    [Test]
+    public void ReadFirstBatch()
+    {
+        const string Expected = @"
 
 /*
 * module dependency: a 2.0
@@ -27,26 +27,25 @@ namespace SqlDatabase.Scripts.MySql
 ;
 line 2;";
 
-            var actual = _sut.ReadFirstBatch(Expected.AsFuncStream()());
+        var actual = _sut.ReadFirstBatch(Expected.AsFuncStream()());
 
-            actual.ShouldBe(@"/*
+        actual.ShouldBe(@"/*
 * module dependency: a 2.0
 * module dependency: b 1.0
 */");
-        }
+    }
 
-        [Test]
-        public void ReadBatches()
-        {
-            const string Expected = @"
+    [Test]
+    public void ReadBatches()
+    {
+        const string Expected = @"
 
 line 1;
 ;
 line 2;";
 
-            var actual = _sut.ReadBatches(Expected.AsFuncStream()());
+        var actual = _sut.ReadBatches(Expected.AsFuncStream()());
 
-            actual.ShouldBe(new[] { Expected });
-        }
+        actual.ShouldBe(new[] { Expected });
     }
 }

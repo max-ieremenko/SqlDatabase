@@ -1,55 +1,54 @@
-﻿namespace SqlDatabase.Configuration
+﻿namespace SqlDatabase.Configuration;
+
+internal readonly struct Arg
 {
-    internal readonly struct Arg
+    internal const string Sign = "-";
+
+    internal const string Database = "database";
+    internal const string Scripts = "from";
+    internal const string InLineScript = "fromSql";
+    internal const string Variable = "var";
+    internal const string Configuration = "configuration";
+    internal const string Transaction = "transaction";
+    internal const string WhatIf = "whatIf";
+    internal const string UsePowerShell = "usePowerShell";
+    internal const string FolderAsModuleName = "folderAsModuleName";
+
+    internal const string ExportToTable = "toTable";
+    internal const string ExportToFile = "toFile";
+
+    internal const string Help = "help";
+    internal const string HelpShort = "h";
+
+    internal const string Log = "log";
+
+    public Arg(string key, string value)
     {
-        internal const string Sign = "-";
+        IsPair = true;
+        Key = key;
+        Value = value;
+    }
 
-        internal const string Database = "database";
-        internal const string Scripts = "from";
-        internal const string InLineScript = "fromSql";
-        internal const string Variable = "var";
-        internal const string Configuration = "configuration";
-        internal const string Transaction = "transaction";
-        internal const string WhatIf = "whatIf";
-        internal const string UsePowerShell = "usePowerShell";
-        internal const string FolderAsModuleName = "folderAsModuleName";
+    public Arg(string value)
+    {
+        IsPair = false;
+        Key = null;
+        Value = value;
+    }
 
-        internal const string ExportToTable = "toTable";
-        internal const string ExportToFile = "toFile";
+    public bool IsPair { get; }
 
-        internal const string Help = "help";
-        internal const string HelpShort = "h";
+    public string Key { get; }
 
-        internal const string Log = "log";
+    public string Value { get; }
 
-        public Arg(string key, string value)
+    public override string ToString()
+    {
+        if (IsPair)
         {
-            IsPair = true;
-            Key = key;
-            Value = value;
+            return "{0}={1}".FormatWith(Key, Value);
         }
 
-        public Arg(string value)
-        {
-            IsPair = false;
-            Key = null;
-            Value = value;
-        }
-
-        public bool IsPair { get; }
-
-        public string Key { get; }
-
-        public string Value { get; }
-
-        public override string ToString()
-        {
-            if (IsPair)
-            {
-                return "{0}={1}".FormatWith(Key, Value);
-            }
-
-            return Value;
-        }
+        return Value;
     }
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace SqlDatabase
+namespace SqlDatabase;
+
+public interface ILogger
 {
-    public interface ILogger
-    {
-        void Error(string message);
+    void Error(string message);
 
-        void Info(string message);
+    void Info(string message);
 
-        IDisposable Indent();
-    }
+    IDisposable Indent();
 }

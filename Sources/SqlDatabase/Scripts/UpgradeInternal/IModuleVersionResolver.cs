@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace SqlDatabase.Scripts.UpgradeInternal
+namespace SqlDatabase.Scripts.UpgradeInternal;
+
+internal interface IModuleVersionResolver
 {
-    internal interface IModuleVersionResolver
-    {
-        // => InvalidOperationException fail to determine dependent module [{1}] version
-        Version GetCurrentVersion(string moduleName);
-    }
+    // => InvalidOperationException fail to determine dependent module [{1}] version
+    Version GetCurrentVersion(string moduleName);
 }

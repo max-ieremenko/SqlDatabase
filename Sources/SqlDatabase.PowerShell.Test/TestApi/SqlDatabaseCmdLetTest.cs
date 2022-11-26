@@ -12,93 +12,92 @@ using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.Internal;
 using Command = System.Management.Automation.Runspaces.Command;
 
-namespace SqlDatabase.PowerShell.TestApi
+namespace SqlDatabase.PowerShell.TestApi;
+
+public abstract class SqlDatabaseCmdLetTest<TSubject>
 {
-    public abstract class SqlDatabaseCmdLetTest<TSubject>
+    private readonly IList<GenericCommandLine> _commandLines = new List<GenericCommandLine>();
+    private Runspace _runSpace;
+    private System.Management.Automation.PowerShell _powerShell;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private readonly IList<GenericCommandLine> _commandLines = new List<GenericCommandLine>();
-        private Runspace _runSpace;
-        private System.Management.Automation.PowerShell _powerShell;
+        var sessionState = InitialSessionState.CreateDefault();
 
-        [SetUp]
-        public void BeforeEachTest()
+        foreach (var alias in ResolveAliases())
         {
-            var sessionState = InitialSessionState.CreateDefault();
+            sessionState.Commands.Add(new SessionStateCmdletEntry(alias, typeof(TSubject), null));
+        }
 
-            foreach (var alias in ResolveAliases())
+        _runSpace = RunspaceFactory.CreateRunspace(sessionState);
+        _runSpace.Open();
+
+        _powerShell = System.Management.Automation.PowerShell.Create();
+        _powerShell.Runspace = _runSpace;
+
+        var program = new Mock<ISqlDatabaseProgram>(MockBehavior.Strict);
+        program
+            .Setup(p => p.ExecuteCommand(It.IsNotNull<GenericCommandLine>()))
+            .Callback<GenericCommandLine>(cmd => _commandLines.Add(cmd));
+
+        _commandLines.Clear();
+        PowerShellCommandBase.Program = program.Object;
+    }
+
+    [TearDown]
+    public void AfterEachTest()
+    {
+        PowerShellCommandBase.Program = null;
+
+        foreach (var row in _powerShell.Streams.Information)
+        {
+            Console.WriteLine(row);
+        }
+
+        _powerShell?.Dispose();
+        _runSpace?.Dispose();
+    }
+
+    protected Collection<PSObject> InvokeCommand(string name)
+    {
+        var command = new Command(name);
+        _powerShell.Commands.AddCommand(command);
+
+        return _powerShell.Invoke();
+    }
+
+    protected GenericCommandLine[] InvokeSqlDatabase(string name, Action<Command> builder)
+    {
+        return InvokeInvokeSqlDatabasePipeLine(name, builder);
+    }
+
+    protected GenericCommandLine[] InvokeInvokeSqlDatabasePipeLine(string name, Action<Command> builder, params object[] args)
+    {
+        _commandLines.Clear();
+
+        var command = new Command(name);
+        _powerShell.Commands.AddCommand(command);
+
+        builder(command);
+        _powerShell.Invoke(args);
+
+        return _commandLines.ToArray();
+    }
+
+    private static IEnumerable<string> ResolveAliases()
+    {
+        var cmdlet = (CmdletAttribute)typeof(TSubject).GetCustomAttribute(typeof(CmdletAttribute));
+        cmdlet.ShouldNotBeNull();
+
+        yield return "{0}-{1}".FormatWith(cmdlet.VerbName, cmdlet.NounName);
+
+        var alias = (AliasAttribute)typeof(TSubject).GetCustomAttribute(typeof(AliasAttribute));
+        if (alias != null)
+        {
+            foreach (var i in alias.AliasNames)
             {
-                sessionState.Commands.Add(new SessionStateCmdletEntry(alias, typeof(TSubject), null));
-            }
-
-            _runSpace = RunspaceFactory.CreateRunspace(sessionState);
-            _runSpace.Open();
-
-            _powerShell = System.Management.Automation.PowerShell.Create();
-            _powerShell.Runspace = _runSpace;
-
-            var program = new Mock<ISqlDatabaseProgram>(MockBehavior.Strict);
-            program
-                .Setup(p => p.ExecuteCommand(It.IsNotNull<GenericCommandLine>()))
-                .Callback<GenericCommandLine>(cmd => _commandLines.Add(cmd));
-
-            _commandLines.Clear();
-            PowerShellCommandBase.Program = program.Object;
-        }
-
-        [TearDown]
-        public void AfterEachTest()
-        {
-            PowerShellCommandBase.Program = null;
-
-            foreach (var row in _powerShell.Streams.Information)
-            {
-                Console.WriteLine(row);
-            }
-
-            _powerShell?.Dispose();
-            _runSpace?.Dispose();
-        }
-
-        protected Collection<PSObject> InvokeCommand(string name)
-        {
-            var command = new Command(name);
-            _powerShell.Commands.AddCommand(command);
-
-            return _powerShell.Invoke();
-        }
-
-        protected GenericCommandLine[] InvokeSqlDatabase(string name, Action<Command> builder)
-        {
-            return InvokeInvokeSqlDatabasePipeLine(name, builder);
-        }
-
-        protected GenericCommandLine[] InvokeInvokeSqlDatabasePipeLine(string name, Action<Command> builder, params object[] args)
-        {
-            _commandLines.Clear();
-
-            var command = new Command(name);
-            _powerShell.Commands.AddCommand(command);
-
-            builder(command);
-            _powerShell.Invoke(args);
-
-            return _commandLines.ToArray();
-        }
-
-        private static IEnumerable<string> ResolveAliases()
-        {
-            var cmdlet = (CmdletAttribute)typeof(TSubject).GetCustomAttribute(typeof(CmdletAttribute));
-            cmdlet.ShouldNotBeNull();
-
-            yield return "{0}-{1}".FormatWith(cmdlet.VerbName, cmdlet.NounName);
-
-            var alias = (AliasAttribute)typeof(TSubject).GetCustomAttribute(typeof(AliasAttribute));
-            if (alias != null)
-            {
-                foreach (var i in alias.AliasNames)
-                {
-                    yield return i;
-                }
+                yield return i;
             }
         }
     }

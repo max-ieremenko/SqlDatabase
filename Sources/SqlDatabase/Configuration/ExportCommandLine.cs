@@ -5,79 +5,78 @@ using SqlDatabase.Commands;
 using SqlDatabase.Export;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase.Configuration
+namespace SqlDatabase.Configuration;
+
+internal sealed class ExportCommandLine : CommandLineBase
 {
-    internal sealed class ExportCommandLine : CommandLineBase
+    public string DestinationTableName { get; set; }
+
+    public string DestinationFileName { get; set; }
+
+    public override ICommand CreateCommand(ILogger logger)
     {
-        public string DestinationTableName { get; set; }
+        var configuration = new ConfigurationManager();
+        configuration.LoadFrom(ConfigurationFile);
 
-        public string DestinationFileName { get; set; }
+        var database = CreateDatabase(logger, configuration, TransactionMode.None, false);
 
-        public override ICommand CreateCommand(ILogger logger)
+        var sequence = new CreateScriptSequence
         {
-            var configuration = new ConfigurationManager();
-            configuration.LoadFrom(ConfigurationFile);
-
-            var database = CreateDatabase(logger, configuration, TransactionMode.None, false);
-
-            var sequence = new CreateScriptSequence
+            ScriptFactory = new ScriptFactory
             {
-                ScriptFactory = new ScriptFactory
-                {
-                    AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                    TextReader = database.Adapter.CreateSqlTextReader()
-                },
-                Sources = Scripts.ToArray()
-            };
+                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
+                TextReader = database.Adapter.CreateSqlTextReader()
+            },
+            Sources = Scripts.ToArray()
+        };
 
-            return new DatabaseExportCommand
-            {
-                Log = WrapLogger(logger),
-                OpenOutput = CreateOutput(),
-                Database = database,
-                ScriptSequence = sequence,
-                DestinationTableName = DestinationTableName
-            };
+        return new DatabaseExportCommand
+        {
+            Log = WrapLogger(logger),
+            OpenOutput = CreateOutput(),
+            Database = database,
+            ScriptSequence = sequence,
+            DestinationTableName = DestinationTableName
+        };
+    }
+
+    internal Func<TextWriter> CreateOutput()
+    {
+        var fileName = DestinationFileName;
+
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return () => Console.Out;
         }
 
-        internal Func<TextWriter> CreateOutput()
+        return () => new StreamWriter(fileName, false);
+    }
+
+    internal ILogger WrapLogger(ILogger logger)
+    {
+        return string.IsNullOrEmpty(DestinationFileName) ? new DataExportLogger(logger) : logger;
+    }
+
+    protected override bool ParseArg(Arg arg)
+    {
+        if (Arg.ExportToTable.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
         {
-            var fileName = DestinationFileName;
-
-            if (string.IsNullOrEmpty(fileName))
-            {
-                return () => Console.Out;
-            }
-
-            return () => new StreamWriter(fileName, false);
+            DestinationTableName = arg.Value;
+            return true;
         }
 
-        internal ILogger WrapLogger(ILogger logger)
+        if (Arg.ExportToFile.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
         {
-            return string.IsNullOrEmpty(DestinationFileName) ? new DataExportLogger(logger) : logger;
+            DestinationFileName = arg.Value;
+            return true;
         }
 
-        protected override bool ParseArg(Arg arg)
+        if (Arg.InLineScript.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
         {
-            if (Arg.ExportToTable.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
-            {
-                DestinationTableName = arg.Value;
-                return true;
-            }
-
-            if (Arg.ExportToFile.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
-            {
-                DestinationFileName = arg.Value;
-                return true;
-            }
-
-            if (Arg.InLineScript.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
-            {
-                SetInLineScript(arg.Value);
-                return true;
-            }
-
-            return false;
+            SetInLineScript(arg.Value);
+            return true;
         }
+
+        return false;
     }
 }

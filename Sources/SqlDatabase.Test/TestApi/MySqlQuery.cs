@@ -1,30 +1,29 @@
 ﻿using System.Configuration;
 using MySqlConnector;
 
-namespace SqlDatabase.TestApi
+namespace SqlDatabase.TestApi;
+
+internal static class MySqlQuery
 {
-    internal static class MySqlQuery
+    public static string ConnectionString => ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
+
+    public static string DatabaseName => new MySqlConnectionStringBuilder(ConnectionString).Database;
+
+    public static MySqlConnection Open()
     {
-        public static string ConnectionString => ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
+        var con = new MySqlConnection(ConnectionString);
+        con.Open();
 
-        public static string DatabaseName => new MySqlConnectionStringBuilder(ConnectionString).Database;
+        return con;
+    }
 
-        public static MySqlConnection Open()
+    public static object ExecuteScalar(string sql)
+    {
+        using (var connection = Open())
+        using (var cmd = connection.CreateCommand())
         {
-            var con = new MySqlConnection(ConnectionString);
-            con.Open();
-
-            return con;
-        }
-
-        public static object ExecuteScalar(string sql)
-        {
-            using (var connection = Open())
-            using (var cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                return cmd.ExecuteScalar();
-            }
+            cmd.CommandText = sql;
+            return cmd.ExecuteScalar();
         }
     }
 }
