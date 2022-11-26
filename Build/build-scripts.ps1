@@ -25,8 +25,7 @@ function Get-AssemblyVersion($assemblyInfoCsPath) {
 }
 
 function Get-RepositoryCommitId {
-    $response = (Invoke-RestMethod -Uri "https://api.github.com/repos/max-ieremenko/SqlDatabase/commits/master")
-    return $response.sha
+    git rev-parse HEAD
 }
 
 function Start-Mssql {
