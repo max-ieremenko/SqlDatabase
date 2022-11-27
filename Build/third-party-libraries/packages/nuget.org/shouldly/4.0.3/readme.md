@@ -3,7 +3,7 @@ Shouldly [4.0.3](https://www.nuget.org/packages/Shouldly/4.0.3)
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, net6.0, netcoreapp3.1
+Target frameworks: net472, net5.0, net6.0, net7.0, netcoreapp3.1
 
 License: [BSD-2-Clause](../../../../licenses/bsd-2-clause) 
 

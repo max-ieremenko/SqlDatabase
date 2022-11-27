@@ -1,4 +1,4 @@
-Microsoft.WSMan.Runtime [7.1.2](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.1.2)
+Microsoft.WSMan.Runtime [7.3.0](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.3.0)
 --------------------
 
 Used by: SqlDatabase
