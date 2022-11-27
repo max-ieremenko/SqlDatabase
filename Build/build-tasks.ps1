@@ -1,5 +1,4 @@
-#task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, IntegrationTest
-task Default Initialize, InitializeIntegrationTest, NetRuntimeWindowsTest
+task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, IntegrationTest
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget452, PackManualDownload
 task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
 
