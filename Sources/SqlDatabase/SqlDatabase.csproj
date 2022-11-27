@@ -81,7 +81,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 
