@@ -1,8 +1,7 @@
-﻿namespace SqlDatabase.Configuration
+﻿namespace SqlDatabase.Configuration;
+
+public enum TransactionMode
 {
-    public enum TransactionMode
-    {
-        None,
-        PerStep
-    }
+    None,
+    PerStep
 }

@@ -4,90 +4,89 @@ using System.Linq;
 using System.Text;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase.Commands
+namespace SqlDatabase.Commands;
+
+internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
 {
-    internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
+    public IUpgradeScriptSequence ScriptSequence { get; set; }
+
+    public IPowerShellFactory PowerShellFactory { get; set; }
+
+    protected override void Greet(string databaseLocation)
     {
-        public IUpgradeScriptSequence ScriptSequence { get; set; }
+        Log.Info("Upgrade {0}".FormatWith(databaseLocation));
+    }
 
-        public IPowerShellFactory PowerShellFactory { get; set; }
-
-        protected override void Greet(string databaseLocation)
+    protected override void ExecuteCore()
+    {
+        var sequence = ScriptSequence.BuildSequence();
+        if (sequence.Count == 0)
         {
-            Log.Info("Upgrade {0}".FormatWith(databaseLocation));
+            Log.Info("the database is up-to-date.");
+            return;
         }
 
-        protected override void ExecuteCore()
+        if (sequence.Any(i => string.IsNullOrEmpty(i.ModuleName)))
         {
-            var sequence = ScriptSequence.BuildSequence();
-            if (sequence.Count == 0)
-            {
-                Log.Info("the database is up-to-date.");
-                return;
-            }
+            ShowMigrationSequenceShort(sequence);
+        }
+        else
+        {
+            ShowMigrationSequenceFull(sequence);
+        }
 
-            if (sequence.Any(i => string.IsNullOrEmpty(i.ModuleName)))
+        PowerShellFactory.InitializeIfRequested(Log);
+
+        foreach (var step in sequence)
+        {
+            var timer = Stopwatch.StartNew();
+            if (string.IsNullOrEmpty(step.ModuleName))
             {
-                ShowMigrationSequenceShort(sequence);
+                Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
             }
             else
             {
-                ShowMigrationSequenceFull(sequence);
+                Log.Info("execute {0} {1} ...".FormatWith(step.ModuleName, step.Script.DisplayName));
             }
 
-            PowerShellFactory.InitializeIfRequested(Log);
-
-            foreach (var step in sequence)
+            using (Log.Indent())
             {
-                var timer = Stopwatch.StartNew();
-                if (string.IsNullOrEmpty(step.ModuleName))
-                {
-                    Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
-                }
-                else
-                {
-                    Log.Info("execute {0} {1} ...".FormatWith(step.ModuleName, step.Script.DisplayName));
-                }
-
-                using (Log.Indent())
-                {
-                    Database.Execute(step.Script, step.ModuleName, step.From, step.To);
-                }
-
-                Log.Info("done in {0}".FormatWith(timer.Elapsed));
+                Database.Execute(step.Script, step.ModuleName, step.From, step.To);
             }
-        }
 
-        private void ShowMigrationSequenceShort(IList<ScriptStep> sequence)
+            Log.Info("done in {0}".FormatWith(timer.Elapsed));
+        }
+    }
+
+    private void ShowMigrationSequenceShort(IList<ScriptStep> sequence)
+    {
+        var message = new StringBuilder()
+            .AppendFormat("sequence: {0}", sequence[0].From);
+
+        foreach (var step in sequence)
         {
-            var message = new StringBuilder()
-                .AppendFormat("sequence: {0}", sequence[0].From);
-
-            foreach (var step in sequence)
-            {
-                message.AppendFormat(" => {0}", step.To);
-            }
-
-            Log.Info(message.ToString());
+            message.AppendFormat(" => {0}", step.To);
         }
 
-        private void ShowMigrationSequenceFull(IList<ScriptStep> sequence)
+        Log.Info(message.ToString());
+    }
+
+    private void ShowMigrationSequenceFull(IList<ScriptStep> sequence)
+    {
+        var message = new StringBuilder()
+            .Append("sequence: ");
+
+        for (var i = 0; i < sequence.Count; i++)
         {
-            var message = new StringBuilder()
-                .Append("sequence: ");
-
-            for (var i = 0; i < sequence.Count; i++)
+            var step = sequence[i];
+            if (i > 0)
             {
-                var step = sequence[i];
-                if (i > 0)
-                {
-                    message.Append("; ");
-                }
-
-                message.AppendFormat("{0} {1} => {2}", step.ModuleName, step.From, step.To);
+                message.Append("; ");
             }
 
-            Log.Info(message.ToString());
+            message.AppendFormat("{0} {1} => {2}", step.ModuleName, step.From, step.To);
         }
+
+        Log.Info(message.ToString());
     }
 }

@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 
-namespace SqlDatabase.Scripts
+namespace SqlDatabase.Scripts;
+
+public interface IScript
 {
-    public interface IScript
-    {
-        string DisplayName { get; set; }
+    string DisplayName { get; set; }
 
-        void Execute(IDbCommand command, IVariables variables, ILogger logger);
+    void Execute(IDbCommand command, IVariables variables, ILogger logger);
 
-        IEnumerable<IDataReader> ExecuteReader(IDbCommand command, IVariables variables, ILogger logger);
+    IEnumerable<IDataReader> ExecuteReader(IDbCommand command, IVariables variables, ILogger logger);
 
-        IList<ScriptDependency> GetDependencies();
-    }
+    IList<ScriptDependency> GetDependencies();
 }

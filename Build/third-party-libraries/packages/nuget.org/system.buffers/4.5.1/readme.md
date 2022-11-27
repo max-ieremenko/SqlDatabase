@@ -1,9 +1,9 @@
 System.Buffers [4.5.1](https://www.nuget.org/packages/System.Buffers/4.5.1)
 --------------------
 
-Used by: SqlDatabase internal
+Used by: SqlDatabase
 
-Target frameworks: net472, net5.0, net6.0, netcoreapp3.1
+Target frameworks: net452, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

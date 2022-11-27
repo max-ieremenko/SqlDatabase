@@ -11,13 +11,14 @@
         "netcoreapp3.1",
         "net5.0",
         "net6.0",
+        "net7.0",
         "net452",
         "netstandard2.0"
       ],
       "Dependencies": [
         {
           "Name": "System.Security.AccessControl",
-          "Version": "4.5.0"
+          "Version": "4.7.0"
         }
       ]
     }

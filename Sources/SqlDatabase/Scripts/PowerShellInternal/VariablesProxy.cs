@@ -1,20 +1,19 @@
 ﻿using System.Dynamic;
 
-namespace SqlDatabase.Scripts.PowerShellInternal
+namespace SqlDatabase.Scripts.PowerShellInternal;
+
+internal sealed class VariablesProxy : DynamicObject
 {
-    internal sealed class VariablesProxy : DynamicObject
+    private readonly IVariables _variables;
+
+    public VariablesProxy(IVariables variables)
     {
-        private readonly IVariables _variables;
+        _variables = variables;
+    }
 
-        public VariablesProxy(IVariables variables)
-        {
-            _variables = variables;
-        }
-
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            result = _variables.GetValue(binder.Name);
-            return result != null;
-        }
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
+    {
+        result = _variables.GetValue(binder.Name);
+        return result != null;
     }
 }

@@ -1,30 +1,29 @@
 ﻿using System.Configuration;
 using Npgsql;
 
-namespace SqlDatabase.TestApi
+namespace SqlDatabase.TestApi;
+
+internal static class PgSqlQuery
 {
-    internal static class PgSqlQuery
+    public static string ConnectionString => ConfigurationManager.ConnectionStrings["pgsql"].ConnectionString;
+
+    public static string DatabaseName => new NpgsqlConnectionStringBuilder(ConnectionString).Database;
+
+    public static NpgsqlConnection Open()
     {
-        public static string ConnectionString => ConfigurationManager.ConnectionStrings["pgsql"].ConnectionString;
+        var con = new NpgsqlConnection(ConnectionString);
+        con.Open();
 
-        public static string DatabaseName => new NpgsqlConnectionStringBuilder(ConnectionString).Database;
+        return con;
+    }
 
-        public static NpgsqlConnection Open()
+    public static object ExecuteScalar(string sql)
+    {
+        using (var connection = Open())
+        using (var cmd = connection.CreateCommand())
         {
-            var con = new NpgsqlConnection(ConnectionString);
-            con.Open();
-
-            return con;
-        }
-
-        public static object ExecuteScalar(string sql)
-        {
-            using (var connection = Open())
-            using (var cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                return cmd.ExecuteScalar();
-            }
+            cmd.CommandText = sql;
+            return cmd.ExecuteScalar();
         }
     }
 }

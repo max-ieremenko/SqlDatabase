@@ -1,9 +1,8 @@
-﻿namespace SqlDatabase.IO
-{
-    internal interface IFileSystemFactory
-    {
-        IFileSystemInfo FileSystemInfoFromPath(string path);
+﻿namespace SqlDatabase.IO;
 
-        IFileSystemInfo FromContent(string name, string content);
-    }
+internal interface IFileSystemFactory
+{
+    IFileSystemInfo FileSystemInfoFromPath(string path);
+
+    IFileSystemInfo FromContent(string name, string content);
 }

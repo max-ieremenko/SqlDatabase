@@ -1,15 +1,14 @@
 ﻿using SqlDatabase.Scripts.PowerShellInternal;
 
-namespace SqlDatabase.Scripts
+namespace SqlDatabase.Scripts;
+
+internal interface IPowerShellFactory
 {
-    internal interface IPowerShellFactory
-    {
-        string InstallationPath { get; }
+    string InstallationPath { get; }
 
-        void Request();
+    void Request();
 
-        void InitializeIfRequested(ILogger logger);
+    void InitializeIfRequested(ILogger logger);
 
-        IPowerShell Create();
-    }
+    IPowerShell Create();
 }

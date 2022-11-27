@@ -13,16 +13,24 @@ Table of Contents
 
 <!-- toc -->
   
+- [SqlDatabase](#sqldatabase)
+  - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-  - [Target database type selection <a name="database-selection"></a>](#target-database-type-selection-)
-  - [Execute script(s) <a name="execute-script"></a>](#execute-scripts-)
-  - [Export data from a database to sql script (file) <a name="export-data"></a>](#export-data-from-a-database-to-sql-script-file-)
-  - [Create a database <a name="create-database"></a>](#create-a-database-)
-  - [Migrate an existing database <a name="upgrade-database"></a>](#migrate-an-existing-database-)
+    - [PowerShell, from gallery](#powershell-from-gallery)
+    - [PowerShell, manual release download](#powershell-manual-release-download)
+    - [Dotnet sdk tool](#dotnet-sdk-tool)
+  - [Target database type selection ](#target-database-type-selection-)
+  - [Execute script(s) ](#execute-scripts-)
+  - [Export data from a database to sql script (file) ](#export-data-from-a-database-to-sql-script-file-)
+  - [Create a database ](#create-a-database-)
+  - [Migrate an existing database ](#migrate-an-existing-database-)
   - [Scripts](#scripts)
   - [Variables](#variables)
-  - [*.zip files <a name="zip-files"></a>](#zip-files-)
-  - [VS Package manager console <a name="console"></a>](#vs-package-manager-console-)
+      - [Example](#example)
+      - [Example how to hide variable value from a log output](#example-how-to-hide-variable-value-from-a-log-output)
+    - [Predefined variables](#predefined-variables)
+  - [\*.zip files ](#zip-files-)
+  - [VS Package manager console ](#vs-package-manager-console-)
   - [Examples](#examples)
   - [License](#license)
 
@@ -33,9 +41,9 @@ Installation
 
 PowerShell module is compatible with Powershell Core 6.1+ and PowerShell Desktop 5.1.
 
-.net tool requires SDK .Net 5.0/6.0 or .Net Core 3.1.
+.net tool is compatible with .net sdk 7.0, 6.0, 5.0 and .net core 3.1.
 
-Command-line tool is compatible with .net runtime 5.0/6.0, .net Core runtime 3.1 and .net Framework 4.5.2+.
+Command-line tool is compatible with .net runtime 7.0, 6.0, 5.0, .net core runtime 3.1 and .net framework 4.5.2+.
 
 ### PowerShell, from gallery
 

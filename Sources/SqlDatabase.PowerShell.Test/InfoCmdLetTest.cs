@@ -4,29 +4,28 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.PowerShell.TestApi;
 
-namespace SqlDatabase.PowerShell
+namespace SqlDatabase.PowerShell;
+
+[TestFixture]
+public class InfoCmdLetTest : SqlDatabaseCmdLetTest<InfoCmdLet>
 {
-    [TestFixture]
-    public class InfoCmdLetTest : SqlDatabaseCmdLetTest<InfoCmdLet>
+    [Test]
+    public void ProcessRecord()
     {
-        [Test]
-        public void ProcessRecord()
-        {
-            var actual = InvokeCommand("Show-SqlDatabaseInfo");
+        var actual = InvokeCommand("Show-SqlDatabaseInfo");
 
-            actual.Count.ShouldBe(1);
-            Console.WriteLine(actual[0]);
+        actual.Count.ShouldBe(1);
+        Console.WriteLine(actual[0]);
 
-            actual[0].Properties["PSEdition"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-            actual[0].Properties["PSVersion"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-            actual[0].Properties["Version"].Value.ShouldBeOfType<Version>().ShouldNotBeNull();
-            actual[0].Properties["FrameworkDescription"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-            actual[0].Properties["OSDescription"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-            actual[0].Properties["OSArchitecture"].Value.ShouldBeOfType<Architecture>();
-            actual[0].Properties["ProcessArchitecture"].Value.ShouldBeOfType<Architecture>();
-            actual[0].Properties["Location"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-            actual[0].Properties["WorkingDirectory"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-            actual[0].Properties["DefaultConfigurationFile"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
-        }
+        actual[0].Properties["PSEdition"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
+        actual[0].Properties["PSVersion"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
+        actual[0].Properties["Version"].Value.ShouldBeOfType<Version>().ShouldNotBeNull();
+        actual[0].Properties["FrameworkDescription"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
+        actual[0].Properties["OSDescription"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
+        actual[0].Properties["OSArchitecture"].Value.ShouldBeOfType<Architecture>();
+        actual[0].Properties["ProcessArchitecture"].Value.ShouldBeOfType<Architecture>();
+        actual[0].Properties["Location"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
+        actual[0].Properties["WorkingDirectory"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
+        actual[0].Properties["DefaultConfigurationFile"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
     }
 }

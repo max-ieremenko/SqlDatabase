@@ -8,10 +8,14 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
     <LangVersion>latest</LangVersion>
+
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.376" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.435" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

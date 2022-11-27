@@ -32,7 +32,7 @@ task RunTest {
     $test = (Join-Path $settings.integrationTests $database) + ":/test"
 
     exec {
-        docker run --rm `
+        docker run -it --rm `
             -v $app `
             -v $test `
             --env connectionString=$connectionString `

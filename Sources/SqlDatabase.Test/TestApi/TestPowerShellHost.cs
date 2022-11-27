@@ -3,37 +3,36 @@ using Moq;
 using SqlDatabase.Scripts;
 using SqlDatabase.Scripts.PowerShellInternal;
 
-namespace SqlDatabase.TestApi
+namespace SqlDatabase.TestApi;
+
+internal static class TestPowerShellHost
 {
-    internal static class TestPowerShellHost
+    public static IPowerShellFactory GetOrCreateFactory()
     {
-        public static IPowerShellFactory GetOrCreateFactory()
+        if (PowerShellFactory.SharedTestFactory == null)
         {
-            if (PowerShellFactory.SharedTestFactory == null)
-            {
-                PowerShellFactory.SharedTestFactory = CreateFactory();
-            }
-
-            return PowerShellFactory.SharedTestFactory;
+            PowerShellFactory.SharedTestFactory = CreateFactory();
         }
 
-        private static IPowerShellFactory CreateFactory()
-        {
-            var logger = new Mock<ILogger>(MockBehavior.Strict);
-            logger
-                .Setup(l => l.Info(It.IsNotNull<string>()))
-                .Callback<string>(m => Console.WriteLine("info: " + m));
-            logger
-                .Setup(l => l.Error(It.IsNotNull<string>()))
-                .Callback<string>(m => Console.WriteLine("error: " + m));
-            logger
-                .Setup(l => l.Indent())
-                .Returns((IDisposable)null);
+        return PowerShellFactory.SharedTestFactory;
+    }
 
-            var factory = PowerShellFactory.Create(null);
-            factory.Request();
-            factory.InitializeIfRequested(logger.Object);
-            return factory;
-        }
+    private static IPowerShellFactory CreateFactory()
+    {
+        var logger = new Mock<ILogger>(MockBehavior.Strict);
+        logger
+            .Setup(l => l.Info(It.IsNotNull<string>()))
+            .Callback<string>(m => Console.WriteLine("info: " + m));
+        logger
+            .Setup(l => l.Error(It.IsNotNull<string>()))
+            .Callback<string>(m => Console.WriteLine("error: " + m));
+        logger
+            .Setup(l => l.Indent())
+            .Returns((IDisposable)null);
+
+        var factory = PowerShellFactory.Create(null);
+        factory.Request();
+        factory.InitializeIfRequested(logger.Object);
+        return factory;
     }
 }

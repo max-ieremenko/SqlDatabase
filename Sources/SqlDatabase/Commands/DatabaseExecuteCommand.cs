@@ -1,37 +1,36 @@
 ﻿using System.Diagnostics;
 using SqlDatabase.Scripts;
 
-namespace SqlDatabase.Commands
+namespace SqlDatabase.Commands;
+
+internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
 {
-    internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
+    public ICreateScriptSequence ScriptSequence { get; set; }
+
+    public IPowerShellFactory PowerShellFactory { get; set; }
+
+    protected override void Greet(string databaseLocation)
     {
-        public ICreateScriptSequence ScriptSequence { get; set; }
+        Log.Info("Execute script on {0}".FormatWith(databaseLocation));
+    }
 
-        public IPowerShellFactory PowerShellFactory { get; set; }
+    protected override void ExecuteCore()
+    {
+        var sequences = ScriptSequence.BuildSequence();
 
-        protected override void Greet(string databaseLocation)
+        PowerShellFactory.InitializeIfRequested(Log);
+
+        foreach (var script in sequences)
         {
-            Log.Info("Execute script on {0}".FormatWith(databaseLocation));
-        }
+            var timer = Stopwatch.StartNew();
+            Log.Info("execute {0} ...".FormatWith(script.DisplayName));
 
-        protected override void ExecuteCore()
-        {
-            var sequences = ScriptSequence.BuildSequence();
-
-            PowerShellFactory.InitializeIfRequested(Log);
-
-            foreach (var script in sequences)
+            using (Log.Indent())
             {
-                var timer = Stopwatch.StartNew();
-                Log.Info("execute {0} ...".FormatWith(script.DisplayName));
-
-                using (Log.Indent())
-                {
-                    Database.Execute(script);
-                }
-
-                Log.Info("done in {0}".FormatWith(timer.Elapsed));
+                Database.Execute(script);
             }
+
+            Log.Info("done in {0}".FormatWith(timer.Elapsed));
         }
     }
 }
