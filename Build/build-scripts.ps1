@@ -156,26 +156,30 @@ function Wait-Connection {
         $timeout = 50
     )
 
-    $connection = New-Object -TypeName $connectionName -ArgumentList $connectionString
-    try {
-        for ($i = 0; $i -lt $timeout; $i++) {
-            try {
-                $connection.Open()
-                return
-            }
-            catch {
-                Start-Sleep -Seconds 1
-            }
-        }
-
+    function Test-Connection {
+        $connection = New-Object -TypeName $connectionName -ArgumentList $connectionString
         try {
             $connection.Open()
         }
-        catch {
-            throw "$connectionName $connectionString"
+        finally {
+            $connection.Dispose()
         }
     }
-    finally {
-        $connection.Dispose()
+
+    for ($i = 0; $i -lt $timeout; $i++) {
+        try {
+            Test-Connection
+            return
+        }
+        catch {
+            Start-Sleep -Seconds 1
+        }
+    }
+
+    try {
+        Test-Connection
+    }
+    catch {
+        throw "$connectionName $connectionString"
     }
 }

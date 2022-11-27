@@ -1,4 +1,3 @@
-
 SqlDatabase supports [straight forward upgrade](StraightForward) and [modularity upgrade](Modularity).
 
 Upgrade an existing database
