@@ -19,6 +19,10 @@
         {
           "Name": "System.Security.AccessControl",
           "Version": "4.7.0"
+        },
+        {
+          "Name": "System.Security.Principal.Windows",
+          "Version": "4.7.0"
         }
       ]
     }
@@ -27,14 +31,14 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
+      "HRef": "https://licenses.nuget.org/MIT",
       "Description": null
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/",
-      "Description": "License should be verified on https://dot.net/"
+      "HRef": "https://github.com/dotnet/corefx",
+      "Description": "License should be verified on https://github.com/dotnet/corefx"
     }
   ]
 }
