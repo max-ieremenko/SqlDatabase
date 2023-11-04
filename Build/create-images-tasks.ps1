@@ -1,9 +1,5 @@
 task Default `
-    BuildDotnetSdk31 `
-    , BuildDotnetRuntime31 `
-    , BuildDotnetSdk50 `
-    , BuildDotnetRuntime50 `
-    , BuildDotnetSdk60 `
+    BuildDotnetSdk60 `
     , BuildDotnetRuntime60 `
     , BuildDotnetSdk70 `
     , BuildDotnetRuntime70 `
@@ -38,42 +34,6 @@ task BuildMySqlDatabase {
             -f image-mysql-8025.dockerfile `
             -t sqldatabase/mysql:8.0.25 `
             $context
-    }
-}
-
-task BuildDotnetSdk31 {
-    exec {
-        docker build `
-            -f image-dotnet-sdk-3.1.dockerfile `
-            -t sqldatabase/dotnet_pwsh:3.1-sdk `
-            .
-    }
-}
-
-task BuildDotnetRuntime31 {
-    exec {
-        docker build `
-            -f image-dotnet-runtime-3.1.dockerfile `
-            -t sqldatabase/dotnet_pwsh:3.1-runtime `
-            .
-    }
-}
-
-task BuildDotnetSdk50 {
-    exec {
-        docker build `
-            -f image-dotnet-sdk-5.0.dockerfile `
-            -t sqldatabase/dotnet_pwsh:5.0-sdk `
-            .
-    }
-}
-
-task BuildDotnetRuntime50 {
-    exec {
-        docker build `
-            -f image-dotnet-runtime-5.0.dockerfile `
-            -t sqldatabase/dotnet_pwsh:5.0-runtime `
-            .
     }
 }
 

@@ -107,7 +107,7 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $source = Join-Path $settings.artifactsPowerShell "*"
     Compress-Archive -Path $source -DestinationPath $destination
 
-    $targets = "net452", "netcoreapp3.1", "net5.0", "net6.0", "net7.0"
+    $targets = "net452", "net6.0", "net7.0"
     foreach ($target in $targets) {
         $destination = Join-Path $out "SqlDatabase.$packageVersion-$target.zip"
         $source = Join-Path $settings.bin "SqlDatabase\$target\*"
@@ -118,8 +118,6 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
 task UnitTest {
     $builds = @(
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net472" }
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "netcoreapp3.1" }
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net5.0" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net6.0" }
         @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net7.0" }
     )
@@ -211,9 +209,7 @@ task PsCoreTest {
 
 task SdkToolTest {
     $images = $(
-        "sqldatabase/dotnet_pwsh:3.1-sdk"
-        , "sqldatabase/dotnet_pwsh:5.0-sdk"
-        , "sqldatabase/dotnet_pwsh:6.0-sdk"
+        "sqldatabase/dotnet_pwsh:6.0-sdk"
         , "sqldatabase/dotnet_pwsh:7.0-sdk")
 
     $builds = @()
@@ -234,9 +230,7 @@ task SdkToolTest {
 
 task NetRuntimeLinuxTest {
     $testCases = $(
-        @{ targetFramework = "netcoreapp3.1"; image = "sqldatabase/dotnet_pwsh:3.1-runtime" }
-        , @{ targetFramework = "net5.0"; image = "sqldatabase/dotnet_pwsh:5.0-runtime" }
-        , @{ targetFramework = "net6.0"; image = "sqldatabase/dotnet_pwsh:6.0-runtime" }
+        @{ targetFramework = "net6.0"; image = "sqldatabase/dotnet_pwsh:6.0-runtime" }
         , @{ targetFramework = "net7.0"; image = "sqldatabase/dotnet_pwsh:7.0-runtime" }
     )
 
@@ -260,8 +254,6 @@ task NetRuntimeLinuxTest {
 task NetRuntimeWindowsTest {
     $testCases = $(
         "net452"
-        , "netcoreapp3.1"
-        , "net5.0"
         , "net6.0"
         , "net7.0"
     )
