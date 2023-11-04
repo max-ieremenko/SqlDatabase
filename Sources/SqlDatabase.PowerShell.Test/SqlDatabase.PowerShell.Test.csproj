@@ -7,15 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="4.18.2" />
-    <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Shouldly" Version="4.1.0" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="PowerShellStandard.Library" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit3TestAdapter" PrivateAssets="All" />
+    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
