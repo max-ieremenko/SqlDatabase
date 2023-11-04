@@ -1,5 +1,5 @@
 task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, IntegrationTest
-task Pack PackGlobalTool, PackPoweShellModule, PackNuget452, PackManualDownload
+task Pack PackGlobalTool, PackPoweShellModule, PackNuget472, PackManualDownload
 task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
 
 . .\build-scripts.ps1
@@ -78,7 +78,7 @@ task PackPoweShellModule {
     Get-ChildItem $dest -Include *.pdb -Recurse | Remove-Item
 }
 
-task PackNuget452 PackPoweShellModule, {
+task PackNuget472 PackPoweShellModule, {
     $bin = $settings.artifactsPowerShell
     if (-not $bin.EndsWith("\")) {
         $bin += "\"
@@ -107,7 +107,7 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $source = Join-Path $settings.artifactsPowerShell "*"
     Compress-Archive -Path $source -DestinationPath $destination
 
-    $targets = "net452", "net6.0", "net7.0"
+    $targets = "net472", "net6.0", "net7.0"
     foreach ($target in $targets) {
         $destination = Join-Path $out "SqlDatabase.$packageVersion-$target.zip"
         $source = Join-Path $settings.bin "SqlDatabase\$target\*"
@@ -253,7 +253,7 @@ task NetRuntimeLinuxTest {
 
 task NetRuntimeWindowsTest {
     $testCases = $(
-        "net452"
+        "net472"
         , "net6.0"
         , "net7.0"
     )
