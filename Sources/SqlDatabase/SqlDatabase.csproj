@@ -60,34 +60,34 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="all" />
+    <PackageReference Include="PowerShellStandard.Library" VersionOverride="5.1.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
-    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" />
+    <PackageReference Include="System.Data.SqlClient" />
+    <PackageReference Include="System.Runtime.Loader" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="1.3.10" />
-    <PackageReference Include="Npgsql" Version="4.0.11" />
+    <PackageReference Include="MySqlConnector" />
+    <PackageReference Include="Npgsql" />
   </ItemGroup>
 
 </Project>
