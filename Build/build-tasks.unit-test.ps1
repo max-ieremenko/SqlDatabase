@@ -5,7 +5,7 @@ param(
 
 task Test RunContainers, UpdateConfig, RunTests
 
-. .\build-scripts.ps1
+Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 $mssqlContainerId = ""
 $mssqlConnectionString = "empty"
@@ -71,7 +71,7 @@ task RunTests {
         | Where-Object FullName -NotMatch \\ref\\ `
         | ForEach-Object {$_.FullName}    
     
-    if (-not $testList.Count) {
+    if (-not $testList) {
         throw "Test list is empty."
     }
     

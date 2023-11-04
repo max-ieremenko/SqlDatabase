@@ -1,32 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net7.0;netstandard2.0</TargetFrameworks>
-	<TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0</TargetFrameworks>
-  </PropertyGroup>
+    <TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0</TargetFrameworks>
 
-  <PropertyGroup>
+    <!--<AssemblyTitle>SqlDatabase</AssemblyTitle>-->
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
     <OutputPath>..\..\bin\SqlDatabase</OutputPath>
-  </PropertyGroup>
 
-  <PropertyGroup>
     <ToolCommandName>SqlDatabase</ToolCommandName>
     <PackageId>SqlDatabase.GlobalTool</PackageId>
-
-    <Authors>Max Ieremenko</Authors>
-    <Description>SqlDatabase is a tool for MSSQL Server, PostgreSQL and MySQL, allows executing scripts, database migrations and data export.</Description>
-    <PackageReleaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/max-ieremenko/SqlDatabase</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/max-ieremenko/SqlDatabase</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
-    <PackageIcon>icon-32.png</PackageIcon>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>(C) 2018-2022 Max Ieremenko.</Copyright>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>sqlserver database postgresql mysql mysql-database sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</PackageTags>
   </PropertyGroup>
   
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
