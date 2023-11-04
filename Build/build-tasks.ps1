@@ -2,7 +2,7 @@ task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, Integr
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget472, PackManualDownload
 task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
 
-. .\build-scripts.ps1
+Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 task Initialize {
     $sources = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
@@ -16,8 +16,8 @@ task Initialize {
         artifacts           = $artifacts
         artifactsPowerShell = Join-Path $artifacts "PowerShell"
         integrationTests    = Join-Path $bin "IntegrationTests"
-        version             = Get-AssemblyVersion (Join-Path $sources "GlobalAssemblyInfo.cs");
-        repositoryCommitId  = Get-RepositoryCommitId;
+        version             = Get-Version -SourcePath $sources;
+        repositoryCommitId  = git rev-parse HEAD;
     }
 
     $script:databases = $("MsSql", "PgSql", "MySql")

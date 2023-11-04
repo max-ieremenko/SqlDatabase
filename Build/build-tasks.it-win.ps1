@@ -6,7 +6,7 @@ param(
 
 task Test StartDatabase, UnZip, RunTest
 
-. .\build-scripts.ps1
+Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 $containerId = ""
 $connectionString = ""
