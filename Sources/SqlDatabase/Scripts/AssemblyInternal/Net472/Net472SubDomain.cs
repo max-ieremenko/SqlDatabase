@@ -1,11 +1,11 @@
-﻿#if NET452
+﻿#if NET472
 using System;
 using System.Data;
 using System.IO;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net452
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472
 {
-    internal sealed class Net452SubDomain : ISubDomain
+    internal sealed class Net472SubDomain : ISubDomain
     {
         private DomainDirectory _appBase;
         private AppDomain _app;

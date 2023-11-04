@@ -8,12 +8,12 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net452
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472
 {
     [TestFixture]
-    public partial class Net452SubDomainTest
+    public partial class Net472SubDomainTest
     {
-        private Net452SubDomain _sut;
+        private Net472SubDomain _sut;
         private Variables _variables;
         private Mock<IDbCommand> _command;
 
@@ -40,7 +40,7 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net452
                 .Callback(() => _executedScripts.Add(_command.Object.CommandText))
                 .Returns(0);
 
-            _sut = new Net452SubDomain { Logger = log.Object };
+            _sut = new Net472SubDomain { Logger = log.Object };
 
             _sut.AssemblyFileName = GetType().Assembly.Location;
             _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);

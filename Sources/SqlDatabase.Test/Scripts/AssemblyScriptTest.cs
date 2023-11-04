@@ -57,7 +57,7 @@ public class AssemblyScriptTest
         _sut.DisplayName = "2.1_2.2.dll";
         _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
-#if !NET452
+#if !NET472
         using (new ConsoleListener(_log.Object))
 #endif
         {
@@ -87,7 +87,7 @@ public class AssemblyScriptTest
         _sut.DisplayName = "2.1_2.2.dll";
         _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
-#if !NET452
+#if !NET472
         using (new ConsoleListener(_log.Object))
 #endif
         {

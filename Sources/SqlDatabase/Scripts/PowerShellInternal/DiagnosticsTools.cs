@@ -9,7 +9,7 @@ internal static class DiagnosticsTools
 {
     public static bool IsOSPlatformWindows()
     {
-#if NET452
+#if NET472
             return true;
 #else
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -18,7 +18,7 @@ internal static class DiagnosticsTools
 
     public static int? GetParentProcessId(int processId)
     {
-#if NET452
+#if NET472
             return null;
 #else
         return IsOSPlatformWindows() ? GetParentProcessIdWindows(processId) : GetParentProcessIdLinux(processId);
@@ -82,7 +82,7 @@ internal static class DiagnosticsTools
         return null;
     }
 
-#if !NET452
+#if !NET472
     private static int? GetParentProcessIdLinux(int processId)
     {
         // /proc/[pid]/stat https://man7.org/linux/man-pages/man5/procfs.5.html

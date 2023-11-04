@@ -131,8 +131,8 @@ internal static class Program
 
     private static string GetHelpFileName(string commandName)
     {
-#if NET452
-        const string Runtime = ".net452";
+#if NET472
+        const string Runtime = ".net472";
 #else
         const string Runtime = null;
 #endif
