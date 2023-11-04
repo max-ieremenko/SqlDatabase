@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "PostgreSQL",
     "Status": "AutomaticallyApproved"
@@ -8,11 +9,9 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net452",
         "net6.0",
         "net7.0",
-        "net452",
         "netstandard2.0"
       ],
       "Dependencies": [
@@ -27,14 +26,12 @@
     {
       "Subject": "package",
       "Code": "PostgreSQL",
-      "HRef": "https://licenses.nuget.org/PostgreSQL",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/PostgreSQL"
     },
     {
       "Subject": "repository",
       "Code": "PostgreSQL",
-      "HRef": "git://github.com/npgsql/npgsql",
-      "Description": null
+      "HRef": "git://github.com/npgsql/npgsql"
     },
     {
       "Subject": "project",

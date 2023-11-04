@@ -3,7 +3,7 @@ PowerShellStandard.Library [5.1.0](https://www.nuget.org/packages/PowerShellStan
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net472, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net452, net472, net6.0, net7.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

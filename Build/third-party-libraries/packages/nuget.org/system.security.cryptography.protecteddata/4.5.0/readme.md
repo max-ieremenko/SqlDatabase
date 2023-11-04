@@ -3,7 +3,7 @@ System.Security.Cryptography.ProtectedData [4.5.0](https://www.nuget.org/package
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net452, net6.0, net7.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

@@ -3,7 +3,7 @@ Dapper.StrongName [2.0.123](https://www.nuget.org/packages/Dapper.StrongName/2.0
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, net6.0, net7.0, netcoreapp3.1
+Target frameworks: net472, net6.0, net7.0
 
 License: [Apache-2.0](../../../../licenses/apache-2.0) 
 

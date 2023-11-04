@@ -8,11 +8,9 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net452",
         "net6.0",
         "net7.0",
-        "net452",
         "netstandard2.0"
       ],
       "Dependencies": [
@@ -27,8 +25,7 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-      "Description": null
+      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
     },
     {
       "Subject": "project",
