@@ -61,9 +61,9 @@ use
 
 The version with which you run the module.
 
-### .net framework 4.5.2
+### .net framework 4.7.2
 
-[![NuGet](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square&label=nuget%20net%204.5.2)](https://www.nuget.org/packages/SqlDatabase/)
+[![NuGet](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square&label=nuget%20net%204.7.2)](https://www.nuget.org/packages/SqlDatabase/)
 
 Installed Powershell Desktop version.
 
