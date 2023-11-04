@@ -3,7 +3,7 @@ MySqlConnector [1.3.10](https://www.nuget.org/packages/MySqlConnector/1.3.10)
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net6.0, net7.0, netstandard2.0
+Target frameworks: net472, net6.0, net7.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

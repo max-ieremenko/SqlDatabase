@@ -3,7 +3,7 @@ System.Text.Encoding.CodePages [4.7.0](https://www.nuget.org/packages/System.Tex
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net6.0, net7.0, netstandard2.0
+Target frameworks: net472, net6.0, net7.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

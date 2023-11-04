@@ -3,7 +3,7 @@ Npgsql [4.0.11](https://www.nuget.org/packages/Npgsql/4.0.11)
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net6.0, net7.0, netstandard2.0
+Target frameworks: net472, net6.0, net7.0, netstandard2.0
 
 License: [PostgreSQL](../../../../licenses/postgresql) 
 
