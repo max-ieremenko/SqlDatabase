@@ -3,7 +3,7 @@ Microsoft.WSMan.Runtime [7.2.0](https://www.nuget.org/packages/Microsoft.WSMan.R
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net6.0, net7.0, netstandard2.0
+Target frameworks: net472, net6.0, net7.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

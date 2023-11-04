@@ -35,7 +35,7 @@ internal sealed class PowerShellStreamsListener : IDisposable
 
     private static IList GetInformation(PSDataStreams streams)
     {
-#if !NET452
+#if !NET472
         return streams.Information;
 #else
             return ReflectionGetInformation(streams);

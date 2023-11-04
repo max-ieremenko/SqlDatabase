@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(GlobalTool)' != true">net452;net6.0;net7.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net7.0;netstandard2.0</TargetFrameworks>
 	<TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0</TargetFrameworks>
   </PropertyGroup>
 
@@ -35,15 +35,15 @@
     <Content Include="..\..\bin\ThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <EmbeddedResource Include="Configuration\CommandLine.export.net452.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.execute.net452.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net452.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.create.net452.txt" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <EmbeddedResource Include="Configuration\CommandLine.export.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.net472.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
     <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
@@ -51,7 +51,7 @@
     <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management.Automation">
@@ -71,7 +71,7 @@
     <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
     <PackageReference Include="System.Configuration.ConfigurationManager" />
     <PackageReference Include="System.Data.SqlClient" />
     <PackageReference Include="System.Runtime.Loader" />

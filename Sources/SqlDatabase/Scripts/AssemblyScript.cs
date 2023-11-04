@@ -80,8 +80,8 @@ internal sealed class AssemblyScript : IScript
 
     private ISubDomain CreateSubDomain()
     {
-#if NET452
-            return new AssemblyInternal.Net452.Net452SubDomain();
+#if NET472
+            return new AssemblyInternal.Net472.Net472SubDomain();
 #else
         return new AssemblyInternal.NetCore.NetCoreSubDomain();
 #endif

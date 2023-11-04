@@ -1,4 +1,4 @@
-﻿#if NET452 || NETSTANDARD
+﻿#if NET472 || NETSTANDARD
 namespace SqlDatabase.Scripts.PowerShellInternal
 {
     internal partial class PowerShellFactory

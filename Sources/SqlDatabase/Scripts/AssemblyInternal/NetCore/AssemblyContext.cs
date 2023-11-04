@@ -1,4 +1,4 @@
-﻿#if !NET452
+﻿#if !NET472
 using System;
 using System.IO;
 using System.Reflection;

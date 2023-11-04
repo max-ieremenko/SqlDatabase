@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net452;
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472;
 
 internal sealed class DomainAgent : MarshalByRefObject
 {

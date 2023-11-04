@@ -4,9 +4,9 @@ using System.Data;
 using System.IO;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net452
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472
 {
-    public partial class Net452SubDomainTest
+    public partial class Net472SubDomainTest
     {
         public sealed class StepWithSubDomain
         {

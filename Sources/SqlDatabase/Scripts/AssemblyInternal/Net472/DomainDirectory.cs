@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net452;
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472;
 
 internal sealed class DomainDirectory : IDisposable
 {

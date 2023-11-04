@@ -3,12 +3,12 @@
 
 Any assembly script is
 
-- .exe or .dll for target framework is 4.5.2+
+- .exe or .dll for target framework is 4.7.2+
 - .dll for .net 7.0 or 6.0
 - has exactly one class with script implementation
 
 This project is an example of script implementation.
-The build output is 2.1_2.2.dll with target framework 4.5.2.
+The build output is 2.1_2.2.dll with target framework 4.7.2.
 Due to the current dependencies, 2.1_2.2.dll works well on .net 6.0+.
 
 ## Script source

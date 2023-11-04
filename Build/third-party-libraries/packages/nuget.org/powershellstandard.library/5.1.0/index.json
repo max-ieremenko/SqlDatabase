@@ -9,7 +9,6 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net452",
         "net472",
         "net6.0",
         "net7.0",
