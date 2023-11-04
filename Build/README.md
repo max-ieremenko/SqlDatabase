@@ -7,8 +7,8 @@ build.ps1 is designed to run on windows
 - PowerShell [7.2.1](https://github.com/PowerShell/PowerShell/releases/tag/v7.2.1) for .net 6.0 tests
 - PowerShell [7.1.5](https://github.com/PowerShell/PowerShell/releases/tag/v7.1.5) for .net 5.0 tests
 - PowerShell [7.0.8](https://github.com/PowerShell/PowerShell/releases/tag/v7.0.8) for .net core 3.1 tests
-- Install-Module -Name [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild/5.9.12) -RequiredVersion 5.9.12
-- Install-Module -Name [ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.1.2) -RequiredVersion 3.1.2
+- Install-Module -Name [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild/5.10.4) -RequiredVersion 5.10.4
+- Install-Module -Name [ThirdPartyLibraries](https://www.powershellgallery.com/packages/ThirdPartyLibraries/3.4.1) -RequiredVersion 3.4.1
 - .net framework 4.7.2+ sdk
 - .net 7.0 sdk
 - docker, switched to linux containers
