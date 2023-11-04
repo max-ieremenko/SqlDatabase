@@ -6,13 +6,13 @@ Licenses
 |[Apache-2.0](licenses/apache-2.0)|no|no|3|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
-|[MIT](licenses/mit)|no|no|41|
+|[MIT](licenses/mit)|no|no|38|
 |[ms-net-library](licenses/ms-net-library)|no|no|6|
 |[PostgreSQL](licenses/postgresql)|no|no|1|
 
 
 
-Packages 53
+Packages 50
 --------
 
 |Name|Version|Source|License|Used by|
@@ -27,8 +27,6 @@ Packages 53
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/17.4.0)|17.4.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/17.4.0)|[ms-net-library](licenses/ms-net-library)|SqlDatabase internal|
 |[Microsoft.Win32.Registry](packages/nuget.org/microsoft.win32.registry/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.Win32.Registry](packages/nuget.org/microsoft.win32.registry/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.Registry/5.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
-|[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.0.5)|7.0.5|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.0.5)|[MIT](licenses/mit)|SqlDatabase|
-|[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.1.2)|7.1.2|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.1.2)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.2.0)|7.2.0|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.2.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.3.0)|7.3.0|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.3.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Moq](packages/nuget.org/moq/4.18.2)|4.18.2|[nuget.org](https://www.nuget.org/packages/Moq/4.18.2)|[BSD-3-Clause](licenses/bsd-3-clause)|SqlDatabase internal|
@@ -48,7 +46,6 @@ Packages 53
 |[System.Configuration.ConfigurationManager](packages/nuget.org/system.configuration.configurationmanager/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/System.Configuration.ConfigurationManager/4.5.0)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Data.SqlClient](packages/nuget.org/system.data.sqlclient/4.8.5)|4.8.5|[nuget.org](https://www.nuget.org/packages/System.Data.SqlClient/4.8.5)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/4.7.0)|[MIT](licenses/mit)|SqlDatabase|
-|[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/4.7.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/6.0.0)|6.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/6.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Management](packages/nuget.org/system.management/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Management/5.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Memory](packages/nuget.org/system.memory/4.5.3)|4.5.3|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.3)|[MIT](licenses/mit)|SqlDatabase|

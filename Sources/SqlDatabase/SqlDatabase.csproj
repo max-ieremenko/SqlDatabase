@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(GlobalTool)' != true">net452;netcoreapp3.1;net5.0;net6.0;net7.0;netstandard2.0</TargetFrameworks>
-	<TargetFrameworks Condition="'$(GlobalTool)' == true">netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GlobalTool)' != true">net452;net6.0;net7.0;netstandard2.0</TargetFrameworks>
+	<TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -61,14 +61,6 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="PowerShellStandard.Library" VersionOverride="5.1.0" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">

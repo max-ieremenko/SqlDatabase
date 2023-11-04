@@ -3,7 +3,7 @@ Microsoft.TestPlatform.TestHost [17.4.0](https://www.nuget.org/packages/Microsof
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net5.0, net6.0, net7.0, netcoreapp3.1
+Target frameworks: net472, net6.0, net7.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 

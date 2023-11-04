@@ -7,11 +7,11 @@ ENV ACCEPT_EULA=Y \
 # copy scripts
 COPY create-database-scripts/ /sql-scripts/
 
-# install .net 5.0 sdk
+# install .net 6.0 sdk
 RUN apt-get update && \
    apt-get install -y apt-transport-https && \
    apt-get update && \
-   apt-get install -y dotnet-sdk-5.0
+   apt-get install -y dotnet-sdk-6.0
 
 # install SqlDatabase.GlobalTool
 RUN dotnet tool install --global SqlDatabase.GlobalTool

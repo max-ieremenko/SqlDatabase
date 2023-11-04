@@ -3,7 +3,7 @@ StyleCop.Analyzers.Unstable [1.2.0.435](https://www.nuget.org/packages/StyleCop.
 
 Used by: SqlDatabase internal
 
-Target frameworks: net452, net472, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net452, net472, net6.0, net7.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
