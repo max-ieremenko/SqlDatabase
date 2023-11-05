@@ -12,12 +12,12 @@ namespace SqlDatabase.Scripts.PowerShellInternal;
 [TestFixture]
 public class PowerShellTest
 {
-    private IPowerShellFactory _factory;
-    private IPowerShell _sut;
-    private Mock<ILogger> _logger;
-    private Mock<IVariables> _variables;
-    private Mock<IDbCommand> _command;
-    private List<string> _logOutput;
+    private IPowerShellFactory _factory = null!;
+    private IPowerShell _sut = null!;
+    private Mock<ILogger> _logger = null!;
+    private Mock<IVariables> _variables = null!;
+    private Mock<IDbCommand> _command = null!;
+    private List<string> _logOutput = null!;
 
     [OneTimeSetUp]
     public void BeforeAllTests()
@@ -33,7 +33,7 @@ public class PowerShellTest
             .Callback<string>(m => _logOutput.Add("error: " + m));
         _logger
             .Setup(l => l.Indent())
-            .Returns((IDisposable)null);
+            .Returns((IDisposable)null!);
 
         _factory = TestPowerShellHost.GetOrCreateFactory();
     }
@@ -175,12 +175,12 @@ public class PowerShellTest
 
     private void InvokeExecute(string script, bool whatIf)
     {
-        var parameters = new KeyValuePair<string, object>[2 + (whatIf ? 1 : 0)];
-        parameters[0] = new KeyValuePair<string, object>(PowerShellScript.ParameterCommand, _command.Object);
-        parameters[1] = new KeyValuePair<string, object>(PowerShellScript.ParameterVariables, new VariablesProxy(_variables.Object));
+        var parameters = new KeyValuePair<string, object?>[2 + (whatIf ? 1 : 0)];
+        parameters[0] = new KeyValuePair<string, object?>(PowerShellScript.ParameterCommand, _command.Object);
+        parameters[1] = new KeyValuePair<string, object?>(PowerShellScript.ParameterVariables, new VariablesProxy(_variables.Object));
         if (whatIf)
         {
-            parameters[2] = new KeyValuePair<string, object>(PowerShellScript.ParameterWhatIf, null);
+            parameters[2] = new KeyValuePair<string, object?>(PowerShellScript.ParameterWhatIf, null);
         }
 
         _sut.Invoke(script, _logger.Object, parameters);

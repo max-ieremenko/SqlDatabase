@@ -12,10 +12,10 @@ namespace SqlDatabase.Commands;
 [TestFixture]
 public class DatabaseExportCommandTest
 {
-    private DatabaseExportCommand _sut;
-    private Mock<IDatabase> _database;
-    private Mock<ICreateScriptSequence> _scriptSequence;
-    private Mock<IDataExporter> _exporter;
+    private DatabaseExportCommand _sut = null!;
+    private Mock<IDatabase> _database = null!;
+    private Mock<ICreateScriptSequence> _scriptSequence = null!;
+    private Mock<IDataExporter> _exporter = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -35,7 +35,7 @@ public class DatabaseExportCommandTest
         _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
         var log = new Mock<ILogger>(MockBehavior.Strict);
-        log.Setup(l => l.Indent()).Returns((IDisposable)null);
+        log.Setup(l => l.Indent()).Returns((IDisposable)null!);
         log
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
@@ -49,13 +49,13 @@ public class DatabaseExportCommandTest
         _exporter
             .SetupSet(e => e.Log = log.Object);
 
-        _sut = new DatabaseExportCommand
+        _sut = new DatabaseExportCommand(
+            _scriptSequence.Object,
+            () => Console.Out,
+            _database.Object,
+            log.Object)
         {
-            Database = _database.Object,
-            Log = log.Object,
-            ScriptSequence = _scriptSequence.Object,
             ExporterFactory = () => _exporter.Object,
-            OpenOutput = () => Console.Out
         };
     }
 

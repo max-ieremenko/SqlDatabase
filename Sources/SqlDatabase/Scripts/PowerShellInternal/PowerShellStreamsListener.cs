@@ -38,7 +38,7 @@ internal sealed class PowerShellStreamsListener : IDisposable
 #if !NET472
         return streams.Information;
 #else
-            return ReflectionGetInformation(streams);
+        return ReflectionGetInformation(streams);
 #endif
     }
 
@@ -47,7 +47,7 @@ internal sealed class PowerShellStreamsListener : IDisposable
         return (IList)streams
             .GetType()
             .FindProperty("Information")
-            .GetValue(streams, null);
+            .GetValue(streams, null)!;
     }
 
     private static void InvokeDataAdded(object dataCollection, EventHandler<DataAddedEventArgs> handler, bool subscribe)
@@ -58,32 +58,32 @@ internal sealed class PowerShellStreamsListener : IDisposable
 
         if (subscribe)
         {
-            evt.AddMethod.Invoke(dataCollection, new object[] { handler });
+            evt.AddMethod!.Invoke(dataCollection, new object[] { handler });
         }
         else
         {
-            evt.RemoveMethod.Invoke(dataCollection, new object[] { handler });
+            evt.RemoveMethod!.Invoke(dataCollection, new object[] { handler });
         }
     }
 
-    private void OnWarning(object sender, DataAddedEventArgs e)
+    private void OnWarning(object? sender, DataAddedEventArgs e)
     {
-        _logger.Info(_streams.Warning[e.Index]?.ToString());
+        _logger.Info(_streams.Warning[e.Index]?.ToString() ?? string.Empty);
     }
 
-    private void OnError(object sender, DataAddedEventArgs e)
+    private void OnError(object? sender, DataAddedEventArgs e)
     {
         HasErrors = true;
-        _logger.Error(_streams.Error[e.Index]?.ToString());
+        _logger.Error(_streams.Error[e.Index]?.ToString() ?? string.Empty);
     }
 
-    private void OnVerbose(object sender, DataAddedEventArgs e)
+    private void OnVerbose(object? sender, DataAddedEventArgs e)
     {
-        _logger.Info(_streams.Verbose[e.Index]?.ToString());
+        _logger.Info(_streams.Verbose[e.Index]?.ToString() ?? string.Empty);
     }
 
-    private void OnInformation(object sender, DataAddedEventArgs e)
+    private void OnInformation(object? sender, DataAddedEventArgs e)
     {
-        _logger.Info(_information[e.Index]?.ToString());
+        _logger.Info(_information[e.Index]?.ToString() ?? string.Empty);
     }
 }

@@ -25,7 +25,7 @@ internal sealed class PowerShellDesktopDependencyResolver : IDependencyResolver
         _cache.Dispose();
     }
 
-    private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+    private Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
     {
         return _cache.Load(new AssemblyName(args.Name), Assembly.LoadFrom);
     }

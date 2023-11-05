@@ -4,8 +4,8 @@ namespace SqlDatabase.Log;
 
 internal sealed class CombinedLogger : ILogger, IDisposable
 {
-    private readonly ILogger _logger1;
-    private readonly ILogger _logger2;
+    private readonly ILogger? _logger1;
+    private readonly ILogger? _logger2;
 
     public CombinedLogger(ILogger logger1, bool ownLogger1, ILogger logger2, bool ownLogger2)
     {
@@ -51,10 +51,10 @@ internal sealed class CombinedLogger : ILogger, IDisposable
 
     private sealed class IndentDisposable : IDisposable
     {
-        private readonly IDisposable _ident1;
-        private readonly IDisposable _ident2;
+        private readonly IDisposable? _ident1;
+        private readonly IDisposable? _ident2;
 
-        public IndentDisposable(IDisposable ident1, IDisposable ident2)
+        public IndentDisposable(IDisposable? ident1, IDisposable? ident2)
         {
             _ident1 = ident1;
             _ident2 = ident2;

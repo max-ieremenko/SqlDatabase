@@ -9,8 +9,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 [TestFixture]
 public class ExecuteMethodResolverSqlConnectionTest
 {
-    private ExecuteMethodResolverSqlConnection _sut;
-    private SqlConnection _executeConnection;
+    private ExecuteMethodResolverSqlConnection _sut = null!;
+    private SqlConnection? _executeConnection;
 
     [SetUp]
     public void BeforeEachTest()
@@ -22,14 +22,14 @@ public class ExecuteMethodResolverSqlConnectionTest
     public void IsMatch()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsTrue(_sut.IsMatch(method));
+        Assert.IsTrue(_sut.IsMatch(method!));
     }
 
     [Test]
     public void CreateDelegate()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        var actual = _sut.CreateDelegate(this, method);
+        var actual = _sut.CreateDelegate(this, method!);
         Assert.IsNotNull(actual);
 
         var connection = new SqlConnection();
@@ -39,7 +39,7 @@ public class ExecuteMethodResolverSqlConnectionTest
             .SetupGet(c => c.Connection)
             .Returns(connection);
 
-        actual(command.Object, null);
+        actual(command.Object, null!);
         Assert.AreEqual(_executeConnection, connection);
     }
 

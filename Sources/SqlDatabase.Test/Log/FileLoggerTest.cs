@@ -9,7 +9,7 @@ namespace SqlDatabase.Log;
 [TestFixture]
 public class FileLoggerTest
 {
-    private TempFile _file;
+    private TempFile _file = null!;
 
     [SetUp]
     public void BeforeEachTest()

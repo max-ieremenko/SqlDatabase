@@ -8,11 +8,11 @@ namespace SqlDatabase.Commands;
 [TestFixture]
 public class DatabaseUpgradeCommandTest
 {
-    private DatabaseUpgradeCommand _sut;
-    private Mock<IDatabase> _database;
-    private Mock<IUpgradeScriptSequence> _scriptSequence;
-    private Mock<IPowerShellFactory> _powerShellFactory;
-    private Mock<ILogger> _log;
+    private DatabaseUpgradeCommand _sut = null!;
+    private Mock<IDatabase> _database = null!;
+    private Mock<IUpgradeScriptSequence> _scriptSequence = null!;
+    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private Mock<ILogger> _log = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -31,7 +31,7 @@ public class DatabaseUpgradeCommandTest
         _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
 
         _log = new Mock<ILogger>(MockBehavior.Strict);
-        _log.Setup(l => l.Indent()).Returns((IDisposable)null);
+        _log.Setup(l => l.Indent()).Returns((IDisposable)null!);
         _log
             .Setup(l => l.Error(It.IsAny<string>()))
             .Callback<string>(m =>
@@ -45,19 +45,17 @@ public class DatabaseUpgradeCommandTest
                 Console.WriteLine("Info: {0}", m);
             });
 
-        _sut = new DatabaseUpgradeCommand
-        {
-            Database = _database.Object,
-            Log = _log.Object,
-            ScriptSequence = _scriptSequence.Object,
-            PowerShellFactory = _powerShellFactory.Object
-        };
+        _sut = new DatabaseUpgradeCommand(
+            _scriptSequence.Object,
+            _powerShellFactory.Object,
+            _database.Object,
+            _log.Object);
     }
 
     [Test]
     public void DatabaseIsUpToDate()
     {
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new ScriptStep[0]);
+        _scriptSequence.Setup(s => s.BuildSequence()).Returns(Array.Empty<ScriptStep>());
 
         _sut.Execute();
 

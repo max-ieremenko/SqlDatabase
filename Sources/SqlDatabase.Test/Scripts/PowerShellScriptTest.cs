@@ -13,11 +13,11 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class PowerShellScriptTest
 {
-    private PowerShellScript _sut;
-    private Mock<IPowerShell> _powerShell;
-    private Mock<IVariables> _variables;
-    private Mock<IDbCommand> _command;
-    private Mock<ILogger> _log;
+    private PowerShellScript _sut = null!;
+    private Mock<IPowerShell> _powerShell = null!;
+    private Mock<IVariables> _variables = null!;
+    private Mock<IDbCommand> _command = null!;
+    private Mock<ILogger> _log = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -32,17 +32,14 @@ public class PowerShellScriptTest
             .Setup(f => f.Create())
             .Returns(_powerShell.Object);
 
-        _sut = new PowerShellScript
-        {
-            PowerShellFactory = factory.Object
-        };
+        _sut = new PowerShellScript(null!, null!, null!, factory.Object);
     }
 
     [Test]
     public void Execute()
     {
         _powerShell
-            .Setup(p => p.Invoke("script content", _log.Object, It.IsNotNull<KeyValuePair<string, object>[]>()))
+            .Setup(p => p.Invoke("script content", _log.Object, It.IsNotNull<KeyValuePair<string, object?>[]>()))
             .Callback<string, ILogger, KeyValuePair<string, object>[]>((_, _, parameters) =>
             {
                 parameters.Length.ShouldBe(2);
@@ -66,7 +63,7 @@ public class PowerShellScriptTest
             .Setup(p => p.SupportsShouldProcess("script content"))
             .Returns(true);
         _powerShell
-            .Setup(p => p.Invoke("script content", _log.Object, It.IsNotNull<KeyValuePair<string, object>[]>()))
+            .Setup(p => p.Invoke("script content", _log.Object, It.IsNotNull<KeyValuePair<string, object?>[]>()))
             .Callback<string, ILogger, KeyValuePair<string, object>[]>((_, _, parameters) =>
             {
                 parameters.Length.ShouldBe(3);

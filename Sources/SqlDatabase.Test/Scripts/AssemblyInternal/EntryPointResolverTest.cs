@@ -9,8 +9,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 [TestFixture]
 public partial class EntryPointResolverTest
 {
-    private EntryPointResolver _sut;
-    private IList<string> _logErrorOutput;
+    private EntryPointResolver _sut = null!;
+    private IList<string> _logErrorOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -32,7 +32,7 @@ public partial class EntryPointResolverTest
                 _logErrorOutput.Add(m);
             });
 
-        _sut = new EntryPointResolver { Log = log.Object };
+        _sut = new EntryPointResolver(log.Object, null!, null!);
     }
 
     [Test]
@@ -50,7 +50,7 @@ public partial class EntryPointResolverTest
         CollectionAssert.IsEmpty(_logErrorOutput);
         Assert.IsInstanceOf<DefaultEntryPoint>(actual);
 
-        var entryPoint = (DefaultEntryPoint)actual;
+        var entryPoint = (DefaultEntryPoint)actual!;
         entryPoint.Log.ShouldNotBeNull();
         entryPoint.ScriptInstance.ShouldBeOfType<ExampleSqlDatabaseScript>();
         entryPoint.Method.Method.Name.ShouldBe(nameof(ExampleSqlDatabaseScript.Execute));
@@ -76,7 +76,7 @@ public partial class EntryPointResolverTest
         CollectionAssert.IsEmpty(_logErrorOutput);
         Assert.IsInstanceOf<DefaultEntryPoint>(actual);
 
-        var entryPoint = (DefaultEntryPoint)actual;
+        var entryPoint = (DefaultEntryPoint)actual!;
         Assert.IsNotNull(entryPoint.Log);
         Assert.IsInstanceOf<DatabaseScriptWithOneParameter>(entryPoint.ScriptInstance);
         Assert.IsNotNull(entryPoint.Method);
@@ -92,7 +92,7 @@ public partial class EntryPointResolverTest
         CollectionAssert.IsEmpty(_logErrorOutput);
         Assert.IsInstanceOf<DefaultEntryPoint>(actual);
 
-        var entryPoint = (DefaultEntryPoint)actual;
+        var entryPoint = (DefaultEntryPoint)actual!;
         Assert.IsNotNull(entryPoint.Log);
         Assert.IsInstanceOf<DatabaseScriptWithConnection>(entryPoint.ScriptInstance);
         Assert.IsNotNull(entryPoint.Method);

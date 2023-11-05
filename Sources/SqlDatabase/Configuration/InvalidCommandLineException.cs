@@ -38,7 +38,7 @@ public class InvalidCommandLineException : SystemException
         Argument = info.GetString(nameof(Argument));
     }
 
-    public string Argument { get; }
+    public string? Argument { get; }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {

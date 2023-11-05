@@ -9,11 +9,11 @@ namespace SqlDatabase.Commands;
 [TestFixture]
 public class DatabaseCreateCommandTest
 {
-    private DatabaseCreateCommand _sut;
-    private Mock<IDatabase> _database;
-    private Mock<ICreateScriptSequence> _scriptSequence;
-    private Mock<IPowerShellFactory> _powerShellFactory;
-    private Mock<ILogger> _log;
+    private DatabaseCreateCommand _sut = null!;
+    private Mock<IDatabase> _database = null!;
+    private Mock<ICreateScriptSequence> _scriptSequence = null!;
+    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private Mock<ILogger> _log = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -32,7 +32,7 @@ public class DatabaseCreateCommandTest
         _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
 
         _log = new Mock<ILogger>(MockBehavior.Strict);
-        _log.Setup(l => l.Indent()).Returns((IDisposable)null);
+        _log.Setup(l => l.Indent()).Returns((IDisposable)null!);
         _log
             .Setup(l => l.Error(It.IsAny<string>()))
             .Callback<string>(m =>
@@ -46,19 +46,17 @@ public class DatabaseCreateCommandTest
                 Console.WriteLine("Info: {0}", m);
             });
 
-        _sut = new DatabaseCreateCommand
-        {
-            Database = _database.Object,
-            Log = _log.Object,
-            ScriptSequence = _scriptSequence.Object,
-            PowerShellFactory = _powerShellFactory.Object
-        };
+        _sut = new DatabaseCreateCommand(
+            _scriptSequence.Object,
+            _powerShellFactory.Object,
+            _database.Object,
+            _log.Object);
     }
 
     [Test]
     public void ScriptsNotFound()
     {
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new IScript[0]);
+        _scriptSequence.Setup(s => s.BuildSequence()).Returns(Array.Empty<IScript>());
 
         Assert.Throws<ConfigurationErrorsException>(_sut.Execute);
 

@@ -10,8 +10,8 @@ namespace SqlDatabase.Scripts.MySql;
 [TestFixture]
 public class MySqlWriterTest
 {
-    private StringBuilder _output;
-    private MySqlWriter _sut;
+    private StringBuilder _output = null!;
+    private MySqlWriter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

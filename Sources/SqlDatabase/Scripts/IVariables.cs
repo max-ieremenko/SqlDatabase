@@ -2,5 +2,5 @@
 
 public interface IVariables
 {
-    string GetValue(string name);
+    string? GetValue(string name);
 }

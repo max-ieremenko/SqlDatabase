@@ -11,13 +11,13 @@ internal sealed class PgSqlTextReader : ISqlTextReader
     private const int MaxFirstBatchSize = 20;
     private readonly Regex _semicolonRegex = new Regex("^(\\s*;+\\s*)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    public string ReadFirstBatch(Stream sql)
+    public string? ReadFirstBatch(Stream sql)
     {
         var script = new StringBuilder();
 
         using (var reader = new StreamReader(sql))
         {
-            string line;
+            string? line;
             var lineNumber = 0;
             while ((line = reader.ReadLine()) != null)
             {
@@ -54,7 +54,7 @@ internal sealed class PgSqlTextReader : ISqlTextReader
 
         if (string.IsNullOrWhiteSpace(script))
         {
-            return new string[0];
+            return Array.Empty<string>();
         }
 
         return new[] { script };

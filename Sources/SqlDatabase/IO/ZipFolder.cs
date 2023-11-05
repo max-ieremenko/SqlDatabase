@@ -10,15 +10,15 @@ namespace SqlDatabase.IO;
 [DebuggerDisplay("{Name}")]
 internal sealed class ZipFolder : IFolder
 {
-    private readonly ZipFolder _parent;
-    private IFolder _tree;
+    private readonly ZipFolder? _parent;
+    private IFolder? _tree;
 
     public ZipFolder(string fileName)
         : this(null, fileName)
     {
     }
 
-    public ZipFolder(ZipFolder parent, string zipEntryFullName)
+    public ZipFolder(ZipFolder? parent, string zipEntryFullName)
     {
         _parent = parent;
 

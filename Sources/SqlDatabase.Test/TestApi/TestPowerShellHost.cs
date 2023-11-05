@@ -28,7 +28,7 @@ internal static class TestPowerShellHost
             .Callback<string>(m => Console.WriteLine("error: " + m));
         logger
             .Setup(l => l.Indent())
-            .Returns((IDisposable)null);
+            .Returns((IDisposable)null!);
 
         var factory = PowerShellFactory.Create(null);
         factory.Request();

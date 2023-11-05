@@ -11,9 +11,9 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class CreateCommandLineTest
 {
-    private Mock<ILogger> _log;
-    private Mock<IFileSystemFactory> _fs;
-    private CreateCommandLine _sut;
+    private Mock<ILogger> _log = null!;
+    private Mock<IFileSystemFactory> _fs = null!;
+    private CreateCommandLine _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -76,7 +76,7 @@ public class CreateCommandLineTest
         database.WhatIf.ShouldBeTrue();
 
         var scriptFactory = actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>().ScriptFactory.ShouldBeOfType<ScriptFactory>();
-        scriptFactory.PowerShellFactory.InstallationPath.ShouldBe(@"c:\PowerShell");
+        scriptFactory.PowerShellFactory!.InstallationPath.ShouldBe(@"c:\PowerShell");
 
         actual.PowerShellFactory.ShouldBe(scriptFactory.PowerShellFactory);
     }

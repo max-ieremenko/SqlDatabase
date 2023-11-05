@@ -4,7 +4,7 @@ namespace SqlDatabase.Scripts;
 
 internal interface IPowerShellFactory
 {
-    string InstallationPath { get; }
+    string? InstallationPath { get; }
 
     void Request();
 

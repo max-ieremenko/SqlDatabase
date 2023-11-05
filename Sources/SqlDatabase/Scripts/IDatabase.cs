@@ -10,7 +10,7 @@ internal interface IDatabase
 
     string GetServerVersion();
 
-    Version GetCurrentVersion(string moduleName);
+    Version GetCurrentVersion(string? moduleName);
 
     void Execute(IScript script, string moduleName, Version currentVersion, Version targetVersion);
 

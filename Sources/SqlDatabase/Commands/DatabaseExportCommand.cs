@@ -9,11 +9,22 @@ namespace SqlDatabase.Commands;
 
 internal sealed class DatabaseExportCommand : DatabaseCommandBase
 {
-    public ICreateScriptSequence ScriptSequence { get; set; }
+    public DatabaseExportCommand(
+        ICreateScriptSequence scriptSequence,
+        Func<TextWriter> openOutput,
+        IDatabase database,
+        ILogger log)
+        : base(database, log)
+    {
+        ScriptSequence = scriptSequence;
+        OpenOutput = openOutput;
+    }
 
-    public Func<TextWriter> OpenOutput { get; set; }
+    public ICreateScriptSequence ScriptSequence { get; }
 
-    public string DestinationTableName { get; set; }
+    public Func<TextWriter> OpenOutput { get; }
+
+    public string? DestinationTableName { get; set; }
 
     internal Func<IDataExporter> ExporterFactory { get; set; } = () => new DataExporter();
 
@@ -54,7 +65,7 @@ internal sealed class DatabaseExportCommand : DatabaseCommandBase
         }
     }
 
-    private static string GetExportTableName(string name, int index, int subIndex)
+    private static string GetExportTableName(string? name, int index, int subIndex)
     {
         var result = new StringBuilder(20);
 

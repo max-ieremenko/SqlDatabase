@@ -7,17 +7,17 @@ internal sealed partial class PowerShellFactory : IPowerShellFactory
     private bool _requested;
     private bool _initialized;
 
-    private PowerShellFactory(string installationPath)
+    private PowerShellFactory(string? installationPath)
     {
         InstallationPath = installationPath;
     }
 
-    public string InstallationPath { get; private set; }
+    public string? InstallationPath { get; private set; }
 
     // only for tests
-    internal static IPowerShellFactory SharedTestFactory { get; set; }
+    internal static IPowerShellFactory? SharedTestFactory { get; set; }
 
-    public static IPowerShellFactory Create(string installationPath)
+    public static IPowerShellFactory Create(string? installationPath)
     {
         if (SharedTestFactory != null)
         {

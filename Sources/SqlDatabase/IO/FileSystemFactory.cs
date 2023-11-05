@@ -7,13 +7,13 @@ namespace SqlDatabase.IO;
 
 internal sealed class FileSystemFactory : IFileSystemFactory
 {
-    public static IFileSystemInfo FileSystemInfoFromPath(string path)
+    public static IFileSystemInfo FileSystemInfoFromPath(string? path)
     {
         path = FileTools.RootPath(path);
 
         if (File.Exists(path))
         {
-            return FileTools.IsZip(path) ? (IFileSystemInfo)new ZipFolder(path) : new FileSystemFile(path);
+            return FileTools.IsZip(path) ? new ZipFolder(path) : new FileSystemFile(path);
         }
 
         if (Directory.Exists(path))
@@ -21,7 +21,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
             return new FileSystemFolder(path);
         }
 
-        IFolder entryPoint = null;
+        IFolder? entryPoint = null;
         var items = new List<string>();
 
         while (!string.IsNullOrEmpty(path))
@@ -44,7 +44,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
         for (var i = 0; i < items.Count - 1; i++)
         {
             var name = items[i];
-            path = Path.Combine(path, name);
+            path = Path.Combine(path!, name);
 
             entryPoint = entryPoint.GetFolders().FirstOrDefault(f => name.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
             if (entryPoint == null)
@@ -54,7 +54,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
         }
 
         var resultName = items.Last();
-        path = Path.Combine(path, resultName);
+        path = Path.Combine(path!, resultName);
 
         var file = entryPoint.GetFiles().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
         if (file != null)
@@ -71,14 +71,14 @@ internal sealed class FileSystemFactory : IFileSystemFactory
         return folder;
     }
 
-    IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string path) => FileSystemInfoFromPath(path);
+    IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string? path) => FileSystemInfoFromPath(path);
 
     public IFileSystemInfo FromContent(string name, string content)
     {
         return new InLineScriptFile(name, content);
     }
 
-    private static IFolder TryToResolveEntryPoint(string path)
+    private static IFolder? TryToResolveEntryPoint(string path)
     {
         if (Directory.Exists(path))
         {

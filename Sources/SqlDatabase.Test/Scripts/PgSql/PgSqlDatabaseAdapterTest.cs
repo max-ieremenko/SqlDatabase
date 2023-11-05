@@ -16,9 +16,9 @@ public class PgSqlDatabaseAdapterTest
     private const string SelectModuleVersion = "SELECT version FROM public.version WHERE module_name = '{{ModuleName}}'";
     private const string UpdateModuleVersion = "UPDATE public.version SET version='{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'";
 
-    private PgSqlDatabaseAdapter _sut;
-    private AppConfiguration _configuration;
-    private IList<string> _logOutput;
+    private PgSqlDatabaseAdapter _sut = null!;
+    private AppConfiguration _configuration = null!;
+    private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -35,10 +35,7 @@ public class PgSqlDatabaseAdapterTest
 
         _configuration = new AppConfiguration();
 
-        _sut = new PgSqlDatabaseAdapter(
-            PgSqlQuery.ConnectionString,
-            _configuration,
-            log.Object);
+        _sut = new PgSqlDatabaseAdapter(PgSqlQuery.ConnectionString, _configuration, log.Object);
     }
 
     [Test]

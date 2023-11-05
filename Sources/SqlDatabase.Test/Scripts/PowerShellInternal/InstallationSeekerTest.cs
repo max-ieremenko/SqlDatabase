@@ -56,7 +56,7 @@ public class InstallationSeekerTest
 
             actual.Location.ShouldBe(dir.Location);
             actual.Version.ShouldBe(GetType().Assembly.GetName().Version);
-            actual.ProductVersion.ShouldBe(GetType().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
+            actual.ProductVersion.ShouldBe(GetType().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion);
         }
     }
 

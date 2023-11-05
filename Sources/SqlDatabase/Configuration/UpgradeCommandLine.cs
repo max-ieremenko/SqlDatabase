@@ -11,7 +11,7 @@ internal sealed class UpgradeCommandLine : CommandLineBase
 {
     public TransactionMode Transaction { get; set; }
 
-    public string UsePowerShell { get; set; }
+    public string? UsePowerShell { get; set; }
 
     public bool FolderAsModuleName { get; set; }
 
@@ -24,29 +24,20 @@ internal sealed class UpgradeCommandLine : CommandLineBase
 
         var database = CreateDatabase(logger, configuration, Transaction, WhatIf);
         var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
+        var scriptFactory = new ScriptFactory(
+            configuration.SqlDatabase.AssemblyScript,
+            powerShellFactory,
+            database.Adapter.CreateSqlTextReader());
 
-        var sequence = new UpgradeScriptSequence
-        {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                PowerShellFactory = powerShellFactory,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            VersionResolver = new ModuleVersionResolver { Database = database, Log = logger },
-            Sources = Scripts.ToArray(),
-            Log = logger,
-            FolderAsModuleName = FolderAsModuleName,
-            WhatIf = WhatIf
-        };
+        var sequence = new UpgradeScriptSequence(
+            scriptFactory,
+            new ModuleVersionResolver(logger, database),
+            Scripts.ToArray(),
+            logger,
+            FolderAsModuleName,
+            WhatIf);
 
-        return new DatabaseUpgradeCommand
-        {
-            Log = logger,
-            Database = database,
-            ScriptSequence = sequence,
-            PowerShellFactory = powerShellFactory
-        };
+        return new DatabaseUpgradeCommand(sequence, powerShellFactory, database, logger);
     }
 
     protected override bool ParseArg(Arg arg)
@@ -80,7 +71,7 @@ internal sealed class UpgradeCommandLine : CommandLineBase
         return false;
     }
 
-    private void SetTransaction(string modeName)
+    private void SetTransaction(string? modeName)
     {
         if (!Enum.TryParse<TransactionMode>(modeName, true, out var mode))
         {

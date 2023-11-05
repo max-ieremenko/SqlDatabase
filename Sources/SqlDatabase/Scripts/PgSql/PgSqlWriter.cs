@@ -35,7 +35,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
     public override SqlWriterBase DataType(string typeName, int size, int precision, int scale)
     {
         var name = typeName.ToUpperInvariant();
-        string sizeText = null;
+        string? sizeText = null;
 
         switch (name)
         {
@@ -81,7 +81,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
 
     public override ExportTable ReadSchemaTable(DataTable metadata, string tableName)
     {
-        var result = new ExportTable { Name = tableName };
+        var result = new ExportTable(tableName);
 
         const string GeneratedName = "GeneratedName";
         var generatedIndex = 0;
@@ -115,7 +115,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
 
     public override string GetDefaultTableName() => "public.sqldatabase_export";
 
-    protected override bool TryWriteValue(object value, string typeNameHint)
+    protected override bool TryWriteValue(object value, string? typeNameHint)
     {
         var type = value.GetType();
 
@@ -235,7 +235,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(NpgsqlRange<>))
         {
             GetType()
-                .GetMethod(nameof(ValueRange), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .GetMethod(nameof(ValueRange), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)!
                 .MakeGenericMethod(type.GenericTypeArguments)
                 .Invoke(this, new[] { value });
             return true;
@@ -389,7 +389,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
         }
     }
 
-    private void Value1dArray(Array value, string typeNameHint)
+    private void Value1dArray(Array value, string? typeNameHint)
     {
         Output.Write(Q);
         Output.Write('{');
@@ -407,7 +407,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
         Output.Write(Q);
     }
 
-    private void Value2dArray(Array value, string typeNameHint)
+    private void Value2dArray(Array value, string? typeNameHint)
     {
         Output.Write(Q);
         Output.Write('{');
@@ -443,7 +443,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
         Output.Write(Q);
     }
 
-    private void ValueComposite(IDictionary<string, object> value)
+    private void ValueComposite(IDictionary<string, object?> value)
     {
         Output.Write("ROW(");
 

@@ -16,9 +16,9 @@ public class MySqlDatabaseAdapterTest
     private const string SelectModuleVersion = "SELECT version FROM version WHERE module_name = '{{ModuleName}}'";
     private const string UpdateModuleVersion = "UPDATE version SET version='{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'";
 
-    private MySqlDatabaseAdapter _sut;
-    private AppConfiguration _configuration;
-    private IList<string> _logOutput;
+    private MySqlDatabaseAdapter _sut = null!;
+    private AppConfiguration _configuration = null!;
+    private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -35,10 +35,7 @@ public class MySqlDatabaseAdapterTest
 
         _configuration = new AppConfiguration();
 
-        _sut = new MySqlDatabaseAdapter(
-            MySqlQuery.ConnectionString,
-            _configuration,
-            log.Object);
+        _sut = new MySqlDatabaseAdapter(MySqlQuery.ConnectionString, _configuration, log.Object);
     }
 
     [Test]

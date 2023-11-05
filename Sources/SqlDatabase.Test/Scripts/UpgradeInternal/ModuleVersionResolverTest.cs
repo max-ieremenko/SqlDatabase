@@ -9,9 +9,9 @@ namespace SqlDatabase.Scripts.UpgradeInternal;
 [TestFixture]
 public class ModuleVersionResolverTest
 {
-    private ModuleVersionResolver _sut;
-    private Mock<IDatabase> _database;
-    private IList<string> _logOutput;
+    private ModuleVersionResolver _sut = null!;
+    private Mock<IDatabase> _database = null!;
+    private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -28,11 +28,7 @@ public class ModuleVersionResolverTest
                 _logOutput.Add(m);
             });
 
-        _sut = new ModuleVersionResolver
-        {
-            Database = _database.Object,
-            Log = log.Object
-        };
+        _sut = new ModuleVersionResolver(log.Object, _database.Object);
     }
 
     [Test]

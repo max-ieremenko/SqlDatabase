@@ -44,7 +44,7 @@ internal sealed class MsSqlWriter : SqlWriterBase
     public override SqlWriterBase DataType(string typeName, int size, int precision, int scale)
     {
         var name = typeName.ToUpperInvariant();
-        string sizeText = null;
+        string? sizeText = null;
 
         switch (name)
         {
@@ -100,7 +100,7 @@ internal sealed class MsSqlWriter : SqlWriterBase
 
     public override ExportTable ReadSchemaTable(DataTable metadata, string tableName)
     {
-        var result = new ExportTable { Name = tableName };
+        var result = new ExportTable(tableName);
 
         const string GeneratedName = "GeneratedName";
         var generatedIndex = 0;
@@ -146,7 +146,7 @@ internal sealed class MsSqlWriter : SqlWriterBase
 
     public override string GetDefaultTableName() => "dbo.SqlDatabaseExport";
 
-    protected override bool TryWriteValue(object value, string typeNameHint)
+    protected override bool TryWriteValue(object value, string? typeNameHint)
     {
         var type = value.GetType();
 

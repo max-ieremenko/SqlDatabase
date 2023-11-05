@@ -13,15 +13,27 @@ internal sealed class PowerShellScript : IScript
     public const string ParameterVariables = "Variables";
     public const string ParameterWhatIf = "WhatIf";
 
+    public PowerShellScript(
+        string displayName,
+        Func<Stream> readScriptContent,
+        Func<Stream?> readDescriptionContent,
+        IPowerShellFactory powerShellFactory)
+    {
+        DisplayName = displayName;
+        ReadScriptContent = readScriptContent;
+        ReadDescriptionContent = readDescriptionContent;
+        PowerShellFactory = powerShellFactory;
+    }
+
     public string DisplayName { get; set; }
 
-    public Func<Stream> ReadScriptContent { get; set; }
+    public Func<Stream> ReadScriptContent { get; internal set; }
 
-    public Func<Stream> ReadDescriptionContent { get; set; }
+    public Func<Stream?> ReadDescriptionContent { get; internal set; }
 
-    public IPowerShellFactory PowerShellFactory { get; set; }
+    public IPowerShellFactory PowerShellFactory { get; }
 
-    public void Execute(IDbCommand command, IVariables variables, ILogger logger)
+    public void Execute(IDbCommand? command, IVariables variables, ILogger logger)
     {
         string script;
         using (var stream = ReadScriptContent())
@@ -52,7 +64,7 @@ internal sealed class PowerShellScript : IScript
         {
             if (description == null)
             {
-                return new ScriptDependency[0];
+                return Array.Empty<ScriptDependency>();
             }
 
             using (var reader = new StreamReader(description))
@@ -62,14 +74,14 @@ internal sealed class PowerShellScript : IScript
         }
     }
 
-    private static void Invoke(IPowerShell powerShell, string script, IDbCommand command, IVariables variables, ILogger logger, bool whatIf)
+    private static void Invoke(IPowerShell powerShell, string script, IDbCommand? command, IVariables variables, ILogger logger, bool whatIf)
     {
-        var parameters = new KeyValuePair<string, object>[2 + (whatIf ? 1 : 0)];
-        parameters[0] = new KeyValuePair<string, object>(ParameterCommand, command);
-        parameters[1] = new KeyValuePair<string, object>(ParameterVariables, new VariablesProxy(variables));
+        var parameters = new KeyValuePair<string, object?>[2 + (whatIf ? 1 : 0)];
+        parameters[0] = new KeyValuePair<string, object?>(ParameterCommand, command);
+        parameters[1] = new KeyValuePair<string, object?>(ParameterVariables, new VariablesProxy(variables));
         if (whatIf)
         {
-            parameters[2] = new KeyValuePair<string, object>(ParameterWhatIf, null);
+            parameters[2] = new KeyValuePair<string, object?>(ParameterWhatIf, null);
         }
 
         powerShell.Invoke(script, logger, parameters);

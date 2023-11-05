@@ -17,8 +17,8 @@ namespace SqlDatabase.PowerShell.TestApi;
 public abstract class SqlDatabaseCmdLetTest<TSubject>
 {
     private readonly IList<GenericCommandLine> _commandLines = new List<GenericCommandLine>();
-    private Runspace _runSpace;
-    private System.Management.Automation.PowerShell _powerShell;
+    private Runspace _runSpace = null!;
+    private System.Management.Automation.PowerShell _powerShell = null!;
 
     [SetUp]
     public void BeforeEachTest()

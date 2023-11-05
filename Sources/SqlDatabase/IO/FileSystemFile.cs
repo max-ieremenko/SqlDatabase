@@ -16,7 +16,7 @@ internal sealed class FileSystemFile : IFile
 
     public IFolder GetParent()
     {
-        return new FileSystemFolder(Path.GetDirectoryName(Location));
+        return new FileSystemFolder(Path.GetDirectoryName(Location)!);
     }
 
     public Stream OpenRead()

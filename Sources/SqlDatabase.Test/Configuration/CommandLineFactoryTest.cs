@@ -7,7 +7,7 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class CommandLineFactoryTest
 {
-    private CommandLineFactory _sut;
+    private CommandLineFactory _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -36,7 +36,7 @@ public class CommandLineFactoryTest
     [Test]
     public void BindEmptyCommandLine()
     {
-        _sut.Args = new CommandLine(new Arg[0], new string[0]);
+        _sut.Args = new CommandLine(Array.Empty<Arg>(), Array.Empty<string>());
 
         _sut.Bind().ShouldBeFalse();
     }
@@ -48,7 +48,7 @@ public class CommandLineFactoryTest
 
         var ex = Assert.Throws<InvalidCommandLineException>(() => _sut.Bind());
 
-        ex.Message.ShouldContain("[Unknown]");
+        ex?.Message.ShouldContain("[Unknown]");
     }
 
     [Test]

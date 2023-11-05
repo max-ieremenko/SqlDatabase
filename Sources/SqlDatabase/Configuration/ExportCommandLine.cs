@@ -9,9 +9,9 @@ namespace SqlDatabase.Configuration;
 
 internal sealed class ExportCommandLine : CommandLineBase
 {
-    public string DestinationTableName { get; set; }
+    public string? DestinationTableName { get; set; }
 
-    public string DestinationFileName { get; set; }
+    public string? DestinationFileName { get; set; }
 
     public override ICommand CreateCommand(ILogger logger)
     {
@@ -20,22 +20,16 @@ internal sealed class ExportCommandLine : CommandLineBase
 
         var database = CreateDatabase(logger, configuration, TransactionMode.None, false);
 
-        var sequence = new CreateScriptSequence
-        {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            Sources = Scripts.ToArray()
-        };
+        var sequence = new CreateScriptSequence(
+            Scripts.ToArray(),
+            new ScriptFactory(configuration.SqlDatabase.AssemblyScript, null, database.Adapter.CreateSqlTextReader()));
 
-        return new DatabaseExportCommand
+        return new DatabaseExportCommand(
+            sequence,
+            CreateOutput(),
+            database,
+            WrapLogger(logger))
         {
-            Log = WrapLogger(logger),
-            OpenOutput = CreateOutput(),
-            Database = database,
-            ScriptSequence = sequence,
             DestinationTableName = DestinationTableName
         };
     }

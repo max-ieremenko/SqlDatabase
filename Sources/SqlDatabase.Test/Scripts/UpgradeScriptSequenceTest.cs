@@ -15,10 +15,10 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class UpgradeScriptSequenceTest
 {
-    private UpgradeScriptSequence _sut;
-    private SourceFolder _root;
-    private Mock<IModuleVersionResolver> _versionResolver;
-    private Mock<IScriptFactory> _scriptFactory;
+    private UpgradeScriptSequence _sut = null!;
+    private SourceFolder _root = null!;
+    private Mock<IModuleVersionResolver> _versionResolver = null!;
+    private Mock<IScriptFactory> _scriptFactory = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -32,12 +32,13 @@ public class UpgradeScriptSequenceTest
 
         _versionResolver = new Mock<IModuleVersionResolver>(MockBehavior.Strict);
 
-        _sut = new UpgradeScriptSequence
-        {
-            Sources = { _root },
-            ScriptFactory = _scriptFactory.Object,
-            VersionResolver = _versionResolver.Object
-        };
+        _sut = new UpgradeScriptSequence(
+            _scriptFactory.Object,
+            _versionResolver.Object,
+            new IFileSystemInfo[] { _root },
+            new Mock<ILogger>(MockBehavior.Strict).Object,
+            false,
+            false);
     }
 
     [Test]
@@ -48,7 +49,7 @@ public class UpgradeScriptSequenceTest
         {
             var file = AddFile(_root, sourceFile.Name);
 
-            var dependencies = new ScriptDependency[0];
+            var dependencies = Array.Empty<ScriptDependency>();
             if (sourceFile.Dependencies != null)
             {
                 dependencies = sourceFile.Dependencies.Select(i => new ScriptDependency(i.Module, new Version(i.Version))).ToArray();
@@ -80,7 +81,7 @@ public class UpgradeScriptSequenceTest
         else
         {
             var ex = Assert.Throws<InvalidOperationException>(() => _sut.BuildSequence());
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex!.Message);
             foreach (var tag in testCase.Exception)
             {
                 ex.Message.ShouldContain(tag);
@@ -103,9 +104,9 @@ public class UpgradeScriptSequenceTest
         {
             BuildSequenceCase[] testCases;
             using (var stream = anchor.Assembly.GetManifestResourceStream(sourceName))
-            using (var reader = new JsonTextReader(new StreamReader(stream)))
+            using (var reader = new JsonTextReader(new StreamReader(stream!)))
             {
-                testCases = new JsonSerializer().Deserialize<BuildSequenceCase[]>(reader);
+                testCases = new JsonSerializer().Deserialize<BuildSequenceCase[]>(reader)!;
             }
 
             foreach (var testCase in testCases)
@@ -131,31 +132,31 @@ public class UpgradeScriptSequenceTest
 
     public sealed class BuildSequenceCase
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public bool FolderAsModuleName { get; set; }
 
-        public ModuleVersion[] Version { get; set; }
+        public ModuleVersion[] Version { get; set; } = null!;
 
-        public SourceFile[] Files { get; set; }
+        public SourceFile[] Files { get; set; } = null!;
 
-        public string[] Sequence { get; set; }
+        public string[] Sequence { get; set; } = null!;
 
-        public string[] Exception { get; set; }
+        public string[]? Exception { get; set; }
     }
 
     public sealed class ModuleVersion
     {
-        public string Module { get; set; }
+        public string Module { get; set; } = null!;
 
-        public string Version { get; set; }
+        public string Version { get; set; } = null!;
     }
 
     public sealed class SourceFile
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public ModuleVersion[] Dependencies { get; set; }
+        public ModuleVersion[]? Dependencies { get; set; }
     }
 
     private sealed class SourceFolder : IFolder

@@ -4,18 +4,18 @@ namespace SqlDatabase.Export;
 
 internal sealed class DataExporter : IDataExporter
 {
-    public SqlWriterBase Output { get; set; }
+    public SqlWriterBase Output { get; set; } = null!;
 
     public int MaxInsertBatchSize { get; set; } = 500;
 
-    public ILogger Log { get; set; }
+    public ILogger Log { get; set; } = null!;
 
     public void Export(IDataReader source, string tableName)
     {
         ExportTable table;
         using (var metadata = source.GetSchemaTable())
         {
-            table = Output.ReadSchemaTable(metadata, tableName);
+            table = Output.ReadSchemaTable(metadata!, tableName);
         }
 
         CreateTable(table);

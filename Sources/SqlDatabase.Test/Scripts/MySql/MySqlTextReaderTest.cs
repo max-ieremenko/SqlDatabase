@@ -7,7 +7,7 @@ namespace SqlDatabase.Scripts.MySql;
 [TestFixture]
 public class MySqlTextReaderTest
 {
-    private MySqlTextReader _sut;
+    private MySqlTextReader _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

@@ -12,7 +12,7 @@ public class DependencyResolverFactoryTest
     [TestCase("Desktop", typeof(PowerShellDesktopDependencyResolver))]
     [TestCase(null, typeof(PowerShellDesktopDependencyResolver))]
     [TestCase("Core", typeof(PowerShellCoreDependencyResolver))]
-    public void CreateProgram(string psEdition, Type expected)
+    public void CreateProgram(string? psEdition, Type expected)
     {
         var psVersionTable = new Hashtable();
         if (psEdition != null)

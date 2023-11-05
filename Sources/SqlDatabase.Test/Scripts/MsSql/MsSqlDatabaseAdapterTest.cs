@@ -16,9 +16,9 @@ public class MsSqlDatabaseAdapterTest
     private const string SelectModuleVersion = "SELECT value from sys.fn_listextendedproperty('version-{{ModuleName}}', default, default, default, default, default, default)";
     private const string UpdateModuleVersion = "EXEC sys.sp_updateextendedproperty @name=N'version-{{ModuleName}}', @value=N'{{TargetVersion}}'";
 
-    private MsSqlDatabaseAdapter _sut;
-    private AppConfiguration _configuration;
-    private IList<string> _logOutput;
+    private MsSqlDatabaseAdapter _sut = null!;
+    private AppConfiguration _configuration = null!;
+    private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -35,10 +35,7 @@ public class MsSqlDatabaseAdapterTest
 
         _configuration = new AppConfiguration();
 
-        _sut = new MsSqlDatabaseAdapter(
-            MsSqlQuery.ConnectionString,
-            _configuration,
-            log.Object);
+        _sut = new MsSqlDatabaseAdapter(MsSqlQuery.ConnectionString, _configuration, log.Object);
     }
 
     [Test]

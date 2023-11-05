@@ -15,13 +15,13 @@ internal sealed class ExecuteMethodResolverDbConnection : ExecuteMethodResolverB
                && typeof(IDbConnection) == parameters[0].ParameterType;
     }
 
-    public override Action<IDbCommand, IReadOnlyDictionary<string, string>> CreateDelegate(object instance, MethodInfo method)
+    public override Action<IDbCommand, IReadOnlyDictionary<string, string?>> CreateDelegate(object instance, MethodInfo method)
     {
         var execute = (Action<IDbConnection>)Delegate.CreateDelegate(
             typeof(Action<IDbConnection>),
             instance,
             method);
 
-        return (command, variables) => execute(command.Connection);
+        return (command, _) => execute(command.Connection!);
     }
 }

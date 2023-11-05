@@ -8,9 +8,20 @@ namespace SqlDatabase.Commands;
 
 internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
 {
-    public IUpgradeScriptSequence ScriptSequence { get; set; }
+    public DatabaseUpgradeCommand(
+        IUpgradeScriptSequence scriptSequence,
+        IPowerShellFactory powerShellFactory,
+        IDatabase database,
+        ILogger log)
+        : base(database, log)
+    {
+        ScriptSequence = scriptSequence;
+        PowerShellFactory = powerShellFactory;
+    }
 
-    public IPowerShellFactory PowerShellFactory { get; set; }
+    public IUpgradeScriptSequence ScriptSequence { get; }
+
+    public IPowerShellFactory PowerShellFactory { get; }
 
     protected override void Greet(string databaseLocation)
     {

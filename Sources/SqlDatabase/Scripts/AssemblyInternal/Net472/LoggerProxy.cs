@@ -5,8 +5,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net472;
 
 internal sealed class LoggerProxy : TraceListener, ILogger
 {
-    private readonly TraceListener _output;
-    private readonly ILogger _input;
+    private readonly TraceListener? _output;
+    private readonly ILogger? _input;
 
     public LoggerProxy(ILogger input)
     {
@@ -18,29 +18,29 @@ internal sealed class LoggerProxy : TraceListener, ILogger
         _output = output;
     }
 
-    public override void Write(string message)
+    public override void Write(string? message)
     {
         throw new NotSupportedException();
     }
 
-    public override void WriteLine(string message)
+    public override void WriteLine(string? message)
     {
-        _input.Info(message);
+        _input?.Info(message ?? string.Empty);
     }
 
-    public override void Fail(string message)
+    public override void Fail(string? message)
     {
-        _input.Error(message);
+        _input?.Error(message!);
     }
 
     void ILogger.Error(string message)
     {
-        _output.Fail(message);
+        _output?.Fail(message);
     }
 
-    void ILogger.Info(string message)
+    void ILogger.Info(string? message)
     {
-        _output.WriteLine(message);
+        _output?.WriteLine(message);
     }
 
     IDisposable ILogger.Indent()

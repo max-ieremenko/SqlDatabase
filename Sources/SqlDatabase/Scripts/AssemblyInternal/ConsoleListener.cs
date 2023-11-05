@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -21,20 +22,21 @@ internal sealed class ConsoleListener : TextWriter
 
     public override IFormatProvider FormatProvider => _original.FormatProvider;
 
+    [AllowNull]
     public override string NewLine
     {
         get => _original.NewLine;
         set => _original.NewLine = value;
     }
 
-    public override void Write(string value)
+    public override void Write(string? value)
     {
-        _logger.Info(value);
+        _logger.Info(value ?? string.Empty);
     }
 
-    public override void WriteLine(string value)
+    public override void WriteLine(string? value)
     {
-        _logger.Info(value);
+        _logger.Info(value ?? string.Empty);
     }
 
     protected override void Dispose(bool disposing)

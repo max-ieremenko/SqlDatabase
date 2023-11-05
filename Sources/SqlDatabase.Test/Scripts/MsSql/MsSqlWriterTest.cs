@@ -10,8 +10,8 @@ namespace SqlDatabase.Scripts.MsSql;
 [TestFixture]
 public class MsSqlWriterTest
 {
-    private StringBuilder _output;
-    private MsSqlWriter _sut;
+    private StringBuilder _output = null!;
+    private MsSqlWriter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

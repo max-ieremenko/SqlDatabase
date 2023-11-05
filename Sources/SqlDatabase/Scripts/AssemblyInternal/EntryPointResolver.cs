@@ -7,13 +7,20 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 
 internal sealed class EntryPointResolver
 {
-    public ILogger Log { get; set; }
+    public EntryPointResolver(ILogger log, string executorClassName, string executorMethodName)
+    {
+        Log = log;
+        ExecutorClassName = executorClassName;
+        ExecutorMethodName = executorMethodName;
+    }
 
-    public string ExecutorClassName { get; set; }
+    public ILogger Log { get; }
 
-    public string ExecutorMethodName { get; set; }
+    public string ExecutorClassName { get; internal set; }
 
-    public IEntryPoint Resolve(Assembly assembly)
+    public string ExecutorMethodName { get; internal set; }
+
+    public IEntryPoint? Resolve(Assembly assembly)
     {
         Log.Info("resolve script executor");
 
@@ -24,10 +31,6 @@ internal sealed class EntryPointResolver
         }
 
         var method = ResolveMethod(type);
-        if (method == null)
-        {
-            return null;
-        }
 
         var message = new StringBuilder()
             .AppendFormat("found {0}.{1}(", type.FullName, method.Method.Name);
@@ -51,7 +54,7 @@ internal sealed class EntryPointResolver
         object scriptInstance;
         try
         {
-            scriptInstance = Activator.CreateInstance(type);
+            scriptInstance = Activator.CreateInstance(type)!;
         }
         catch (Exception ex)
         {
@@ -59,15 +62,10 @@ internal sealed class EntryPointResolver
             return null;
         }
 
-        return new DefaultEntryPoint
-        {
-            Log = Log,
-            ScriptInstance = scriptInstance,
-            Method = method.Resolver.CreateDelegate(scriptInstance, method.Method)
-        };
+        return new DefaultEntryPoint(Log, scriptInstance, method.Resolver.CreateDelegate(scriptInstance, method.Method));
     }
 
-    private Type ResolveClass(Assembly assembly)
+    private Type? ResolveClass(Assembly assembly)
     {
         var filter = assembly
             .GetExportedTypes()
@@ -120,19 +118,14 @@ internal sealed class EntryPointResolver
                     var resolver = methodResolvers[priority];
                     if (resolver.IsMatch(i))
                     {
-                        return new ExecuteMethodRef
-                        {
-                            Method = i,
-                            Resolver = resolver,
-                            Priority = priority
-                        };
+                        return new ExecuteMethodRef(priority, i, resolver);
                     }
                 }
 
                 return null;
             })
             .Where(i => i != null)
-            .OrderBy(i => i.Priority)
+            .OrderBy(i => i!.Priority)
             .ToList();
 
         if (methods.Count == 0)
@@ -140,15 +133,22 @@ internal sealed class EntryPointResolver
             Log.Error("public void {0}(IDbCommand command, IReadOnlyDictionary<string, string> variables) not found in {1}.".FormatWith(ExecutorMethodName, type));
         }
 
-        return methods[0];
+        return methods[0]!;
     }
 
     private sealed class ExecuteMethodRef
     {
-        public int Priority { get; set; }
+        public ExecuteMethodRef(int priority, MethodInfo method, ExecuteMethodResolverBase resolver)
+        {
+            Priority = priority;
+            Method = method;
+            Resolver = resolver;
+        }
 
-        public MethodInfo Method { get; set; }
+        public int Priority { get; }
 
-        public ExecuteMethodResolverBase Resolver { get; set; }
+        public MethodInfo Method { get; }
+
+        public ExecuteMethodResolverBase Resolver { get; }
     }
 }

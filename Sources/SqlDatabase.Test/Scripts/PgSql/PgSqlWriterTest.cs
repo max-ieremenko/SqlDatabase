@@ -14,8 +14,8 @@ namespace SqlDatabase.Scripts.PgSql;
 [TestFixture]
 public class PgSqlWriterTest
 {
-    private StringBuilder _output;
-    private PgSqlWriter _sut;
+    private StringBuilder _output = null!;
+    private PgSqlWriter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -137,7 +137,7 @@ public class PgSqlWriterTest
             .Text("::tsquery");
 
         var actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeAssignableTo<NpgsqlTsQuery>();
-        actual.ToString().ShouldBe(expected.ToString());
+        actual!.ToString().ShouldBe(expected!.ToString());
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class PgSqlWriterTest
     [Test]
     public void ValueCompositeType()
     {
-        IDictionary<string, object> expected = new ExpandoObject();
+        IDictionary<string, object?> expected = new ExpandoObject();
         expected.Add("name", "fuzzy dice");
         expected.Add("supplier_id", 42);
         expected.Add("price", 1.99);
@@ -187,7 +187,7 @@ public class PgSqlWriterTest
             .Value(expected)
             .Text("::public.inventory_item");
 
-        IDictionary<string, object> actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeOfType<ExpandoObject>();
+        IDictionary<string, object?> actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeOfType<ExpandoObject>();
         actual.Keys.ShouldBe(expected.Keys);
         foreach (var key in actual.Keys)
         {

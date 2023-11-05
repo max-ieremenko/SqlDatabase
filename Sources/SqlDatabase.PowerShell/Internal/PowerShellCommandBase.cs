@@ -14,7 +14,7 @@ internal abstract class PowerShellCommandBase
     public PSCmdlet Cmdlet { get; }
 
     // only for tests
-    internal static ISqlDatabaseProgram Program { get; set; }
+    internal static ISqlDatabaseProgram? Program { get; set; }
 
     public void Execute()
     {

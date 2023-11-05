@@ -17,7 +17,7 @@ internal static class CmdletExtensions
         return root;
     }
 
-    public static string RootPath(this PSCmdlet cmdlet, string path)
+    public static string? RootPath(this PSCmdlet cmdlet, string? path)
     {
         if (string.IsNullOrEmpty(path) || Path.IsPathRooted(path))
         {
@@ -40,13 +40,19 @@ internal static class CmdletExtensions
         return true;
     }
 
-    public static void AppendFrom(this PSCmdlet cmdlet, string[] from, GenericCommandLineBuilder target)
+    public static void AppendFrom(this PSCmdlet cmdlet, string[]? from, GenericCommandLineBuilder target)
     {
-        if (from != null)
+        if (from == null)
         {
-            for (var i = 0; i < from.Length; i++)
+            return;
+        }
+
+        for (var i = 0; i < from.Length; i++)
+        {
+            var path = cmdlet.RootPath(from[i]);
+            if (path != null)
             {
-                target.SetScripts(cmdlet.RootPath(from[i]));
+                target.SetScripts(path);
             }
         }
     }

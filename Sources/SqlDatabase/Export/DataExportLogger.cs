@@ -19,7 +19,7 @@ internal sealed class DataExportLogger : ILogger
 
         using (var reader = new StringReader(message))
         {
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null)
             {
                 if (escaped.Length > 0)
@@ -34,7 +34,7 @@ internal sealed class DataExportLogger : ILogger
         _origin.Error(escaped.ToString());
     }
 
-    public void Info(string message)
+    public void Info(string? message)
     {
         // ignore
     }

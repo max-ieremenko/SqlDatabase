@@ -7,9 +7,15 @@ namespace SqlDatabase.Scripts;
 
 internal sealed class CreateScriptSequence : ICreateScriptSequence
 {
-    public IList<IFileSystemInfo> Sources { get; set; }
+    public CreateScriptSequence(IList<IFileSystemInfo> sources, IScriptFactory scriptFactory)
+    {
+        Sources = sources;
+        ScriptFactory = scriptFactory;
+    }
 
-    public IScriptFactory ScriptFactory { get; set; }
+    public IList<IFileSystemInfo> Sources { get; }
+
+    public IScriptFactory ScriptFactory { get; }
 
     public IList<IScript> BuildSequence()
     {
@@ -32,7 +38,7 @@ internal sealed class CreateScriptSequence : ICreateScriptSequence
 
     private static void Build(
         IFolder root,
-        string fullPath,
+        string? fullPath,
         IScriptFactory factory,
         List<IScript> scripts)
     {

@@ -4,15 +4,24 @@ namespace SqlDatabase.Commands;
 
 internal sealed class EchoCommand : ICommand
 {
-    public ILogger Logger { get; set; }
+    public EchoCommand(ILogger logger, CommandLine args)
+    {
+        Logger = logger;
+        Args = args;
+    }
 
-    public CommandLine Args { get; set; }
+    public ILogger Logger { get; }
+
+    public CommandLine Args { get; }
 
     public void Execute()
     {
-        foreach (var arg in Args.Original)
+        if (Args.Original != null)
         {
-            Logger.Info(arg);
+            foreach (var arg in Args.Original)
+            {
+                Logger.Info(arg);
+            }
         }
     }
 }

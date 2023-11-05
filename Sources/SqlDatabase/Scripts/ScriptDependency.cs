@@ -20,7 +20,7 @@ public readonly struct ScriptDependency : IEquatable<ScriptDependency>
                && Version == other.Version;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is ScriptDependency d && Equals(d);
     }

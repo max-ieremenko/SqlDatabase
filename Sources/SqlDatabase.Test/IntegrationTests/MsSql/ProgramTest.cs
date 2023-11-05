@@ -19,16 +19,16 @@ public class ProgramTest
 {
     private readonly string _connectionString = new SqlConnectionStringBuilder(MsSqlQuery.ConnectionString) { InitialCatalog = "SqlDatabaseIT" }.ToString();
 
-    private string _scriptsLocation;
-    private AppConfiguration _configuration;
-    private TempFile _logFile;
+    private string _scriptsLocation = null!;
+    private AppConfiguration _configuration = null!;
+    private TempFile _logFile = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
         TestPowerShellHost.GetOrCreateFactory();
 
-        _scriptsLocation = ConfigurationManager.AppSettings["MsSql.IntegrationTestsScriptsLocation"];
+        _scriptsLocation = ConfigurationManager.AppSettings["MsSql.IntegrationTestsScriptsLocation"]!;
         if (!Path.IsPathRooted(_scriptsLocation))
         {
             _scriptsLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsLocation);
@@ -266,11 +266,11 @@ ORDER BY p.Name";
         Program.Main(args).ShouldBe(0);
     }
 
-    private IDatabase CreateDatabaseObject(AppConfiguration configuration = null)
+    private IDatabase CreateDatabaseObject(AppConfiguration? configuration = null)
     {
-        return new Database
-        {
-            Adapter = new MsSqlDatabaseAdapter(_connectionString, configuration ?? _configuration, new Mock<ILogger>(MockBehavior.Strict).Object)
-        };
+        var log = new Mock<ILogger>(MockBehavior.Strict).Object;
+        var adapter = new MsSqlDatabaseAdapter(_connectionString, configuration ?? _configuration, log);
+
+        return new Database(adapter, log, TransactionMode.None, false);
     }
 }

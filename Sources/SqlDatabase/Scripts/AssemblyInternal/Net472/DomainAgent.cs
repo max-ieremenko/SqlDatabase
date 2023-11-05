@@ -9,13 +9,13 @@ namespace SqlDatabase.Scripts.AssemblyInternal.Net472;
 
 internal sealed class DomainAgent : MarshalByRefObject
 {
-    private ConsoleListener _consoleRedirect;
+    private ConsoleListener? _consoleRedirect;
 
-    internal Assembly Assembly { get; set; }
+    internal Assembly? Assembly { get; set; }
 
-    internal IEntryPoint EntryPoint { get; set; }
+    internal IEntryPoint? EntryPoint { get; set; }
 
-    internal ILogger Logger { get; set; }
+    internal ILogger? Logger { get; set; }
 
     public void LoadAssembly(string fileName)
     {
@@ -37,21 +37,16 @@ internal sealed class DomainAgent : MarshalByRefObject
             return true;
         }
 
-        var resolver = new EntryPointResolver
-        {
-            Log = Logger,
-            ExecutorClassName = className,
-            ExecutorMethodName = methodName
-        };
+        var resolver = new EntryPointResolver(Logger!, className, methodName);
 
-        EntryPoint = resolver.Resolve(Assembly);
+        EntryPoint = resolver.Resolve(Assembly!);
 
         return EntryPoint != null;
     }
 
-    public bool Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+    public bool Execute(IDbCommand command, IReadOnlyDictionary<string, string?> variables)
     {
-        return EntryPoint.Execute(command, variables);
+        return EntryPoint!.Execute(command, variables);
     }
 
     public void BeforeUnload()
@@ -60,17 +55,17 @@ internal sealed class DomainAgent : MarshalByRefObject
         AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
     }
 
-    private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
+    private Assembly? OnAssemblyResolve(object? sender, ResolveEventArgs args)
     {
         var argName = new AssemblyName(args.Name).Name;
 
-        var sqlDataBase = GetType().Assembly;
-        if (sqlDataBase.GetName().Name.Equals(argName, StringComparison.OrdinalIgnoreCase))
+        var sqlDataBase = GetType().Assembly!;
+        if (sqlDataBase.GetName().Name!.Equals(argName, StringComparison.OrdinalIgnoreCase))
         {
             return sqlDataBase;
         }
 
-        var fileName = Path.Combine(Path.GetDirectoryName(sqlDataBase.Location), argName + ".dll");
+        var fileName = Path.Combine(Path.GetDirectoryName(sqlDataBase.Location)!, argName + ".dll");
         if (File.Exists(fileName))
         {
             return Assembly.LoadFrom(fileName);

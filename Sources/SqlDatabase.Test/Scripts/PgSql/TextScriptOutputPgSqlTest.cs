@@ -11,13 +11,13 @@ namespace SqlDatabase.Scripts.PgSql;
 [TestFixture]
 public class TextScriptOutputPgSqlTest
 {
-    private NpgsqlConnection _connection;
-    private NpgsqlCommand _command;
-    private Mock<ILogger> _logger;
-    private Variables _variables;
-    private TextScript _sut;
+    private NpgsqlConnection _connection = null!;
+    private NpgsqlCommand _command = null!;
+    private Mock<ILogger> _logger = null!;
+    private Variables _variables = null!;
+    private TextScript _sut = null!;
 
-    private IList<string> _logOutput;
+    private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -28,7 +28,7 @@ public class TextScriptOutputPgSqlTest
         _logger = new Mock<ILogger>(MockBehavior.Strict);
         _logger
             .Setup(l => l.Indent())
-            .Returns((IDisposable)null);
+            .Returns((IDisposable)null!);
         _logger
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
@@ -37,10 +37,7 @@ public class TextScriptOutputPgSqlTest
                 _logOutput.Add(m);
             });
 
-        _sut = new TextScript
-        {
-            TextReader = new PgSqlTextReader()
-        };
+        _sut = new TextScript("dummy", null!, new PgSqlTextReader());
 
         _connection = PgSqlQuery.Open();
         _command = _connection.CreateCommand();

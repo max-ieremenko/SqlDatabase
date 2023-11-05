@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace SqlDatabase.Scripts.PowerShellInternal;
@@ -10,7 +11,7 @@ internal static class InstallationSeeker
     public const string RootAssemblyName = "System.Management.Automation";
     public const string RootAssemblyFileName = RootAssemblyName + ".dll";
 
-    public static bool TryFindByParentProcess(out string installationPath)
+    public static bool TryFindByParentProcess([NotNullWhen(true)] out string? installationPath)
     {
         int processId;
         DateTime processStartTime;
@@ -22,11 +23,11 @@ internal static class InstallationSeeker
 
         installationPath = FindPowerShellProcess(processId, processStartTime);
         return !string.IsNullOrEmpty(installationPath)
-               && TryGetInfo(installationPath, out var info)
+               && TryGetInfo(installationPath!, out var info)
                && IsCompatibleVersion(info.Version);
     }
 
-    public static bool TryFindOnDisk(out string installationPath)
+    public static bool TryFindOnDisk([NotNullWhen(true)] out string? installationPath)
     {
         installationPath = null;
         var root = GetDefaultInstallationRoot();
@@ -80,7 +81,7 @@ internal static class InstallationSeeker
         return true;
     }
 
-    private static string FindPowerShellProcess(int processId, DateTime processStartTime)
+    private static string? FindPowerShellProcess(int processId, DateTime processStartTime)
     {
         var parentId = DiagnosticsTools.GetParentProcessId(processId);
         if (!parentId.HasValue || parentId == processId)
@@ -88,7 +89,7 @@ internal static class InstallationSeeker
             return null;
         }
 
-        string parentLocation = null;
+        string? parentLocation = null;
         try
         {
             using (var parent = Process.GetProcessById(parentId.Value))

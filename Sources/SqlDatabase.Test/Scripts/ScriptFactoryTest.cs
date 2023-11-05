@@ -11,10 +11,10 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class ScriptFactoryTest
 {
-    private ScriptFactory _sut;
-    private Mock<IPowerShellFactory> _powerShellFactory;
-    private AssemblyScriptConfiguration _configuration;
-    private Mock<ISqlTextReader> _textReader;
+    private ScriptFactory _sut = null!;
+    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private AssemblyScriptConfiguration _configuration = null!;
+    private Mock<ISqlTextReader> _textReader = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -23,12 +23,7 @@ public class ScriptFactoryTest
         _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
         _textReader = new Mock<ISqlTextReader>(MockBehavior.Strict);
 
-        _sut = new ScriptFactory
-        {
-            AssemblyScriptConfiguration = _configuration,
-            PowerShellFactory = _powerShellFactory.Object,
-            TextReader = _textReader.Object
-        };
+        _sut = new ScriptFactory(_configuration, _powerShellFactory.Object, _textReader.Object);
     }
 
     [Test]
@@ -57,10 +52,10 @@ public class ScriptFactoryTest
 
         var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
 
-        script.DisplayName.ShouldBe("11.dll");
+        script!.DisplayName.ShouldBe("11.dll");
         script.Configuration.ShouldBe(_configuration);
         script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
-        new StreamReader(script.ReadDescriptionContent()).ReadToEnd().ShouldBe("3, 2, 1");
+        new StreamReader(script.ReadDescriptionContent()!).ReadToEnd().ShouldBe("3, 2, 1");
     }
 
     [Test]
@@ -99,7 +94,7 @@ public class ScriptFactoryTest
         script.PowerShellFactory.ShouldBe(_powerShellFactory.Object);
         script.DisplayName.ShouldBe("11.ps1");
         new StreamReader(script.ReadScriptContent()).ReadToEnd().ShouldBe("some script");
-        new StreamReader(script.ReadDescriptionContent()).ReadToEnd().ShouldBe("3, 2, 1");
+        new StreamReader(script.ReadDescriptionContent()!).ReadToEnd().ShouldBe("3, 2, 1");
         _powerShellFactory.VerifyAll();
     }
 

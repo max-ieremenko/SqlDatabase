@@ -30,7 +30,7 @@ internal sealed class PowerShellCoreDependencyResolver : IDependencyResolver
         _cache.Dispose();
     }
 
-    private Assembly AssemblyResolving(AssemblyLoadContext context, AssemblyName assemblyName)
+    private Assembly? AssemblyResolving(AssemblyLoadContext context, AssemblyName assemblyName)
     {
         return _cache.Load(assemblyName, context.LoadFromAssemblyPath);
     }
