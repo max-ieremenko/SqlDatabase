@@ -3,7 +3,6 @@
     <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net7.0;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0</TargetFrameworks>
 
-    <!--<AssemblyTitle>SqlDatabase</AssemblyTitle>-->
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
@@ -13,28 +12,6 @@
     <PackageId>SqlDatabase.GlobalTool</PackageId>
   </PropertyGroup>
   
-  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
-    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
-    <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
-    <Content Include="..\..\bin\ThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <EmbeddedResource Include="Configuration\CommandLine.export.net472.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.execute.net472.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net472.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.create.net472.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.txt" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.create.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.txt" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.IO.Compression" />
@@ -66,4 +43,29 @@
     <PackageReference Include="Npgsql" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.FileSystem\SqlDatabase.FileSystem.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
+    <Content Include="..\..\bin\ThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <EmbeddedResource Include="Configuration\CommandLine.export.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.txt" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.txt" />
+  </ItemGroup>
 </Project>

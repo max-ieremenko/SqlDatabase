@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using SqlDatabase.Configuration;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Scripts;
 

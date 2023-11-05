@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Commands;
 using SqlDatabase.Export;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
 using SqlDatabase.TestApi;
 

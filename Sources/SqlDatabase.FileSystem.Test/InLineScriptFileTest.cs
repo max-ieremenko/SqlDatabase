@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Shouldly;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 [TestFixture]
 public class InLineScriptFileTest

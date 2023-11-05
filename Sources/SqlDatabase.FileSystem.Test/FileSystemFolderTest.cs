@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 [TestFixture]
 public class FileSystemFolderTest

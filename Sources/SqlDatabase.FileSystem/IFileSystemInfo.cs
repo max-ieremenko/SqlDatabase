@@ -1,4 +1,4 @@
-﻿namespace SqlDatabase.IO;
+﻿namespace SqlDatabase.FileSystem;
 
 public interface IFileSystemInfo
 {

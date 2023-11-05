@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.TestApi;
 
-internal sealed class TempDirectory : IDisposable
+public sealed class TempDirectory : IDisposable
 {
     public TempDirectory(string? name = null)
     {
@@ -23,7 +23,7 @@ internal sealed class TempDirectory : IDisposable
         }
 
         var source = resourceAnchor!.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
-        Assert.IsNotNull(source, resourceName);
+        source.ShouldNotBeNull(resourceName);
 
         var fileName = Path.Combine(Location, resourceName);
 

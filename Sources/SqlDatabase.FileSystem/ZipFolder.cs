@@ -5,7 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 [DebuggerDisplay("{Name}")]
 internal sealed class ZipFolder : IFolder

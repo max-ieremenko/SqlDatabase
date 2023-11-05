@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts;

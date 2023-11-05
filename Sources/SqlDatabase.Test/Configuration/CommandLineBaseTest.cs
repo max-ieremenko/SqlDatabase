@@ -3,7 +3,7 @@ using System.Configuration;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration;

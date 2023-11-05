@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SqlDatabase.TestApi;
 
-internal sealed class TempFile : IDisposable
+public sealed class TempFile : IDisposable
 {
     public TempFile(string extension)
     {

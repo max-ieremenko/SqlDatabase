@@ -1,4 +1,4 @@
-﻿using SqlDatabase.IO;
+﻿using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Scripts;
 

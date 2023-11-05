@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 [DebuggerDisplay(@"zip\{EntryName}")]
 internal sealed partial class ZipFolderFile : IFile

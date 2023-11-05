@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 [DebuggerDisplay("{Name}")]
 internal sealed class ZipEntryFolder : IFolder

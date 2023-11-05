@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts.UpgradeInternal;
 
 namespace SqlDatabase.Scripts;

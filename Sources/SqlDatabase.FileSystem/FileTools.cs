@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 internal static class FileTools
 {

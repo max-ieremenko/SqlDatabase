@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
-internal sealed class FileSystemFactory : IFileSystemFactory
+public sealed class FileSystemFactory : IFileSystemFactory
 {
     public static IFileSystemInfo FileSystemInfoFromPath(string? path)
     {
@@ -38,7 +38,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
 
         if (entryPoint == null)
         {
-            throw new IOException("Directory {0} not found.".FormatWith(path));
+            throw new IOException($"Directory {path} not found.");
         }
 
         for (var i = 0; i < items.Count - 1; i++)
@@ -49,7 +49,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
             entryPoint = entryPoint.GetFolders().FirstOrDefault(f => name.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
             if (entryPoint == null)
             {
-                throw new IOException("Directory {0} not found.".FormatWith(path));
+                throw new IOException($"Directory {path} not found.");
             }
         }
 
@@ -65,7 +65,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
         var folder = entryPoint.GetFolders().FirstOrDefault(f => resultName.Equals(f.Name, StringComparison.OrdinalIgnoreCase));
         if (folder == null)
         {
-            throw new IOException("File or folder {0} not found.".FormatWith(path));
+            throw new IOException($"File or folder {path} not found.");
         }
 
         return folder;
@@ -89,7 +89,7 @@ internal sealed class FileSystemFactory : IFileSystemFactory
         {
             if (!FileTools.IsZip(path))
             {
-                throw new NotSupportedException("File format [{0}] is not supported as .zip container.".FormatWith(Path.GetExtension(path)));
+                throw new NotSupportedException($"File format [{Path.GetExtension(path)}] is not supported as .zip container.");
             }
 
             return new ZipFolder(path);

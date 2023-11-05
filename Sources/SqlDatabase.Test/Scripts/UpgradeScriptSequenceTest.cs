@@ -6,7 +6,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts.UpgradeInternal;
 using SqlDatabase.TestApi;
 

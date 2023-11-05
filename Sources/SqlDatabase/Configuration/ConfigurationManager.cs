@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using SqlDatabase.IO;
+using SqlDatabase.FileSystem;
 using Manager = System.Configuration.ConfigurationManager;
 
 namespace SqlDatabase.Configuration;
@@ -13,7 +13,8 @@ internal sealed class ConfigurationManager : IConfigurationManager
 
     public static string ResolveDefaultConfigurationFile(string probingPath)
     {
-        var fileName = ResolveFile(new FileSystemFolder(probingPath)).Name;
+        var info = FileSystemFactory.FileSystemInfoFromPath(probingPath);
+        var fileName = ResolveFile(info).Name;
 
         return Path.Combine(probingPath, fileName);
     }

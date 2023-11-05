@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 public interface IFolder : IFileSystemInfo
 {

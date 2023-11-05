@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.IO;
+namespace SqlDatabase.FileSystem;
 
 [TestFixture]
 public class ZipFolderTest

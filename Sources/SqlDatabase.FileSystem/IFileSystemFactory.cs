@@ -1,6 +1,6 @@
-﻿namespace SqlDatabase.IO;
+﻿namespace SqlDatabase.FileSystem;
 
-internal interface IFileSystemFactory
+public interface IFileSystemFactory
 {
     IFileSystemInfo FileSystemInfoFromPath(string? path);
 

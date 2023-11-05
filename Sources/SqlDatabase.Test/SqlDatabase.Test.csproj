@@ -14,11 +14,11 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
     <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
   </ItemGroup>
 
@@ -34,7 +34,6 @@
     <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
-    <EmbeddedResource Include="IO\Content.zip" />
     <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.ExecuteWhatIfIgnore.ps1" />
     <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.ExecuteWhatIfInvoke.ps1" />
     <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.HandleThrow.ps1" />
