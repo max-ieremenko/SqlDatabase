@@ -8,8 +8,8 @@ namespace SqlDatabase.Export;
 [TestFixture]
 public class DataExportLoggerTest
 {
-    private DataExportLogger _sut;
-    private IList<string> _output;
+    private DataExportLogger _sut = null!;
+    private IList<string> _output = null!;
 
     [SetUp]
     public void BeforeEachTest()

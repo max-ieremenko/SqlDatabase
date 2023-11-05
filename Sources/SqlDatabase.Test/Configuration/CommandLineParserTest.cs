@@ -6,7 +6,7 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class CommandLineParserTest
 {
-    private CommandLineParser _sut;
+    private CommandLineParser _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -22,7 +22,7 @@ public class CommandLineParserTest
     [TestCase("-=x", null, null, false)]
     [TestCase("-=", null, null, false)]
     [TestCase("-", null, null, false)]
-    public void SplitArg(string keyValue, string expectedKey, string expectedValue, bool isValid)
+    public void SplitArg(string keyValue, string? expectedKey, string? expectedValue, bool isValid)
     {
         CommandLineParser.ParseArg(keyValue, out var actual).ShouldBe(isValid);
         if (isValid)

@@ -11,12 +11,5 @@ internal sealed class EchoCommandLine : ICommandLine
         _args = args;
     }
 
-    public ICommand CreateCommand(ILogger logger)
-    {
-        return new EchoCommand
-        {
-            Logger = logger,
-            Args = _args
-        };
-    }
+    public ICommand CreateCommand(ILogger logger) => new EchoCommand(logger, _args);
 }

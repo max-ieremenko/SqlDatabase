@@ -22,7 +22,7 @@ public class ConfigurationManagerTest
 </configuration>
 ";
 
-    private ConfigurationManager _sut;
+    private ConfigurationManager _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -33,7 +33,7 @@ public class ConfigurationManagerTest
     [Test]
     public void LoadFromCurrentConfiguration()
     {
-        _sut.LoadFrom((string)null);
+        _sut.LoadFrom((string?)null);
 
         _sut.SqlDatabase.ShouldNotBeNull();
         _sut.SqlDatabase.Variables.AllKeys.ShouldBe(new[] { nameof(ConfigurationManagerTest) });

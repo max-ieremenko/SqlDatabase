@@ -29,6 +29,6 @@ internal sealed partial class ZipFolderFile : IFile
         var content = _container.OpenRead();
         var entry = content.GetEntry(EntryFullName);
 
-        return new EntryStream(content, entry.Open());
+        return new EntryStream(content, entry!.Open());
     }
 }

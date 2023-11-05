@@ -8,6 +8,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
 
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>

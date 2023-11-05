@@ -20,7 +20,7 @@ internal abstract class SqlWriterBase : IDisposable
         Output.Dispose();
     }
 
-    public SqlWriterBase Line(string value = null)
+    public SqlWriterBase Line(string? value = null)
     {
         Output.WriteLine(value);
         return this;
@@ -32,7 +32,7 @@ internal abstract class SqlWriterBase : IDisposable
         return this;
     }
 
-    public SqlWriterBase TextFormat(string format, params object[] args)
+    public SqlWriterBase TextFormat(string format, params object?[] args)
     {
         Output.Write(format, args);
         return this;
@@ -50,7 +50,7 @@ internal abstract class SqlWriterBase : IDisposable
         return this;
     }
 
-    public SqlWriterBase Value(object value, string typeNameHint = null)
+    public SqlWriterBase Value(object? value, string? typeNameHint = null)
     {
         value = DataReaderTools.CleanValue(value);
         if (value == null)
@@ -71,7 +71,7 @@ internal abstract class SqlWriterBase : IDisposable
 
     public abstract string GetDefaultTableName();
 
-    protected abstract bool TryWriteValue(object value, string typeNameHint);
+    protected abstract bool TryWriteValue(object value, string? typeNameHint);
 
     protected void ValueString(string value, char q = Q)
     {

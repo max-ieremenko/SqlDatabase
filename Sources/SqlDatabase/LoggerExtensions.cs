@@ -5,7 +5,7 @@ namespace SqlDatabase;
 
 internal static class LoggerExtensions
 {
-    public static void Error(this ILogger logger, string message, Exception error)
+    public static void Error(this ILogger logger, string? message, Exception error)
     {
         var text = new StringBuilder();
         if (!string.IsNullOrEmpty(message))
@@ -26,7 +26,7 @@ internal static class LoggerExtensions
         }
 
         logger.Error(text.ToString());
-        logger.Info(error.StackTrace);
+        logger.Info(error.StackTrace ?? string.Empty);
     }
 
     public static void Error(this ILogger logger, Exception error) => Error(logger, null, error);

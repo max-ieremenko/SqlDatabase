@@ -10,24 +10,32 @@ namespace SqlDatabase.Scripts;
 
 internal sealed class AssemblyScript : IScript
 {
+    public AssemblyScript(
+        string displayName,
+        Func<byte[]> readAssemblyContent,
+        Func<Stream?> readDescriptionContent,
+        AssemblyScriptConfiguration configuration)
+    {
+        DisplayName = displayName;
+        ReadAssemblyContent = readAssemblyContent;
+        ReadDescriptionContent = readDescriptionContent;
+        Configuration = configuration;
+    }
+
     public string DisplayName { get; set; }
 
-    public Func<byte[]> ReadAssemblyContent { get; set; }
+    public Func<byte[]> ReadAssemblyContent { get; internal set; }
 
-    public Func<Stream> ReadDescriptionContent { get; set; }
+    public Func<Stream?> ReadDescriptionContent { get; internal set; }
 
-    public AssemblyScriptConfiguration Configuration { get; set; }
+    public AssemblyScriptConfiguration Configuration { get; }
 
-    public void Execute(IDbCommand command, IVariables variables, ILogger logger)
+    public void Execute(IDbCommand? command, IVariables variables, ILogger logger)
     {
-        var domain = CreateSubDomain();
+        var domain = CreateSubDomain(logger);
 
         using (domain)
         {
-            domain.Logger = logger;
-            domain.AssemblyFileName = DisplayName;
-            domain.ReadAssemblyContent = ReadAssemblyContent;
-
             try
             {
                 domain.Initialize();
@@ -52,7 +60,7 @@ internal sealed class AssemblyScript : IScript
         {
             if (description == null)
             {
-                return new ScriptDependency[0];
+                return Array.Empty<ScriptDependency>();
             }
 
             using (var reader = new StreamReader(description))
@@ -70,7 +78,7 @@ internal sealed class AssemblyScript : IScript
         }
     }
 
-    internal void Execute(ISubDomain domain, IDbCommand command, IVariables variables)
+    internal void Execute(ISubDomain domain, IDbCommand? command, IVariables variables)
     {
         if (command != null && !domain.Execute(command, variables))
         {
@@ -78,12 +86,12 @@ internal sealed class AssemblyScript : IScript
         }
     }
 
-    private ISubDomain CreateSubDomain()
+    private ISubDomain CreateSubDomain(ILogger logger)
     {
 #if NET472
-            return new AssemblyInternal.Net472.Net472SubDomain();
+        return new AssemblyInternal.Net472.Net472SubDomain(logger, DisplayName, ReadAssemblyContent);
 #else
-        return new AssemblyInternal.NetCore.NetCoreSubDomain();
+        return new AssemblyInternal.NetCore.NetCoreSubDomain(logger, DisplayName, ReadAssemblyContent);
 #endif
     }
 }

@@ -38,8 +38,8 @@ internal sealed class FileLogger : LoggerBase, IDisposable
 
     public void Dispose()
     {
-        _writer?.Dispose();
-        _file?.Dispose();
+        _writer.Dispose();
+        _file.Dispose();
     }
 
     internal void Flush()

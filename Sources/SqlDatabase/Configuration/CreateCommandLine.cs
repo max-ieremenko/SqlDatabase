@@ -7,7 +7,7 @@ namespace SqlDatabase.Configuration;
 
 internal sealed class CreateCommandLine : CommandLineBase
 {
-    public string UsePowerShell { get; set; }
+    public string? UsePowerShell { get; set; }
 
     public bool WhatIf { get; set; }
 
@@ -19,24 +19,11 @@ internal sealed class CreateCommandLine : CommandLineBase
         var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
         var database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf);
 
-        var sequence = new CreateScriptSequence
-        {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                PowerShellFactory = powerShellFactory,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            Sources = Scripts.ToArray()
-        };
+        var sequence = new CreateScriptSequence(
+            Scripts.ToArray(),
+            new ScriptFactory(configuration.SqlDatabase.AssemblyScript, powerShellFactory, database.Adapter.CreateSqlTextReader()));
 
-        return new DatabaseCreateCommand
-        {
-            Log = logger,
-            Database = database,
-            ScriptSequence = sequence,
-            PowerShellFactory = powerShellFactory
-        };
+        return new DatabaseCreateCommand(sequence, powerShellFactory, database, logger);
     }
 
     protected override bool ParseArg(Arg arg)

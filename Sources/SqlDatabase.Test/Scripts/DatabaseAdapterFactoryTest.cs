@@ -14,8 +14,8 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class DatabaseAdapterFactoryTest
 {
-    private ILogger _log;
-    private AppConfiguration _configuration;
+    private ILogger _log = null!;
+    private AppConfiguration _configuration = null!;
 
     [SetUp]
     public void BeforeEachTest()

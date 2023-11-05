@@ -6,13 +6,20 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 
 internal sealed class DefaultEntryPoint : IEntryPoint
 {
-    public ILogger Log { get; set; }
+    public DefaultEntryPoint(ILogger log, object scriptInstance, Action<IDbCommand, IReadOnlyDictionary<string, string?>> method)
+    {
+        Log = log;
+        ScriptInstance = scriptInstance;
+        Method = method;
+    }
 
-    public object ScriptInstance { get; set; }
+    public ILogger Log { get; }
 
-    public Action<IDbCommand, IReadOnlyDictionary<string, string>> Method { get; set; }
+    public object ScriptInstance { get; internal set; }
 
-    public bool Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+    public Action<IDbCommand, IReadOnlyDictionary<string, string?>> Method { get; internal set; }
+
+    public bool Execute(IDbCommand command, IReadOnlyDictionary<string, string?> variables)
     {
         var result = false;
 

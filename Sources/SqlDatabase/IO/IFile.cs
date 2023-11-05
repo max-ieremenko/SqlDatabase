@@ -4,7 +4,7 @@ namespace SqlDatabase.IO;
 
 public interface IFile : IFileSystemInfo
 {
-    IFolder GetParent();
+    IFolder? GetParent();
 
     Stream OpenRead();
 }

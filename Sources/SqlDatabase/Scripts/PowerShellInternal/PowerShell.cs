@@ -21,7 +21,7 @@ internal sealed class PowerShell : IPowerShell
         return false;
     }
 
-    public void Invoke(string script, ILogger logger, params KeyValuePair<string, object>[] parameters)
+    public void Invoke(string script, ILogger logger, params KeyValuePair<string, object?>[] parameters)
     {
         var sessionState = InitialSessionState.CreateDefault();
         using (var runSpace = RunspaceFactory.CreateRunspace(sessionState))

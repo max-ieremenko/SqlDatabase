@@ -15,14 +15,14 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class TextScriptTest
 {
-    private Mock<ILogger> _logger;
-    private Variables _variables;
-    private Mock<IDbCommand> _command;
-    private TextScript _sut;
+    private Mock<ILogger> _logger = null!;
+    private Variables _variables = null!;
+    private Mock<IDbCommand> _command = null!;
+    private TextScript _sut = null!;
 
-    private IList<string> _logOutput;
-    private IList<string> _executedScripts;
-    private Mock<IDataReader> _executedReader;
+    private IList<string> _logOutput = null!;
+    private IList<string> _executedScripts = null!;
+    private Mock<IDataReader> _executedReader = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -52,10 +52,7 @@ public class TextScriptTest
             .Callback(() => _executedScripts.Add(_command.Object.CommandText))
             .Returns(_executedReader.Object);
 
-        _sut = new TextScript
-        {
-            TextReader = new MsSqlTextReader()
-        };
+        _sut = new TextScript(null!, null!, new MsSqlTextReader());
         _variables.SetValue(VariableSource.CommandLine, "var1", "[some value]");
     }
 
@@ -66,7 +63,7 @@ public class TextScriptTest
 
         _executedReader
             .Setup(r => r.GetSchemaTable())
-            .Returns((DataTable)null);
+            .Returns((DataTable)null!);
         _executedReader
             .Setup(r => r.Read())
             .Returns(false);
@@ -96,7 +93,7 @@ go"
 
         _executedReader
             .Setup(r => r.GetSchemaTable())
-            .Returns((DataTable)null);
+            .Returns((DataTable)null!);
         _executedReader
             .Setup(r => r.Read())
             .Returns(false);

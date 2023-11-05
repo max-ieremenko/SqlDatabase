@@ -16,10 +16,10 @@ internal sealed class ExecuteMethodResolverCommandDictionary : ExecuteMethodReso
                && typeof(IReadOnlyDictionary<string, string>) == parameters[1].ParameterType;
     }
 
-    public override Action<IDbCommand, IReadOnlyDictionary<string, string>> CreateDelegate(object instance, MethodInfo method)
+    public override Action<IDbCommand, IReadOnlyDictionary<string, string?>> CreateDelegate(object instance, MethodInfo method)
     {
-        return (Action<IDbCommand, IReadOnlyDictionary<string, string>>)Delegate.CreateDelegate(
-            typeof(Action<IDbCommand, IReadOnlyDictionary<string, string>>),
+        return (Action<IDbCommand, IReadOnlyDictionary<string, string?>>)Delegate.CreateDelegate(
+            typeof(Action<IDbCommand, IReadOnlyDictionary<string, string?>>),
             instance,
             method);
     }

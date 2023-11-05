@@ -8,22 +8,26 @@ namespace SqlDatabase.Scripts;
 
 internal sealed class Database : IDatabase
 {
-    public Database()
+    public Database(IDatabaseAdapter adapter, ILogger log, TransactionMode transaction, bool whatIf)
     {
+        Adapter = adapter;
+        Log = log;
+        Transaction = transaction;
+        WhatIf = whatIf;
         Variables = new Variables();
     }
 
-    public IDatabaseAdapter Adapter { get; set; }
+    public IDatabaseAdapter Adapter { get; }
 
-    public ILogger Log { get; set; }
+    public ILogger Log { get; }
 
-    public TransactionMode Transaction { get; set; }
+    public TransactionMode Transaction { get; internal set; }
 
-    public bool WhatIf { get; set; }
+    public bool WhatIf { get; internal set; }
 
     internal Variables Variables { get; }
 
-    public Version GetCurrentVersion(string moduleName)
+    public Version GetCurrentVersion(string? moduleName)
     {
         Variables.ModuleName = moduleName;
 
@@ -45,7 +49,7 @@ internal sealed class Database : IDatabase
             command.CommandText = Adapter.GetServerVersionSelectScript();
 
             connection.Open();
-            return Convert.ToString(command.ExecuteScalar());
+            return Convert.ToString(command.ExecuteScalar())!;
         }
     }
 
@@ -129,7 +133,7 @@ internal sealed class Database : IDatabase
         var script = new SqlScriptVariableParser(Variables).ApplyVariables(Adapter.GetVersionSelectScript());
         command.CommandText = script;
 
-        string version;
+        string? version;
         try
         {
             version = Convert.ToString(command.ExecuteScalar());
@@ -183,7 +187,7 @@ internal sealed class Database : IDatabase
             command.CommandTimeout = 0;
             connection.Open();
 
-            command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName);
+            command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName!);
             var value = command.ExecuteScalar();
 
             useMaster = value == null || Convert.IsDBNull(value);

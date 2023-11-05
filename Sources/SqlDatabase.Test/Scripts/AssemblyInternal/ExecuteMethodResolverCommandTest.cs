@@ -8,8 +8,8 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 [TestFixture]
 public class ExecuteMethodResolverCommandTest
 {
-    private ExecuteMethodResolverCommand _sut;
-    private IDbCommand _executeCommand;
+    private ExecuteMethodResolverCommand _sut = null!;
+    private IDbCommand? _executeCommand;
 
     [SetUp]
     public void BeforeEachTest()
@@ -21,18 +21,18 @@ public class ExecuteMethodResolverCommandTest
     public void IsMatch()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsTrue(_sut.IsMatch(method));
+        Assert.IsTrue(_sut.IsMatch(method!));
     }
 
     [Test]
     public void CreateDelegate()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        var actual = _sut.CreateDelegate(this, method);
+        var actual = _sut.CreateDelegate(this, method!);
         Assert.IsNotNull(actual);
 
         var command = new Mock<IDbCommand>(MockBehavior.Strict);
-        actual(command.Object, null);
+        actual(command.Object, null!);
         Assert.AreEqual(_executeCommand, command.Object);
     }
 

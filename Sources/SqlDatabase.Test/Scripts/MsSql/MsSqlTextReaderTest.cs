@@ -10,7 +10,7 @@ namespace SqlDatabase.Scripts.MsSql;
 [TestFixture]
 public class MsSqlTextReaderTest
 {
-    private MsSqlTextReader _sut;
+    private MsSqlTextReader _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

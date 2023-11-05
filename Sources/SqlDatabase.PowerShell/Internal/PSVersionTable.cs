@@ -26,7 +26,7 @@ internal readonly ref struct PSVersionTable
         }
     }
 
-    public string PSEdition { get; }
+    public string? PSEdition { get; }
 
-    public string PSVersion { get; }
+    public string? PSVersion { get; }
 }

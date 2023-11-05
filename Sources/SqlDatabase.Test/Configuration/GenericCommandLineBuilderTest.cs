@@ -7,7 +7,7 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class GenericCommandLineBuilderTest
 {
-    private GenericCommandLineBuilder _sut;
+    private GenericCommandLineBuilder _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

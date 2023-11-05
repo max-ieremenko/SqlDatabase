@@ -14,13 +14,13 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class AssemblyScriptTest
 {
-    private AssemblyScript _sut;
-    private Variables _variables;
-    private Mock<ILogger> _log;
-    private Mock<IDbCommand> _command;
+    private AssemblyScript _sut = null!;
+    private Variables _variables = null!;
+    private Mock<ILogger> _log = null!;
+    private Mock<IDbCommand> _command = null!;
 
-    private IList<string> _logOutput;
-    private IList<string> _executedScripts;
+    private IList<string> _logOutput = null!;
+    private IList<string> _executedScripts = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -41,8 +41,7 @@ public class AssemblyScriptTest
             .Callback(() => _executedScripts.Add(_command.Object.CommandText))
             .Returns(0);
 
-        _sut = new AssemblyScript();
-        _sut.Configuration = new AssemblyScriptConfiguration();
+        _sut = new AssemblyScript("dummy", null!, null!, new AssemblyScriptConfiguration());
     }
 
     [Test]

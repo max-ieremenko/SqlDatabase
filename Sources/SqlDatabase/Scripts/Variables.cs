@@ -7,7 +7,7 @@ internal sealed class Variables : IVariables
 {
     private readonly IDictionary<string, VariableValue> _valueByName = new Dictionary<string, VariableValue>(StringComparer.OrdinalIgnoreCase);
 
-    public string DatabaseName
+    public string? DatabaseName
     {
         get => GetValue(nameof(DatabaseName));
         set
@@ -17,19 +17,19 @@ internal sealed class Variables : IVariables
         }
     }
 
-    public string CurrentVersion
+    public string? CurrentVersion
     {
         get => GetValue(nameof(CurrentVersion));
         set => SetValue(VariableSource.Runtime, nameof(CurrentVersion), value);
     }
 
-    public string TargetVersion
+    public string? TargetVersion
     {
         get => GetValue(nameof(TargetVersion));
         set => SetValue(VariableSource.Runtime, nameof(TargetVersion), value);
     }
 
-    public string ModuleName
+    public string? ModuleName
     {
         get => GetValue(nameof(ModuleName));
         set => SetValue(VariableSource.Runtime, nameof(ModuleName), value);
@@ -40,7 +40,7 @@ internal sealed class Variables : IVariables
         return _valueByName.Keys;
     }
 
-    public string GetValue(string name)
+    public string? GetValue(string name)
     {
         if (_valueByName.TryGetValue(name, out var value))
         {
@@ -54,7 +54,7 @@ internal sealed class Variables : IVariables
         return string.IsNullOrEmpty(environmentValue) ? value.Value : environmentValue;
     }
 
-    internal void SetValue(VariableSource source, string name, string value)
+    internal void SetValue(VariableSource source, string name, string? value)
     {
         if (!_valueByName.TryGetValue(name, out var oldValue)
             || source <= oldValue.Source)
@@ -82,14 +82,8 @@ internal sealed class Variables : IVariables
 
         public string Value { get; }
 
-        public override bool Equals(object obj)
-        {
-            throw new NotSupportedException();
-        }
+        public override bool Equals(object? obj) => throw new NotSupportedException();
 
-        public override int GetHashCode()
-        {
-            throw new NotSupportedException();
-        }
+        public override int GetHashCode() => throw new NotSupportedException();
     }
 }

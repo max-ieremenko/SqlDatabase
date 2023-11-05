@@ -8,98 +8,97 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net472
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472;
+
+[TestFixture]
+public partial class Net472SubDomainTest
 {
-    [TestFixture]
-    public partial class Net472SubDomainTest
+    private Net472SubDomain _sut = null!;
+    private Variables _variables = null!;
+    private Mock<IDbCommand> _command = null!;
+
+    private IList<string> _executedScripts = null!;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        private Net472SubDomain _sut;
-        private Variables _variables;
-        private Mock<IDbCommand> _command;
+        _variables = new Variables();
 
-        private IList<string> _executedScripts;
+        var log = new Mock<ILogger>(MockBehavior.Strict);
+        log
+            .Setup(l => l.Info(It.IsAny<string>()))
+            .Callback<string>(m => Console.WriteLine("Info: {0}", m));
+        log
+            .Setup(l => l.Error(It.IsAny<string>()))
+            .Callback<string>(m => Console.WriteLine("Error: {0}", m));
 
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            _variables = new Variables();
+        _executedScripts = new List<string>();
+        _command = new Mock<IDbCommand>(MockBehavior.Strict);
+        _command.SetupProperty(c => c.CommandText);
+        _command
+            .Setup(c => c.ExecuteNonQuery())
+            .Callback(() => _executedScripts.Add(_command.Object.CommandText))
+            .Returns(0);
 
-            var log = new Mock<ILogger>(MockBehavior.Strict);
-            log
-                .Setup(l => l.Info(It.IsAny<string>()))
-                .Callback<string>(m => Console.WriteLine("Info: {0}", m));
-            log
-                .Setup(l => l.Error(It.IsAny<string>()))
-                .Callback<string>(m => Console.WriteLine("Error: {0}", m));
+        _sut = new Net472SubDomain(
+            log.Object,
+            GetType().Assembly.Location,
+            () => File.ReadAllBytes(GetType().Assembly.Location));
 
-            _executedScripts = new List<string>();
-            _command = new Mock<IDbCommand>(MockBehavior.Strict);
-            _command.SetupProperty(c => c.CommandText);
-            _command
-                .Setup(c => c.ExecuteNonQuery())
-                .Callback(() => _executedScripts.Add(_command.Object.CommandText))
-                .Returns(0);
+        _sut.Initialize();
+    }
 
-            _sut = new Net472SubDomain { Logger = log.Object };
+    [TearDown]
+    public void AfterEachTest()
+    {
+        _sut?.Unload();
+        _sut?.Dispose();
+    }
 
-            _sut.AssemblyFileName = GetType().Assembly.Location;
-            _sut.ReadAssemblyContent = () => File.ReadAllBytes(GetType().Assembly.Location);
+    [Test]
+    public void ValidateScriptDomainAppBase()
+    {
+        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowAppBase));
+        _sut.Execute(new DbCommandStub(_command.Object), _variables);
+        _sut.Unload();
+        _sut.Dispose();
 
-            _sut.Initialize();
-        }
+        _executedScripts.Count.ShouldBe(2);
 
-        [TearDown]
-        public void AfterEachTest()
-        {
-            _sut?.Unload();
-            _sut?.Dispose();
-        }
+        var assemblyFileName = _executedScripts[0];
+        FileAssert.DoesNotExist(assemblyFileName);
+        Path.GetFileName(GetType().Assembly.Location).ShouldBe(Path.GetFileName(assemblyFileName));
 
-        [Test]
-        public void ValidateScriptDomainAppBase()
-        {
-            _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowAppBase));
-            _sut.Execute(new DbCommandStub(_command.Object), _variables);
-            _sut.Unload();
-            _sut.Dispose();
+        var appBase = _executedScripts[1];
+        DirectoryAssert.DoesNotExist(appBase);
+        Path.GetDirectoryName(assemblyFileName).ShouldBe(appBase);
+    }
 
-            _executedScripts.Count.ShouldBe(2);
+    [Test]
+    public void ValidateScriptDomainConfiguration()
+    {
+        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowConfiguration));
+        _sut.Execute(new DbCommandStub(_command.Object), _variables);
+        _sut.Unload();
+        _sut.Dispose();
 
-            var assemblyFileName = _executedScripts[0];
-            FileAssert.DoesNotExist(assemblyFileName);
-            Path.GetFileName(GetType().Assembly.Location).ShouldBe(Path.GetFileName(assemblyFileName));
+        Assert.AreEqual(2, _executedScripts.Count);
 
-            var appBase = _executedScripts[1];
-            DirectoryAssert.DoesNotExist(appBase);
-            Path.GetDirectoryName(assemblyFileName).ShouldBe(appBase);
-        }
+        var configurationFile = _executedScripts[0];
+        configurationFile.ShouldBe(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
 
-        [Test]
-        public void ValidateScriptDomainConfiguration()
-        {
-            _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowConfiguration));
-            _sut.Execute(new DbCommandStub(_command.Object), _variables);
-            _sut.Unload();
-            _sut.Dispose();
+        var connectionString = _executedScripts[1];
+        connectionString.ShouldBe(MsSqlQuery.ConnectionString);
+    }
 
-            Assert.AreEqual(2, _executedScripts.Count);
+    [Test]
+    public void ValidateScriptDomainCreateSubDomain()
+    {
+        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.Execute));
+        _sut.Execute(new DbCommandStub(_command.Object), _variables);
 
-            var configurationFile = _executedScripts[0];
-            configurationFile.ShouldBe(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-
-            var connectionString = _executedScripts[1];
-            connectionString.ShouldBe(MsSqlQuery.ConnectionString);
-        }
-
-        [Test]
-        public void ValidateScriptDomainCreateSubDomain()
-        {
-            _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.Execute));
-            _sut.Execute(new DbCommandStub(_command.Object), _variables);
-
-            _executedScripts.Count.ShouldBe(1);
-            _executedScripts[0].ShouldBe("hello");
-        }
+        _executedScripts.Count.ShouldBe(1);
+        _executedScripts[0].ShouldBe("hello");
     }
 }
 #endif

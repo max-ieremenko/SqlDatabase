@@ -10,7 +10,7 @@ internal sealed class ExecuteCommandLine : CommandLineBase
 {
     public TransactionMode Transaction { get; set; }
 
-    public string UsePowerShell { get; set; }
+    public string? UsePowerShell { get; set; }
 
     public bool WhatIf { get; set; }
 
@@ -22,24 +22,14 @@ internal sealed class ExecuteCommandLine : CommandLineBase
         var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
         var database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf);
 
-        var sequence = new CreateScriptSequence
-        {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                PowerShellFactory = powerShellFactory,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            Sources = Scripts.ToArray()
-        };
+        var sequence = new CreateScriptSequence(
+            Scripts.ToArray(),
+            new ScriptFactory(
+                configuration.SqlDatabase.AssemblyScript,
+                powerShellFactory,
+                database.Adapter.CreateSqlTextReader()));
 
-        return new DatabaseExecuteCommand
-        {
-            Log = logger,
-            Database = database,
-            ScriptSequence = sequence,
-            PowerShellFactory = powerShellFactory
-        };
+        return new DatabaseExecuteCommand(sequence, powerShellFactory, database, logger);
     }
 
     protected override bool ParseArg(Arg arg)
@@ -72,7 +62,7 @@ internal sealed class ExecuteCommandLine : CommandLineBase
         return false;
     }
 
-    private void SetTransaction(string modeName)
+    private void SetTransaction(string? modeName)
     {
         if (!Enum.TryParse<TransactionMode>(modeName, true, out var mode))
         {

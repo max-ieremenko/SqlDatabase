@@ -10,7 +10,7 @@ internal sealed class MsSqlTextReader : ISqlTextReader
 {
     private readonly Regex _goRegex = new Regex("^(\\s*(go)+\\s*)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    public string ReadFirstBatch(Stream sql)
+    public string? ReadFirstBatch(Stream sql)
     {
         return ReadBatches(sql).FirstOrDefault();
     }
@@ -52,7 +52,7 @@ internal sealed class MsSqlTextReader : ISqlTextReader
     {
         using (var reader = new StreamReader(sql))
         {
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null)
             {
                 yield return line;

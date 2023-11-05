@@ -8,9 +8,9 @@ namespace SqlDatabase.Log;
 [TestFixture]
 public class LoggerBaseTest
 {
-    private IList<string> _info;
-    private IList<string> _error;
-    private LoggerBase _sut;
+    private IList<string> _info = null!;
+    private IList<string> _error = null!;
+    private LoggerBase _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

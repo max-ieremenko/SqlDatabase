@@ -8,11 +8,18 @@ namespace SqlDatabase.Scripts;
 
 internal sealed class ScriptFactory : IScriptFactory
 {
-    public AssemblyScriptConfiguration AssemblyScriptConfiguration { get; set; }
+    public ScriptFactory(AssemblyScriptConfiguration assemblyScriptConfiguration, IPowerShellFactory? powerShellFactory, ISqlTextReader textReader)
+    {
+        AssemblyScriptConfiguration = assemblyScriptConfiguration;
+        PowerShellFactory = powerShellFactory;
+        TextReader = textReader;
+    }
 
-    public IPowerShellFactory PowerShellFactory { get; set; }
+    public AssemblyScriptConfiguration AssemblyScriptConfiguration { get; }
 
-    public ISqlTextReader TextReader { get; set; }
+    public IPowerShellFactory? PowerShellFactory { get; internal set; }
+
+    public ISqlTextReader TextReader { get; }
 
     public bool IsSupported(string fileName)
     {
@@ -30,24 +37,17 @@ internal sealed class ScriptFactory : IScriptFactory
 
         if (".sql".Equals(ext, StringComparison.OrdinalIgnoreCase))
         {
-            return new TextScript
-            {
-                DisplayName = file.Name,
-                ReadSqlContent = file.OpenRead,
-                TextReader = TextReader
-            };
+            return new TextScript(file.Name, file.OpenRead, TextReader);
         }
 
         if (".exe".Equals(ext, StringComparison.OrdinalIgnoreCase)
             || ".dll".Equals(ext, StringComparison.OrdinalIgnoreCase))
         {
-            return new AssemblyScript
-            {
-                DisplayName = file.Name,
-                Configuration = AssemblyScriptConfiguration,
-                ReadAssemblyContent = CreateBinaryReader(file),
-                ReadDescriptionContent = CreateScriptDescriptionReader(file)
-            };
+            return new AssemblyScript(
+                file.Name,
+                CreateBinaryReader(file),
+                CreateScriptDescriptionReader(file),
+                AssemblyScriptConfiguration);
         }
 
         if (".ps1".Equals(ext, StringComparison.OrdinalIgnoreCase))
@@ -59,13 +59,11 @@ internal sealed class ScriptFactory : IScriptFactory
 
             PowerShellFactory.Request();
 
-            return new PowerShellScript
-            {
-                DisplayName = file.Name,
-                ReadScriptContent = file.OpenRead,
-                ReadDescriptionContent = CreateScriptDescriptionReader(file),
-                PowerShellFactory = PowerShellFactory
-            };
+            return new PowerShellScript(
+                file.Name,
+                file.OpenRead,
+                CreateScriptDescriptionReader(file),
+                PowerShellFactory);
         }
 
         throw new NotSupportedException("File [{0}] cannot be used as script.".FormatWith(file.Name));
@@ -76,7 +74,7 @@ internal sealed class ScriptFactory : IScriptFactory
         return () => BinaryRead(file);
     }
 
-    private static Func<Stream> CreateScriptDescriptionReader(IFile file)
+    private static Func<Stream?> CreateScriptDescriptionReader(IFile file)
     {
         return () =>
         {

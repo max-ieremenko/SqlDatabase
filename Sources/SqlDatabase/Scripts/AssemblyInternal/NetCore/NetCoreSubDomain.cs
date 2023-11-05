@@ -2,57 +2,64 @@
 using System;
 using System.Data;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.NetCore
+namespace SqlDatabase.Scripts.AssemblyInternal.NetCore;
+
+internal sealed class NetCoreSubDomain : ISubDomain
 {
-    internal sealed class NetCoreSubDomain : ISubDomain
+    private readonly AssemblyContext _assemblyContext;
+    ////private ConsoleListener _consoleRedirect;
+
+    public NetCoreSubDomain(ILogger logger, string assemblyFileName, Func<byte[]> readAssemblyContent)
     {
-        private readonly AssemblyContext _assemblyContext = new AssemblyContext();
-        ////private ConsoleListener _consoleRedirect;
+        Logger = logger;
+        AssemblyFileName = assemblyFileName;
+        ReadAssemblyContent = readAssemblyContent;
+        _assemblyContext = new AssemblyContext();
+    }
 
-        public ILogger Logger { get; set; }
+    public ILogger Logger { get; set; }
 
-        public string AssemblyFileName { get; set; }
+    public string AssemblyFileName { get; set; }
 
-        public Func<byte[]> ReadAssemblyContent { get; set; }
+    public Func<byte[]> ReadAssemblyContent { get; set; }
 
-        private IEntryPoint EntryPoint { get; set; }
+    private IEntryPoint? EntryPoint { get; set; }
 
-        public void Initialize()
+    public void Initialize()
+    {
+        _assemblyContext.LoadScriptAssembly(ReadAssemblyContent());
+
+        ////_consoleRedirect = new ConsoleListener(Logger);
+    }
+
+    public void Unload()
+    {
+        ////_consoleRedirect?.Dispose();
+
+        _assemblyContext.UnloadAll();
+    }
+
+    public bool ResolveScriptExecutor(string className, string methodName)
+    {
+        if (_assemblyContext.ScriptAssembly == null)
         {
-            _assemblyContext.LoadScriptAssembly(ReadAssemblyContent());
-
-            ////_consoleRedirect = new ConsoleListener(Logger);
+            return false;
         }
 
-        public void Unload()
-        {
-            ////_consoleRedirect?.Dispose();
+        var resolver = new EntryPointResolver(Logger, className, methodName);
 
-            _assemblyContext.UnloadAll();
-        }
+        EntryPoint = resolver.Resolve(_assemblyContext.ScriptAssembly);
 
-        public bool ResolveScriptExecutor(string className, string methodName)
-        {
-            var resolver = new EntryPointResolver
-            {
-                Log = Logger,
-                ExecutorClassName = className,
-                ExecutorMethodName = methodName
-            };
+        return EntryPoint != null;
+    }
 
-            EntryPoint = resolver.Resolve(_assemblyContext.ScriptAssembly);
+    public bool Execute(IDbCommand command, IVariables variables)
+    {
+        return EntryPoint!.Execute(command, new VariablesProxy(variables));
+    }
 
-            return EntryPoint != null;
-        }
-
-        public bool Execute(IDbCommand command, IVariables variables)
-        {
-            return EntryPoint.Execute(command, new VariablesProxy(variables));
-        }
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }
 #endif

@@ -13,7 +13,7 @@ internal sealed class CommandLineFactory
 
     public CommandLine Args { get; set; }
 
-    public string ActiveCommandName { get; private set; }
+    public string ActiveCommandName { get; private set; } = null!;
 
     public bool ShowCommandHelp { get; private set; }
 
@@ -30,7 +30,7 @@ internal sealed class CommandLineFactory
             throw new InvalidCommandLineException("<command> not found.");
         }
 
-        ActiveCommandName = commandArgs[0].Value;
+        ActiveCommandName = commandArgs[0].Value!;
         var command = CreateCommand(ActiveCommandName);
 
         if (command == null)
@@ -58,14 +58,14 @@ internal sealed class CommandLineFactory
         return true;
     }
 
-    public ICommandLine Resolve()
+    public ICommandLine? Resolve()
     {
         var command = CreateCommand(ActiveCommandName);
-        command.Parse(Args);
+        command?.Parse(Args);
         return command;
     }
 
-    internal static ICommandLine CreateCommand(string name)
+    internal static ICommandLine? CreateCommand(string? name)
     {
         if (CommandCreate.Equals(name, StringComparison.OrdinalIgnoreCase))
         {

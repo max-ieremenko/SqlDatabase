@@ -8,11 +8,11 @@ namespace SqlDatabase.Commands;
 [TestFixture]
 public class DatabaseExecuteCommandTest
 {
-    private DatabaseExecuteCommand _sut;
-    private Mock<IDatabase> _database;
-    private Mock<ICreateScriptSequence> _scriptSequence;
-    private Mock<IPowerShellFactory> _powerShellFactory;
-    private Mock<ILogger> _log;
+    private DatabaseExecuteCommand _sut = null!;
+    private Mock<IDatabase> _database = null!;
+    private Mock<ICreateScriptSequence> _scriptSequence = null!;
+    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private Mock<ILogger> _log = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -31,7 +31,7 @@ public class DatabaseExecuteCommandTest
         _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
 
         _log = new Mock<ILogger>(MockBehavior.Strict);
-        _log.Setup(l => l.Indent()).Returns((IDisposable)null);
+        _log.Setup(l => l.Indent()).Returns((IDisposable)null!);
         _log
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
@@ -39,13 +39,11 @@ public class DatabaseExecuteCommandTest
                 Console.WriteLine("Info: {0}", m);
             });
 
-        _sut = new DatabaseExecuteCommand
-        {
-            Database = _database.Object,
-            Log = _log.Object,
-            ScriptSequence = _scriptSequence.Object,
-            PowerShellFactory = _powerShellFactory.Object
-        };
+        _sut = new DatabaseExecuteCommand(
+            _scriptSequence.Object,
+            _powerShellFactory.Object,
+            _database.Object,
+            _log.Object);
     }
 
     [Test]

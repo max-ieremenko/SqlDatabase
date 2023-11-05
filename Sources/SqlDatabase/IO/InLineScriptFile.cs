@@ -15,7 +15,7 @@ internal sealed class InLineScriptFile : IFile
 
     public string Content { get; }
 
-    public IFolder GetParent() => null;
+    public IFolder? GetParent() => null;
 
     public Stream OpenRead()
     {

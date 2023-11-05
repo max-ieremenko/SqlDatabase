@@ -9,16 +9,16 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 [TestFixture]
 public class DefaultEntryPointTest
 {
-    private DefaultEntryPoint _sut;
-    private IList<string> _logOutput;
-    private Mock<IDbCommand> _command;
-    private Mock<IReadOnlyDictionary<string, string>> _variables;
+    private DefaultEntryPoint _sut = null!;
+    private IList<string> _logOutput = null!;
+    private Mock<IDbCommand> _command = null!;
+    private Mock<IReadOnlyDictionary<string, string?>> _variables = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
         _command = new Mock<IDbCommand>(MockBehavior.Strict);
-        _variables = new Mock<IReadOnlyDictionary<string, string>>(MockBehavior.Strict);
+        _variables = new Mock<IReadOnlyDictionary<string, string?>>(MockBehavior.Strict);
 
         _logOutput = new List<string>();
 
@@ -38,7 +38,7 @@ public class DefaultEntryPointTest
                 _logOutput.Add(m);
             });
 
-        _sut = new DefaultEntryPoint { Log = log.Object };
+        _sut = new DefaultEntryPoint(log.Object, null!, null!);
     }
 
     [Test]

@@ -9,13 +9,20 @@ namespace SqlDatabase.Scripts;
 
 internal sealed class TextScript : IScript
 {
+    public TextScript(string displayName, Func<Stream> readSqlContent, ISqlTextReader textReader)
+    {
+        DisplayName = displayName;
+        ReadSqlContent = readSqlContent;
+        TextReader = textReader;
+    }
+
     public string DisplayName { get; set; }
 
-    public Func<Stream> ReadSqlContent { get; set; }
+    public Func<Stream> ReadSqlContent { get; internal set; }
 
-    public ISqlTextReader TextReader { get; set; }
+    public ISqlTextReader TextReader { get; }
 
-    public void Execute(IDbCommand command, IVariables variables, ILogger logger)
+    public void Execute(IDbCommand? command, IVariables variables, ILogger logger)
     {
         var batches = ResolveBatches(variables, logger);
 
@@ -69,7 +76,7 @@ internal sealed class TextScript : IScript
 
     public IList<ScriptDependency> GetDependencies()
     {
-        string batch;
+        string? batch;
         using (var sql = ReadSqlContent())
         {
             batch = TextReader.ReadFirstBatch(sql);
@@ -77,13 +84,13 @@ internal sealed class TextScript : IScript
 
         if (string.IsNullOrWhiteSpace(batch))
         {
-            return new ScriptDependency[0];
+            return Array.Empty<ScriptDependency>();
         }
 
         return DependencyParser.ExtractDependencies(new StringReader(batch), DisplayName).ToArray();
     }
 
-    private static string[] GetReaderColumns(IDataReader reader)
+    private static string[]? GetReaderColumns(IDataReader reader)
     {
         using (var metadata = reader.GetSchemaTable())
         {
@@ -93,7 +100,7 @@ internal sealed class TextScript : IScript
                 ?.Rows
                 .Cast<DataRow>()
                 .OrderBy(i => (int)i["ColumnOrdinal"])
-                .Select(i => i["ColumnName"]?.ToString())
+                .Select(i => i["ColumnName"].ToString()!)
                 .ToArray();
         }
     }

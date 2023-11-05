@@ -13,9 +13,9 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class ExportCommandLineTest
 {
-    private Mock<ILogger> _log;
-    private Mock<IFileSystemFactory> _fs;
-    private ExportCommandLine _sut;
+    private Mock<ILogger> _log = null!;
+    private Mock<IFileSystemFactory> _fs = null!;
+    private ExportCommandLine _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

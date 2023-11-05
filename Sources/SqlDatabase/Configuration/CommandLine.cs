@@ -2,9 +2,9 @@
 
 namespace SqlDatabase.Configuration;
 
-internal struct CommandLine
+internal readonly struct CommandLine
 {
-    public CommandLine(IList<Arg> args, string[] original)
+    public CommandLine(IList<Arg> args, string[]? original)
     {
         Args = args;
         Original = original;
@@ -18,5 +18,5 @@ internal struct CommandLine
 
     public IList<Arg> Args { get; }
 
-    public string[] Original { get; }
+    public string[]? Original { get; }
 }

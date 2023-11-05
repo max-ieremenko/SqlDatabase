@@ -9,9 +9,9 @@ namespace SqlDatabase.Scripts.AssemblyInternal;
 [TestFixture]
 public class ExecuteMethodResolverCommandDictionaryTest
 {
-    private ExecuteMethodResolverCommandDictionary _sut;
-    private IDbCommand _executeCommand;
-    private IReadOnlyDictionary<string, string> _executeVariables;
+    private ExecuteMethodResolverCommandDictionary _sut = null!;
+    private IDbCommand? _executeCommand;
+    private IReadOnlyDictionary<string, string?>? _executeVariables;
 
     [SetUp]
     public void BeforeEachTest()
@@ -23,18 +23,18 @@ public class ExecuteMethodResolverCommandDictionaryTest
     public void IsMatch()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsTrue(_sut.IsMatch(method));
+        Assert.IsTrue(_sut.IsMatch(method!));
     }
 
     [Test]
     public void CreateDelegate()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        var actual = _sut.CreateDelegate(this, method);
+        var actual = _sut.CreateDelegate(this, method!);
         Assert.IsNotNull(actual);
 
         var command = new Mock<IDbCommand>(MockBehavior.Strict);
-        var variables = new Mock<IReadOnlyDictionary<string, string>>(MockBehavior.Strict);
+        var variables = new Mock<IReadOnlyDictionary<string, string?>>(MockBehavior.Strict);
 
         actual(command.Object, variables.Object);
 
@@ -42,7 +42,7 @@ public class ExecuteMethodResolverCommandDictionaryTest
         Assert.AreEqual(_executeVariables, variables.Object);
     }
 
-    private void Execute(IDbCommand command, IReadOnlyDictionary<string, string> variables)
+    private void Execute(IDbCommand command, IReadOnlyDictionary<string, string?> variables)
     {
         Assert.IsNull(_executeCommand);
         _executeCommand = command;

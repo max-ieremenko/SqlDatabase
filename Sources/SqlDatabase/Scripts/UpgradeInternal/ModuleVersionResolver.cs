@@ -7,11 +7,17 @@ internal sealed class ModuleVersionResolver : IModuleVersionResolver
 {
     private readonly IDictionary<string, Version> _versionByModule = new Dictionary<string, Version>(StringComparer.OrdinalIgnoreCase);
 
-    public ILogger Log { get; set; }
+    public ModuleVersionResolver(ILogger log, IDatabase database)
+    {
+        Log = log;
+        Database = database;
+    }
 
-    public IDatabase Database { get; set; }
+    public ILogger Log { get; }
 
-    public Version GetCurrentVersion(string moduleName)
+    public IDatabase Database { get; }
+
+    public Version GetCurrentVersion(string? moduleName)
     {
         if (moduleName == null)
         {

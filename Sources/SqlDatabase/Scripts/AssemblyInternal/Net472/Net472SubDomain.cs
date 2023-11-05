@@ -3,70 +3,76 @@ using System;
 using System.Data;
 using System.IO;
 
-namespace SqlDatabase.Scripts.AssemblyInternal.Net472
+namespace SqlDatabase.Scripts.AssemblyInternal.Net472;
+
+internal sealed class Net472SubDomain : ISubDomain
 {
-    internal sealed class Net472SubDomain : ISubDomain
+    private DomainDirectory? _appBase;
+    private AppDomain? _app;
+    private DomainAgent? _appAgent;
+
+    public Net472SubDomain(ILogger logger, string assemblyFileName, Func<byte[]> readAssemblyContent)
     {
-        private DomainDirectory _appBase;
-        private AppDomain _app;
-        private DomainAgent _appAgent;
+        Logger = logger;
+        AssemblyFileName = assemblyFileName;
+        ReadAssemblyContent = readAssemblyContent;
+    }
 
-        public ILogger Logger { get; set; }
+    public ILogger Logger { get; }
 
-        public string AssemblyFileName { get; set; }
+    public string AssemblyFileName { get; }
 
-        public Func<byte[]> ReadAssemblyContent { get; set; }
+    public Func<byte[]> ReadAssemblyContent { get; }
 
-        public void Initialize()
+    public void Initialize()
+    {
+        Logger.Info("create domain for {0}".FormatWith(AssemblyFileName));
+
+        var appBaseName = Path.GetFileName(AssemblyFileName);
+        _appBase = new DomainDirectory(Logger);
+
+        var entryAssembly = _appBase.SaveFile(ReadAssemblyContent(), appBaseName);
+
+        var setup = new AppDomainSetup
         {
-            Logger.Info("create domain for {0}".FormatWith(AssemblyFileName));
+            ApplicationBase = _appBase.Location,
+            ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
+            LoaderOptimization = LoaderOptimization.MultiDomainHost
+        };
 
-            var appBaseName = Path.GetFileName(AssemblyFileName);
-            _appBase = new DomainDirectory(Logger);
+        _app = AppDomain.CreateDomain(appBaseName, null, setup);
+        _appAgent = (DomainAgent)_app.CreateInstanceFromAndUnwrap(GetType().Assembly.Location, typeof(DomainAgent).FullName);
 
-            var entryAssembly = _appBase.SaveFile(ReadAssemblyContent(), appBaseName);
+        _appAgent.RedirectConsoleOut(new LoggerProxy(Logger));
+        _appAgent.LoadAssembly(entryAssembly);
+    }
 
-            var setup = new AppDomainSetup
-            {
-                ApplicationBase = _appBase.Location,
-                ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
-                LoaderOptimization = LoaderOptimization.MultiDomainHost
-            };
+    public void Unload()
+    {
+        _appAgent?.BeforeUnload();
 
-            _app = AppDomain.CreateDomain(appBaseName, null, setup);
-            _appAgent = (DomainAgent)_app.CreateInstanceFromAndUnwrap(GetType().Assembly.Location, typeof(DomainAgent).FullName);
-
-            _appAgent.RedirectConsoleOut(new LoggerProxy(Logger));
-            _appAgent.LoadAssembly(entryAssembly);
+        if (_app != null)
+        {
+            AppDomain.Unload(_app);
         }
 
-        public void Unload()
-        {
-            _appAgent?.BeforeUnload();
+        _app = null;
+        _appAgent = null;
+    }
 
-            if (_app != null)
-            {
-                AppDomain.Unload(_app);
-            }
+    public bool ResolveScriptExecutor(string className, string methodName)
+    {
+        return _appAgent != null && _appAgent.ResolveScriptExecutor(className, methodName);
+    }
 
-            _app = null;
-            _appAgent = null;
-        }
+    public bool Execute(IDbCommand command, IVariables variables)
+    {
+        return _appAgent!.Execute(command, new VariablesProxy(variables));
+    }
 
-        public bool ResolveScriptExecutor(string className, string methodName)
-        {
-            return _appAgent.ResolveScriptExecutor(className, methodName);
-        }
-
-        public bool Execute(IDbCommand command, IVariables variables)
-        {
-            return _appAgent.Execute(command, new VariablesProxy(variables));
-        }
-
-        public void Dispose()
-        {
-            _appBase?.Dispose();
-        }
+    public void Dispose()
+    {
+        _appBase?.Dispose();
     }
 }
 #endif

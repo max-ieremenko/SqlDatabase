@@ -4,7 +4,13 @@ namespace SqlDatabase.Export;
 
 internal sealed class ExportTable
 {
-    public string Name { get; set; }
+    public ExportTable(string name)
+    {
+        Name = name;
+        Columns = new List<ExportTableColumn>();
+    }
 
-    public IList<ExportTableColumn> Columns { get; } = new List<ExportTableColumn>();
+    public string Name { get; }
+
+    public IList<ExportTableColumn> Columns { get; }
 }

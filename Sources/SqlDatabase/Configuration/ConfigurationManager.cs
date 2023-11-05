@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using SqlDatabase.IO;
 using Manager = System.Configuration.ConfigurationManager;
 
@@ -10,7 +9,7 @@ namespace SqlDatabase.Configuration;
 
 internal sealed class ConfigurationManager : IConfigurationManager
 {
-    public AppConfiguration SqlDatabase { get; private set; }
+    public AppConfiguration SqlDatabase { get; private set; } = null!;
 
     public static string ResolveDefaultConfigurationFile(string probingPath)
     {
@@ -19,7 +18,7 @@ internal sealed class ConfigurationManager : IConfigurationManager
         return Path.Combine(probingPath, fileName);
     }
 
-    public void LoadFrom(string configurationFile)
+    public void LoadFrom(string? configurationFile)
     {
         try
         {
@@ -32,9 +31,9 @@ internal sealed class ConfigurationManager : IConfigurationManager
         }
     }
 
-    internal void LoadFrom(IFileSystemInfo info)
+    internal void LoadFrom(IFileSystemInfo? info)
     {
-        AppConfiguration section;
+        AppConfiguration? section;
         if (info == null)
         {
             section = LoadCurrent();
@@ -47,7 +46,7 @@ internal sealed class ConfigurationManager : IConfigurationManager
         SqlDatabase = section ?? new AppConfiguration();
     }
 
-    private static AppConfiguration LoadCurrent()
+    private static AppConfiguration? LoadCurrent()
     {
         return (AppConfiguration)Manager.GetSection(AppConfiguration.SectionName);
     }
@@ -79,7 +78,7 @@ internal sealed class ConfigurationManager : IConfigurationManager
 
     private static IFile ResolveFile(IFileSystemInfo info)
     {
-        IFile file;
+        IFile? file;
         if (info is IFolder folder)
         {
             const string Name1 = "SqlDatabase.exe.config";

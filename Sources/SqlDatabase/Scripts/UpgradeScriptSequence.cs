@@ -9,17 +9,33 @@ namespace SqlDatabase.Scripts;
 
 internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
 {
-    public IList<IFileSystemInfo> Sources { get; set; } = new List<IFileSystemInfo>();
+    public UpgradeScriptSequence(
+        IScriptFactory scriptFactory,
+        IModuleVersionResolver versionResolver,
+        IList<IFileSystemInfo> sources,
+        ILogger log,
+        bool folderAsModuleName,
+        bool whatIf)
+    {
+        ScriptFactory = scriptFactory;
+        VersionResolver = versionResolver;
+        Sources = sources;
+        Log = log;
+        FolderAsModuleName = folderAsModuleName;
+        WhatIf = whatIf;
+    }
 
-    public IScriptFactory ScriptFactory { get; set; }
+    public IList<IFileSystemInfo> Sources { get; }
 
-    public IModuleVersionResolver VersionResolver { get; set; }
+    public IScriptFactory ScriptFactory { get; }
 
-    public ILogger Log { get; set; }
+    public IModuleVersionResolver VersionResolver { get; }
+
+    public ILogger Log { get; }
 
     public bool FolderAsModuleName { get; set; }
 
-    public bool WhatIf { get; set; }
+    public bool WhatIf { get; }
 
     public IList<ScriptStep> BuildSequence()
     {
@@ -29,7 +45,7 @@ internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
         // folder is empty
         if (scripts.ModuleNames.Count == 0)
         {
-            return new ScriptStep[0];
+            return Array.Empty<ScriptStep>();
         }
 
         foreach (var moduleName in scripts.ModuleNames.ToArray())
@@ -40,7 +56,7 @@ internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
         // no updates
         if (scripts.ModuleNames.Count == 0)
         {
-            return new ScriptStep[0];
+            return Array.Empty<ScriptStep>();
         }
 
         // no modules
@@ -83,7 +99,7 @@ internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
         while (scripts.ModuleNames.Count > 0)
         {
             var nextStep = default(ScriptStep);
-            string nextStepModuleName = null;
+            string? nextStepModuleName = null;
 
             foreach (var moduleName in scripts.ModuleNames)
             {

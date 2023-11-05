@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SqlDatabase.Scripts;
@@ -12,7 +12,7 @@ internal static class DependencyParser
 
     public static IEnumerable<ScriptDependency> ExtractDependencies(TextReader reader, string scriptName)
     {
-        string line;
+        string? line;
         while ((line = reader.ReadLine()) != null)
         {
             if (TryParseDependencyLine(line, out var moduleName, out var versionText))
@@ -27,7 +27,10 @@ internal static class DependencyParser
         }
     }
 
-    private static bool TryParseDependencyLine(string line, out string moduleName, out string version)
+    private static bool TryParseDependencyLine(
+        string line,
+        [NotNullWhen(true)] out string? moduleName,
+        [NotNullWhen(true)] out string? version)
     {
         moduleName = null;
         version = null;

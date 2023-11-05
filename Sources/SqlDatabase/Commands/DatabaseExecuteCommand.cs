@@ -5,9 +5,20 @@ namespace SqlDatabase.Commands;
 
 internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
 {
-    public ICreateScriptSequence ScriptSequence { get; set; }
+    public DatabaseExecuteCommand(
+        ICreateScriptSequence scriptSequence,
+        IPowerShellFactory powerShellFactory,
+        IDatabase database,
+        ILogger log)
+        : base(database, log)
+    {
+        ScriptSequence = scriptSequence;
+        PowerShellFactory = powerShellFactory;
+    }
 
-    public IPowerShellFactory PowerShellFactory { get; set; }
+    public ICreateScriptSequence ScriptSequence { get; }
+
+    public IPowerShellFactory PowerShellFactory { get; }
 
     protected override void Greet(string databaseLocation)
     {

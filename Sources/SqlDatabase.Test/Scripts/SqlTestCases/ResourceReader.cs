@@ -22,7 +22,7 @@ internal static class ResourceReader
         foreach (var sourceName in sources)
         {
             using (var stream = anchor.Assembly.GetManifestResourceStream(sourceName))
-            using (var reader = new StreamReader(stream))
+            using (var reader = new StreamReader(stream!))
             {
                 var name = Path.GetFileNameWithoutExtension(sourceName.Substring(prefix.Length));
                 var (input, expected) = ParseResource(reader);
@@ -42,7 +42,7 @@ internal static class ResourceReader
 
         var isInput = true;
 
-        string line;
+        string? line;
         while ((line = reader.ReadLine()) != null)
         {
             if (line == Separator)

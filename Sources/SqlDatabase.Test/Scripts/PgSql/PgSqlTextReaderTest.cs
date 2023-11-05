@@ -7,7 +7,7 @@ namespace SqlDatabase.Scripts.PgSql;
 [TestFixture]
 public class PgSqlTextReaderTest
 {
-    private PgSqlTextReader _sut;
+    private PgSqlTextReader _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

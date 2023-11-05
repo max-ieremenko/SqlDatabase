@@ -27,7 +27,7 @@ public class DependencyParserTest
         var input = "-- module dependency: moduleName " + versionText;
         var ex = Assert.Throws<InvalidOperationException>(() => DependencyParser.ExtractDependencies(new StringReader(input), "file name").ToArray());
 
-        ex.Message.ShouldContain("moduleName");
+        ex!.Message.ShouldContain("moduleName");
         ex.Message.ShouldContain(versionText);
     }
 

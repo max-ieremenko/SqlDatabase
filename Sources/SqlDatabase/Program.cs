@@ -70,7 +70,7 @@ internal static class Program
         }
     }
 
-    private static ICommandLine ResolveCommandLine(CommandLineFactory factory, ILogger logger)
+    private static ICommandLine? ResolveCommandLine(CommandLineFactory factory, ILogger logger)
     {
         try
         {
@@ -84,7 +84,7 @@ internal static class Program
         return null;
     }
 
-    private static CommandLineFactory ResolveFactory(string[] args, ILogger logger)
+    private static CommandLineFactory? ResolveFactory(string[] args, ILogger logger)
     {
         try
         {
@@ -105,7 +105,7 @@ internal static class Program
         return null;
     }
 
-    private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger combined)
+    private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger? combined)
     {
         combined = null;
         var fileName = CommandLineParser.GetLogFileName(args);
@@ -117,7 +117,7 @@ internal static class Program
         ILogger fileLogger;
         try
         {
-            fileLogger = new FileLogger(fileName);
+            fileLogger = new FileLogger(fileName!);
         }
         catch (Exception ex)
         {
@@ -134,7 +134,7 @@ internal static class Program
 #if NET472
         const string Runtime = ".net472";
 #else
-        const string Runtime = null;
+        const string? Runtime = null;
 #endif
         return "CommandLine." + commandName + Runtime + ".txt";
     }
@@ -156,7 +156,7 @@ internal static class Program
         }
 
         using (var stream = scope.Assembly.GetManifestResourceStream(resourceName))
-        using (var reader = new StreamReader(stream))
+        using (var reader = new StreamReader(stream!))
         {
             return reader.ReadToEnd();
         }

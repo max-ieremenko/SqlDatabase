@@ -9,13 +9,13 @@ namespace SqlDatabase.Configuration;
 
 internal abstract class CommandLineBase : ICommandLine
 {
-    public string ConnectionString { get; set; }
+    public string? ConnectionString { get; set; }
 
     public IList<IFileSystemInfo> Scripts { get; } = new List<IFileSystemInfo>();
 
     public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-    public string ConfigurationFile { get; set; }
+    public string? ConfigurationFile { get; set; }
 
     public IFileSystemFactory FileSystemFactory { get; set; } = new FileSystemFactory();
 
@@ -46,20 +46,14 @@ internal abstract class CommandLineBase : ICommandLine
         IDatabaseAdapter adapter;
         try
         {
-            adapter = DatabaseAdapterFactory.CreateAdapter(ConnectionString, configuration.SqlDatabase, logger);
+            adapter = DatabaseAdapterFactory.CreateAdapter(ConnectionString!, configuration.SqlDatabase, logger);
         }
         catch (Exception ex)
         {
             throw new InvalidCommandLineException(Arg.Database, "Invalid connection string value.", ex);
         }
 
-        var database = new Database
-        {
-            Adapter = adapter,
-            Log = logger,
-            Transaction = transaction,
-            WhatIf = whatIf
-        };
+        var database = new Database(adapter, logger, transaction, whatIf);
 
         var configurationVariables = configuration.SqlDatabase.Variables;
         foreach (var name in configurationVariables.AllKeys)
@@ -122,10 +116,15 @@ internal abstract class CommandLineBase : ICommandLine
         return false;
     }
 
-    protected void SetInLineScript(string value)
+    protected void SetInLineScript(string? value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            return;
+        }
+
         var index = Scripts.Count + 1;
-        var script = FileSystemFactory.FromContent("from{0}.sql".FormatWith(index), value);
+        var script = FileSystemFactory.FromContent("from{0}.sql".FormatWith(index), value!);
 
         Scripts.Add(script);
     }
@@ -166,7 +165,7 @@ internal abstract class CommandLineBase : ICommandLine
             return true;
         }
 
-        if (arg.Key.StartsWith(Arg.Variable, StringComparison.OrdinalIgnoreCase))
+        if (arg.Key != null && arg.Key.StartsWith(Arg.Variable, StringComparison.OrdinalIgnoreCase))
         {
             SetVariable(arg.Key.Substring(Arg.Variable.Length), arg.Value);
             return true;
@@ -181,12 +180,12 @@ internal abstract class CommandLineBase : ICommandLine
         return false;
     }
 
-    private void SetScripts(string value)
+    private void SetScripts(string? value)
     {
         Scripts.Add(FileSystemFactory.FileSystemInfoFromPath(value));
     }
 
-    private void SetVariable(string name, string value)
+    private void SetVariable(string? name, string? value)
     {
         name = name?.Trim();
         if (string.IsNullOrEmpty(name))
@@ -194,15 +193,15 @@ internal abstract class CommandLineBase : ICommandLine
             throw new InvalidCommandLineException(Arg.Variable, "Invalid variable name [{0}].".FormatWith(name));
         }
 
-        if (Variables.ContainsKey(name))
+        if (Variables.ContainsKey(name!))
         {
             throw new InvalidCommandLineException(Arg.Variable, "Variable with name [{0}] is duplicated.".FormatWith(name));
         }
 
-        Variables.Add(name, value);
+        Variables.Add(name!, value ?? string.Empty);
     }
 
-    private void SetConfigurationFile(string configurationFile)
+    private void SetConfigurationFile(string? configurationFile)
     {
         ConfigurationFile = configurationFile;
     }

@@ -14,8 +14,8 @@ namespace SqlDatabase.Export;
 [TestFixture]
 public class MsSqlDataExporterTest
 {
-    private StringBuilder _output;
-    private DataExporter _sut;
+    private StringBuilder _output = null!;
+    private DataExporter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -244,11 +244,11 @@ select * from @x";
         yield return new TestCaseData("BINARY", new[] { byte.MinValue }, new[] { byte.MaxValue }) { TestName = "BINARY" };
         yield return new TestCaseData("BINARY(2)", new[] { byte.MinValue, byte.MinValue }, new[] { byte.MaxValue, byte.MaxValue }) { TestName = "BINARY(2)" };
 
-        yield return new TestCaseData("VARBINARY", new byte[0], new[] { byte.MinValue }) { TestName = "VARBINARY" };
-        yield return new TestCaseData("VARBINARY(3)", new byte[0], new byte[] { byte.MinValue, 2, byte.MaxValue }) { TestName = "VARBINARY(3)" };
-        yield return new TestCaseData("VARBINARY(MAX)", new byte[0], new byte[] { byte.MinValue, 2, byte.MaxValue }) { TestName = "VARBINARY(MAX)" };
+        yield return new TestCaseData("VARBINARY", Array.Empty<byte>(), new[] { byte.MinValue }) { TestName = "VARBINARY" };
+        yield return new TestCaseData("VARBINARY(3)", Array.Empty<byte>(), new byte[] { byte.MinValue, 2, byte.MaxValue }) { TestName = "VARBINARY(3)" };
+        yield return new TestCaseData("VARBINARY(MAX)", Array.Empty<byte>(), new byte[] { byte.MinValue, 2, byte.MaxValue }) { TestName = "VARBINARY(MAX)" };
 
-        yield return new TestCaseData("IMAGE", new byte[0], new byte[] { byte.MinValue, 2, byte.MaxValue }) { TestName = "IMAGE" };
+        yield return new TestCaseData("IMAGE", Array.Empty<byte>(), new byte[] { byte.MinValue, 2, byte.MaxValue }) { TestName = "IMAGE" };
 
         var date = new DateTime(2019, 04, 22, 15, 42, 30);
         yield return new TestCaseData("DATE", date.Date, date.Date) { TestName = "DATE" };

@@ -11,9 +11,9 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class UpgradeCommandLineTest
 {
-    private Mock<ILogger> _log;
-    private Mock<IFileSystemFactory> _fs;
-    private UpgradeCommandLine _sut;
+    private Mock<ILogger> _log = null!;
+    private Mock<IFileSystemFactory> _fs = null!;
+    private UpgradeCommandLine _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -86,7 +86,7 @@ public class UpgradeCommandLineTest
         sequence.FolderAsModuleName.ShouldBeTrue();
 
         var scriptFactory = sequence.ScriptFactory.ShouldBeOfType<ScriptFactory>();
-        scriptFactory.PowerShellFactory.InstallationPath.ShouldBe(@"c:\PowerShell");
+        scriptFactory.PowerShellFactory!.InstallationPath.ShouldBe(@"c:\PowerShell");
 
         actual.PowerShellFactory.ShouldBe(scriptFactory.PowerShellFactory);
     }

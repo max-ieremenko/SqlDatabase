@@ -9,8 +9,8 @@ namespace SqlDatabase.IO;
 [TestFixture]
 public class ZipFolderTest
 {
-    private TempDirectory _temp;
-    private ZipFolder _sut;
+    private TempDirectory _temp = null!;
+    private ZipFolder _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -55,7 +55,7 @@ public class ZipFolderTest
             Assert.AreEqual("11", reader.ReadToEnd());
         }
 
-        files[0].GetParent().GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
+        files[0].GetParent()!.GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
     }
 
     [Test]
@@ -98,6 +98,6 @@ public class ZipFolderTest
             Assert.AreEqual("11", reader.ReadToEnd());
         }
 
-        files[0].GetParent().GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
+        files[0].GetParent()!.GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
     }
 }

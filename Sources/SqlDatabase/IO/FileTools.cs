@@ -9,7 +9,7 @@ internal static class FileTools
     private const string ZipExtension = ".zip";
     private const string NuGetExtension = ".nupkg";
 
-    public static string RootPath(string path)
+    public static string RootPath(string? path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -21,7 +21,7 @@ internal static class FileTools
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
         }
 
-        return path;
+        return path!;
     }
 
     public static IEnumerable<string> GetZipExtensions()

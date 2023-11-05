@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using SqlDatabase.IO;
@@ -208,7 +209,11 @@ internal sealed class UpgradeScriptCollection
         return !objections;
     }
 
-    internal static bool TryParseFileName(string name, out string moduleName, out Version from, out Version to)
+    internal static bool TryParseFileName(
+        string name,
+        [NotNullWhen(true)] out string? moduleName,
+        [NotNullWhen(true)] out Version? from,
+        [NotNullWhen(true)] out Version? to)
     {
         moduleName = null;
         from = null;
@@ -250,7 +255,7 @@ internal sealed class UpgradeScriptCollection
         return from != null && to != null && from < to;
     }
 
-    private static Version ParseVersion(string value)
+    private static Version? ParseVersion(string value)
     {
         if (Version.TryParse(value, out var ver))
         {
@@ -265,7 +270,7 @@ internal sealed class UpgradeScriptCollection
         return null;
     }
 
-    private void LoadFrom(IEnumerable<IFileSystemInfo> sources, IScriptFactory scriptFactory, int depth, string rootFolderName)
+    private void LoadFrom(IEnumerable<IFileSystemInfo> sources, IScriptFactory scriptFactory, int depth, string? rootFolderName)
     {
         foreach (var source in sources)
         {
@@ -299,14 +304,14 @@ internal sealed class UpgradeScriptCollection
                         moduleName = rootFolderName;
                     }
 
-                    if (!_stepsByModule.TryGetValue(moduleName, out var steps))
+                    if (!_stepsByModule.TryGetValue(moduleName!, out var steps))
                     {
                         steps = new List<ScriptStep>();
-                        _stepsByModule.Add(moduleName, steps);
+                        _stepsByModule.Add(moduleName!, steps);
                     }
 
                     var script = scriptFactory.FromFile(file);
-                    steps.Add(new ScriptStep(moduleName, from, to, script));
+                    steps.Add(new ScriptStep(moduleName!, from, to, script));
                 }
             }
         }

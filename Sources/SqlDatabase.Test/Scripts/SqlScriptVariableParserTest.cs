@@ -8,8 +8,8 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class SqlScriptVariableParserTest
 {
-    private Mock<IVariables> _variables;
-    private SqlScriptVariableParser _sut;
+    private Mock<IVariables> _variables = null!;
+    private SqlScriptVariableParser _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -99,11 +99,11 @@ public class SqlScriptVariableParserTest
     {
         _variables
             .Setup(v => v.GetValue(It.IsAny<string>()))
-            .Returns((string)null);
+            .Returns((string?)null);
 
         var ex = Assert.Throws<InvalidOperationException>(() => _sut.ApplyVariables("{{Value_1}}"));
 
-        ex.Message.ShouldContain("Value_1");
+        ex!.Message.ShouldContain("Value_1");
     }
 
     [Test]

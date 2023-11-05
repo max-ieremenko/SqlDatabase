@@ -13,8 +13,8 @@ namespace SqlDatabase.Export;
 [TestFixture]
 public class MySqlDataExporterTest
 {
-    private StringBuilder _output;
-    private DataExporter _sut;
+    private StringBuilder _output = null!;
+    private DataExporter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()

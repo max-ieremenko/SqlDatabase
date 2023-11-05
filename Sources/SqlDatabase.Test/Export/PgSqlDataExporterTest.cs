@@ -17,8 +17,8 @@ namespace SqlDatabase.Export;
 [TestFixture]
 public class PgSqlDataExporterTest
 {
-    private StringBuilder _output;
-    private DataExporter _sut;
+    private StringBuilder _output = null!;
+    private DataExporter _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -121,14 +121,14 @@ public class PgSqlDataExporterTest
 
         if (dataType.Equals("tsquery", StringComparison.OrdinalIgnoreCase))
         {
-            actual.ShouldBeAssignableTo<NpgsqlTsQuery>().ToString().ShouldBe(NpgsqlTsQuery.Parse((string)expected).ToString());
+            actual.ShouldBeAssignableTo<NpgsqlTsQuery>()!.ToString().ShouldBe(NpgsqlTsQuery.Parse((string)expected).ToString());
             return;
         }
 
         if (expected is IDictionary<string, object> compositeExpected)
         {
             var compositeActual = actual.ShouldBeAssignableTo<IDictionary<string, object>>();
-            compositeActual.Keys.ShouldBe(compositeExpected.Keys);
+            compositeActual!.Keys.ShouldBe(compositeExpected.Keys);
             foreach (var key in compositeExpected.Keys)
             {
                 compositeActual[key].ShouldBe(compositeExpected[key]);
@@ -180,7 +180,7 @@ public class PgSqlDataExporterTest
         yield return new TestCaseData("public.citext", "abc", "d", true, null) { TestName = "public.citext" };
 
         // Binary Data Types
-        yield return new TestCaseData("bytea", new byte[0], new[] { byte.MinValue, byte.MaxValue, (byte)10 }, true, null) { TestName = "bytea" };
+        yield return new TestCaseData("bytea", Array.Empty<byte>(), new[] { byte.MinValue, byte.MaxValue, (byte)10 }, true, null) { TestName = "bytea" };
 
         // Date/Time Types
         var date = new DateTime(2021, 05, 13, 18, 31, 30, 10);
@@ -222,7 +222,7 @@ public class PgSqlDataExporterTest
         yield return new TestCaseData("integer[3]", new[] { 1, 2, 3 }, new[] { -1, -2, 3 }, true, "integer[]") { TestName = "integer[3]" };
 
         // Composite Types
-        IDictionary<string, object> composite = new ExpandoObject();
+        IDictionary<string, object?> composite = new ExpandoObject();
         composite.Add("name", "fuzzy dice");
         composite.Add("supplier_id", 42);
         composite.Add("price", 1.99);

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
@@ -10,7 +11,7 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class CreateScriptSequenceTest
 {
-    private CreateScriptSequence _sut;
+    private CreateScriptSequence _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -30,10 +31,7 @@ public class CreateScriptSequenceTest
                 return script.Object;
             });
 
-        _sut = new CreateScriptSequence
-        {
-            ScriptFactory = scriptFactory.Object
-        };
+        _sut = new CreateScriptSequence(new List<IFileSystemInfo>(), scriptFactory.Object);
     }
 
     [Test]
@@ -68,7 +66,7 @@ public class CreateScriptSequenceTest
             .Concat(files)
             .ToArray();
 
-        _sut.Sources = new IFileSystemInfo[] { FileFactory.Folder("root", content) };
+        _sut.Sources.Add(FileFactory.Folder("root", content));
 
         var actual = _sut.BuildSequence();
 
@@ -89,13 +87,10 @@ public class CreateScriptSequenceTest
     [Test]
     public void BuildSequenceFromFolderAndFile()
     {
-        _sut.Sources = new IFileSystemInfo[]
-        {
-            FileFactory.Folder("root", FileFactory.File("20.sql"), FileFactory.File("10.sql")),
-            FileFactory.File("02.sql"),
-            FileFactory.File("01.sql"),
-            FileFactory.File("ignore")
-        };
+        _sut.Sources.Add(FileFactory.Folder("root", FileFactory.File("20.sql"), FileFactory.File("10.sql")));
+        _sut.Sources.Add(FileFactory.File("02.sql"));
+        _sut.Sources.Add(FileFactory.File("01.sql"));
+        _sut.Sources.Add(FileFactory.File("ignore"));
 
         var actual = _sut.BuildSequence();
 

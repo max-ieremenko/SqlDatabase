@@ -10,7 +10,7 @@ internal static class DiagnosticsTools
     public static bool IsOSPlatformWindows()
     {
 #if NET472
-            return true;
+        return true;
 #else
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 #endif
@@ -19,7 +19,7 @@ internal static class DiagnosticsTools
     public static int? GetParentProcessId(int processId)
     {
 #if NET472
-            return null;
+        return null;
 #else
         return IsOSPlatformWindows() ? GetParentProcessIdWindows(processId) : GetParentProcessIdLinux(processId);
 #endif
@@ -27,7 +27,7 @@ internal static class DiagnosticsTools
 
     internal static int? ParseParentProcessIdLinux(string fileName)
     {
-        string line = null;
+        string? line = null;
 
         try
         {
@@ -47,7 +47,7 @@ internal static class DiagnosticsTools
         }
 
         // (2) comm  %s: The filename of the executable, in parentheses.
-        var startIndex = line.LastIndexOf(')');
+        var startIndex = line!.LastIndexOf(')');
         if (startIndex <= 0 || startIndex >= line.Length)
         {
             return null;

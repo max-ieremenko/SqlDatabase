@@ -7,7 +7,7 @@ namespace SqlDatabase.TestApi;
 
 internal sealed class TempDirectory : IDisposable
 {
-    public TempDirectory(string name = null)
+    public TempDirectory(string? name = null)
     {
         Location = Path.Combine(Path.GetTempPath(), name ?? Guid.NewGuid().ToString());
         Directory.CreateDirectory(Location);
@@ -15,14 +15,14 @@ internal sealed class TempDirectory : IDisposable
 
     public string Location { get; }
 
-    public string CopyFileFromResources(string resourceName, Type resourceAnchor = null)
+    public string CopyFileFromResources(string resourceName, Type? resourceAnchor = null)
     {
         if (resourceAnchor == null)
         {
-            resourceAnchor = new StackTrace().GetFrame(1).GetMethod().DeclaringType;
+            resourceAnchor = new StackTrace().GetFrame(1)!.GetMethod()!.DeclaringType;
         }
 
-        var source = resourceAnchor.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
+        var source = resourceAnchor!.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
         Assert.IsNotNull(source, resourceName);
 
         var fileName = Path.Combine(Location, resourceName);
@@ -30,7 +30,7 @@ internal sealed class TempDirectory : IDisposable
         using (source)
         using (var dest = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
         {
-            source.CopyTo(dest);
+            source!.CopyTo(dest);
         }
 
         return fileName;

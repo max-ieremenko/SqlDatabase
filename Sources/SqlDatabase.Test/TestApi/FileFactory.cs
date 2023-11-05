@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Moq;
@@ -9,7 +10,7 @@ namespace SqlDatabase.TestApi;
 
 internal static class FileFactory
 {
-    public static IFile File(string name, byte[] content, IFolder parent)
+    public static IFile File(string name, byte[]? content, IFolder? parent)
     {
         var file = new Mock<IFile>(MockBehavior.Strict);
 
@@ -25,15 +26,15 @@ internal static class FileFactory
         return file.Object;
     }
 
-    public static IFile File(string name, byte[] content = null) => File(name, content, null);
+    public static IFile File(string name, byte[]? content = null) => File(name, content, null);
 
     public static IFile File(string name, string content) => File(name, content, null);
 
-    public static IFile File(string name, string content, IFolder parent)
+    public static IFile File(string name, string content, IFolder? parent)
     {
         return File(
             name,
-            string.IsNullOrEmpty(content) ? new byte[0] : Encoding.UTF8.GetBytes(content),
+            string.IsNullOrEmpty(content) ? Array.Empty<byte>() : Encoding.UTF8.GetBytes(content),
             parent);
     }
 

@@ -8,7 +8,7 @@ namespace SqlDatabase.PowerShell.Internal;
 internal sealed class AssemblyCache : IDisposable
 {
     private readonly string[] _probingPaths;
-    private readonly IDictionary<string, Assembly> _assemblyByName;
+    private readonly IDictionary<string, Assembly?> _assemblyByName;
 
     public AssemblyCache(params string[] probingPaths)
     {
@@ -19,10 +19,10 @@ internal sealed class AssemblyCache : IDisposable
             _probingPaths[i + 1] = probingPaths[i];
         }
 
-        _assemblyByName = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
+        _assemblyByName = new Dictionary<string, Assembly?>(StringComparer.OrdinalIgnoreCase);
     }
 
-    public Assembly Load(AssemblyName assemblyName, Func<string, Assembly> loader)
+    public Assembly? Load(AssemblyName assemblyName, Func<string, Assembly> loader)
     {
         var fileName = assemblyName.Name + ".dll";
         if (_assemblyByName.TryGetValue(fileName, out var assembly))
@@ -40,7 +40,7 @@ internal sealed class AssemblyCache : IDisposable
         _assemblyByName.Clear();
     }
 
-    private Assembly TryFindAndLoad(string fileName, Func<string, Assembly> loader)
+    private Assembly? TryFindAndLoad(string fileName, Func<string, Assembly> loader)
     {
         for (var i = 0; i < _probingPaths.Length; i++)
         {

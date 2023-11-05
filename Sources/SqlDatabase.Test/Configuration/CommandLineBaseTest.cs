@@ -11,11 +11,11 @@ namespace SqlDatabase.Configuration;
 [TestFixture]
 public class CommandLineBaseTest
 {
-    private Mock<ILogger> _log;
-    private Mock<IConfigurationManager> _configurationManager;
-    private AppConfiguration _configuration;
-    private Mock<IFileSystemFactory> _fs;
-    private CommandLineBase _sut;
+    private Mock<ILogger> _log = null!;
+    private Mock<IConfigurationManager> _configurationManager = null!;
+    private AppConfiguration _configuration = null!;
+    private Mock<IFileSystemFactory> _fs = null!;
+    private CommandLineBase _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -72,7 +72,7 @@ public class CommandLineBaseTest
 
         var ex = Assert.Throws<InvalidOperationException>(() => _sut.CreateDatabase(_log.Object, _configurationManager.Object, TransactionMode.None, false));
 
-        ex.Message.ShouldContain("a b");
+        ex!.Message.ShouldContain("a b");
         ex.Message.ShouldContain("c d");
     }
 

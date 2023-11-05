@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SqlDatabase.Scripts.AssemblyInternal;
 
-internal sealed class VariablesProxy : MarshalByRefObject, IReadOnlyDictionary<string, string>
+internal sealed class VariablesProxy : MarshalByRefObject, IReadOnlyDictionary<string, string?>
 {
     private readonly IVariables _variables;
 
@@ -19,20 +20,20 @@ internal sealed class VariablesProxy : MarshalByRefObject, IReadOnlyDictionary<s
 
     public IEnumerable<string> Values => throw new NotSupportedException();
 
-    public string this[string key] => _variables.GetValue(key);
+    public string? this[string key] => _variables.GetValue(key);
 
     public bool ContainsKey(string key)
     {
         return _variables.GetValue(key) != null;
     }
 
-    public bool TryGetValue(string key, out string value)
+    public bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
     {
         value = _variables.GetValue(key);
         return value != null;
     }
 
-    public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+    public IEnumerator<KeyValuePair<string, string?>> GetEnumerator()
     {
         throw new NotSupportedException();
     }
