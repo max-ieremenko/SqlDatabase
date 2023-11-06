@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Scripts;
@@ -27,9 +28,9 @@ internal sealed class CreateScriptSequence : ICreateScriptSequence
             {
                 Build(folder, null, ScriptFactory, result);
             }
-            else if (ScriptFactory.IsSupported(source.Name))
+            else if ((source is IFile file) && ScriptFactory.IsSupported(file))
             {
-                result.Add(ScriptFactory.FromFile((IFile)source));
+                result.Add(ScriptFactory.FromFile(file));
             }
         }
 
@@ -46,7 +47,7 @@ internal sealed class CreateScriptSequence : ICreateScriptSequence
 
         var files = root
             .GetFiles()
-            .Where(i => factory.IsSupported(i.Name))
+            .Where(factory.IsSupported)
             .OrderBy(i => i.Name)
             .Select(factory.FromFile);
 

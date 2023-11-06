@@ -1,4 +1,5 @@
-﻿using SqlDatabase.Scripts.PowerShellInternal;
+﻿using SqlDatabase.Adapter;
+using SqlDatabase.Scripts.PowerShellInternal;
 
 namespace SqlDatabase.Scripts;
 

@@ -6,6 +6,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts.UpgradeInternal;
 using SqlDatabase.TestApi;
@@ -27,8 +28,8 @@ public class UpgradeScriptSequenceTest
 
         _scriptFactory = new Mock<IScriptFactory>(MockBehavior.Strict);
         _scriptFactory
-            .Setup(f => f.IsSupported(It.IsAny<string>()))
-            .Returns<string>(s => ".sql".Equals(Path.GetExtension(s)) || ".exe".Equals(Path.GetExtension(s)));
+            .Setup(f => f.IsSupported(It.IsAny<IFile>()))
+            .Returns<IFile>(f => ".sql".Equals(f.Extension) || ".exe".Equals(f.Extension));
 
         _versionResolver = new Mock<IModuleVersionResolver>(MockBehavior.Strict);
 
@@ -49,15 +50,21 @@ public class UpgradeScriptSequenceTest
         {
             var file = AddFile(_root, sourceFile.Name);
 
-            var dependencies = Array.Empty<ScriptDependency>();
-            if (sourceFile.Dependencies != null)
-            {
-                dependencies = sourceFile.Dependencies.Select(i => new ScriptDependency(i.Module, new Version(i.Version))).ToArray();
-            }
-
             var script = new Mock<IScript>(MockBehavior.Strict);
             script.SetupGet(s => s.DisplayName).Returns(file.Name);
-            script.Setup(s => s.GetDependencies()).Returns(dependencies);
+
+            if (sourceFile.Dependencies == null)
+            {
+                script.Setup(s => s.GetDependencies()).Returns((TextReader?)null);
+            }
+            else
+            {
+                var dependenciesText = string.Join(
+                    Environment.NewLine,
+                    sourceFile.Dependencies.Select(i => $"-- module dependency: {i.Module} {i.Version}"));
+
+                script.Setup(s => s.GetDependencies()).Returns(new StringReader(dependenciesText));
+            }
 
             _scriptFactory
                 .Setup(s => s.FromFile(file))

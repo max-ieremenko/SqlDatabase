@@ -6,6 +6,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts.PowerShellInternal;
 
 namespace SqlDatabase.Scripts;
@@ -102,19 +103,12 @@ public class PowerShellScriptTest
     [Test]
     public void GetDependencies()
     {
-        var description = Encoding.Default.GetBytes(@"
--- module dependency: a 1.0
--- module dependency: b 1.0");
-
-        _sut.ReadDescriptionContent = () => new MemoryStream(description);
+        _sut.ReadDescriptionContent = () => new MemoryStream(Encoding.Default.GetBytes("dependencies"));
 
         var actual = _sut.GetDependencies();
 
-        actual.ShouldBe(new[]
-        {
-            new ScriptDependency("a", new Version("1.0")),
-            new ScriptDependency("b", new Version("1.0"))
-        });
+        actual.ShouldNotBeNull();
+        actual.ReadToEnd().ShouldBe("dependencies");
     }
 
     [Test]
@@ -124,6 +118,6 @@ public class PowerShellScriptTest
 
         var actual = _sut.GetDependencies();
 
-        actual.ShouldBeEmpty();
+        actual.ShouldBeNull();
     }
 }

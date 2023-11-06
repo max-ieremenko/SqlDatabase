@@ -6,6 +6,7 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts;

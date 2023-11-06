@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.Adapter;
 using SqlDatabase.Export;
 using SqlDatabase.Scripts;
 using SqlDatabase.Scripts.MsSql;

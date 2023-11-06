@@ -17,17 +17,17 @@ public sealed class AssemblyScriptConfiguration : ConfigurationElement
         MethodName = methodName;
     }
 
-    [ConfigurationProperty(PropertyClassName, DefaultValue = "SqlDatabaseScript")]
-    public string ClassName
+    [ConfigurationProperty(PropertyClassName)]
+    public string? ClassName
     {
-        get => (string)this[PropertyClassName];
+        get => (string?)this[PropertyClassName];
         set => this[PropertyClassName] = value;
     }
 
-    [ConfigurationProperty(PropertyMethodName, DefaultValue = "Execute")]
-    public string MethodName
+    [ConfigurationProperty(PropertyMethodName)]
+    public string? MethodName
     {
-        get => (string)this[PropertyMethodName];
+        get => (string?)this[PropertyMethodName];
         set => this[PropertyMethodName] = value;
     }
 }

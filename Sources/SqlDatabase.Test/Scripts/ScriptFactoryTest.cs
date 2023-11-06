@@ -31,49 +31,13 @@ public class ScriptFactoryTest
     {
         var file = FileFactory.File("11.sql", "some script");
 
-        _sut.IsSupported(file.Name).ShouldBeTrue();
+        _sut.IsSupported(file).ShouldBeTrue();
 
         var script = _sut.FromFile(file).ShouldBeOfType<TextScript>();
 
         script.DisplayName.ShouldBe("11.sql");
         script.TextReader.ShouldBe(_textReader.Object);
         new StreamReader(script.ReadSqlContent()).ReadToEnd().ShouldBe("some script");
-    }
-
-    [Test]
-    public void FromDllFile()
-    {
-        var file = FileFactory.File(
-            "11.dll",
-            new byte[] { 1, 2, 3 },
-            FileFactory.Folder("name", FileFactory.File("11.txt", "3, 2, 1")));
-
-        _sut.IsSupported(file.Name).ShouldBeTrue();
-
-        var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
-
-        script!.DisplayName.ShouldBe("11.dll");
-        script.Configuration.ShouldBe(_configuration);
-        script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
-        new StreamReader(script.ReadDescriptionContent()!).ReadToEnd().ShouldBe("3, 2, 1");
-    }
-
-    [Test]
-    public void FromExeFile()
-    {
-        var file = FileFactory.File(
-            "11.exe",
-            new byte[] { 1, 2, 3 },
-            FileFactory.Folder("name"));
-
-        _sut.IsSupported(file.Name).ShouldBeTrue();
-
-        var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
-
-        script.DisplayName.ShouldBe("11.exe");
-        script.Configuration.ShouldBe(_configuration);
-        script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
-        script.ReadDescriptionContent().ShouldBeNull();
     }
 
     [Test]
@@ -87,7 +51,7 @@ public class ScriptFactoryTest
         _powerShellFactory
             .Setup(f => f.Request());
 
-        _sut.IsSupported(file.Name).ShouldBeTrue();
+        _sut.IsSupported(file).ShouldBeTrue();
 
         var script = _sut.FromFile(file).ShouldBeOfType<PowerShellScript>();
 
@@ -104,7 +68,7 @@ public class ScriptFactoryTest
         var file = FileFactory.File("11.ps1", "some script");
         _sut.PowerShellFactory = null;
 
-        _sut.IsSupported(file.Name).ShouldBeFalse();
+        _sut.IsSupported(file).ShouldBeFalse();
 
         Assert.Throws<NotSupportedException>(() => _sut.FromFile(file));
     }
@@ -114,7 +78,7 @@ public class ScriptFactoryTest
     {
         var file = FileFactory.File("11.txt");
 
-        _sut.IsSupported(file.Name).ShouldBeFalse();
+        _sut.IsSupported(file).ShouldBeFalse();
         Assert.Throws<NotSupportedException>(() => _sut.FromFile(file));
     }
 }

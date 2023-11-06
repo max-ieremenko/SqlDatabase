@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Management.Automation;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Scripts.PowerShellInternal;
 

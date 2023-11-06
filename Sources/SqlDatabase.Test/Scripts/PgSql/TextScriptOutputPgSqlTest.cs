@@ -4,6 +4,7 @@ using Moq;
 using Npgsql;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts.PgSql;

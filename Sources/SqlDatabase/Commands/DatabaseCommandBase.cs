@@ -1,4 +1,5 @@
-﻿using SqlDatabase.Scripts;
+﻿using SqlDatabase.Adapter;
+using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands;
 

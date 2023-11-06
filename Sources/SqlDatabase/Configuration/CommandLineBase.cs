@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;

@@ -26,8 +26,8 @@ public class AppConfigurationTest
         configuration.GetCurrentVersionScript.ShouldBeNullOrEmpty();
         configuration.SetCurrentVersionScript.ShouldBeNullOrEmpty();
 
-        configuration.AssemblyScript.ClassName.ShouldBe("SqlDatabaseScript");
-        configuration.AssemblyScript.MethodName.ShouldBe("Execute");
+        configuration.AssemblyScript.ClassName.ShouldBeNullOrEmpty();
+        configuration.AssemblyScript.MethodName.ShouldBeNullOrEmpty();
 
         configuration.Variables.Count.ShouldBe(0);
 

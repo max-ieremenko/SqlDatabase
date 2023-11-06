@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Scripts.PowerShellInternal;
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands;

@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using MySqlConnector;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Export;
 
@@ -75,7 +76,7 @@ internal sealed class MySqlDatabaseAdapter : IDatabaseAdapter
             script = DefaultSelectVersion;
         }
 
-        return script;
+        return script!;
     }
 
     public string GetVersionUpdateScript()
@@ -91,7 +92,7 @@ internal sealed class MySqlDatabaseAdapter : IDatabaseAdapter
             script = DefaultUpdateVersion;
         }
 
-        return script;
+        return script!;
     }
 
     private void OnConnectionInfoMessage(object sender, MySqlInfoMessageEventArgs args)

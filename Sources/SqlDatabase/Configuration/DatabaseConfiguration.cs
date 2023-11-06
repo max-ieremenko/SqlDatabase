@@ -9,16 +9,16 @@ public sealed class DatabaseConfiguration : ConfigurationElement
     private const string PropertyVariables = "variables";
 
     [ConfigurationProperty(PropertyGetCurrentVersionScript)]
-    public string GetCurrentVersionScript
+    public string? GetCurrentVersionScript
     {
-        get => (string)this[PropertyGetCurrentVersionScript];
+        get => (string?)this[PropertyGetCurrentVersionScript];
         set => this[PropertyGetCurrentVersionScript] = value;
     }
 
     [ConfigurationProperty(PropertySetCurrentVersionScript)]
-    public string SetCurrentVersionScript
+    public string? SetCurrentVersionScript
     {
-        get => (string)this[PropertySetCurrentVersionScript];
+        get => (string?)this[PropertySetCurrentVersionScript];
         set => this[PropertySetCurrentVersionScript] = value;
     }
 

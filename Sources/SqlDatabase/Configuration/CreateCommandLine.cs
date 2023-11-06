@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
 using SqlDatabase.Scripts;
 using SqlDatabase.Scripts.PowerShellInternal;

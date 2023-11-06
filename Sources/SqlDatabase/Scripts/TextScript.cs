@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Scripts;
 
@@ -74,7 +75,7 @@ internal sealed class TextScript : IScript
         }
     }
 
-    public IList<ScriptDependency> GetDependencies()
+    public TextReader? GetDependencies()
     {
         string? batch;
         using (var sql = ReadSqlContent())
@@ -84,10 +85,10 @@ internal sealed class TextScript : IScript
 
         if (string.IsNullOrWhiteSpace(batch))
         {
-            return Array.Empty<ScriptDependency>();
+            return null;
         }
 
-        return DependencyParser.ExtractDependencies(new StringReader(batch), DisplayName).ToArray();
+        return new StringReader(batch);
     }
 
     private static string[]? GetReaderColumns(IDataReader reader)

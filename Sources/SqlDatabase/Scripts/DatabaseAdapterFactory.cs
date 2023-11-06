@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using MySqlConnector;
 using Npgsql;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.Scripts.MySql;

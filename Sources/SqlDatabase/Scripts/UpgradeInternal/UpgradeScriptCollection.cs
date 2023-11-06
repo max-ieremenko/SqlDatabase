@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Scripts.UpgradeInternal;
@@ -101,7 +102,13 @@ internal sealed class UpgradeScriptCollection
         {
             foreach (var step in steps)
             {
-                var dependencies = step.Script.GetDependencies();
+                var dependencies = Array.Empty<ScriptDependency>();
+                using var reader = step.Script.GetDependencies();
+                if (reader != null)
+                {
+                    dependencies = DependencyParser.ExtractDependencies(reader, step.Script.DisplayName).ToArray();
+                }
+
                 _dependencyByStep.Add(step.Script, dependencies);
             }
         }
@@ -287,7 +294,7 @@ internal sealed class UpgradeScriptCollection
             else
             {
                 var file = (IFile)source;
-                if (scriptFactory.IsSupported(file.Name) && TryParseFileName(file.Name, out var moduleName, out var from, out var to))
+                if (scriptFactory.IsSupported(file) && TryParseFileName(file.Name, out var moduleName, out var from, out var to))
                 {
                     if (FolderAsModuleName && string.IsNullOrEmpty(rootFolderName))
                     {

@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts.MsSql;

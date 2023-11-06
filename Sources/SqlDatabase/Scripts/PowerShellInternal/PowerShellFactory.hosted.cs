@@ -5,6 +5,7 @@ using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts.PowerShellInternal;

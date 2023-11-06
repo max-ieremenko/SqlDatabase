@@ -3,21 +3,18 @@
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>SqlDatabase</RootNamespace>
-    <NoWarn>NU1702</NoWarn>
     <OutputPath>..\..\bin\Tests</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Moq" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj" />
     <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
     <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
   </ItemGroup>
@@ -54,6 +51,10 @@
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\FolderAsModuleName.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
     <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Scripts\AssemblyInternal\" />
   </ItemGroup>
 
 </Project>

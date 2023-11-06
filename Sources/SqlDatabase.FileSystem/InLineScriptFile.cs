@@ -9,11 +9,14 @@ internal sealed class InLineScriptFile : IFile
     {
         Name = name;
         Content = content;
+        Extension = Path.GetExtension(name);
     }
 
     public string Name { get; }
 
     public string Content { get; }
+
+    public string Extension { get; }
 
     public IFolder? GetParent() => null;
 

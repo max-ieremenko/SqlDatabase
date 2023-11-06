@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands;

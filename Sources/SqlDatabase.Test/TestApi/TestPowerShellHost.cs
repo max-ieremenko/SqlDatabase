@@ -1,5 +1,6 @@
 ﻿using System;
 using Moq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 using SqlDatabase.Scripts.PowerShellInternal;
 

@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using Npgsql;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Export;
 
@@ -79,7 +80,7 @@ internal sealed class PgSqlDatabaseAdapter : IDatabaseAdapter
             script = DefaultSelectVersion;
         }
 
-        return script;
+        return script!;
     }
 
     public string GetVersionUpdateScript()
@@ -95,7 +96,7 @@ internal sealed class PgSqlDatabaseAdapter : IDatabaseAdapter
             script = DefaultUpdateVersion;
         }
 
-        return script;
+        return script!;
     }
 
     private void OnConnectionNotice(object sender, NpgsqlNoticeEventArgs e)

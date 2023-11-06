@@ -16,11 +16,14 @@ internal sealed partial class ZipFolderFile : IFile
 
         EntryFullName = entryFullName;
         Name = Path.GetFileName(entryFullName);
+        Extension = Path.GetExtension(Name);
     }
 
     public string Name { get; }
 
     public string EntryFullName { get; }
+
+    public string Extension { get; }
 
     public IFolder GetParent() => _parent;
 

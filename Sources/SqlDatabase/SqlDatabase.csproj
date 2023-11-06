@@ -14,7 +14,6 @@
   
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.Configuration" />
-    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management.Automation">
       <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
     </Reference>
@@ -44,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SqlDatabase.FileSystem\SqlDatabase.FileSystem.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

@@ -1,6 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;

@@ -7,6 +7,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.TestApi;
 
@@ -152,6 +153,7 @@ go"
 
         var actual = _sut.GetDependencies();
 
-        actual.ShouldBe(new[] { new ScriptDependency("a", new Version("1.0")) });
+        actual.ShouldNotBeNull();
+        actual.ReadToEnd().ShouldBe("-- module dependency: a 1.0");
     }
 }

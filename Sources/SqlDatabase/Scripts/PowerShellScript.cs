@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts.PowerShellInternal;
 
 namespace SqlDatabase.Scripts;
@@ -58,20 +58,15 @@ internal sealed class PowerShellScript : IScript
         throw new NotSupportedException("PowerShell script does not support readers.");
     }
 
-    public IList<ScriptDependency> GetDependencies()
+    public TextReader? GetDependencies()
     {
-        using (var description = ReadDescriptionContent())
+        var description = ReadDescriptionContent();
+        if (description == null)
         {
-            if (description == null)
-            {
-                return Array.Empty<ScriptDependency>();
-            }
-
-            using (var reader = new StreamReader(description))
-            {
-                return DependencyParser.ExtractDependencies(reader, DisplayName).ToArray();
-            }
+            return null;
         }
+
+        return new StreamReader(description);
     }
 
     private static void Invoke(IPowerShell powerShell, string script, IDbCommand? command, IVariables variables, ILogger logger, bool whatIf)

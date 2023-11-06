@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands;

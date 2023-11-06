@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
 
@@ -18,8 +18,8 @@ public class CreateScriptSequenceTest
     {
         var scriptFactory = new Mock<IScriptFactory>(MockBehavior.Strict);
         scriptFactory
-            .Setup(f => f.IsSupported(It.IsAny<string>()))
-            .Returns<string>(s => ".sql".Equals(Path.GetExtension(s)) || ".exe".Equals(Path.GetExtension(s)));
+            .Setup(f => f.IsSupported(It.IsAny<IFile>()))
+            .Returns<IFile>(f => ".sql".Equals(f.Extension) || ".exe".Equals(f.Extension));
 
         scriptFactory
             .Setup(s => s.FromFile(It.IsNotNull<IFile>()))

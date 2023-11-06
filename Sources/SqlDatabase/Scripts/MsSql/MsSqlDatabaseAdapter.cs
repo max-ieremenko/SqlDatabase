@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Export;
 
@@ -73,7 +74,7 @@ internal sealed class MsSqlDatabaseAdapter : IDatabaseAdapter
             script = DefaultSelectVersion;
         }
 
-        return script;
+        return script!;
     }
 
     public string GetVersionUpdateScript()
@@ -89,7 +90,7 @@ internal sealed class MsSqlDatabaseAdapter : IDatabaseAdapter
             script = DefaultUpdateVersion;
         }
 
-        return script;
+        return script!;
     }
 
     private void OnConnectionInfoMessage(object sender, SqlInfoMessageEventArgs e)

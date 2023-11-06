@@ -9,6 +9,7 @@ using Npgsql;
 using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts.PgSql;
 using SqlDatabase.TestApi;
 

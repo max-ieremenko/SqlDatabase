@@ -8,11 +8,14 @@ internal sealed class FileSystemFile : IFile
     {
         Location = location;
         Name = Path.GetFileName(location);
+        Extension = Path.GetExtension(Name);
     }
 
     public string Name { get; }
 
     public string Location { get; }
+
+    public string Extension { get; }
 
     public IFolder GetParent()
     {

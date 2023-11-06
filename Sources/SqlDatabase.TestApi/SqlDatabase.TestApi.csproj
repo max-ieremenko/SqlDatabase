@@ -6,5 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="Shouldly" />
+    <PackageReference Include="Moq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.FileSystem\SqlDatabase.FileSystem.csproj" />
   </ItemGroup>
 </Project>
