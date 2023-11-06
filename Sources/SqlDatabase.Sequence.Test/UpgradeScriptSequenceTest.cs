@@ -8,10 +8,9 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
-using SqlDatabase.Scripts.UpgradeInternal;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
 [TestFixture]
 public class UpgradeScriptSequenceTest

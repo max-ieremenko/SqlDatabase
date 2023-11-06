@@ -2,32 +2,32 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Shouldly;
 
-namespace SqlDatabase.Scripts.SqlTestCases;
+namespace SqlDatabase.TestApi;
 
-internal static class ResourceReader
+public static class ResourceReader
 {
-    public static IEnumerable<(string Name, string Input, string[] Expected)> Read(string folder)
+    public static IEnumerable<(string Name, string Input, string[] Expected)> Read(Assembly assembly, string filter)
     {
-        var anchor = typeof(ResourceReader);
-        var prefix = anchor.Namespace + "." + anchor.Name + "." + folder + ".";
-
-        var sources = anchor
-            .Assembly
+        var sources = assembly
             .GetManifestResourceNames()
-            .Where(i => i.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(i => i);
+            .Where(i => i.IndexOf(filter, StringComparison.Ordinal) >= 0)
+            .OrderBy(i => i)
+            .ToArray();
+
+        sources.ShouldNotBeEmpty();
 
         foreach (var sourceName in sources)
         {
-            using (var stream = anchor.Assembly.GetManifestResourceStream(sourceName))
+            using (var stream = assembly.GetManifestResourceStream(sourceName))
             using (var reader = new StreamReader(stream!))
             {
-                var name = Path.GetFileNameWithoutExtension(sourceName.Substring(prefix.Length));
                 var (input, expected) = ParseResource(reader);
 
-                yield return (name, input, expected);
+                yield return (GetShortName(sourceName), input, expected);
             }
         }
     }
@@ -80,5 +80,23 @@ internal static class ResourceReader
         }
 
         return (input.ToString(), expected.ToArray());
+    }
+
+    private static string GetShortName(string fullName)
+    {
+        var result = fullName;
+
+        var index = fullName.LastIndexOf('.');
+        if (index > 0)
+        {
+            index = fullName.LastIndexOf('.', index - 1);
+        }
+
+        if (index > 0)
+        {
+            result = fullName.Substring(index + 1);
+        }
+
+        return result;
     }
 }

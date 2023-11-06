@@ -6,7 +6,7 @@ using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
 [TestFixture]
 public class CreateScriptSequenceTest

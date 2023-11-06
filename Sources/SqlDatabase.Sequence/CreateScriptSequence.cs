@@ -4,9 +4,9 @@ using System.Linq;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
-internal sealed class CreateScriptSequence : ICreateScriptSequence
+public sealed class CreateScriptSequence : ICreateScriptSequence
 {
     public CreateScriptSequence(IList<IFileSystemInfo> sources, IScriptFactory scriptFactory)
     {

@@ -4,19 +4,19 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Scripts.SqlTestCases;
+using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
 [TestFixture]
 public class DependencyParserTest
 {
     [Test]
     [TestCaseSource(nameof(GetExtractDependenciesTestCases))]
-    public void ExtractDependencies(string sql, ScriptDependency[] expected)
+    public void ExtractDependencies(string sql, Array expected)
     {
         var actual = DependencyParser.ExtractDependencies(new StringReader(sql), "file name").ToArray();
-        actual.ShouldBe(expected);
+        actual.ShouldBe((ScriptDependency[])expected);
     }
 
     [Test]
@@ -33,7 +33,7 @@ public class DependencyParserTest
 
     private static IEnumerable<TestCaseData> GetExtractDependenciesTestCases()
     {
-        foreach (var testCase in ResourceReader.Read("Dependencies"))
+        foreach (var testCase in ResourceReader.Read(typeof(DependencyParserTest).Assembly, nameof(DependencyParserTest)))
         {
             var expected = new List<ScriptDependency>();
             foreach (var line in testCase.Expected)

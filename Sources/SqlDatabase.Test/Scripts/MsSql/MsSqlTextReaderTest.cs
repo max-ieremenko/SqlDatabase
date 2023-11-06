@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Scripts.SqlTestCases;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts.MsSql;
 
@@ -34,23 +34,21 @@ public class MsSqlTextReaderTest
 
     [Test]
     [TestCaseSource(nameof(GetSplitByGoTestCases))]
-    public void SplitByGo(Stream input, string[] expected)
+    public void SplitByGo(byte[] input, string[] expected)
     {
-        var batches = _sut.ReadBatches(input);
+        var batches = _sut.ReadBatches(new MemoryStream(input));
         batches.ShouldBe(expected);
 
-        input.Position = 0;
-
-        var first = _sut.ReadFirstBatch(input);
+        var first = _sut.ReadFirstBatch(new MemoryStream(input));
         first.ShouldBe(expected[0]);
     }
 
     private static IEnumerable<TestCaseData> GetSplitByGoTestCases()
     {
-        foreach (var testCase in ResourceReader.Read("Go"))
+        foreach (var testCase in ResourceReader.Read(typeof(MsSqlTextReaderTest).Assembly, "SqlTestCases.Go"))
         {
             yield return new TestCaseData(
-                new MemoryStream(Encoding.Default.GetBytes(testCase.Input)),
+                Encoding.Default.GetBytes(testCase.Input),
                 testCase.Expected)
             {
                 TestName = testCase.Name

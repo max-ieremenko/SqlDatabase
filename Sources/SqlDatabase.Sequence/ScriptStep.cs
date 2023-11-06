@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
 [DebuggerDisplay("{Script.DisplayName}")]
 public readonly struct ScriptStep

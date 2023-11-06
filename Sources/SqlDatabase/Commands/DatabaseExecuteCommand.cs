@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 

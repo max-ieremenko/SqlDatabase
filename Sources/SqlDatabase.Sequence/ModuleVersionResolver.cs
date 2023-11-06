@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.UpgradeInternal;
+namespace SqlDatabase.Sequence;
 
 internal sealed class ModuleVersionResolver : IModuleVersionResolver
 {
     private readonly IDictionary<string, Version> _versionByModule = new Dictionary<string, Version>(StringComparer.OrdinalIgnoreCase);
 
-    public ModuleVersionResolver(ILogger log, IDatabase database)
+    public ModuleVersionResolver(ILogger log, GetDatabaseCurrentVersion database)
     {
         Log = log;
         Database = database;
@@ -16,7 +16,7 @@ internal sealed class ModuleVersionResolver : IModuleVersionResolver
 
     public ILogger Log { get; }
 
-    public IDatabase Database { get; }
+    public GetDatabaseCurrentVersion Database { get; internal set; }
 
     public Version GetCurrentVersion(string? moduleName)
     {
@@ -36,15 +36,15 @@ internal sealed class ModuleVersionResolver : IModuleVersionResolver
 
     private Version LoadVersion(string moduleName)
     {
-        var version = Database.GetCurrentVersion(moduleName);
+        var version = Database(moduleName);
 
         if (moduleName.Length == 0)
         {
-            Log.Info("database version: {0}".FormatWith(version));
+            Log.Info($"database version: {version}");
         }
         else
         {
-            Log.Info("module [{0}] version: {1}".FormatWith(moduleName, version));
+            Log.Info($"module [{moduleName}] version: {version}");
         }
 
         return version;

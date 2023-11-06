@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
 internal static class DependencyParser
 {
@@ -19,7 +19,7 @@ internal static class DependencyParser
             {
                 if (!Version.TryParse(versionText, out var version))
                 {
-                    throw new InvalidOperationException("The current version value [{0}] of module [{1}] is invalid, script {2}.".FormatWith(versionText, moduleName, scriptName));
+                    throw new InvalidOperationException($"The current version value [{versionText}] of module [{moduleName}] is invalid, script {scriptName}.");
                 }
 
                 yield return new ScriptDependency(moduleName, version);

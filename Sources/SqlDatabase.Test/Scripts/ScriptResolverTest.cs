@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;

@@ -5,6 +5,7 @@ using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Configuration;
 

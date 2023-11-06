@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">

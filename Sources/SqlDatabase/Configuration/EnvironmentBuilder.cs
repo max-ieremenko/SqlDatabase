@@ -6,7 +6,7 @@ using SqlDatabase.Adapter.AssemblyScripts;
 using SqlDatabase.Adapter.PowerShellScripts;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
-using SqlDatabase.Scripts.UpgradeInternal;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Configuration;
 
@@ -92,7 +92,7 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
 
         return new UpgradeScriptSequence(
             scriptResolver,
-            new ModuleVersionResolver(GetLogger(), database),
+            database.GetCurrentVersion,
             scripts.ToArray(),
             GetLogger(),
             folderAsModuleName,

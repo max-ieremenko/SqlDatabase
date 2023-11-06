@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Shouldly;
 
-namespace SqlDatabase.Scripts.UpgradeInternal;
+namespace SqlDatabase.Sequence;
 
 [TestFixture]
 public class UpgradeScriptCollectionTest
@@ -20,7 +20,7 @@ public class UpgradeScriptCollectionTest
     [TestCase("1.0_xxx.sql", null, null, null)]
     [TestCase("2.0_1.0.sql", null, null, null)]
     [TestCase("_1.0_1.1.sql", null, null, null)]
-    public void TryParseFileName(string name, string moduleName, string from, string to)
+    public void TryParseFileName(string name, string? moduleName, string? from, string? to)
     {
         var actual = UpgradeScriptCollection.TryParseFileName(name, out var actualModuleName, out var actualFrom, out var actualTo);
 
@@ -33,7 +33,7 @@ public class UpgradeScriptCollectionTest
             actual.ShouldBeTrue();
             actualModuleName.ShouldBe(moduleName);
             actualFrom.ShouldBe(new Version(from));
-            actualTo.ShouldBe(new Version(to));
+            actualTo.ShouldBe(new Version(to!));
         }
     }
 }

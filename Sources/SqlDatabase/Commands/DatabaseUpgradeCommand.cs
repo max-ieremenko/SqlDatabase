@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 

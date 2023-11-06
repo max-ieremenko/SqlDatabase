@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 

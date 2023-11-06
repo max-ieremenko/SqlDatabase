@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
-public readonly struct ScriptDependency : IEquatable<ScriptDependency>
+internal readonly struct ScriptDependency : IEquatable<ScriptDependency>
 {
     public ScriptDependency(string moduleName, Version version)
     {
@@ -33,5 +33,5 @@ public readonly struct ScriptDependency : IEquatable<ScriptDependency>
         return (int)((uint)(h1 << 5) | (uint)h1 >> 27) + h1 ^ h2;
     }
 
-    public override string ToString() => "{0} {1}".FormatWith(ModuleName, Version);
+    public override string ToString() => $"{ModuleName} {Version}";
 }

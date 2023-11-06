@@ -6,7 +6,7 @@ using System.Linq;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 
-namespace SqlDatabase.Scripts.UpgradeInternal;
+namespace SqlDatabase.Sequence;
 
 internal sealed class UpgradeScriptCollection
 {
@@ -45,10 +45,10 @@ internal sealed class UpgradeScriptCollection
         {
             if (string.IsNullOrEmpty(moduleName))
             {
-                throw new InvalidOperationException("The current version [{0}] is greater then latest upgrade [{1}].".FormatWith(moduleVersion, maxVersion));
+                throw new InvalidOperationException($"The current version [{moduleVersion}] is greater then latest upgrade [{maxVersion}].");
             }
 
-            throw new InvalidOperationException("Module [{0}], the current version [{1}] is greater then latest upgrade [{2}].".FormatWith(moduleName, moduleVersion, maxVersion));
+            throw new InvalidOperationException($"Module [{moduleName}], the current version [{moduleVersion}] is greater then latest upgrade [{maxVersion}].");
         }
 
         files = files
@@ -73,10 +73,10 @@ internal sealed class UpgradeScriptCollection
             {
                 if (string.IsNullOrEmpty(moduleName))
                 {
-                    throw new InvalidOperationException("Duplicated step found [{0}] and [{1}].".FormatWith(file.Script.DisplayName, files[0].Script.DisplayName));
+                    throw new InvalidOperationException($"Duplicated step found [{file.Script.DisplayName}] and [{files[0].Script.DisplayName}].");
                 }
 
-                throw new InvalidOperationException("Module [{0}], duplicated step found [{1}] and [{2}].".FormatWith(moduleName, file.Script.DisplayName, files[0].Script.DisplayName));
+                throw new InvalidOperationException($"Module [{moduleName}], duplicated step found [{file.Script.DisplayName}] and [{files[0].Script.DisplayName}].");
             }
 
             sequence.Add(file);
@@ -87,10 +87,10 @@ internal sealed class UpgradeScriptCollection
         {
             if (string.IsNullOrEmpty(moduleName))
             {
-                throw new InvalidOperationException("Upgrade step from [{0}] to a next not found.".FormatWith(version));
+                throw new InvalidOperationException($"Upgrade step from [{version}] to a next not found.");
             }
 
-            throw new InvalidOperationException("Module [{0}], upgrade step from [{1}] to a next not found.".FormatWith(moduleName, version));
+            throw new InvalidOperationException($"Module [{moduleName}], upgrade step from [{version}] to a next not found.");
         }
 
         _stepsByModule[moduleName] = sequence;
@@ -119,10 +119,9 @@ internal sealed class UpgradeScriptCollection
         foreach (var moduleName in _stepsByModule.Keys.OrderBy(i => i))
         {
             var steps = _stepsByModule[moduleName];
-            logger.Info("module [{0}], {1} step{2}:".FormatWith(
-                moduleName,
-                steps.Count,
-                steps.Count == 1 ? null : "s"));
+
+            var s = steps.Count == 1 ? null : "s";
+            logger.Info($"module [{moduleName}], {steps.Count} step{s}:");
 
             using (logger.Indent())
             {
@@ -131,13 +130,12 @@ internal sealed class UpgradeScriptCollection
                     var dependencies = GetDependencies(step);
                     if (dependencies.Count == 0)
                     {
-                        logger.Info("{0}, no dependencies".FormatWith(step.Script.DisplayName));
+                        logger.Info($"{step.Script.DisplayName}, no dependencies");
                     }
                     else
                     {
-                        logger.Info("{0}, depends on {1}".FormatWith(
-                            step.Script.DisplayName,
-                            string.Join("; ", dependencies.OrderBy(i => i.ModuleName))));
+                        var dependsOn = string.Join("; ", dependencies.OrderBy(i => i.ModuleName));
+                        logger.Info($"{step.Script.DisplayName}, depends on {dependsOn}");
                     }
                 }
             }
@@ -153,11 +151,7 @@ internal sealed class UpgradeScriptCollection
                 var currentVersion = versionResolver.GetCurrentVersion(dependency.ModuleName);
                 if (currentVersion > dependency.Version)
                 {
-                    throw new InvalidOperationException("Migration step [{0}] requires module [{1}] to be version [{2}], but current is [{3}].".FormatWith(
-                        step.Script.DisplayName,
-                        dependency.ModuleName,
-                        dependency.Version,
-                        currentVersion));
+                    throw new InvalidOperationException($"Migration step [{step.Script.DisplayName}] requires module [{dependency.ModuleName}] to be version [{dependency.Version}], but current is [{currentVersion}].");
                 }
 
                 if (currentVersion != dependency.Version)
@@ -167,10 +161,7 @@ internal sealed class UpgradeScriptCollection
 
                     if (!contains)
                     {
-                        throw new InvalidOperationException("Migration step [{0}] depends on module [{1}] version [{2}], but upgrade for this module not found.".FormatWith(
-                            step.Script.DisplayName,
-                            dependency.ModuleName,
-                            dependency.Version));
+                        throw new InvalidOperationException($"Migration step [{step.Script.DisplayName}] depends on module [{dependency.ModuleName}] version [{dependency.Version}], but upgrade for this module not found.");
                     }
                 }
             }
@@ -298,12 +289,12 @@ internal sealed class UpgradeScriptCollection
                 {
                     if (FolderAsModuleName && string.IsNullOrEmpty(rootFolderName))
                     {
-                        throw new InvalidOperationException("File [{0}] is not expected in the root folder.".FormatWith(file.Name));
+                        throw new InvalidOperationException($"File [{file.Name}] is not expected in the root folder.");
                     }
 
                     if (FolderAsModuleName && !string.IsNullOrEmpty(moduleName) && !moduleName.Equals(rootFolderName, StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new InvalidOperationException("File [{0}] with module name [{1}] is not expected in the folder [{2}].".FormatWith(file.Name, moduleName, rootFolderName));
+                        throw new InvalidOperationException($"File [{file.Name}] with module name [{moduleName}] is not expected in the folder [{rootFolderName}].");
                     }
 
                     if (FolderAsModuleName)

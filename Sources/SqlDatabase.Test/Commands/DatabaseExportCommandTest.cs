@@ -7,6 +7,7 @@ using SqlDatabase.Adapter;
 using SqlDatabase.Export;
 using SqlDatabase.Scripts;
 using SqlDatabase.Scripts.MsSql;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 

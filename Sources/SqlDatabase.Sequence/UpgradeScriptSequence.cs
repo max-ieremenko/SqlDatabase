@@ -4,13 +4,23 @@ using System.Linq;
 using System.Text;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
-using SqlDatabase.Scripts.UpgradeInternal;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
-internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
+public sealed class UpgradeScriptSequence : IUpgradeScriptSequence
 {
     public UpgradeScriptSequence(
+        IScriptFactory scriptFactory,
+        GetDatabaseCurrentVersion versionResolver,
+        IList<IFileSystemInfo> sources,
+        ILogger log,
+        bool folderAsModuleName,
+        bool whatIf)
+        : this(scriptFactory, new ModuleVersionResolver(log, versionResolver), sources, log, folderAsModuleName, whatIf)
+    {
+    }
+
+    internal UpgradeScriptSequence(
         IScriptFactory scriptFactory,
         IModuleVersionResolver versionResolver,
         IList<IFileSystemInfo> sources,
@@ -30,13 +40,13 @@ internal sealed class UpgradeScriptSequence : IUpgradeScriptSequence
 
     public IScriptFactory ScriptFactory { get; }
 
-    public IModuleVersionResolver VersionResolver { get; }
-
     public ILogger Log { get; }
 
     public bool FolderAsModuleName { get; set; }
 
     public bool WhatIf { get; }
+
+    internal IModuleVersionResolver VersionResolver { get; }
 
     public IList<ScriptStep> BuildSequence()
     {

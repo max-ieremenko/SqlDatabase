@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SqlDatabase.Scripts.UpgradeInternal;
+namespace SqlDatabase.Sequence;
 
 internal interface IModuleVersionResolver
 {

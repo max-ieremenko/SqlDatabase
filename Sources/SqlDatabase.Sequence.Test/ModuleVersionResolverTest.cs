@@ -5,20 +5,17 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.UpgradeInternal;
+namespace SqlDatabase.Sequence;
 
 [TestFixture]
 public class ModuleVersionResolverTest
 {
     private ModuleVersionResolver _sut = null!;
-    private Mock<IDatabase> _database = null!;
     private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
-        _database = new Mock<IDatabase>(MockBehavior.Strict);
-
         _logOutput = new List<string>();
         var log = new Mock<ILogger>(MockBehavior.Strict);
         log
@@ -29,7 +26,7 @@ public class ModuleVersionResolverTest
                 _logOutput.Add(m);
             });
 
-        _sut = new ModuleVersionResolver(log.Object, _database.Object);
+        _sut = new ModuleVersionResolver(log.Object, null!);
     }
 
     [Test]
@@ -38,13 +35,14 @@ public class ModuleVersionResolverTest
         const string ModuleName = "the-module";
         var moduleVersion = new Version("1.0");
 
-        _database
-            .Setup(d => d.GetCurrentVersion(ModuleName))
-            .Returns(moduleVersion);
+        _sut.Database = name =>
+        {
+            name.ShouldBe(ModuleName);
+            return moduleVersion;
+        };
 
         _sut.GetCurrentVersion(ModuleName).ShouldBe(moduleVersion);
 
-        _database.VerifyAll();
         _logOutput.Count.ShouldBe(1);
         _logOutput[0].ShouldContain(ModuleName);
         _logOutput[0].ShouldContain(moduleVersion.ToString());
@@ -55,13 +53,14 @@ public class ModuleVersionResolverTest
     {
         var version = new Version("1.0");
 
-        _database
-            .Setup(d => d.GetCurrentVersion(string.Empty))
-            .Returns(version);
+        _sut.Database = name =>
+        {
+            name.ShouldBeEmpty();
+            return version;
+        };
 
         _sut.GetCurrentVersion(null).ShouldBe(version);
 
-        _database.VerifyAll();
         _logOutput.Count.ShouldBe(1);
         _logOutput[0].ShouldContain("database version");
         _logOutput[0].ShouldContain(version.ToString());
@@ -72,16 +71,20 @@ public class ModuleVersionResolverTest
     {
         var version = new Version("1.0");
 
-        _database
-            .Setup(d => d.GetCurrentVersion(string.Empty))
-            .Returns(new Version("1.0"));
+        _sut.Database = name =>
+        {
+            name.ShouldBeEmpty();
+            return version;
+        };
 
         _sut.GetCurrentVersion(null).ShouldBe(version);
 
         _logOutput.Clear();
-        _database
-            .Setup(d => d.GetCurrentVersion(string.Empty))
-            .Throws<NotSupportedException>();
+        _sut.Database = name =>
+        {
+            name.ShouldBeEmpty();
+            throw new NotSupportedException();
+        };
 
         _sut.GetCurrentVersion(null).ShouldBe(version);
         _logOutput.ShouldBeEmpty();

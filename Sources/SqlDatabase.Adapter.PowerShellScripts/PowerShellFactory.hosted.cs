@@ -11,6 +11,8 @@ namespace SqlDatabase.Adapter.PowerShellScripts;
 // https://github.com/PowerShell/PowerShell/tree/master/docs/host-powershell
 internal partial class PowerShellFactory
 {
+    private static string? _initializedInstallationPath;
+
     partial void DoInitialize(ILogger logger)
     {
         if (string.IsNullOrEmpty(InstallationPath))
@@ -93,7 +95,12 @@ Write-Host ""OS:"" $PSVersionTable.OS";
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void SetPowerShellAssemblyLoadContext()
     {
-        PowerShellAssemblyLoadContextInitializer.SetPowerShellAssemblyLoadContext(InstallationPath);
+        // The singleton of PowerShellAssemblyLoadContext has already been initialized
+        if (_initializedInstallationPath == null || !_initializedInstallationPath.Equals(InstallationPath, StringComparison.OrdinalIgnoreCase))
+        {
+            PowerShellAssemblyLoadContextInitializer.SetPowerShellAssemblyLoadContext(InstallationPath);
+            _initializedInstallationPath = InstallationPath;
+        }
     }
 }
 #endif

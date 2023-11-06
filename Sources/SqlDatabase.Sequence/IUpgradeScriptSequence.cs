@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Sequence;
 
 public interface IUpgradeScriptSequence
 {
