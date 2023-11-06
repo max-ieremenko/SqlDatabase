@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 [TestFixture]
 public class DiagnosticsToolsTest

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Management.Automation;
-using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal sealed class PowerShellStreamsListener : IDisposable
 {

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
 using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
-using SqlDatabase.Scripts;
-using SqlDatabase.Scripts.PowerShellInternal;
 
 namespace SqlDatabase.Configuration;
 
@@ -15,22 +12,23 @@ internal sealed class ExecuteCommandLine : CommandLineBase
 
     public bool WhatIf { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger)
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+
+    internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {
-        var configuration = new ConfigurationManager();
-        configuration.LoadFrom(ConfigurationFile);
+        builder
+            .WithLogger(logger)
+            .WithConfiguration(ConfigurationFile)
+            .WithPowerShellScripts(UsePowerShell)
+            .WithAssemblyScripts()
+            .WithVariables(Variables)
+            .WithDataBase(ConnectionString!, Transaction, WhatIf);
 
-        var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
-        var database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf);
+        var database = builder.BuildDatabase();
+        var scriptResolver = builder.BuildScriptResolver();
+        var sequence = builder.BuildCreateSequence(Scripts);
 
-        var sequence = new CreateScriptSequence(
-            Scripts.ToArray(),
-            new ScriptFactory(
-                configuration.SqlDatabase.AssemblyScript,
-                powerShellFactory,
-                database.Adapter.CreateSqlTextReader()));
-
-        return new DatabaseExecuteCommand(sequence, powerShellFactory, database, logger);
+        return new DatabaseExecuteCommand(sequence, scriptResolver, database, logger);
     }
 
     protected override bool ParseArg(Arg arg)

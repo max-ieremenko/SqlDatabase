@@ -1,11 +1,9 @@
 ﻿using System;
-using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal sealed partial class PowerShellFactory : IPowerShellFactory
 {
-    private bool _requested;
     private bool _initialized;
 
     private PowerShellFactory(string? installationPath)
@@ -15,27 +13,14 @@ internal sealed partial class PowerShellFactory : IPowerShellFactory
 
     public string? InstallationPath { get; private set; }
 
-    // only for tests
-    internal static IPowerShellFactory? SharedTestFactory { get; set; }
-
     public static IPowerShellFactory Create(string? installationPath)
     {
-        if (SharedTestFactory != null)
-        {
-            return SharedTestFactory;
-        }
-
         return new PowerShellFactory(installationPath);
     }
 
-    public void Request()
+    public void Initialize(ILogger logger)
     {
-        _requested = true;
-    }
-
-    public void InitializeIfRequested(ILogger logger)
-    {
-        if (_initialized || !_requested)
+        if (_initialized)
         {
             return;
         }

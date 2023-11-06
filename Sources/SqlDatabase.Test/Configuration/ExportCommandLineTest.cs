@@ -6,7 +6,6 @@ using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
 using SqlDatabase.Export;
 using SqlDatabase.FileSystem;
-using SqlDatabase.Scripts;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration;
@@ -58,16 +57,26 @@ public class ExportCommandLineTest
     [Test]
     public void CreateCommand()
     {
-        _sut.ConnectionString = MsSqlQuery.ConnectionString;
+        _sut.ConnectionString = "connection string";
         _sut.DestinationTableName = "table 1";
 
+        var builder = new EnvironmentBuilderMock()
+            .WithLogger(_log.Object)
+            .WithConfiguration(_sut.ConfigurationFile)
+            .WithVariables(_sut.Variables)
+            .WithDataBase(_sut.ConnectionString, TransactionMode.None, false)
+            .WithCreateSequence(_sut.Scripts);
+
         var actual = _sut
-            .CreateCommand(_log.Object)
+            .CreateCommand(_log.Object, builder.Build())
             .ShouldBeOfType<DatabaseExportCommand>();
 
+        builder.VerifyAll();
+
         actual.Log.ShouldNotBe(_log.Object);
-        actual.Database.ShouldBeOfType<Database>();
-        actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>();
+        actual.Database.ShouldBe(builder.Database);
+        actual.ScriptResolver.ShouldBe(builder.ScriptResolver);
+        actual.ScriptSequence.ShouldBe(builder.CreateSequence);
         actual.OpenOutput.ShouldNotBeNull();
         actual.DestinationTableName.ShouldBe("table 1");
     }

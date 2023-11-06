@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal static class DiagnosticsTools
 {

@@ -12,16 +12,20 @@ internal sealed class DatabaseExportCommand : DatabaseCommandBase
 {
     public DatabaseExportCommand(
         ICreateScriptSequence scriptSequence,
+        IScriptResolver scriptResolver,
         Func<TextWriter> openOutput,
         IDatabase database,
         ILogger log)
         : base(database, log)
     {
         ScriptSequence = scriptSequence;
+        ScriptResolver = scriptResolver;
         OpenOutput = openOutput;
     }
 
     public ICreateScriptSequence ScriptSequence { get; }
+
+    public IScriptResolver ScriptResolver { get; }
 
     public Func<TextWriter> OpenOutput { get; }
 
@@ -37,6 +41,12 @@ internal sealed class DatabaseExportCommand : DatabaseCommandBase
     protected override void ExecuteCore()
     {
         var sequences = ScriptSequence.BuildSequence();
+        if (sequences.Count == 0)
+        {
+            return;
+        }
+
+        ScriptResolver.InitializeEnvironment(Log, sequences);
 
         using (var output = OpenOutput())
         {

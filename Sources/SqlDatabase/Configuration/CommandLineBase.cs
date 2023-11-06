@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
 using SqlDatabase.FileSystem;
-using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration;
 
@@ -41,52 +39,6 @@ internal abstract class CommandLineBase : ICommandLine
     }
 
     public abstract ICommand CreateCommand(ILogger logger);
-
-    internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration, TransactionMode transaction, bool whatIf)
-    {
-        IDatabaseAdapter adapter;
-        try
-        {
-            adapter = DatabaseAdapterFactory.CreateAdapter(ConnectionString!, configuration.SqlDatabase, logger);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidCommandLineException(Arg.Database, "Invalid connection string value.", ex);
-        }
-
-        var database = new Database(adapter, logger, transaction, whatIf);
-
-        var configurationVariables = configuration.SqlDatabase.Variables;
-        foreach (var name in configurationVariables.AllKeys)
-        {
-            database.Variables.SetValue(VariableSource.ConfigurationFile, name, configurationVariables[name].Value);
-        }
-
-        foreach (var entry in Variables)
-        {
-            database.Variables.SetValue(VariableSource.CommandLine, entry.Key, entry.Value);
-        }
-
-        var invalidNames = database
-            .Variables
-            .GetNames()
-            .OrderBy(i => i)
-            .Where(i => !SqlScriptVariableParser.IsValidVariableName(i))
-            .Select(i => "[{0}]".FormatWith(i))
-            .ToList();
-
-        if (invalidNames.Count == 1)
-        {
-            throw new InvalidOperationException("The variable name {0} is invalid.".FormatWith(invalidNames[0]));
-        }
-
-        if (invalidNames.Count > 1)
-        {
-            throw new InvalidOperationException("The following variable names are invalid: {0}.".FormatWith(string.Join(", ", invalidNames)));
-        }
-
-        return database;
-    }
 
     protected internal virtual void Validate()
     {

@@ -12,7 +12,7 @@ public class DatabaseUpgradeCommandTest
     private DatabaseUpgradeCommand _sut = null!;
     private Mock<IDatabase> _database = null!;
     private Mock<IUpgradeScriptSequence> _scriptSequence = null!;
-    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private Mock<IScriptResolver> _scriptResolver = null!;
     private Mock<ILogger> _log = null!;
 
     [SetUp]
@@ -29,7 +29,7 @@ public class DatabaseUpgradeCommandTest
 
         _scriptSequence = new Mock<IUpgradeScriptSequence>(MockBehavior.Strict);
 
-        _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
+        _scriptResolver = new Mock<IScriptResolver>(MockBehavior.Strict);
 
         _log = new Mock<ILogger>(MockBehavior.Strict);
         _log.Setup(l => l.Indent()).Returns((IDisposable)null!);
@@ -48,7 +48,7 @@ public class DatabaseUpgradeCommandTest
 
         _sut = new DatabaseUpgradeCommand(
             _scriptSequence.Object,
-            _powerShellFactory.Object,
+            _scriptResolver.Object,
             _database.Object,
             _log.Object);
     }
@@ -78,8 +78,8 @@ public class DatabaseUpgradeCommandTest
         var stepTo2 = new ScriptStep("module1", currentVersion, new Version("2.0"), updateTo2.Object);
         var stepTo3 = new ScriptStep("module2", new Version("2.0"), new Version("3.0"), updateTo3.Object);
 
-        _powerShellFactory
-            .Setup(f => f.InitializeIfRequested(_log.Object));
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_log.Object, new[] { stepTo2.Script, stepTo3.Script }));
 
         _database
             .Setup(d => d.Execute(updateTo2.Object, "module1", stepTo2.From, stepTo2.To))
@@ -91,7 +91,7 @@ public class DatabaseUpgradeCommandTest
 
         _database.VerifyAll();
         _scriptSequence.VerifyAll();
-        _powerShellFactory.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 
     [Test]
@@ -108,8 +108,8 @@ public class DatabaseUpgradeCommandTest
         var stepTo2 = new ScriptStep(string.Empty, currentVersion, new Version("2.0"), updateTo2.Object);
         var stepTo3 = new ScriptStep(string.Empty, new Version("2.0"), new Version("3.0"), updateTo3.Object);
 
-        _powerShellFactory
-            .Setup(f => f.InitializeIfRequested(_log.Object));
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_log.Object, new[] { stepTo2.Script, stepTo3.Script }));
 
         _database.Setup(d => d.Execute(updateTo2.Object, string.Empty, stepTo2.From, stepTo2.To)).Throws<InvalidOperationException>();
 
@@ -119,6 +119,6 @@ public class DatabaseUpgradeCommandTest
 
         _database.VerifyAll();
         _scriptSequence.VerifyAll();
-        _powerShellFactory.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 }

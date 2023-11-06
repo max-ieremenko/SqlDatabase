@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
-using SqlDatabase.Scripts.PowerShellInternal;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 [TestFixture]
 public class PowerShellScriptTest

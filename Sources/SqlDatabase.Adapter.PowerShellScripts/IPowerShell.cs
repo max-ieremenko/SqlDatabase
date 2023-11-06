@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal interface IPowerShell
 {

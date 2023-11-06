@@ -5,10 +5,8 @@ using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 [TestFixture]
 public class PowerShellTest
@@ -36,7 +34,8 @@ public class PowerShellTest
             .Setup(l => l.Indent())
             .Returns((IDisposable)null!);
 
-        _factory = TestPowerShellHost.GetOrCreateFactory();
+        _factory = PowerShellFactory.Create(null);
+        _factory.Initialize(_logger.Object);
     }
 
     [SetUp]

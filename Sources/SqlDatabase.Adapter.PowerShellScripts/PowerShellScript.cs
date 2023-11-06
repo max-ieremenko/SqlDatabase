@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using SqlDatabase.Adapter;
-using SqlDatabase.Scripts.PowerShellInternal;
 
-namespace SqlDatabase.Scripts;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal sealed class PowerShellScript : IScript
 {

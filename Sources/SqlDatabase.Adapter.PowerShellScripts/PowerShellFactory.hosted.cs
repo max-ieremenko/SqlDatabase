@@ -5,10 +5,8 @@ using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
-using SqlDatabase.Adapter;
-using SqlDatabase.Configuration;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 // https://github.com/PowerShell/PowerShell/tree/master/docs/host-powershell
 internal partial class PowerShellFactory
@@ -29,15 +27,15 @@ internal partial class PowerShellFactory
 
         if (string.IsNullOrEmpty(InstallationPath))
         {
-            throw new InvalidOperationException("PowerShell Core installation not found, please provide installation path via command line options {0}{1}.".FormatWith(Arg.Sign, Arg.UsePowerShell));
+            throw new InvalidOperationException("PowerShell Core installation not found, please provide installation path via command line options -usePowerShell.");
         }
 
         if (!InstallationSeeker.TryGetInfo(InstallationPath, out var info))
         {
-            throw new InvalidOperationException("PowerShell Core installation not found in {0}.".FormatWith(InstallationPath));
+            throw new InvalidOperationException($"PowerShell Core installation not found in {InstallationPath}.");
         }
 
-        logger.Info("host PowerShell from {0}, version {1}".FormatWith(InstallationPath, info.ProductVersion));
+        logger.Info($"host PowerShell from {InstallationPath}, version {info.ProductVersion}");
 
         AssemblyLoadContext.Default.Resolving += AssemblyResolving;
         try

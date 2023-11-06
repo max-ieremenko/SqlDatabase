@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal static class ReflectionTools
 {
@@ -10,10 +10,7 @@ internal static class ReflectionTools
         var result = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
         if (result == null)
         {
-            throw new InvalidOperationException(
-                "public property {0} not found in {1}.".FormatWith(
-                    name,
-                    type.FullName));
+            throw new InvalidOperationException($"public property {name} not found in {type.FullName}.");
         }
 
         return result;
@@ -24,7 +21,7 @@ internal static class ReflectionTools
         var result = type.GetEvent(name, BindingFlags.Public | BindingFlags.Instance);
         if (result?.AddMethod == null || result.RemoveMethod == null)
         {
-            throw new InvalidOperationException("Event {0} not found in {1}.".FormatWith(name, type.FullName));
+            throw new InvalidOperationException($"Event {name} not found in {type.FullName}.");
         }
 
         return result;

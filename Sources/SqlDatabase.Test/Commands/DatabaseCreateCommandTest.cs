@@ -13,7 +13,7 @@ public class DatabaseCreateCommandTest
     private DatabaseCreateCommand _sut = null!;
     private Mock<IDatabase> _database = null!;
     private Mock<ICreateScriptSequence> _scriptSequence = null!;
-    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private Mock<IScriptResolver> _scriptResolver = null!;
     private Mock<ILogger> _log = null!;
 
     [SetUp]
@@ -30,7 +30,7 @@ public class DatabaseCreateCommandTest
 
         _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-        _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
+        _scriptResolver = new Mock<IScriptResolver>(MockBehavior.Strict);
 
         _log = new Mock<ILogger>(MockBehavior.Strict);
         _log.Setup(l => l.Indent()).Returns((IDisposable)null!);
@@ -49,7 +49,7 @@ public class DatabaseCreateCommandTest
 
         _sut = new DatabaseCreateCommand(
             _scriptSequence.Object,
-            _powerShellFactory.Object,
+            _scriptResolver.Object,
             _database.Object,
             _log.Object);
     }
@@ -73,20 +73,24 @@ public class DatabaseCreateCommandTest
         var step2 = new Mock<IScript>(MockBehavior.Strict);
         step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-        _powerShellFactory
-            .Setup(f => f.InitializeIfRequested(_log.Object));
+        var sequence = new[] { step1.Object, step2.Object };
+
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_log.Object, sequence));
 
         _database
             .Setup(d => d.Execute(step1.Object))
             .Callback(() => _database.Setup(d => d.Execute(step2.Object)));
 
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { step1.Object, step2.Object });
+        _scriptSequence
+            .Setup(s => s.BuildSequence())
+            .Returns(sequence);
 
         _sut.Execute();
 
         _database.VerifyAll();
         _scriptSequence.VerifyAll();
-        _powerShellFactory.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 
     [Test]
@@ -98,19 +102,23 @@ public class DatabaseCreateCommandTest
         var step2 = new Mock<IScript>(MockBehavior.Strict);
         step2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-        _powerShellFactory
-            .Setup(f => f.InitializeIfRequested(_log.Object));
+        var sequence = new[] { step1.Object, step2.Object };
+
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_log.Object, sequence));
 
         _database
             .Setup(d => d.Execute(step1.Object))
             .Throws<InvalidOperationException>();
 
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { step1.Object, step2.Object });
+        _scriptSequence
+            .Setup(s => s.BuildSequence())
+            .Returns(sequence);
 
         Assert.Throws<InvalidOperationException>(_sut.Execute);
 
         _database.VerifyAll();
         _scriptSequence.VerifyAll();
-        _powerShellFactory.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 }

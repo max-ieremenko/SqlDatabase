@@ -16,6 +16,8 @@ public class DatabaseExportCommandTest
     private DatabaseExportCommand _sut = null!;
     private Mock<IDatabase> _database = null!;
     private Mock<ICreateScriptSequence> _scriptSequence = null!;
+    private Mock<IScriptResolver> _scriptResolver = null!;
+    private Mock<ILogger> _logger = null!;
     private Mock<IDataExporter> _exporter = null!;
 
     [SetUp]
@@ -35,9 +37,11 @@ public class DatabaseExportCommandTest
 
         _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-        var log = new Mock<ILogger>(MockBehavior.Strict);
-        log.Setup(l => l.Indent()).Returns((IDisposable)null!);
-        log
+        _scriptResolver = new Mock<IScriptResolver>(MockBehavior.Strict);
+
+        _logger = new Mock<ILogger>(MockBehavior.Strict);
+        _logger.Setup(l => l.Indent()).Returns((IDisposable)null!);
+        _logger
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
@@ -48,13 +52,14 @@ public class DatabaseExportCommandTest
         _exporter
             .SetupProperty(e => e.Output);
         _exporter
-            .SetupSet(e => e.Log = log.Object);
+            .SetupSet(e => e.Log = _logger.Object);
 
         _sut = new DatabaseExportCommand(
             _scriptSequence.Object,
+            _scriptResolver.Object,
             () => Console.Out,
             _database.Object,
-            log.Object)
+            _logger.Object)
         {
             ExporterFactory = () => _exporter.Object,
         };
@@ -65,6 +70,11 @@ public class DatabaseExportCommandTest
     {
         var script = new Mock<IScript>(MockBehavior.Strict);
         script.SetupGet(s => s.DisplayName).Returns("display name");
+
+        var sequence = new[] { script.Object };
+
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_logger.Object, sequence));
 
         var reader = new Mock<IDataReader>(MockBehavior.Strict);
         reader
@@ -78,13 +88,16 @@ public class DatabaseExportCommandTest
         _exporter
             .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport"));
 
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { script.Object });
+        _scriptSequence
+            .Setup(s => s.BuildSequence())
+            .Returns(sequence);
 
         _sut.Execute();
 
         _database.VerifyAll();
         script.VerifyAll();
         _exporter.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 
     [Test]
@@ -92,6 +105,11 @@ public class DatabaseExportCommandTest
     {
         var script = new Mock<IScript>(MockBehavior.Strict);
         script.SetupGet(s => s.DisplayName).Returns("display name");
+
+        var sequence = new[] { script.Object };
+
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_logger.Object, sequence));
 
         var reader = new Mock<IDataReader>(MockBehavior.Strict);
         reader
@@ -109,12 +127,15 @@ public class DatabaseExportCommandTest
         _exporter
             .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport_2"));
 
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { script.Object });
+        _scriptSequence
+            .Setup(s => s.BuildSequence())
+            .Returns(sequence);
 
         _sut.Execute();
 
         _database.VerifyAll();
         script.VerifyAll();
         _exporter.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 }

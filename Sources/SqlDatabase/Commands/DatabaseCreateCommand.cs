@@ -9,18 +9,18 @@ internal sealed class DatabaseCreateCommand : DatabaseCommandBase
 {
     public DatabaseCreateCommand(
         ICreateScriptSequence scriptSequence,
-        IPowerShellFactory powerShellFactory,
+        IScriptResolver scriptResolver,
         IDatabase database,
         ILogger log)
         : base(database, log)
     {
         ScriptSequence = scriptSequence;
-        PowerShellFactory = powerShellFactory;
+        ScriptResolver = scriptResolver;
     }
 
     public ICreateScriptSequence ScriptSequence { get; }
 
-    public IPowerShellFactory PowerShellFactory { get; }
+    public IScriptResolver ScriptResolver { get; }
 
     protected override void Greet(string databaseLocation)
     {
@@ -35,7 +35,7 @@ internal sealed class DatabaseCreateCommand : DatabaseCommandBase
             throw new ConfigurationErrorsException("scripts to create database not found.");
         }
 
-        PowerShellFactory.InitializeIfRequested(Log);
+        ScriptResolver.InitializeEnvironment(Log, sequences);
 
         foreach (var script in sequences)
         {

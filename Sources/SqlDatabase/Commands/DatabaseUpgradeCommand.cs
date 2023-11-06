@@ -11,18 +11,18 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
 {
     public DatabaseUpgradeCommand(
         IUpgradeScriptSequence scriptSequence,
-        IPowerShellFactory powerShellFactory,
+        IScriptResolver scriptResolver,
         IDatabase database,
         ILogger log)
         : base(database, log)
     {
         ScriptSequence = scriptSequence;
-        PowerShellFactory = powerShellFactory;
+        ScriptResolver = scriptResolver;
     }
 
     public IUpgradeScriptSequence ScriptSequence { get; }
 
-    public IPowerShellFactory PowerShellFactory { get; }
+    public IScriptResolver ScriptResolver { get; }
 
     protected override void Greet(string databaseLocation)
     {
@@ -47,7 +47,7 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
             ShowMigrationSequenceFull(sequence);
         }
 
-        PowerShellFactory.InitializeIfRequested(Log);
+        ScriptResolver.InitializeEnvironment(Log, sequence.Select(i => i.Script));
 
         foreach (var step in sequence)
         {

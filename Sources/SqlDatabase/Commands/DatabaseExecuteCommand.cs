@@ -8,18 +8,18 @@ internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
 {
     public DatabaseExecuteCommand(
         ICreateScriptSequence scriptSequence,
-        IPowerShellFactory powerShellFactory,
+        IScriptResolver scriptResolver,
         IDatabase database,
         ILogger log)
         : base(database, log)
     {
         ScriptSequence = scriptSequence;
-        PowerShellFactory = powerShellFactory;
+        ScriptResolver = scriptResolver;
     }
 
     public ICreateScriptSequence ScriptSequence { get; }
 
-    public IPowerShellFactory PowerShellFactory { get; }
+    public IScriptResolver ScriptResolver { get; }
 
     protected override void Greet(string databaseLocation)
     {
@@ -29,8 +29,12 @@ internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
     protected override void ExecuteCore()
     {
         var sequences = ScriptSequence.BuildSequence();
+        if (sequences.Count == 0)
+        {
+            return;
+        }
 
-        PowerShellFactory.InitializeIfRequested(Log);
+        ScriptResolver.InitializeEnvironment(Log, sequences);
 
         foreach (var script in sequences)
         {

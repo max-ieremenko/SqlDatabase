@@ -6,9 +6,8 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
-using InstallationInfo = SqlDatabase.Scripts.PowerShellInternal.InstallationSeeker.InstallationInfo;
 
-namespace SqlDatabase.Scripts.PowerShellInternal;
+namespace SqlDatabase.Adapter.PowerShellScripts;
 
 [TestFixture]
 public class InstallationSeekerTest

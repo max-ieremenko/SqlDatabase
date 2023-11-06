@@ -27,8 +27,6 @@ public class ProgramTest
     [SetUp]
     public void BeforeEachTest()
     {
-        TestPowerShellHost.GetOrCreateFactory();
-
         _scriptsLocation = ConfigurationManager.AppSettings["PgSql.IntegrationTestsScriptsLocation"]!;
         if (!Path.IsPathRooted(_scriptsLocation))
         {
