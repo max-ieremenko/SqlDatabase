@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Common;
-using System.Data.SqlClient;
 using MySqlConnector;
 using Npgsql;
 using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.MsSql;
 using SqlDatabase.Configuration;
-using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.Scripts.MySql;
 using SqlDatabase.Scripts.PgSql;
 
@@ -20,7 +19,7 @@ internal static class DatabaseAdapterFactory
         // connection strings are compatible
         var factories = new List<Func<string, AppConfiguration, ILogger, IDatabaseAdapter>>(3);
 
-        if (CanBe<SqlConnectionStringBuilder>(connectionString, "Data Source", "Initial Catalog"))
+        if (MsSqlDatabaseAdapterFactory.CanBe(connectionString))
         {
             factories.Add(CreateMsSql);
         }
@@ -45,7 +44,19 @@ internal static class DatabaseAdapterFactory
 
     private static IDatabaseAdapter CreateMsSql(string connectionString, AppConfiguration configuration, ILogger log)
     {
-        return new MsSqlDatabaseAdapter(connectionString, configuration, log);
+        var getCurrentVersionScript = configuration.MsSql.GetCurrentVersionScript;
+        if (string.IsNullOrWhiteSpace(getCurrentVersionScript))
+        {
+            getCurrentVersionScript = configuration.GetCurrentVersionScript;
+        }
+
+        var setCurrentVersionScript = configuration.MsSql.SetCurrentVersionScript;
+        if (string.IsNullOrWhiteSpace(setCurrentVersionScript))
+        {
+            setCurrentVersionScript = configuration.SetCurrentVersionScript;
+        }
+
+        return MsSqlDatabaseAdapterFactory.CreateAdapter(connectionString, getCurrentVersionScript, setCurrentVersionScript, log);
     }
 
     private static IDatabaseAdapter CreatePgSql(string connectionString, AppConfiguration configuration, ILogger log)

@@ -30,10 +30,6 @@
     <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\Case02.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\CaseOneLineComment.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\CaseStoredProcedure.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\Case01.sql" />
   </ItemGroup>
 
 </Project>

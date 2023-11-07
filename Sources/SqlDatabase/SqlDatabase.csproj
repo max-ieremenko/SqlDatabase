@@ -18,8 +18,6 @@
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
     <PackageReference Include="System.Configuration.ConfigurationManager" />
-    <PackageReference Include="System.Data.SqlClient" />
-    <PackageReference Include="System.Runtime.Loader" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +27,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.MsSql\SqlDatabase.Adapter.MsSql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
   </ItemGroup>
 

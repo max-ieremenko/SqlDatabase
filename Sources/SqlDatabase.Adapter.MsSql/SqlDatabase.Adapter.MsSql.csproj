@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="System.Data.SqlClient" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter\SqlDatabase.Adapter.csproj" />
+  </ItemGroup>
+
+</Project>

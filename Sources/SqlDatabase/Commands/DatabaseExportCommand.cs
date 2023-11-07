@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using SqlDatabase.Adapter;
-using SqlDatabase.Export;
+using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
 

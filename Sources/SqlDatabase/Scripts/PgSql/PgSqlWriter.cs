@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using NpgsqlTypes;
-using SqlDatabase.Export;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Scripts.PgSql;
 

@@ -3,7 +3,6 @@ using System.IO;
 using MySqlConnector;
 using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
-using SqlDatabase.Export;
 
 namespace SqlDatabase.Scripts.MySql;
 

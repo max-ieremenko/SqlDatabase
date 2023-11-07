@@ -5,7 +5,6 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
-using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.Scripts.MySql;
 using SqlDatabase.Scripts.PgSql;
 using SqlDatabase.TestApi;
@@ -27,20 +26,20 @@ public class DatabaseAdapterFactoryTest
 
     [Test]
     [TestCaseSource(nameof(GetCreateAdapterCases))]
-    public void CreateAdapter(string connectionString, string databaseName, Type expected)
+    public void CreateAdapter(string connectionString, string databaseName, string expected)
     {
         var actual = DatabaseAdapterFactory.CreateAdapter(connectionString, _configuration, _log);
 
-        actual.ShouldBeOfType(expected);
+        actual.GetType().Name.ShouldBe(expected);
         actual.DatabaseName.ShouldBe(databaseName);
     }
 
     private static IEnumerable<TestCaseData> GetCreateAdapterCases()
     {
         yield return new TestCaseData(
-            MsSqlQuery.ConnectionString,
-            MsSqlQuery.DatabaseName,
-            typeof(MsSqlDatabaseAdapter))
+            "Data Source=.;Initial Catalog=SqlDatabaseTest",
+            "SqlDatabaseTest",
+            "MsSqlDatabaseAdapter")
         {
             TestName = "MsSql"
         };
@@ -48,7 +47,7 @@ public class DatabaseAdapterFactoryTest
         yield return new TestCaseData(
             PgSqlQuery.ConnectionString,
             PgSqlQuery.DatabaseName,
-            typeof(PgSqlDatabaseAdapter))
+            nameof(PgSqlDatabaseAdapter))
         {
             TestName = "PgSql"
         };
@@ -56,7 +55,7 @@ public class DatabaseAdapterFactoryTest
         yield return new TestCaseData(
             MySqlQuery.ConnectionString,
             MySqlQuery.DatabaseName,
-            typeof(MySqlDatabaseAdapter))
+            nameof(MySqlDatabaseAdapter))
         {
             TestName = "MySql"
         };

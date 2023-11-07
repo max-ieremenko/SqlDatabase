@@ -10,6 +10,7 @@ using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Scripts.PgSql;
 using SqlDatabase.TestApi;
 

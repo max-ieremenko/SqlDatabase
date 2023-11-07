@@ -4,6 +4,7 @@ using System.Linq;
 using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.AssemblyScripts;
 using SqlDatabase.Adapter.PowerShellScripts;
+using SqlDatabase.Adapter.Sql;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
@@ -166,7 +167,7 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
     {
         var factories = new List<IScriptFactory>(3);
 
-        factories.Add(new SqlScriptFactory(BuildDatabase().Adapter.CreateSqlTextReader()));
+        factories.Add(new TextScriptFactory(BuildDatabase().Adapter.CreateSqlTextReader()));
 
         if (_powerShellScript != null)
         {
@@ -199,25 +200,5 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
         }
 
         return _logger;
-    }
-
-    private sealed class SqlScriptFactory : IScriptFactory
-    {
-        private readonly ISqlTextReader _textReader;
-
-        public SqlScriptFactory(ISqlTextReader textReader)
-        {
-            _textReader = textReader;
-        }
-
-        public bool IsSupported(IFile file)
-        {
-            return ".sql".Equals(file.Extension, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public IScript FromFile(IFile file)
-        {
-            return new TextScript(file.Name, file.OpenRead, _textReader);
-        }
     }
 }

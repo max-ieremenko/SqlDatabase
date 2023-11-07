@@ -4,9 +4,8 @@ using System.IO;
 using Moq;
 using NUnit.Framework;
 using SqlDatabase.Adapter;
-using SqlDatabase.Export;
+using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Scripts;
-using SqlDatabase.Scripts.MsSql;
 using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
@@ -30,7 +29,7 @@ public class DatabaseExportCommandTest
             .Returns("host; database");
         adapter
             .Setup(a => a.CreateSqlWriter(It.IsAny<TextWriter>()))
-            .Returns<TextWriter>(output => new MsSqlWriter(output));
+            .Returns<TextWriter>(output => new Mock<SqlWriterBase>(MockBehavior.Loose, output) { CallBase = true }.Object);
 
         _database = new Mock<IDatabase>(MockBehavior.Strict);
         _database.SetupGet(d => d.Adapter).Returns(adapter.Object);

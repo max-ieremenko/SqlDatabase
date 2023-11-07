@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Scripts.MySql;
 using SqlDatabase.TestApi;
 

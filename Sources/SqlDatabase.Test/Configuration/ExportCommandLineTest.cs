@@ -3,8 +3,8 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Commands;
-using SqlDatabase.Export;
 using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
 

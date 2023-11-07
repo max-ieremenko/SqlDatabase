@@ -5,6 +5,7 @@ using Npgsql;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts.PgSql;
@@ -15,15 +16,14 @@ public class TextScriptOutputPgSqlTest
     private NpgsqlConnection _connection = null!;
     private NpgsqlCommand _command = null!;
     private Mock<ILogger> _logger = null!;
-    private Variables _variables = null!;
-    private TextScript _sut = null!;
+    private Mock<IVariables> _variables = null!;
 
     private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
-        _variables = new Variables();
+        _variables = new Mock<IVariables>(MockBehavior.Strict);
 
         _logOutput = new List<string>();
         _logger = new Mock<ILogger>(MockBehavior.Strict);
@@ -37,8 +37,6 @@ public class TextScriptOutputPgSqlTest
                 Console.WriteLine("Info: {0}", m);
                 _logOutput.Add(m);
             });
-
-        _sut = new TextScript("dummy", null!, new PgSqlTextReader());
 
         _connection = PgSqlQuery.Open();
         _command = _connection.CreateCommand();
@@ -54,9 +52,9 @@ public class TextScriptOutputPgSqlTest
     [Test]
     public void ExecuteEmpty()
     {
-        _sut.ReadSqlContent = "/* do nothing */".AsFuncStream();
+        var sut = CreateSut("/* do nothing */");
 
-        _sut.Execute(_command, _variables, _logger.Object);
+        sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.ShouldBeEmpty();
     }
@@ -64,7 +62,7 @@ public class TextScriptOutputPgSqlTest
     [Test]
     public void ExecuteDdlWithReader()
     {
-        _sut.ReadSqlContent = @"
+        var sut = CreateSut(@"
 create table public.TextScriptIntegrationTest(id int, name varchar(20));
 
 insert into public.TextScriptIntegrationTest values(1, 'name 1');
@@ -72,10 +70,9 @@ insert into public.TextScriptIntegrationTest values(2, 'name 2');
 
 select * from public.TextScriptIntegrationTest;
 
-drop table public.TextScriptIntegrationTest;"
-            .AsFuncStream();
+drop table public.TextScriptIntegrationTest;");
 
-        _sut.Execute(_command, _variables, _logger.Object);
+        sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(8);
         _logOutput[0].ShouldBe("output: id; name");
@@ -91,9 +88,9 @@ drop table public.TextScriptIntegrationTest;"
     [Test]
     public void NoColumnName()
     {
-        _sut.ReadSqlContent = "select 1".AsFuncStream();
+        var sut = CreateSut("select 1");
 
-        _sut.Execute(_command, _variables, _logger.Object);
+        sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(4);
         _logOutput[0].ShouldBe("output: (no name)");
@@ -105,9 +102,9 @@ drop table public.TextScriptIntegrationTest;"
     [Test]
     public void SelectNull()
     {
-        _sut.ReadSqlContent = "select null".AsFuncStream();
+        var sut = CreateSut("select null");
 
-        _sut.Execute(_command, _variables, _logger.Object);
+        sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(4);
         _logOutput[0].ShouldBe("output: (no name)");
@@ -119,12 +116,11 @@ drop table public.TextScriptIntegrationTest;"
     [Test]
     public void TwoSelections()
     {
-        _sut.ReadSqlContent = @"
+        var sut = CreateSut(@"
 select 1 first_;
-select 2 second_;"
-            .AsFuncStream();
+select 2 second_;");
 
-        _sut.Execute(_command, _variables, _logger.Object);
+        sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(9);
 
@@ -144,12 +140,18 @@ select 2 second_;"
     [Test]
     public void SelectZeroRowsNull()
     {
-        _sut.ReadSqlContent = "select null value_ limit 0".AsFuncStream();
+        var sut = CreateSut("select null value_ limit 0");
 
-        _sut.Execute(_command, _variables, _logger.Object);
+        sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(2);
         _logOutput[0].ShouldBe("output: value_");
         _logOutput[1].ShouldBe("0 rows selected");
+    }
+
+    private IScript CreateSut(string sql)
+    {
+        var file = FileFactory.File("dummy.sql", sql);
+        return new TextScriptFactory(new PgSqlTextReader()).FromFile(file);
     }
 }

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using Moq;
-using MySqlConnector;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MsSql;
 
 [TestFixture]
-public class TextScriptOutputMySqlTest
+public class TextScriptOutputMsSqlTest
 {
-    private MySqlConnection _connection = null!;
-    private MySqlCommand _command = null!;
+    private SqlConnection _connection = null!;
+    private SqlCommand _command = null!;
     private Mock<ILogger> _logger = null!;
     private Mock<IVariables> _variables = null!;
 
@@ -38,7 +37,7 @@ public class TextScriptOutputMySqlTest
                 _logOutput.Add(m);
             });
 
-        _connection = MySqlQuery.Open();
+        _connection = MsSqlQuery.Open();
         _command = _connection.CreateCommand();
     }
 
@@ -63,25 +62,25 @@ public class TextScriptOutputMySqlTest
     public void ExecuteDdlWithReader()
     {
         var sut = CreateSut(@"
-create table TextScriptIntegrationTest(id int, name varchar(20));
-
-insert into TextScriptIntegrationTest values(1, 'name 1');
-insert into TextScriptIntegrationTest values(2, 'name 2');
-
-select * from TextScriptIntegrationTest;
-
-drop table TextScriptIntegrationTest;");
+create table dbo.TextScriptIntegrationTest(Id int, Name nvarchar(20))
+go
+insert into dbo.TextScriptIntegrationTest values(1, 'name 1')
+insert into dbo.TextScriptIntegrationTest values(2, 'name 2')
+go
+select * from dbo.TextScriptIntegrationTest
+go
+drop table dbo.TextScriptIntegrationTest");
 
         sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(8);
-        _logOutput[0].ShouldBe("output: id; name");
+        _logOutput[0].ShouldBe("output: Id; Name");
         _logOutput[1].ShouldBe("row 1");
-        _logOutput[2].ShouldBe("id   : 1");
-        _logOutput[3].ShouldBe("name : name 1");
+        _logOutput[2].ShouldBe("Id   : 1");
+        _logOutput[3].ShouldBe("Name : name 1");
         _logOutput[4].ShouldBe("row 2");
-        _logOutput[5].ShouldBe("id   : 2");
-        _logOutput[6].ShouldBe("name : name 2");
+        _logOutput[5].ShouldBe("Id   : 2");
+        _logOutput[6].ShouldBe("Name : name 2");
         _logOutput[7].ShouldBe("2 rows selected");
     }
 
@@ -93,9 +92,9 @@ drop table TextScriptIntegrationTest;");
         sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(4);
-        _logOutput[0].ShouldBe("output: 1");
+        _logOutput[0].ShouldBe("output: (no name)");
         _logOutput[1].ShouldBe("row 1");
-        _logOutput[2].ShouldBe("1 : 1");
+        _logOutput[2].ShouldBe("(no name) : 1");
         _logOutput[3].ShouldBe("1 row selected");
     }
 
@@ -107,9 +106,9 @@ drop table TextScriptIntegrationTest;");
         sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(4);
-        _logOutput[0].ShouldBe("output: NULL");
+        _logOutput[0].ShouldBe("output: (no name)");
         _logOutput[1].ShouldBe("row 1");
-        _logOutput[2].ShouldBe("NULL : NULL");
+        _logOutput[2].ShouldBe("(no name) : NULL");
         _logOutput[3].ShouldBe("1 row selected");
     }
 
@@ -117,41 +116,41 @@ drop table TextScriptIntegrationTest;");
     public void TwoSelections()
     {
         var sut = CreateSut(@"
-select 1 first_;
-select 2 second_;");
+select 1 first
+select 2 second");
 
         sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(9);
 
-        _logOutput[0].ShouldBe("output: first_");
+        _logOutput[0].ShouldBe("output: first");
         _logOutput[1].ShouldBe("row 1");
-        _logOutput[2].ShouldBe("first_ : 1");
+        _logOutput[2].ShouldBe("first : 1");
         _logOutput[3].ShouldBe("1 row selected");
 
         _logOutput[4].ShouldBe(string.Empty);
 
-        _logOutput[5].ShouldBe("output: second_");
+        _logOutput[5].ShouldBe("output: second");
         _logOutput[6].ShouldBe("row 1");
-        _logOutput[7].ShouldBe("second_ : 2");
+        _logOutput[7].ShouldBe("second : 2");
         _logOutput[8].ShouldBe("1 row selected");
     }
 
     [Test]
     public void SelectZeroRowsNull()
     {
-        var sut = CreateSut("select null value_ limit 0");
+        var sut = CreateSut("select top 0 null value");
 
         sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(2);
-        _logOutput[0].ShouldBe("output: value_");
+        _logOutput[0].ShouldBe("output: value");
         _logOutput[1].ShouldBe("0 rows selected");
     }
 
     private IScript CreateSut(string sql)
     {
         var file = FileFactory.File("dummy.sql", sql);
-        return new TextScriptFactory(new MySqlTextReader()).FromFile(file);
+        return new TextScriptFactory(new MsSqlTextReader()).FromFile(file);
     }
 }
