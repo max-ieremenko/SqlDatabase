@@ -4,11 +4,10 @@ using Moq;
 using Npgsql;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.PgSql;
+namespace SqlDatabase.Adapter.PgSql;
 
 [TestFixture]
 public class TextScriptOutputPgSqlTest

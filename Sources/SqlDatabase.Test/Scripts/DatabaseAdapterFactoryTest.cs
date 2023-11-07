@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.MySql;
-using SqlDatabase.Scripts.PgSql;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts;
@@ -45,9 +43,9 @@ public class DatabaseAdapterFactoryTest
         };
 
         yield return new TestCaseData(
-            PgSqlQuery.ConnectionString,
-            PgSqlQuery.DatabaseName,
-            nameof(PgSqlDatabaseAdapter))
+            "Host=localhost;Database=sqldatabasetest;",
+            "sqldatabasetest",
+            "PgSqlDatabaseAdapter")
         {
             TestName = "PgSql"
         };

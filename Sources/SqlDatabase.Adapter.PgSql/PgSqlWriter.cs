@@ -9,9 +9,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using NpgsqlTypes;
-using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.PgSql;
+namespace SqlDatabase.Adapter.PgSql;
 
 internal sealed class PgSqlWriter : SqlWriterBase
 {
@@ -49,7 +48,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
             case "TIME":
                 if (scale != 0)
                 {
-                    sizeText = "{0},{1}".FormatWith(precision, scale);
+                    sizeText = $"{precision},{scale}";
                 }
                 else if (precision != 0)
                 {
@@ -223,7 +222,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
                 return true;
             }
 
-            throw new NotSupportedException("{0}d array is not supported.".FormatWith(array.Rank));
+            throw new NotSupportedException($"{array.Rank}d array is not supported.");
         }
 
         if (value is ExpandoObject composite)

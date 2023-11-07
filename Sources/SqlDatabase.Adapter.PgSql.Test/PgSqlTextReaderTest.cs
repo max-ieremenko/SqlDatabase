@@ -2,7 +2,7 @@
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.PgSql;
+namespace SqlDatabase.Adapter.PgSql;
 
 [TestFixture]
 public class PgSqlTextReaderTest

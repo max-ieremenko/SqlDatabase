@@ -7,9 +7,8 @@ using System.Text;
 using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.PgSql;
+namespace SqlDatabase.Adapter.PgSql;
 
 [TestFixture]
 public class PgSqlWriterTest
@@ -129,7 +128,7 @@ public class PgSqlWriterTest
     [TestCase("fat & (rat | cat)")]
     public void ValueTsQuery(string value)
     {
-        var expected = PgSqlQuery.ExecuteScalar("SELECT '{0}'::tsquery".FormatWith(value)).ShouldBeAssignableTo<NpgsqlTsQuery>();
+        var expected = PgSqlQuery.ExecuteScalar($"SELECT '{value}'::tsquery").ShouldBeAssignableTo<NpgsqlTsQuery>();
 
         _sut
             .Text("SELECT ")

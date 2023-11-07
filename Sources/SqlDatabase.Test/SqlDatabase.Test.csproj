@@ -31,5 +31,9 @@
     <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
     <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Scripts\PgSql\" />
+  </ItemGroup>
 
 </Project>

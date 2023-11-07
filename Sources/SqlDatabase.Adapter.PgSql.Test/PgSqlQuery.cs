@@ -1,17 +1,19 @@
 ﻿using System.Configuration;
 using Npgsql;
+using SqlDatabase.TestApi;
 
-namespace SqlDatabase.TestApi;
+namespace SqlDatabase.Adapter.PgSql;
 
 internal static class PgSqlQuery
 {
-    public static string ConnectionString => ConfigurationManager.ConnectionStrings["pgsql"].ConnectionString;
-
-    public static string DatabaseName => new NpgsqlConnectionStringBuilder(ConnectionString).Database;
+    public static string GetConnectionString()
+    {
+        return ConfigurationExtensions.GetConnectionString("pgsql");
+    }
 
     public static NpgsqlConnection Open()
     {
-        var con = new NpgsqlConnection(ConnectionString);
+        var con = new NpgsqlConnection(GetConnectionString());
         con.Open();
 
         return con;

@@ -4,11 +4,8 @@ using System.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
-using SqlDatabase.Configuration;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.PgSql;
+namespace SqlDatabase.Adapter.PgSql;
 
 [TestFixture]
 public class PgSqlDatabaseAdapterTest
@@ -18,7 +15,6 @@ public class PgSqlDatabaseAdapterTest
     private const string UpdateModuleVersion = "UPDATE public.version SET version='{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'";
 
     private PgSqlDatabaseAdapter _sut = null!;
-    private AppConfiguration _configuration = null!;
     private IList<string> _logOutput = null!;
 
     [SetUp]
@@ -34,9 +30,7 @@ public class PgSqlDatabaseAdapterTest
                 _logOutput.Add(m);
             });
 
-        _configuration = new AppConfiguration();
-
-        _sut = new PgSqlDatabaseAdapter(PgSqlQuery.ConnectionString, _configuration, log.Object);
+        _sut = new PgSqlDatabaseAdapter(PgSqlQuery.GetConnectionString(), null!, null!, log.Object);
     }
 
     [Test]
@@ -131,8 +125,11 @@ $$;";
     [Test]
     public void GetSetVersionScriptDefault()
     {
-        _sut.GetVersionSelectScript().ShouldBe(PgSqlDatabaseAdapter.DefaultSelectVersion);
-        _sut.GetVersionUpdateScript().ShouldBe(PgSqlDatabaseAdapter.DefaultUpdateVersion);
+        _sut.GetCurrentVersionScript = PgSqlDefaults.DefaultSelectVersion;
+        _sut.SetCurrentVersionScript = PgSqlDefaults.DefaultUpdateVersion;
+
+        _sut.GetVersionSelectScript().ShouldBe(PgSqlDefaults.DefaultSelectVersion);
+        _sut.GetVersionUpdateScript().ShouldBe(PgSqlDefaults.DefaultUpdateVersion);
 
         using (var connection = _sut.CreateConnection(false))
         {
@@ -160,8 +157,8 @@ $$;";
     [Test]
     public void GetSetVersionScriptModuleName()
     {
-        _configuration.GetCurrentVersionScript = SelectModuleVersion;
-        _configuration.SetCurrentVersionScript = UpdateModuleVersion;
+        _sut.GetCurrentVersionScript = SelectModuleVersion;
+        _sut.SetCurrentVersionScript = UpdateModuleVersion;
 
         _sut.GetVersionSelectScript().ShouldBe(SelectModuleVersion);
         _sut.GetVersionUpdateScript().ShouldBe(UpdateModuleVersion);

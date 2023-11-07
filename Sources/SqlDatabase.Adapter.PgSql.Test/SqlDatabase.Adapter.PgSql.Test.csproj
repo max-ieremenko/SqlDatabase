@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
-    <RootNamespace>SqlDatabase.Adapter.MsSql</RootNamespace>
+    <RootNamespace>SqlDatabase.Adapter.PgSql</RootNamespace>
     <OutputPath>..\..\bin\Tests</OutputPath>
   </PropertyGroup>
 
@@ -13,12 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SqlDatabase.Adapter.MsSql\SqlDatabase.Adapter.MsSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.PgSql\SqlDatabase.Adapter.PgSql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
     <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="MsSqlTextReaderTest.Go\*.sql" />
   </ItemGroup>
 </Project>

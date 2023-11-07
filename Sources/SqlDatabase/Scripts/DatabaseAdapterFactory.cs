@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Common;
 using MySqlConnector;
-using Npgsql;
 using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.MsSql;
+using SqlDatabase.Adapter.PgSql;
 using SqlDatabase.Configuration;
 using SqlDatabase.Scripts.MySql;
-using SqlDatabase.Scripts.PgSql;
 
 namespace SqlDatabase.Scripts;
 
@@ -24,7 +23,7 @@ internal static class DatabaseAdapterFactory
             factories.Add(CreateMsSql);
         }
 
-        if (CanBe<NpgsqlConnectionStringBuilder>(connectionString, "Host", "Database"))
+        if (PgSqlDatabaseAdapterFactory.CanBe(connectionString))
         {
             factories.Add(CreatePgSql);
         }
@@ -61,7 +60,7 @@ internal static class DatabaseAdapterFactory
 
     private static IDatabaseAdapter CreatePgSql(string connectionString, AppConfiguration configuration, ILogger log)
     {
-        return new PgSqlDatabaseAdapter(connectionString, configuration, log);
+        return PgSqlDatabaseAdapterFactory.CreateAdapter(connectionString, configuration.PgSql.GetCurrentVersionScript, configuration.PgSql.SetCurrentVersionScript, log);
     }
 
     private static IDatabaseAdapter CreateMySql(string connectionString, AppConfiguration configuration, ILogger log)

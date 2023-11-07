@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Npgsql;
 
-namespace SqlDatabase.Adapter.MsSql;
+namespace SqlDatabase.Adapter.PgSql;
 
-public static class MsSqlDatabaseAdapterFactory
+public static class PgSqlDatabaseAdapterFactory
 {
     public static bool CanBe(string connectionString)
     {
-        if (!IsMsSql(connectionString))
+        if (!IsPgSql(connectionString))
         {
             return false;
         }
 
         var builder = new DbConnectionStringBuilder(false) { ConnectionString = connectionString };
-        return builder.ContainsKey("Data Source") && builder.ContainsKey("Initial Catalog");
+        return builder.ContainsKey("Host") && builder.ContainsKey("Database");
     }
 
     public static IDatabaseAdapter CreateAdapter(
@@ -23,16 +23,16 @@ public static class MsSqlDatabaseAdapterFactory
         string? setCurrentVersionScript,
         ILogger log)
     {
-        return new MsSqlDatabaseAdapter(
+        return new PgSqlDatabaseAdapter(
             connectionString,
-            string.IsNullOrWhiteSpace(getCurrentVersionScript) ? MsSqlDefaults.DefaultSelectVersion : getCurrentVersionScript!,
-            string.IsNullOrWhiteSpace(setCurrentVersionScript) ? MsSqlDefaults.DefaultUpdateVersion : setCurrentVersionScript!,
+            string.IsNullOrWhiteSpace(getCurrentVersionScript) ? PgSqlDefaults.DefaultSelectVersion : getCurrentVersionScript!,
+            string.IsNullOrWhiteSpace(setCurrentVersionScript) ? PgSqlDefaults.DefaultUpdateVersion : setCurrentVersionScript!,
             log);
     }
 
-    private static bool IsMsSql(string connectionString)
+    private static bool IsPgSql(string connectionString)
     {
-        var builder = new SqlConnectionStringBuilder();
+        var builder = new NpgsqlConnectionStringBuilder();
 
         try
         {

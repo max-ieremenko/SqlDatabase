@@ -9,12 +9,9 @@ using Npgsql;
 using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql.Export;
-using SqlDatabase.Scripts.PgSql;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Export;
+namespace SqlDatabase.Adapter.PgSql;
 
 [TestFixture]
 public class PgSqlDataExporterTest
@@ -62,7 +59,7 @@ public class PgSqlDataExporterTest
 
         script.Text("SELECT * FROM input_data;");
 
-        using (var connection = new NpgsqlConnection(PgSqlQuery.ConnectionString))
+        using (var connection = new NpgsqlConnection(PgSqlQuery.GetConnectionString()))
         using (var cmd = connection.CreateCommand())
         {
             cmd.CommandText = sql.ToString();
@@ -79,7 +76,7 @@ public class PgSqlDataExporterTest
 
         exportSql.ShouldContain(" " + (expectedDataType ?? dataType) + " ");
 
-        using (var connection = new NpgsqlConnection(PgSqlQuery.ConnectionString))
+        using (var connection = new NpgsqlConnection(PgSqlQuery.GetConnectionString()))
         using (var cmd = connection.CreateCommand())
         {
             cmd.CommandText = exportSql.Replace("CREATE TABLE", "CREATE TEMP TABLE") + "\r\n\r\nSELECT * FROM test_data;";
