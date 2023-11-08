@@ -1,28 +1,24 @@
 ﻿using System.Data;
 using System.IO;
 using MySqlConnector;
-using SqlDatabase.Adapter;
-using SqlDatabase.Configuration;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MySql;
 
 internal sealed class MySqlDatabaseAdapter : IDatabaseAdapter
 {
-    public const string DefaultSelectVersion = "SELECT version FROM version WHERE module_name = 'database'";
-    public const string DefaultUpdateVersion = "UPDATE version SET version='{{TargetVersion}}' WHERE module_name = 'database'";
-
     private readonly string _connectionString;
     private readonly string _connectionStringMaster;
-    private readonly AppConfiguration _configuration;
     private readonly ILogger _log;
     private readonly MySqlInfoMessageEventHandler _onConnectionInfoMessage;
 
     public MySqlDatabaseAdapter(
         string connectionString,
-        AppConfiguration configuration,
+        string getCurrentVersionScript,
+        string setCurrentVersionScript,
         ILogger log)
     {
-        _configuration = configuration;
+        GetCurrentVersionScript = getCurrentVersionScript;
+        SetCurrentVersionScript = setCurrentVersionScript;
         _log = log;
 
         var builder = new MySqlConnectionStringBuilder(connectionString);
@@ -38,10 +34,14 @@ internal sealed class MySqlDatabaseAdapter : IDatabaseAdapter
 
     public string DatabaseName { get; }
 
+    public string GetCurrentVersionScript { get; internal set; }
+
+    public string SetCurrentVersionScript { get; internal set; }
+
     public string GetUserFriendlyConnectionString()
     {
         var cs = new MySqlConnectionStringBuilder(_connectionString);
-        return "database [{0}] on [{1}]".FormatWith(cs.Database, cs.Server);
+        return $"database [{cs.Database}] on [{cs.Server}]";
     }
 
     public ISqlTextReader CreateSqlTextReader() => new MySqlTextReader();
@@ -60,46 +60,18 @@ internal sealed class MySqlDatabaseAdapter : IDatabaseAdapter
 
     public string GetServerVersionSelectScript() => "SELECT concat(@@version_comment, ', ', version(), ', ', @@version_compile_os)";
 
-    public string GetDatabaseExistsScript(string databaseName) => "SELECT 1 FROM information_schema.schemata WHERE LOWER(schema_name) = LOWER('{0}')".FormatWith(databaseName);
+    public string GetDatabaseExistsScript(string databaseName) => $"SELECT 1 FROM information_schema.schemata WHERE LOWER(schema_name) = LOWER('{databaseName}')";
 
-    public string GetVersionSelectScript()
-    {
-        var script = _configuration.MySql.GetCurrentVersionScript;
-        if (string.IsNullOrWhiteSpace(script))
-        {
-            script = _configuration.GetCurrentVersionScript;
-        }
+    public string GetVersionSelectScript() => GetCurrentVersionScript;
 
-        if (string.IsNullOrWhiteSpace(script))
-        {
-            script = DefaultSelectVersion;
-        }
-
-        return script!;
-    }
-
-    public string GetVersionUpdateScript()
-    {
-        var script = _configuration.MySql.SetCurrentVersionScript;
-        if (string.IsNullOrWhiteSpace(script))
-        {
-            script = _configuration.SetCurrentVersionScript;
-        }
-
-        if (string.IsNullOrWhiteSpace(script))
-        {
-            script = DefaultUpdateVersion;
-        }
-
-        return script!;
-    }
+    public string GetVersionUpdateScript() => SetCurrentVersionScript;
 
     private void OnConnectionInfoMessage(object sender, MySqlInfoMessageEventArgs args)
     {
         for (var i = 0; i < args.Errors.Count; i++)
         {
             var error = args.Errors[i];
-            _log.Info("{0}: {1}".FormatWith(error.Level, error.Message));
+            _log.Info($"{error.Level}: {error.Message}");
         }
     }
 }

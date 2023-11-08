@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Scripts\PgSql\**" />
+    <EmbeddedResource Remove="Scripts\PgSql\**" />
+    <None Remove="Scripts\PgSql\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper.StrongName" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
@@ -27,13 +33,7 @@
   </Target>
   
   <ItemGroup>
-    <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
-    <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
-    <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Scripts\PgSql\" />
+    <EmbeddedResource Include="Configuration\AppConfiguration.*.xml" />
   </ItemGroup>
 
 </Project>

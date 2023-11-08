@@ -5,12 +5,9 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql.Export;
-using SqlDatabase.Scripts.MySql;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Export;
+namespace SqlDatabase.Adapter.MySql;
 
 [TestFixture]
 public class MySqlDataExporterTest

@@ -2,7 +2,7 @@
 using Shouldly;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MySql;
 
 [TestFixture]
 public class MySqlTextReaderTest

@@ -21,12 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.MsSql\SqlDatabase.Adapter.MsSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.MySql\SqlDatabase.Adapter.MySql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.PgSql\SqlDatabase.Adapter.PgSql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />

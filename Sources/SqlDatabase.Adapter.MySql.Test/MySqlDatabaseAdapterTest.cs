@@ -4,11 +4,8 @@ using System.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
-using SqlDatabase.Configuration;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MySql;
 
 [TestFixture]
 public class MySqlDatabaseAdapterTest
@@ -18,7 +15,6 @@ public class MySqlDatabaseAdapterTest
     private const string UpdateModuleVersion = "UPDATE version SET version='{{TargetVersion}}' WHERE module_name = '{{ModuleName}}'";
 
     private MySqlDatabaseAdapter _sut = null!;
-    private AppConfiguration _configuration = null!;
     private IList<string> _logOutput = null!;
 
     [SetUp]
@@ -34,9 +30,7 @@ public class MySqlDatabaseAdapterTest
                 _logOutput.Add(m);
             });
 
-        _configuration = new AppConfiguration();
-
-        _sut = new MySqlDatabaseAdapter(MySqlQuery.ConnectionString, _configuration, log.Object);
+        _sut = new MySqlDatabaseAdapter(MySqlQuery.GetConnectionString(), null!, null!, log.Object);
     }
 
     [Test]
@@ -126,8 +120,11 @@ public class MySqlDatabaseAdapterTest
     [Test]
     public void GetSetVersionScriptDefault()
     {
-        _sut.GetVersionSelectScript().ShouldBe(MySqlDatabaseAdapter.DefaultSelectVersion);
-        _sut.GetVersionUpdateScript().ShouldBe(MySqlDatabaseAdapter.DefaultUpdateVersion);
+        _sut.GetCurrentVersionScript = MySqlDefaults.DefaultSelectVersion;
+        _sut.SetCurrentVersionScript = MySqlDefaults.DefaultUpdateVersion;
+
+        _sut.GetVersionSelectScript().ShouldBe(MySqlDefaults.DefaultSelectVersion);
+        _sut.GetVersionUpdateScript().ShouldBe(MySqlDefaults.DefaultUpdateVersion);
 
         using (var connection = _sut.CreateConnection(false))
         {
@@ -155,8 +152,8 @@ public class MySqlDatabaseAdapterTest
     [Test]
     public void GetSetVersionScriptModuleName()
     {
-        _configuration.GetCurrentVersionScript = SelectModuleVersion;
-        _configuration.SetCurrentVersionScript = UpdateModuleVersion;
+        _sut.GetCurrentVersionScript = SelectModuleVersion;
+        _sut.SetCurrentVersionScript = UpdateModuleVersion;
 
         _sut.GetVersionSelectScript().ShouldBe(SelectModuleVersion);
         _sut.GetVersionUpdateScript().ShouldBe(UpdateModuleVersion);

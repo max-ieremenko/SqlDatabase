@@ -4,8 +4,6 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
-using SqlDatabase.Scripts.MySql;
-using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts;
 
@@ -51,9 +49,9 @@ public class DatabaseAdapterFactoryTest
         };
 
         yield return new TestCaseData(
-            MySqlQuery.ConnectionString,
-            MySqlQuery.DatabaseName,
-            nameof(MySqlDatabaseAdapter))
+            "Server=localhost;Database=sqldatabasetest",
+            "sqldatabasetest",
+            "MySqlDatabaseAdapter")
         {
             TestName = "MySql"
         };

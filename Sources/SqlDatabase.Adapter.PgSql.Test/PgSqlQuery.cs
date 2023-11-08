@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using Npgsql;
+﻿using Npgsql;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.PgSql;

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
+    <RootNamespace>SqlDatabase.Adapter.MySql</RootNamespace>
+    <OutputPath>..\..\bin\Tests</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter.MySql\SqlDatabase.Adapter.MySql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
+  </ItemGroup>
+</Project>

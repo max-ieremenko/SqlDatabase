@@ -4,9 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SqlDatabase.Adapter;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MySql;
 
 internal sealed class MySqlWriter : SqlWriterBase
 {
@@ -59,7 +58,7 @@ internal sealed class MySqlWriter : SqlWriterBase
             case "BIGINT UNSIGNED":
                 if (size != 0)
                 {
-                    name = name.Insert(name.IndexOf(' '), "({0})".FormatWith(size));
+                    name = name.Insert(name.IndexOf(' '), $"({size})");
                 }
 
                 break;
@@ -67,7 +66,7 @@ internal sealed class MySqlWriter : SqlWriterBase
             case "NUMERIC":
                 if (scale != 0)
                 {
-                    sizeText = "{0},{1}".FormatWith(precision, scale);
+                    sizeText = $"{precision},{scale}";
                 }
                 else if (precision != 0)
                 {

@@ -56,6 +56,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Adapter.PgSql",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Adapter.PgSql.Test", "SqlDatabase.Adapter.PgSql.Test\SqlDatabase.Adapter.PgSql.Test.csproj", "{33749EF7-49CE-4564-BF9D-5713806CC646}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Adapter.MySql", "SqlDatabase.Adapter.MySql\SqlDatabase.Adapter.MySql.csproj", "{49B103C8-958D-41B2-AB22-EDF029947AB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDatabase.Adapter.MySql.Test", "SqlDatabase.Adapter.MySql.Test\SqlDatabase.Adapter.MySql.Test.csproj", "{D017ECF1-F2E3-4EAF-970B-F46991AD86F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +154,14 @@ Global
 		{33749EF7-49CE-4564-BF9D-5713806CC646}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33749EF7-49CE-4564-BF9D-5713806CC646}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33749EF7-49CE-4564-BF9D-5713806CC646}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B103C8-958D-41B2-AB22-EDF029947AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B103C8-958D-41B2-AB22-EDF029947AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B103C8-958D-41B2-AB22-EDF029947AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B103C8-958D-41B2-AB22-EDF029947AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D017ECF1-F2E3-4EAF-970B-F46991AD86F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D017ECF1-F2E3-4EAF-970B-F46991AD86F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D017ECF1-F2E3-4EAF-970B-F46991AD86F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D017ECF1-F2E3-4EAF-970B-F46991AD86F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +178,7 @@ Global
 		{93FBF3ED-A6F3-4EBF-8779-A398D6654C03} = {6E9C8ACC-7A1B-47F4-B7C0-78DE8C931A08}
 		{74003456-8C80-402A-AD68-24B02350ADDC} = {6E9C8ACC-7A1B-47F4-B7C0-78DE8C931A08}
 		{33749EF7-49CE-4564-BF9D-5713806CC646} = {6E9C8ACC-7A1B-47F4-B7C0-78DE8C931A08}
+		{D017ECF1-F2E3-4EAF-970B-F46991AD86F6} = {6E9C8ACC-7A1B-47F4-B7C0-78DE8C931A08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CFDC1B98-55BE-40C3-BF95-A2BA8182DC40}

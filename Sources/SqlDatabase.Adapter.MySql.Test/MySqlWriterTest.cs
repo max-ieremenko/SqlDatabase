@@ -3,9 +3,8 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MySql;
 
 [TestFixture]
 public class MySqlWriterTest

@@ -8,7 +8,7 @@ using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql;
 using SqlDatabase.TestApi;
 
-namespace SqlDatabase.Scripts.MySql;
+namespace SqlDatabase.Adapter.MySql;
 
 [TestFixture]
 public class TextScriptOutputMySqlTest

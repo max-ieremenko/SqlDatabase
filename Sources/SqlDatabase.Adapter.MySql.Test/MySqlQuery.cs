@@ -1,17 +1,18 @@
-﻿using System.Configuration;
-using MySqlConnector;
+﻿using MySqlConnector;
+using SqlDatabase.TestApi;
 
-namespace SqlDatabase.TestApi;
+namespace SqlDatabase.Adapter.MySql;
 
 internal static class MySqlQuery
 {
-    public static string ConnectionString => ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
-
-    public static string DatabaseName => new MySqlConnectionStringBuilder(ConnectionString).Database;
+    public static string GetConnectionString()
+    {
+        return ConfigurationExtensions.GetConnectionString("mysql");
+    }
 
     public static MySqlConnection Open()
     {
-        var con = new MySqlConnection(ConnectionString);
+        var con = new MySqlConnection(GetConnectionString());
         con.Open();
 
         return con;
