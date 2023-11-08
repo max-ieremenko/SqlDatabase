@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.MySql;
 
@@ -22,7 +23,7 @@ public class MySqlWriterTest
     [TearDown]
     public void AfterEachTest()
     {
-        Console.WriteLine(_output);
+        TestOutput.WriteLine(_output);
     }
 
     [Test]

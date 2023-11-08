@@ -7,6 +7,7 @@ using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Commands;
 
@@ -45,7 +46,7 @@ public class DatabaseExportCommandTest
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
             });
 
         _exporter = new Mock<IDataExporter>(MockBehavior.Strict);

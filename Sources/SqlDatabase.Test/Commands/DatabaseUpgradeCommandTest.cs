@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Commands;
 
@@ -38,13 +39,13 @@ public class DatabaseUpgradeCommandTest
             .Setup(l => l.Error(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Error: {0}", m);
+                TestOutput.WriteLine("Error: {0}", m);
             });
         _log
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
             });
 
         _sut = new DatabaseUpgradeCommand(

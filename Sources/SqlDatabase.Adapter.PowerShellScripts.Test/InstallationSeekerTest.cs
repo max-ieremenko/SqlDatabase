@@ -18,7 +18,7 @@ public class InstallationSeekerTest
         var actual = InstallationSeeker.TryFindByParentProcess(out var path);
         if (actual)
         {
-            Console.WriteLine(path);
+            TestOutput.WriteLine(path);
         }
     }
 
@@ -31,7 +31,7 @@ public class InstallationSeekerTest
 
         InstallationSeeker.TryFindOnDisk(out var path).ShouldBeTrue();
 
-        Console.WriteLine(path);
+        TestOutput.WriteLine(path);
     }
 
     [Test]

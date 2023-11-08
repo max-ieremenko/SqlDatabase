@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Commands;
 
@@ -38,7 +39,7 @@ public class DatabaseExecuteCommandTest
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
             });
 
         _sut = new DatabaseExecuteCommand(

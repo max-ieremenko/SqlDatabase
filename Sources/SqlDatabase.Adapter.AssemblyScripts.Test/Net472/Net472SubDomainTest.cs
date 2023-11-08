@@ -27,10 +27,10 @@ public partial class Net472SubDomainTest
         var log = new Mock<ILogger>(MockBehavior.Strict);
         log
             .Setup(l => l.Info(It.IsAny<string>()))
-            .Callback<string>(m => Console.WriteLine("Info: {0}", m));
+            .Callback<string>(m => TestOutput.WriteLine("Info: {0}", m));
         log
             .Setup(l => l.Error(It.IsAny<string>()))
-            .Callback<string>(m => Console.WriteLine("Error: {0}", m));
+            .Callback<string>(m => TestOutput.WriteLine("Error: {0}", m));
 
         _executedScripts = new List<string>();
         _command = new Mock<IDbCommand>(MockBehavior.Strict);

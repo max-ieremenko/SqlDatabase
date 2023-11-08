@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter.Sql.Export;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.MsSql;
 
@@ -24,7 +25,7 @@ public class MsSqlDataExporterTest
         var log = new Mock<ILogger>(MockBehavior.Strict);
         log
             .Setup(l => l.Info(It.IsAny<string>()))
-            .Callback<string>(m => Console.WriteLine("Info: {0}", m));
+            .Callback<string>(m => TestOutput.WriteLine("Info: {0}", m));
 
         _sut = new DataExporter
         {
@@ -62,7 +63,7 @@ public class MsSqlDataExporterTest
         }
 
         var exportSql = _output.ToString();
-        Console.WriteLine(exportSql);
+        TestOutput.WriteLine(exportSql);
 
         exportSql.ShouldContain(" " + dataType + " ");
 
@@ -109,7 +110,7 @@ select * from @x";
         }
 
         var exportSql = _output.ToString();
-        Console.WriteLine(exportSql);
+        TestOutput.WriteLine(exportSql);
 
         using (var connection = new SqlConnection(MsSqlQuery.GetConnectionString()))
         using (var cmd = connection.CreateCommand())
@@ -203,7 +204,7 @@ select * from @x";
             }
         }
 
-        Console.WriteLine(slq2);
+        TestOutput.WriteLine(slq2);
 
         slq2.Length.ShouldBeGreaterThan(slq500.Length);
     }

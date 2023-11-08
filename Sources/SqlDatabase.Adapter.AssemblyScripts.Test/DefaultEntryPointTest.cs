@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 
@@ -27,14 +28,14 @@ public class DefaultEntryPointTest
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
                 _logOutput.Add(m);
             });
         log
             .Setup(l => l.Error(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Error: {0}", m);
+                TestOutput.WriteLine("Error: {0}", m);
                 _logOutput.Add(m);
             });
 

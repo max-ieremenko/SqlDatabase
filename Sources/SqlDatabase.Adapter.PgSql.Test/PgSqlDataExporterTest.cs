@@ -10,6 +10,7 @@ using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter.Sql.Export;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.PgSql;
 
@@ -27,7 +28,7 @@ public class PgSqlDataExporterTest
         var log = new Mock<ILogger>(MockBehavior.Strict);
         log
             .Setup(l => l.Info(It.IsAny<string>()))
-            .Callback<string>(m => Console.WriteLine("Info: {0}", m));
+            .Callback<string>(m => TestOutput.WriteLine("Info: {0}", m));
 
         _sut = new DataExporter
         {
@@ -72,7 +73,7 @@ public class PgSqlDataExporterTest
         }
 
         var exportSql = _output.ToString();
-        Console.WriteLine(exportSql);
+        TestOutput.WriteLine(exportSql);
 
         exportSql.ShouldContain(" " + (expectedDataType ?? dataType) + " ");
 

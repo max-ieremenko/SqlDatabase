@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.Internal;
+using SqlDatabase.TestApi;
 using Command = System.Management.Automation.Runspaces.Command;
 
 namespace SqlDatabase.PowerShell.TestApi;
@@ -52,7 +53,7 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
 
         foreach (var row in _powerShell.Streams.Information)
         {
-            Console.WriteLine(row);
+            TestOutput.WriteLine(row);
         }
 
         _powerShell?.Dispose();

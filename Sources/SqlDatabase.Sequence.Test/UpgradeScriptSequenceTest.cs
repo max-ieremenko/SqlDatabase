@@ -87,7 +87,7 @@ public class UpgradeScriptSequenceTest
         else
         {
             var ex = Assert.Throws<InvalidOperationException>(() => _sut.BuildSequence());
-            Console.WriteLine(ex!.Message);
+            TestOutput.WriteLine(ex!.Message);
             foreach (var tag in testCase.Exception)
             {
                 ex.Message.ShouldContain(tag);

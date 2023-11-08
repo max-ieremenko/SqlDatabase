@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Sequence;
 
@@ -22,7 +23,7 @@ public class ModuleVersionResolverTest
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
                 _logOutput.Add(m);
             });
 

@@ -7,6 +7,7 @@ using System.Text;
 using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.PgSql;
 
@@ -26,7 +27,7 @@ public class PgSqlWriterTest
     [TearDown]
     public void AfterEachTest()
     {
-        Console.WriteLine(_output);
+        TestOutput.WriteLine(_output);
     }
 
     [Test]

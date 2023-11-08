@@ -6,16 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="PowerShellStandard.Library" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit3TestAdapter" PrivateAssets="All" />
-    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SqlDatabase.PowerShell\SqlDatabase.PowerShell.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
     <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
   </ItemGroup>
 

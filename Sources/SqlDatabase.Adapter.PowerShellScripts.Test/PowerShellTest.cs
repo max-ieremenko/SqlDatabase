@@ -5,6 +5,7 @@ using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.PowerShellScripts;
 
@@ -54,7 +55,7 @@ public class PowerShellTest
     {
         foreach (var line in _logOutput)
         {
-            Console.WriteLine(line);
+            TestOutput.WriteLine(line);
         }
     }
 
@@ -103,7 +104,7 @@ public class PowerShellTest
         catch (Exception ex)
         {
             failed = true;
-            Console.WriteLine(ex);
+            TestOutput.WriteLine(ex);
         }
 
         failed.ShouldBeTrue();

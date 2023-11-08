@@ -4,6 +4,7 @@ using System.Data;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.MsSql;
 
@@ -26,7 +27,7 @@ public class MsSqlDatabaseAdapterTest
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
                 _logOutput.Add(m);
             });
 
@@ -67,7 +68,7 @@ public class MsSqlDatabaseAdapterTest
             connection.Open();
 
             var actual = cmd.ExecuteScalar();
-            Console.WriteLine(actual);
+            TestOutput.WriteLine(actual);
 
             actual.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
         }
