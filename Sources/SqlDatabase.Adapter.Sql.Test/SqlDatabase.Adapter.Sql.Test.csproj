@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>SqlDatabase.Adapter.Sql</RootNamespace>
-    <OutputPath>..\..\bin\Tests</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

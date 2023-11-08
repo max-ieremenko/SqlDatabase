@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>SqlDatabase.PowerShell</RootNamespace>
-    <OutputPath>..\..\bin\Tests</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
