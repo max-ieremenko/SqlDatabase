@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.MsSql;
@@ -14,29 +13,33 @@ internal static class DatabaseAdapterFactory
     public static IDatabaseAdapter CreateAdapter(string connectionString, AppConfiguration configuration, ILogger log)
     {
         // connection strings are compatible
-        var factories = new List<Func<string, AppConfiguration, ILogger, IDatabaseAdapter>>(3);
+        Func<string, AppConfiguration, ILogger, IDatabaseAdapter>? factory = null;
+        var factoriesCounter = 0;
 
         if (MsSqlDatabaseAdapterFactory.CanBe(connectionString))
         {
-            factories.Add(CreateMsSql);
+            factoriesCounter++;
+            factory = CreateMsSql;
         }
 
         if (PgSqlDatabaseAdapterFactory.CanBe(connectionString))
         {
-            factories.Add(CreatePgSql);
+            factoriesCounter++;
+            factory = CreatePgSql;
         }
 
         if (MySqlDatabaseAdapterFactory.CanBe(connectionString))
         {
-            factories.Add(CreateMySql);
+            factoriesCounter++;
+            factory = CreateMySql;
         }
 
-        if (factories.Count != 1)
+        if (factory == null || factoriesCounter != 1)
         {
             throw new ConfigurationErrorsException("Could not determine the database type from the provided connection string.");
         }
 
-        return factories[0](connectionString, configuration, log);
+        return factory(connectionString, configuration, log);
     }
 
     private static IDatabaseAdapter CreateMsSql(string connectionString, AppConfiguration configuration, ILogger log)
