@@ -27,7 +27,7 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
 
     protected override void Greet(string databaseLocation)
     {
-        Log.Info("Upgrade {0}".FormatWith(databaseLocation));
+        Log.Info($"Upgrade {databaseLocation}");
     }
 
     protected override void ExecuteCore()
@@ -55,11 +55,11 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
             var timer = Stopwatch.StartNew();
             if (string.IsNullOrEmpty(step.ModuleName))
             {
-                Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
+                Log.Info($"execute {step.Script.DisplayName} ...");
             }
             else
             {
-                Log.Info("execute {0} {1} ...".FormatWith(step.ModuleName, step.Script.DisplayName));
+                Log.Info($"execute {step.ModuleName} {step.Script.DisplayName} ...");
             }
 
             using (Log.Indent())
@@ -67,7 +67,7 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
                 Database.Execute(step.Script, step.ModuleName, step.From, step.To);
             }
 
-            Log.Info("done in {0}".FormatWith(timer.Elapsed));
+            Log.Info($"done in {timer.Elapsed}");
         }
     }
 

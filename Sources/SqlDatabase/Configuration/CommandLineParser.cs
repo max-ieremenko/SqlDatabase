@@ -27,7 +27,7 @@ internal sealed class CommandLineParser
         {
             if (!ParseArg(arg, out var value))
             {
-                throw new InvalidCommandLineException("Invalid option [{0}].".FormatWith(arg));
+                throw new InvalidCommandLineException($"Invalid option [{arg}].");
             }
 
             if (!IsLog(value))

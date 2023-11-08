@@ -90,7 +90,7 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
         var cmdlet = (CmdletAttribute)typeof(TSubject).GetCustomAttribute(typeof(CmdletAttribute));
         cmdlet.ShouldNotBeNull();
 
-        yield return "{0}-{1}".FormatWith(cmdlet.VerbName, cmdlet.NounName);
+        yield return $"{cmdlet.VerbName}-{cmdlet.NounName}";
 
         var alias = (AliasAttribute)typeof(TSubject).GetCustomAttribute(typeof(AliasAttribute));
         if (alias != null)

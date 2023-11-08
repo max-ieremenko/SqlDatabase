@@ -21,7 +21,7 @@ internal sealed class ScriptResolver : IScriptResolver, IScriptFactory
         var factory = FindSupported(file);
         if (factory == null)
         {
-            throw new NotSupportedException("File [{0}] cannot be used as script.".FormatWith(file.Name));
+            throw new NotSupportedException($"File [{file.Name}] cannot be used as script.");
         }
 
         return factory.FromFile(file);

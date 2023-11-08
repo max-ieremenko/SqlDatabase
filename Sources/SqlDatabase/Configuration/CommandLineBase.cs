@@ -27,12 +27,12 @@ internal abstract class CommandLineBase : ICommandLine
 
         if (string.IsNullOrWhiteSpace(ConnectionString))
         {
-            throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Database));
+            throw new InvalidCommandLineException($"Options {Arg.Database} is not specified.");
         }
 
         if (Scripts.Count == 0)
         {
-            throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Scripts));
+            throw new InvalidCommandLineException($"Options {Arg.Scripts} is not specified.");
         }
 
         Validate();
@@ -77,7 +77,7 @@ internal abstract class CommandLineBase : ICommandLine
         }
 
         var index = Scripts.Count + 1;
-        var script = FileSystemFactory.FromContent("from{0}.sql".FormatWith(index), value!);
+        var script = FileSystemFactory.FromContent($"from{index}.sql", value!);
 
         Scripts.Add(script);
     }
@@ -95,12 +95,12 @@ internal abstract class CommandLineBase : ICommandLine
         }
         catch (Exception ex)
         {
-            throw new InvalidCommandLineException("Fail to parse option [{0}].".FormatWith(arg), ex);
+            throw new InvalidCommandLineException($"Fail to parse option [{arg}].", ex);
         }
 
         if (!isParsed)
         {
-            throw new InvalidCommandLineException("Unknown option [{0}].".FormatWith(arg));
+            throw new InvalidCommandLineException($"Unknown option [{arg}].");
         }
     }
 
@@ -143,12 +143,12 @@ internal abstract class CommandLineBase : ICommandLine
         name = name?.Trim();
         if (string.IsNullOrEmpty(name))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Invalid variable name [{0}].".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Invalid variable name [{name}].");
         }
 
         if (Variables.ContainsKey(name!))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Variable with name [{0}] is duplicated.".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Variable with name [{name}] is duplicated.");
         }
 
         Variables.Add(name!, value ?? string.Empty);

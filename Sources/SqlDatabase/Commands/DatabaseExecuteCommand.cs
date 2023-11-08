@@ -24,7 +24,7 @@ internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
 
     protected override void Greet(string databaseLocation)
     {
-        Log.Info("Execute script on {0}".FormatWith(databaseLocation));
+        Log.Info($"Execute script on {databaseLocation}");
     }
 
     protected override void ExecuteCore()
@@ -40,14 +40,14 @@ internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
         foreach (var script in sequences)
         {
             var timer = Stopwatch.StartNew();
-            Log.Info("execute {0} ...".FormatWith(script.DisplayName));
+            Log.Info($"execute {script.DisplayName} ...");
 
             using (Log.Indent())
             {
                 Database.Execute(script);
             }
 
-            Log.Info("done in {0}".FormatWith(timer.Elapsed));
+            Log.Info($"done in {timer.Elapsed}");
         }
     }
 }

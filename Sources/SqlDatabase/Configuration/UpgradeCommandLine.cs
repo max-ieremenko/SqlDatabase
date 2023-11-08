@@ -68,7 +68,7 @@ internal sealed class UpgradeCommandLine : CommandLineBase
     {
         if (!Enum.TryParse<TransactionMode>(modeName, true, out var mode))
         {
-            throw new InvalidCommandLineException(Arg.Transaction, "Unknown transaction mode [{0}].".FormatWith(modeName));
+            throw new InvalidCommandLineException(Arg.Transaction, $"Unknown transaction mode [{modeName}].");
         }
 
         Transaction = mode;

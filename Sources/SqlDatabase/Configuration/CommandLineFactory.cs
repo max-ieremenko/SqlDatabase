@@ -35,7 +35,7 @@ internal sealed class CommandLineFactory
 
         if (command == null)
         {
-            throw new InvalidCommandLineException("Unknown command [{0}].".FormatWith(ActiveCommandName));
+            throw new InvalidCommandLineException($"Unknown command [{ActiveCommandName}].");
         }
 
         commandArgs.RemoveAt(0);

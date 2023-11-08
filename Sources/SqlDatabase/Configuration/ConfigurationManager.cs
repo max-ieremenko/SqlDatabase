@@ -28,7 +28,7 @@ internal sealed class ConfigurationManager : IConfigurationManager
         }
         catch (Exception ex) when ((ex as IOException) == null)
         {
-            throw new ConfigurationErrorsException("Fail to load configuration from [{0}].".FormatWith(configurationFile), ex);
+            throw new ConfigurationErrorsException($"Fail to load configuration from [{configurationFile}].", ex);
         }
     }
 
@@ -94,7 +94,7 @@ internal sealed class ConfigurationManager : IConfigurationManager
 
             if (file == null)
             {
-                throw new FileNotFoundException("Configuration file {0} not found in {1}.".FormatWith(fileName, info.Name));
+                throw new FileNotFoundException($"Configuration file {fileName} not found in {info.Name}.");
             }
         }
         else

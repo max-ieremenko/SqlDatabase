@@ -147,17 +147,17 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
             .GetNames()
             .OrderBy(i => i)
             .Where(i => !SqlScriptVariableParser.IsValidVariableName(i))
-            .Select(i => "[{0}]".FormatWith(i))
+            .Select(i => $"[{i}]")
             .ToList();
 
         if (invalidNames.Count == 1)
         {
-            throw new InvalidOperationException("The variable name {0} is invalid.".FormatWith(invalidNames[0]));
+            throw new InvalidOperationException($"The variable name {invalidNames[0]} is invalid.");
         }
 
         if (invalidNames.Count > 1)
         {
-            throw new InvalidOperationException("The following variable names are invalid: {0}.".FormatWith(string.Join(", ", invalidNames)));
+            throw new InvalidOperationException($"The following variable names are invalid: {string.Join(", ", invalidNames)}.");
         }
 
         return database;

@@ -36,7 +36,7 @@ internal sealed class DatabaseExportCommand : DatabaseCommandBase
 
     protected override void Greet(string databaseLocation)
     {
-        Log.Info("Export data from {0}".FormatWith(databaseLocation));
+        Log.Info($"Export data from {databaseLocation}");
     }
 
     protected override void ExecuteCore()
@@ -65,14 +65,14 @@ internal sealed class DatabaseExportCommand : DatabaseCommandBase
             foreach (var script in sequences)
             {
                 var timer = Stopwatch.StartNew();
-                Log.Info("export {0} ...".FormatWith(script.DisplayName));
+                Log.Info($"export {script.DisplayName} ...");
 
                 using (Log.Indent())
                 {
                     ExportScript(exporter, script, ref readerIndex);
                 }
 
-                Log.Info("done in {0}".FormatWith(timer.Elapsed));
+                Log.Info($"done in {timer.Elapsed}");
             }
         }
     }
