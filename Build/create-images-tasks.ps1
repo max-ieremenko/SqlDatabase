@@ -7,67 +7,75 @@ task Default `
     , BuildPgSqlDatabase `
     , BuildMySqlDatabase
 
+Enter-Build {
+    $context = Join-Path $PSScriptRoot "..\Sources\Docker"
+}
+
 task BuildMsSqlDatabase {
-    $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
+    $dockerfile = Join-Path $context "image-mssql-2017.dockerfile"
     exec {
         docker build `
-            -f image-mssql-2017.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/mssql:2017 `
             $context
     }
 }
 
 task BuildPgSqlDatabase {
-    $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
+    $dockerfile = Join-Path $context "image-postgres-133.dockerfile"
     exec {
         docker build `
-            -f image-postgres-133.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/postgres:13.3 `
             $context
     }
 }
 
 task BuildMySqlDatabase {
-    $context = Join-Path $PSScriptRoot "..\Sources\SqlDatabase.Test\Docker"
+    $dockerfile = Join-Path $context "image-mysql-8025.dockerfile"
     exec {
         docker build `
-            -f image-mysql-8025.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/mysql:8.0.25 `
             $context
     }
 }
 
 task BuildDotnetSdk60 {
+    $dockerfile = Join-Path $context "image-dotnet-sdk-6.0.dockerfile"
     exec {
         docker build `
-            -f image-dotnet-sdk-6.0.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/dotnet_pwsh:6.0-sdk `
             .
     }
 }
 
 task BuildDotnetRuntime60 {
+    $dockerfile = Join-Path $context "image-dotnet-runtime-6.0.dockerfile"
     exec {
         docker build `
-            -f image-dotnet-runtime-6.0.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/dotnet_pwsh:6.0-runtime `
             .
     }
 }
 
 task BuildDotnetSdk70 {
+    $dockerfile = Join-Path $context "image-dotnet-sdk-7.0.dockerfile"
     exec {
         docker build `
-            -f image-dotnet-sdk-7.0.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/dotnet_pwsh:7.0-sdk `
             .
     }
 }
 
 task BuildDotnetRuntime70 {
+    $dockerfile = Join-Path $context "image-dotnet-runtime-7.0.dockerfile"
     exec {
         docker build `
-            -f image-dotnet-runtime-7.0.dockerfile `
+            -f $dockerfile `
             -t sqldatabase/dotnet_pwsh:7.0-runtime `
             .
     }

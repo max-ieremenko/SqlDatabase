@@ -135,7 +135,7 @@ task InitializeIntegrationTest {
         Remove-Item -Path $dest -Force -Recurse
     }
 
-    Copy-Item -Path (Join-Path $settings.sources "SqlDatabase.Test\IntegrationTests") -Destination $dest -Force -Recurse
+    Copy-Item -Path (Join-Path $settings.sources "IntegrationTests") -Destination $dest -Force -Recurse
     $assemblyScript = Join-Path $settings.bin "..\Examples\CSharpMirationStep\bin\Release\net472\2.1_2.2.*"
     foreach ($database in $databases) {
         Copy-Item -Path $assemblyScript -Destination (Join-Path $dest "$database\Upgrade") -Force
