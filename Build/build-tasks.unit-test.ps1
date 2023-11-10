@@ -1,37 +1,57 @@
 param(
-    $settings,
-    $targetFramework
+    [Parameter(Mandatory)]
+    [ValidateScript({ Test-Path $_ })]
+    [string]
+    $Sources,
+
+    [Parameter(Mandatory)]
+    [ValidateSet("net472", "net6.0", "net7.0")] 
+    [string]
+    $Framework
 )
 
-task Test RunContainers, UpdateConfig, RunTests
+task Default RunContainers, UpdateConfig, RunTests
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
-$mssqlContainerId = ""
-$mssqlConnectionString = "empty"
-$pgsqlContainerId = ""
-$pgsqlConnectionString = "empty"
-$mysqlContainerId = ""
-$mysqlConnectionString = "empty"
-$testDir = Join-Path (Join-Path $settings.bin "Tests") $targetFramework
+$containerIds = @()
+$mssqlConnectionString = ""
+$pgsqlConnectionString = ""
+$mysqlConnectionString = ""
 
 Enter-Build {
-    Write-Output "$testDir"
+    $testList = Get-ChildItem -Path $Sources -Recurse -Filter *.Test.dll `
+    | Where-Object FullName -Match \\$Framework\\ `
+    | Where-Object FullName -Match \\bin\\Release\\ `
+    | Where-Object FullName -NotMatch \\$Framework\\ref\\ `
+    | ForEach-Object { $_.FullName }
+
+    if (-not $testList) {
+        throw "Test list is empty."
+    }
+    
+    $testList
+}
+
+Exit-Build {
+    if ($containerIds) {
+        exec { docker container rm -f $containerIds } | Out-Null
+    }
 }
 
 task RunContainers {
     $info = Start-Mssql
-    $script:mssqlContainerId = $info.containerId
+    $script:containerIds += $info.containerId
     $script:mssqlConnectionString = $info.connectionString
     Write-Output $mssqlConnectionString
 
     $info = Start-Pgsql
-    $script:pgsqlContainerId = $info.containerId
+    $script:containerIds += $info.containerId
     $script:pgsqlConnectionString = $info.connectionString
     Write-Output $pgsqlConnectionString
 
     $info = Start-Mysql
-    $script:mysqlContainerId = $info.containerId
+    $script:containerIds += $info.containerId
     $script:mysqlConnectionString = $info.connectionString
     Write-Output $mysqlConnectionString
 
@@ -40,9 +60,8 @@ task RunContainers {
     Wait-Mysql $mysqlConnectionString
 }
 
-
 task UpdateConfig {
-    $configFiles = Get-ChildItem -Path $testDir -Filter *.dll.config
+    $configFiles = $testList | ForEach-Object { Split-Path -Path $_ -Parent } | Sort-Object | Get-Unique | Get-ChildItem -Filter *.dll.config
     foreach ($configFile in $configFiles) {
         [xml]$config = Get-Content $configFile
 
@@ -67,19 +86,5 @@ task UpdateConfig {
 }
 
 task RunTests {
-    $testList = Get-ChildItem -Path $testDir -Filter *.Test.dll `
-        | Where-Object FullName -NotMatch \\ref\\ `
-        | ForEach-Object {$_.FullName}    
-    
-    if (-not $testList) {
-        throw "Test list is empty."
-    }
-    
-    $testList
     exec { dotnet vstest $testList }
-}
-
-
-Exit-Build {
-    exec { docker container rm -f $mssqlContainerId $pgsqlContainerId $mysqlContainerId } | Out-Null
 }

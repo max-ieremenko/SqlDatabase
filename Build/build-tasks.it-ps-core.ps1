@@ -4,7 +4,7 @@ param(
     , $image
 )
 
-task Test StartDatabase, RunTest
+task Default StartDatabase, RunTest
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 

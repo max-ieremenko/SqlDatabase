@@ -3,7 +3,7 @@ param(
     , $database
 )
 
-task Test RunContainers, CopyModule, PublishModule, RunTest
+task Default RunContainers, CopyModule, PublishModule, RunTest
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
@@ -47,5 +47,7 @@ Exit-Build {
         Remove-Item -Path $testDir -Force -Recurse
     }
 
-    exec { docker container rm -f $containerId } | Out-Null
+    if ($containerId) {
+        exec { docker container rm -f $containerId } | Out-Null
+    }
 }
