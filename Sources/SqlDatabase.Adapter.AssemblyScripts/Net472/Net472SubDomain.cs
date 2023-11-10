@@ -1,5 +1,4 @@
-﻿#if NET472
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 
@@ -24,6 +23,8 @@ internal sealed class Net472SubDomain : ISubDomain
 
     public Func<byte[]> ReadAssemblyContent { get; }
 
+    public static void Test() => AppDomainAdapter.Initialize();
+
     public void Initialize()
     {
         Logger.Info($"create domain for {AssemblyFileName}");
@@ -33,15 +34,8 @@ internal sealed class Net472SubDomain : ISubDomain
 
         var entryAssembly = _appBase.SaveFile(ReadAssemblyContent(), appBaseName);
 
-        var setup = new AppDomainSetup
-        {
-            ApplicationBase = _appBase.Location,
-            ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
-            LoaderOptimization = LoaderOptimization.MultiDomainHost
-        };
-
-        _app = AppDomain.CreateDomain(appBaseName, null, setup);
-        _appAgent = (DomainAgent)_app.CreateInstanceFromAndUnwrap(GetType().Assembly.Location, typeof(DomainAgent).FullName);
+        _app = AppDomainAdapter.CreateDomain(appBaseName, _appBase.Location);
+        _appAgent = AppDomainAdapter.CreateInstanceFromAndUnwrap(_app);
 
         _appAgent.RedirectConsoleOut(new LoggerProxy(Logger));
         _appAgent.LoadAssembly(entryAssembly);
@@ -75,4 +69,3 @@ internal sealed class Net472SubDomain : ISubDomain
         _appBase?.Dispose();
     }
 }
-#endif

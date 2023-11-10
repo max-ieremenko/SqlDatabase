@@ -1,5 +1,4 @@
-﻿#if !NET472
-using System;
+﻿using System;
 using System.Data;
 
 namespace SqlDatabase.Adapter.AssemblyScripts.NetCore;
@@ -24,6 +23,10 @@ internal sealed class NetCoreSubDomain : ISubDomain
     public Func<byte[]> ReadAssemblyContent { get; set; }
 
     private IEntryPoint? EntryPoint { get; set; }
+
+    public static void Test()
+    {
+    }
 
     public void Initialize()
     {
@@ -62,4 +65,3 @@ internal sealed class NetCoreSubDomain : ISubDomain
     {
     }
 }
-#endif

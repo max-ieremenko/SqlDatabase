@@ -6,6 +6,10 @@
     <NoWarn>NU1702</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="System.Data.SqlClient" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />

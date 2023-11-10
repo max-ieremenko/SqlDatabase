@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
@@ -13,16 +13,18 @@ internal sealed class ExecuteMethodResolverSqlConnection : ExecuteMethodResolver
     {
         var parameters = method.GetParameters();
         return parameters.Length == 1
-               && typeof(SqlConnection) == parameters[0].ParameterType;
+               && "System.Data.SqlClient.SqlConnection".Equals(parameters[0].ParameterType.FullName, StringComparison.Ordinal);
     }
 
     public override Action<IDbCommand, IReadOnlyDictionary<string, string?>> CreateDelegate(object instance, MethodInfo method)
     {
-        var execute = (Action<SqlConnection>)Delegate.CreateDelegate(
-            typeof(Action<SqlConnection>),
-            instance,
-            method);
+        var command = Expression.Parameter(typeof(IDbCommand), "command");
+        var variables = Expression.Parameter(typeof(IReadOnlyDictionary<string, string?>), "variables");
 
-        return (command, _) => execute((SqlConnection)command.Connection!);
+        var connection = Expression.Property(command, nameof(IDbCommand.Connection));
+        var sqlConnection = Expression.Convert(connection, method.GetParameters()[0].ParameterType);
+        var call = Expression.Call(Expression.Constant(instance), method, sqlConnection);
+
+        return Expression.Lambda<Action<IDbCommand, IReadOnlyDictionary<string, string?>>>(call, command, variables).Compile();
     }
 }

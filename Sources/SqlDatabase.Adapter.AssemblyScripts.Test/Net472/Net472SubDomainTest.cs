@@ -40,10 +40,11 @@ public partial class Net472SubDomainTest
             .Callback(() => _executedScripts.Add(_command.Object.CommandText))
             .Returns(0);
 
-        _sut = new Net472SubDomain(
+        _sut = SubDomainFactory.Create(
             log.Object,
             GetType().Assembly.Location,
-            () => File.ReadAllBytes(GetType().Assembly.Location));
+            () => File.ReadAllBytes(GetType().Assembly.Location))
+            .ShouldBeOfType<Net472SubDomain>();
 
         _sut.Initialize();
     }
@@ -58,7 +59,7 @@ public partial class Net472SubDomainTest
     [Test]
     public void ValidateScriptDomainAppBase()
     {
-        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowAppBase));
+        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowAppBase)).ShouldBeTrue();
         _sut.Execute(new DbCommandStub(_command.Object), _variables.Object);
         _sut.Unload();
         _sut.Dispose();
@@ -77,12 +78,12 @@ public partial class Net472SubDomainTest
     [Test]
     public void ValidateScriptDomainConfiguration()
     {
-        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowConfiguration));
+        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.ShowConfiguration)).ShouldBeTrue();
         _sut.Execute(new DbCommandStub(_command.Object), _variables.Object);
         _sut.Unload();
         _sut.Dispose();
 
-        Assert.AreEqual(2, _executedScripts.Count);
+        _executedScripts.Count.ShouldBe(2);
 
         var configurationFile = _executedScripts[0];
         configurationFile.ShouldBe(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
@@ -94,7 +95,7 @@ public partial class Net472SubDomainTest
     [Test]
     public void ValidateScriptDomainCreateSubDomain()
     {
-        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.Execute));
+        _sut.ResolveScriptExecutor(nameof(StepWithSubDomain), nameof(StepWithSubDomain.Execute)).ShouldBeTrue();
         _sut.Execute(new DbCommandStub(_command.Object), _variables.Object);
 
         _executedScripts.Count.ShouldBe(1);

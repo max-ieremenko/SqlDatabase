@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Reflection;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 
@@ -11,26 +12,29 @@ public class ExecuteMethodResolverSqlConnectionTest
 {
     private ExecuteMethodResolverSqlConnection _sut = null!;
     private SqlConnection? _executeConnection;
+    private MethodInfo _execute = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
+        _execute = GetType()
+            .GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic)
+            .ShouldNotBeNull();
+
         _sut = new ExecuteMethodResolverSqlConnection();
     }
 
     [Test]
     public void IsMatch()
     {
-        var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsTrue(_sut.IsMatch(method!));
+        _sut.IsMatch(_execute).ShouldBeTrue();
     }
 
     [Test]
     public void CreateDelegate()
     {
-        var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        var actual = _sut.CreateDelegate(this, method!);
-        Assert.IsNotNull(actual);
+        var actual = _sut.CreateDelegate(this, _execute);
+        actual.ShouldNotBeNull();
 
         var connection = new SqlConnection();
 
@@ -40,12 +44,12 @@ public class ExecuteMethodResolverSqlConnectionTest
             .Returns(connection);
 
         actual(command.Object, null!);
-        Assert.AreEqual(_executeConnection, connection);
+        _executeConnection.ShouldBe(connection);
     }
 
     private void Execute(SqlConnection connection)
     {
-        Assert.IsNull(_executeConnection);
+        _executeConnection.ShouldBeNull();
         _executeConnection = connection;
     }
 }

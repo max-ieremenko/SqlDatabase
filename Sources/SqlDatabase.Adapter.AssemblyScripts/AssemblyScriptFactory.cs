@@ -5,7 +5,7 @@ using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 
-public sealed class AssemblyScriptFactory : IScriptFactory
+public sealed class AssemblyScriptFactory : IScriptFactory, IScriptEnvironment
 {
     private readonly string? _configurationClassName;
     private readonly string? _configurationMethodName;
@@ -31,6 +31,10 @@ public sealed class AssemblyScriptFactory : IScriptFactory
             CreateBinaryReader(file),
             CreateScriptDescriptionReader(file));
     }
+
+    public bool IsSupported(IScript script) => script is AssemblyScript;
+
+    public void Initialize(ILogger logger) => SubDomainFactory.Test();
 
     private static Func<byte[]> CreateBinaryReader(IFile file)
     {

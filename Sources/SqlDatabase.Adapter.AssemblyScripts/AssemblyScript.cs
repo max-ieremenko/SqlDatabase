@@ -36,7 +36,7 @@ internal sealed class AssemblyScript : IScript
 
     public void Execute(IDbCommand? command, IVariables variables, ILogger logger)
     {
-        var domain = CreateSubDomain(logger);
+        var domain = SubDomainFactory.Create(logger, DisplayName, ReadAssemblyContent);
 
         using (domain)
         {
@@ -83,14 +83,5 @@ internal sealed class AssemblyScript : IScript
         {
             throw new InvalidOperationException("Errors during script execution.");
         }
-    }
-
-    private ISubDomain CreateSubDomain(ILogger logger)
-    {
-#if NET472
-        return new Net472.Net472SubDomain(logger, DisplayName, ReadAssemblyContent);
-#else
-        return new NetCore.NetCoreSubDomain(logger, DisplayName, ReadAssemblyContent);
-#endif
     }
 }
