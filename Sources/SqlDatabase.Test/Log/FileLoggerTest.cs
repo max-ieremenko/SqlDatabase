@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
@@ -33,7 +32,7 @@ public class FileLoggerTest
 
         var actual = File.ReadAllText(_file.Location);
 
-        Console.WriteLine(actual);
+        TestOutput.WriteLine(actual);
         actual.ShouldContain(" INFO ");
         actual.ShouldContain(" some message");
     }
@@ -48,7 +47,7 @@ public class FileLoggerTest
 
         var actual = File.ReadAllText(_file.Location);
 
-        Console.WriteLine(actual);
+        TestOutput.WriteLine(actual);
         actual.ShouldContain(" ERROR ");
         actual.ShouldContain(" some message");
     }
@@ -66,7 +65,7 @@ public class FileLoggerTest
 
         var actual = File.ReadAllText(_file.Location);
 
-        Console.WriteLine(actual);
+        TestOutput.WriteLine(actual);
         actual.ShouldContain("do not remove");
         actual.ShouldContain(" INFO ");
         actual.ShouldContain(" some message");
@@ -90,7 +89,7 @@ public class FileLoggerTest
             }
         }
 
-        Console.WriteLine(actual);
+        TestOutput.WriteLine(actual);
         actual.ShouldContain(" INFO ");
         actual.ShouldContain(" some message");
     }
@@ -105,7 +104,7 @@ public class FileLoggerTest
 
         var actual = File.ReadAllText(_file.Location);
 
-        Console.WriteLine(actual);
+        TestOutput.WriteLine(actual);
         actual.ShouldContain(" INFO ");
     }
 }

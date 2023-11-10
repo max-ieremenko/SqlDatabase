@@ -1,4 +1,5 @@
-﻿using SqlDatabase.Commands;
+﻿using SqlDatabase.Adapter;
+using SqlDatabase.Commands;
 
 namespace SqlDatabase.Configuration;
 

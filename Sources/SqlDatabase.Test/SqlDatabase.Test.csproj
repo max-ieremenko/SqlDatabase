@@ -3,58 +3,17 @@
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>SqlDatabase</RootNamespace>
-    <NoWarn>NU1702</NoWarn>
-    <OutputPath>..\..\bin\Tests</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Moq" />
-    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
     <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
   </ItemGroup>
-
-  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <!-- fix configuration for .net core tests
-	https://github.com/dotnet/corefx/issues/22101 -->
-    <Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\testhost.dll.config" />
-    <Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\ReSharperTestRunner64.dll.config" />
-    <Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\ReSharperTestRunner.dll.config" />
-  </Target>
-  
-  <ItemGroup>
-    <EmbeddedResource Include="Configuration\AppConfiguration.default.xml" />
-    <EmbeddedResource Include="Configuration\AppConfiguration.full.xml" />
-    <EmbeddedResource Include="Configuration\AppConfiguration.empty.xml" />
-    <EmbeddedResource Include="IO\Content.zip" />
-    <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.ExecuteWhatIfIgnore.ps1" />
-    <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.ExecuteWhatIfInvoke.ps1" />
-    <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.HandleThrow.ps1" />
-    <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.HandleWriteError.ps1" />
-    <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.ParametersBinding.ps1" />
-    <EmbeddedResource Include="Scripts\PowerShellInternal\PowerShellTest.HandleOutput.ps1" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Dependencies\Case05.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Dependencies\Case04.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Dependencies\Case03.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Dependencies\Case02.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Dependencies\Case01.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Dependencies\Empty.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\Case02.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\CaseOneLineComment.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\CaseStoredProcedure.sql" />
-    <EmbeddedResource Include="Scripts\SqlTestCases\Go\Case01.sql" />
-    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\ThreeModules.json" />
-    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\FolderAsModuleName.json" />
-    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\TwoModules.json" />
-    <EmbeddedResource Include="Scripts\UpgradeScriptSequenceTest\OneModule.json" />
-  </ItemGroup>
-
 </Project>

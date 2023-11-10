@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <sqlDatabase getCurrentVersion="get-version"
+               setCurrentVersion="set-version">
+    <assemblyScript methodName="method-name"
+                    className="class-name"/>
+    <variables>
+      <add name="x"
+           value="1" />
+      <add name="y"
+           value="2" />
+    </variables>
+
+    <mssql getCurrentVersion="get-mssql-version"
+           setCurrentVersion="set-mssql-version">
+      <variables>
+        <add name="mssql1"
+             value="10" />
+      </variables>
+    </mssql>
+
+    <pgsql getCurrentVersion="get-pgsql-version"
+           setCurrentVersion="set-pgsql-version">
+      <variables>
+        <add name="pgsql1"
+             value="20" />
+      </variables>
+    </pgsql>
+
+    <mysql getCurrentVersion="get-mysql-version"
+           setCurrentVersion="set-mysql-version">
+      <variables>
+        <add name="mysql1"
+             value="30" />
+      </variables>
+    </mysql>
+  </sqlDatabase>
+</configuration>

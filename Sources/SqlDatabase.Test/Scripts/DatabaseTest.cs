@@ -6,7 +6,9 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts;
 
@@ -29,14 +31,14 @@ public class DatabaseTest
             .Setup(l => l.Error(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Error: {0}", m);
+                TestOutput.WriteLine("Error: {0}", m);
                 _logOutput.Add(m);
             });
         log
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
                 _logOutput.Add(m);
             });
 

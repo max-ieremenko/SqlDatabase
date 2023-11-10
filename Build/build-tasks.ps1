@@ -10,26 +10,26 @@ task Initialize {
     $artifacts = Join-Path $bin "artifacts"
 
     $script:settings = @{
-        nugetexe            = Join-Path $PSScriptRoot "nuget.exe";
-        sources             = $sources;
-        bin                 = $bin;
+        nugetexe            = Join-Path $PSScriptRoot "nuget.exe"
+        sources             = $sources
+        bin                 = $bin
         artifacts           = $artifacts
         artifactsPowerShell = Join-Path $artifacts "PowerShell"
         integrationTests    = Join-Path $bin "IntegrationTests"
-        version             = Get-Version -SourcePath $sources;
-        repositoryCommitId  = git rev-parse HEAD;
+        version             = Get-Version -SourcePath $sources
+        repositoryCommitId  = git rev-parse HEAD
     }
 
-    $script:databases = $("MsSql", "PgSql", "MySql")
+    $script:frameworks = "net472", "net6.0", "net7.0"
+    $script:databases = "MsSql", "PgSql", "MySql"
 
     Write-Output "PackageVersion: $($settings.version)"
     Write-Output "CommitId: $($settings.repositoryCommitId)"
 }
 
 task Clean {
-    if (Test-Path $settings.bin) {
-        Remove-Item -Path $settings.bin -Recurse -Force
-    }
+    Remove-DirectoryRecurse -Path $settings.bin
+    Remove-DirectoryRecurse -Path $settings.sources -Filters "bin", "obj"
 
     New-Item -Path $settings.bin -ItemType Directory | Out-Null
 }
@@ -67,7 +67,7 @@ task PackPoweShellModule {
 
     # .psd1 set module version
     $psdFile = Join-Path $dest "SqlDatabase.psd1"
-    ((Get-Content -Path $psdFile -Raw) -replace '{{ModuleVersion}}', $settings.version) | Set-Content -Path $psdFile
+    ((Get-Content -Path $psdFile -Raw) -replace '1.2.3', $settings.version) | Set-Content -Path $psdFile
 
     # copy license
     Copy-Item -Path (Join-Path $settings.sources "..\LICENSE.md") -Destination $dest
@@ -85,7 +85,7 @@ task PackNuget472 PackPoweShellModule, {
     }
 
     $nuspec = Join-Path $settings.sources "SqlDatabase.Package\nuget\package.nuspec"
-    Exec { 
+    exec { 
         & $($settings.nugetexe) pack `
             -NoPackageAnalysis `
             -verbosity detailed `
@@ -98,6 +98,8 @@ task PackNuget472 PackPoweShellModule, {
 }
 
 task PackManualDownload PackGlobalTool, PackPoweShellModule, {
+    Get-ChildItem -Path $settings.bin -Recurse -Directory -Filter "publish" | Remove-Item -Force -Recurse
+
     $out = $settings.artifacts
     $lic = Join-Path $settings.sources "..\LICENSE.md"
     $thirdParty = Join-Path $settings.bin "ThirdPartyNotices.txt"
@@ -107,8 +109,7 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
     $source = Join-Path $settings.artifactsPowerShell "*"
     Compress-Archive -Path $source -DestinationPath $destination
 
-    $targets = "net472", "net6.0", "net7.0"
-    foreach ($target in $targets) {
+    foreach ($target in $frameworks) {
         $destination = Join-Path $out "SqlDatabase.$packageVersion-$target.zip"
         $source = Join-Path $settings.bin "SqlDatabase\$target\*"
         Compress-Archive -Path $source, $lic, $thirdParty -DestinationPath $destination
@@ -116,13 +117,16 @@ task PackManualDownload PackGlobalTool, PackPoweShellModule, {
 }
 
 task UnitTest {
-    $builds = @(
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net472" }
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net6.0" }
-        @{ File = "build-tasks.unit-test.ps1"; Task = "Test"; settings = $settings; targetFramework = "net7.0" }
-    )
+    $builds = @()
+    foreach ($case in $frameworks) {
+        $builds += @{
+            File      = "build-tasks.unit-test.ps1"
+            Sources   = $settings.sources
+            Framework = $case
+        }
+    }
     
-    Build-Parallel $builds -ShowParameter targetFramework -MaximumBuilds 4
+    Build-Parallel $builds -ShowParameter Framework -MaximumBuilds 4
 }
 
 task InitializeIntegrationTest {
@@ -131,9 +135,10 @@ task InitializeIntegrationTest {
         Remove-Item -Path $dest -Force -Recurse
     }
 
-    Copy-Item -Path (Join-Path $settings.sources "SqlDatabase.Test\IntegrationTests") -Destination $dest -Force -Recurse
+    Copy-Item -Path (Join-Path $settings.sources "IntegrationTests") -Destination $dest -Force -Recurse
+    $assemblyScript = Join-Path $settings.bin "..\Examples\CSharpMirationStep\bin\Release\net472\2.1_2.2.*"
     foreach ($database in $databases) {
-        Copy-Item -Path (Join-Path $settings.bin "Tests\net472\2.1_2.2.*") -Destination (Join-Path $dest "$database\Upgrade") -Force
+        Copy-Item -Path $assemblyScript -Destination (Join-Path $dest "$database\Upgrade") -Force
     }
 
     $bashLine = "sed -i 's/\r//g'"
@@ -146,7 +151,7 @@ task InitializeIntegrationTest {
     exec {
         docker run --rm `
             -v $test `
-            mcr.microsoft.com/dotnet/core/sdk:3.1 `
+            mcr.microsoft.com/dotnet/sdk:7.0 `
             bash -c $bashLine
     }
 }
@@ -155,10 +160,9 @@ task PsDesktopTest {
     $builds = @()
     foreach ($database in $databases) {
         $builds += @{
-            File     = "build-tasks.it-ps-desktop.ps1";
-            Task     = "Test";
-            settings = $settings;
-            database = $database;
+            File     = "build-tasks.it-ps-desktop.ps1"
+            settings = $settings
+            database = $database
         }
     }
 
@@ -195,11 +199,10 @@ task PsCoreTest {
     foreach ($image in $images) {
         foreach ($database in $databases) {
             $builds += @{
-                File     = "build-tasks.it-ps-core.ps1";
-                Task     = "Test";
-                settings = $settings;
-                database = $database;
-                image    = $image;
+                File     = "build-tasks.it-ps-core.ps1"
+                settings = $settings
+                database = $database
+                image    = $image
             }
         }
     }
@@ -216,11 +219,10 @@ task SdkToolTest {
     foreach ($image in $images) {
         foreach ($database in $databases) {
             $builds += @{
-                File     = "build-tasks.it-tool-linux.ps1";
-                Task     = "Test";
-                settings = $settings;
-                database = $database;
-                image    = $image;
+                File     = "build-tasks.it-tool-linux.ps1"
+                settings = $settings
+                database = $database
+                image    = $image
             }
         }
     }
@@ -238,12 +240,11 @@ task NetRuntimeLinuxTest {
     foreach ($case in $testCases) {
         foreach ($database in $databases) {
             $builds += @{
-                File            = "build-tasks.it-linux.ps1";
-                Task            = "Test";
-                settings        = $settings;
-                targetFramework = $case.targetFramework;
-                database        = $database;
-                image           = $case.image;
+                File            = "build-tasks.it-linux.ps1"
+                settings        = $settings
+                targetFramework = $case.targetFramework
+                database        = $database
+                image           = $case.image
             }
         }
     }
@@ -252,21 +253,14 @@ task NetRuntimeLinuxTest {
 }
 
 task NetRuntimeWindowsTest {
-    $testCases = $(
-        "net472"
-        , "net6.0"
-        , "net7.0"
-    )
-
     $builds = @()
-    foreach ($case in $testCases) {
+    foreach ($case in $frameworks) {
         foreach ($database in $databases) {
             $builds += @{
-                File            = "build-tasks.it-win.ps1";
-                Task            = "Test";
-                settings        = $settings;
-                targetFramework = $case;
-                database        = $database;
+                File            = "build-tasks.it-win.ps1"
+                settings        = $settings
+                targetFramework = $case
+                database        = $database
             }
         }
     }

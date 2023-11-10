@@ -1,4 +1,6 @@
-﻿namespace SqlDatabase.Log;
+﻿using SqlDatabase.Adapter;
+
+namespace SqlDatabase.Log;
 
 internal static class LoggerFactory
 {

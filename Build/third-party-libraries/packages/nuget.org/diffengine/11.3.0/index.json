@@ -1,0 +1,43 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "System.Management",
+          "Version": "6.0.1"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/VerifyTests/DiffEngine.git"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/VerifyTests/DiffEngine"
+    }
+  ]
+}

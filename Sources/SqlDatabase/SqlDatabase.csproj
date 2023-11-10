@@ -3,7 +3,6 @@
     <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net7.0;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0</TargetFrameworks>
 
-    <!--<AssemblyTitle>SqlDatabase</AssemblyTitle>-->
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
@@ -12,7 +11,18 @@
     <ToolCommandName>SqlDatabase</ToolCommandName>
     <PackageId>SqlDatabase.GlobalTool</PackageId>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.MsSql\SqlDatabase.Adapter.MsSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.MySql\SqlDatabase.Adapter.MySql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.PgSql\SqlDatabase.Adapter.PgSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Configuration\SqlDatabase.Configuration.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
     <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
@@ -34,36 +44,4 @@
     <EmbeddedResource Include="Configuration\CommandLine.create.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Management.Automation">
-      <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="PowerShellStandard.Library" VersionOverride="5.1.0" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" />
-    <PackageReference Include="System.Data.SqlClient" />
-    <PackageReference Include="System.Runtime.Loader" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MySqlConnector" />
-    <PackageReference Include="Npgsql" />
-  </ItemGroup>
-
 </Project>

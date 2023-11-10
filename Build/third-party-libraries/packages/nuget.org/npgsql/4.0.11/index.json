@@ -9,14 +9,19 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net472",
-        "net6.0",
-        "net7.0",
         "netstandard2.0"
       ],
       "Dependencies": [
         {
+          "Name": "System.Memory",
+          "Version": "4.5.3"
+        },
+        {
           "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "4.5.2"
+        },
+        {
+          "Name": "System.Threading.Tasks.Extensions",
           "Version": "4.5.2"
         }
       ]
@@ -36,8 +41,7 @@
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "http://www.npgsql.org/",
-      "Description": "License should be verified on http://www.npgsql.org/"
+      "HRef": "http://www.npgsql.org/"
     }
   ]
 }

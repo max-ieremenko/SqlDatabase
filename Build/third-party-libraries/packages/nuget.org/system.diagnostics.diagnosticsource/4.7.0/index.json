@@ -10,8 +10,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net472",
-        "net6.0",
-        "net7.0",
         "netstandard2.0"
       ],
       "Dependencies": [
@@ -31,8 +29,7 @@
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://github.com/dotnet/corefx",
-      "Description": "License should be verified on https://github.com/dotnet/corefx"
+      "HRef": "https://github.com/dotnet/corefx"
     }
   ]
 }

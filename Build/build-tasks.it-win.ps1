@@ -4,7 +4,7 @@ param(
     , $database
 )
 
-task Test StartDatabase, UnZip, RunTest
+task Default StartDatabase, UnZip, RunTest
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 

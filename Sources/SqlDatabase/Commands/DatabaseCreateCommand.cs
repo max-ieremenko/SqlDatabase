@@ -1,6 +1,8 @@
-﻿using System.Configuration;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using SqlDatabase.Adapter;
+using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 
@@ -8,22 +10,22 @@ internal sealed class DatabaseCreateCommand : DatabaseCommandBase
 {
     public DatabaseCreateCommand(
         ICreateScriptSequence scriptSequence,
-        IPowerShellFactory powerShellFactory,
+        IScriptResolver scriptResolver,
         IDatabase database,
         ILogger log)
         : base(database, log)
     {
         ScriptSequence = scriptSequence;
-        PowerShellFactory = powerShellFactory;
+        ScriptResolver = scriptResolver;
     }
 
     public ICreateScriptSequence ScriptSequence { get; }
 
-    public IPowerShellFactory PowerShellFactory { get; }
+    public IScriptResolver ScriptResolver { get; }
 
     protected override void Greet(string databaseLocation)
     {
-        Log.Info("Create {0}".FormatWith(databaseLocation));
+        Log.Info($"Create {databaseLocation}");
     }
 
     protected override void ExecuteCore()
@@ -34,19 +36,19 @@ internal sealed class DatabaseCreateCommand : DatabaseCommandBase
             throw new ConfigurationErrorsException("scripts to create database not found.");
         }
 
-        PowerShellFactory.InitializeIfRequested(Log);
+        ScriptResolver.InitializeEnvironment(Log, sequences);
 
         foreach (var script in sequences)
         {
             var timer = Stopwatch.StartNew();
-            Log.Info("execute {0} ...".FormatWith(script.DisplayName));
+            Log.Info($"execute {script.DisplayName} ...");
 
             using (Log.Indent())
             {
                 Database.Execute(script);
             }
 
-            Log.Info("done in {0}".FormatWith(timer.Elapsed));
+            Log.Info($"done in {timer.Elapsed}");
         }
     }
 }

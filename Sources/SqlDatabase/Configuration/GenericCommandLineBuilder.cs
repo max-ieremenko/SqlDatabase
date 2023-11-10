@@ -54,12 +54,12 @@ internal sealed class GenericCommandLineBuilder
         name = name?.Trim();
         if (string.IsNullOrEmpty(name))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Invalid variable name [{0}].".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Invalid variable name [{name}].");
         }
 
         if (Line.Variables.ContainsKey(name!))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Variable with name [{0}] is duplicated.".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Variable with name [{name}] is duplicated.");
         }
 
         Line.Variables.Add(name!, value ?? string.Empty);
@@ -72,7 +72,7 @@ internal sealed class GenericCommandLineBuilder
         if (!CommandLineParser.ParseArg(Arg.Sign + nameValue, out var arg)
             || !arg.IsPair)
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Invalid variable value definition [{0}].".FormatWith(nameValue));
+            throw new InvalidCommandLineException(Arg.Variable, $"Invalid variable value definition [{nameValue}].");
         }
 
         return SetVariable(arg.Key, arg.Value);

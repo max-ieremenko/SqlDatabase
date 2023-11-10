@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts;
@@ -115,16 +117,13 @@ internal sealed class Database : IDatabase
         }
         catch (DbException ex)
         {
-            throw new InvalidOperationException("Fail to update the version, script: {0}".FormatWith(script), ex);
+            throw new InvalidOperationException($"Fail to update the version, script: {script}", ex);
         }
 
         var checkVersion = ReadCurrentVersion(command);
         if (checkVersion != targetVersion)
         {
-            throw new InvalidOperationException("Set version script works incorrectly: expected version is {0}, but actual is {1}. Script: {2}".FormatWith(
-                targetVersion,
-                checkVersion,
-                script));
+            throw new InvalidOperationException($"Set version script works incorrectly: expected version is {targetVersion}, but actual is {checkVersion}. Script: {script}");
         }
     }
 
@@ -140,17 +139,17 @@ internal sealed class Database : IDatabase
         }
         catch (DbException ex)
         {
-            throw new InvalidOperationException("Fail to read the version, script: {0}".FormatWith(script), ex);
+            throw new InvalidOperationException($"Fail to read the version, script: {script}", ex);
         }
 
         if (!Version.TryParse(version, out var result))
         {
             if (string.IsNullOrEmpty(Variables.ModuleName))
             {
-                throw new InvalidOperationException("The version [{0}] of database is invalid.".FormatWith(version));
+                throw new InvalidOperationException($"The version [{version}] of database is invalid.");
             }
 
-            throw new InvalidOperationException("The version [{0}] of module [{1}] is invalid.".FormatWith(version, Variables.ModuleName));
+            throw new InvalidOperationException($"The version [{version}] of module [{Variables.ModuleName}] is invalid.");
         }
 
         return result;

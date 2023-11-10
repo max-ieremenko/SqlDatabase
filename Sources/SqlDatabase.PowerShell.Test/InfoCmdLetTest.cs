@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.PowerShell.TestApi;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.PowerShell;
 
@@ -15,7 +16,7 @@ public class InfoCmdLetTest : SqlDatabaseCmdLetTest<InfoCmdLet>
         var actual = InvokeCommand("Show-SqlDatabaseInfo");
 
         actual.Count.ShouldBe(1);
-        Console.WriteLine(actual[0]);
+        TestOutput.WriteLine(actual[0]);
 
         actual[0].Properties["PSEdition"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();
         actual[0].Properties["PSVersion"].Value.ShouldBeOfType<string>().ShouldNotBeNullOrWhiteSpace();

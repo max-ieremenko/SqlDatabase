@@ -1,6 +1,6 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration;
 
@@ -33,7 +33,7 @@ public class GenericCommandLineBuilderTest
 
         foreach (var arg in args)
         {
-            Console.WriteLine(arg);
+            TestOutput.WriteLine(arg);
         }
 
         CommandLineParser.GetLogFileName(args).ShouldBe("log file");

@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 
@@ -10,22 +12,22 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
 {
     public DatabaseUpgradeCommand(
         IUpgradeScriptSequence scriptSequence,
-        IPowerShellFactory powerShellFactory,
+        IScriptResolver scriptResolver,
         IDatabase database,
         ILogger log)
         : base(database, log)
     {
         ScriptSequence = scriptSequence;
-        PowerShellFactory = powerShellFactory;
+        ScriptResolver = scriptResolver;
     }
 
     public IUpgradeScriptSequence ScriptSequence { get; }
 
-    public IPowerShellFactory PowerShellFactory { get; }
+    public IScriptResolver ScriptResolver { get; }
 
     protected override void Greet(string databaseLocation)
     {
-        Log.Info("Upgrade {0}".FormatWith(databaseLocation));
+        Log.Info($"Upgrade {databaseLocation}");
     }
 
     protected override void ExecuteCore()
@@ -46,18 +48,18 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
             ShowMigrationSequenceFull(sequence);
         }
 
-        PowerShellFactory.InitializeIfRequested(Log);
+        ScriptResolver.InitializeEnvironment(Log, sequence.Select(i => i.Script));
 
         foreach (var step in sequence)
         {
             var timer = Stopwatch.StartNew();
             if (string.IsNullOrEmpty(step.ModuleName))
             {
-                Log.Info("execute {0} ...".FormatWith(step.Script.DisplayName));
+                Log.Info($"execute {step.Script.DisplayName} ...");
             }
             else
             {
-                Log.Info("execute {0} {1} ...".FormatWith(step.ModuleName, step.Script.DisplayName));
+                Log.Info($"execute {step.ModuleName} {step.Script.DisplayName} ...");
             }
 
             using (Log.Indent())
@@ -65,7 +67,7 @@ internal sealed class DatabaseUpgradeCommand : DatabaseCommandBase
                 Database.Execute(step.Script, step.ModuleName, step.From, step.To);
             }
 
-            Log.Info("done in {0}".FormatWith(timer.Elapsed));
+            Log.Info($"done in {timer.Elapsed}");
         }
     }
 

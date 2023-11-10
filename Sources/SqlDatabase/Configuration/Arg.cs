@@ -46,7 +46,7 @@ internal readonly struct Arg
     {
         if (IsPair)
         {
-            return "{0}={1}".FormatWith(Key, Value);
+            return $"{Key}={Value}";
         }
 
         return Value;

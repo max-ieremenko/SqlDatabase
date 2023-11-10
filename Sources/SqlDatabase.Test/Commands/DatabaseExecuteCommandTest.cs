@@ -1,7 +1,10 @@
 ﻿using System;
 using Moq;
 using NUnit.Framework;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Commands;
 
@@ -11,7 +14,7 @@ public class DatabaseExecuteCommandTest
     private DatabaseExecuteCommand _sut = null!;
     private Mock<IDatabase> _database = null!;
     private Mock<ICreateScriptSequence> _scriptSequence = null!;
-    private Mock<IPowerShellFactory> _powerShellFactory = null!;
+    private Mock<IScriptResolver> _scriptResolver = null!;
     private Mock<ILogger> _log = null!;
 
     [SetUp]
@@ -28,7 +31,7 @@ public class DatabaseExecuteCommandTest
 
         _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
-        _powerShellFactory = new Mock<IPowerShellFactory>(MockBehavior.Strict);
+        _scriptResolver = new Mock<IScriptResolver>(MockBehavior.Strict);
 
         _log = new Mock<ILogger>(MockBehavior.Strict);
         _log.Setup(l => l.Indent()).Returns((IDisposable)null!);
@@ -36,12 +39,12 @@ public class DatabaseExecuteCommandTest
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
             });
 
         _sut = new DatabaseExecuteCommand(
             _scriptSequence.Object,
-            _powerShellFactory.Object,
+            _scriptResolver.Object,
             _database.Object,
             _log.Object);
     }
@@ -55,20 +58,22 @@ public class DatabaseExecuteCommandTest
         var script2 = new Mock<IScript>(MockBehavior.Strict);
         script2.SetupGet(s => s.DisplayName).Returns("step 2");
 
-        _powerShellFactory
-            .Setup(f => f.InitializeIfRequested(_log.Object));
+        var sequence = new[] { script1.Object, script2.Object };
+
+        _scriptResolver
+            .Setup(f => f.InitializeEnvironment(_log.Object, sequence));
 
         _database
             .Setup(d => d.Execute(script1.Object))
             .Callback(() => _database.Setup(d => d.Execute(script2.Object)));
 
-        _scriptSequence.Setup(s => s.BuildSequence()).Returns(new[] { script1.Object, script2.Object });
+        _scriptSequence.Setup(s => s.BuildSequence()).Returns(sequence);
 
         _sut.Execute();
 
         _database.VerifyAll();
         script1.VerifyAll();
         script2.VerifyAll();
-        _powerShellFactory.VerifyAll();
+        _scriptResolver.VerifyAll();
     }
 }

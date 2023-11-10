@@ -6,13 +6,7 @@ task Default Update, Test, Publish
 
 Enter-Build {
     $repository = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "third-party-libraries"))
-
-    $sourceDir = $settings.sources
-    $sources = (Join-Path $sourceDir "SqlDatabase"),
-        (Join-Path $sourceDir "SqlDatabase.Test"),
-        (Join-Path $sourceDir "SqlDatabase.PowerShell"),
-        (Join-Path $sourceDir "SqlDatabase.PowerShell.Test"),
-        (Join-Path $sourceDir "SqlDatabase.Test")
+    $sources = $settings.sources
 }
 
 task Update {

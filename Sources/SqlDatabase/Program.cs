@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Log;
 
@@ -152,7 +153,7 @@ internal static class Program
 
         if (resourceName == null)
         {
-            throw new InvalidOperationException("Help file [{0}] not found.".FormatWith(fullName));
+            throw new InvalidOperationException($"Help file [{fullName}] not found.");
         }
 
         using (var stream = scope.Assembly.GetManifestResourceStream(resourceName))

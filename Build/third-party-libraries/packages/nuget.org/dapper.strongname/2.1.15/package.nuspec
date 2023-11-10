@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Dapper.StrongName</id>
+    <version>2.1.15</version>
+    <title>Dapper (Strong Named)</title>
+    <authors>Sam Saffron,Marc Gravell,Nick Craver</authors>
+    <owners>Sam Saffron,Marc Gravell,Nick Craver</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <projectUrl>https://github.com/DapperLib/Dapper</projectUrl>
+    <description>A high performance Micro-ORM supporting SQL Server, MySQL, Sqlite, SqlCE, Firebird etc..</description>
+    <releaseNotes>https://dapperlib.github.io/Dapper/</releaseNotes>
+    <copyright>2019 Stack Exchange, Inc.</copyright>
+    <tags>orm sql micro-orm</tags>
+    <repository type="git" url="https://github.com/DapperLib/Dapper" commit="cdadfa6db61c9248b6e3169cc813be3df59c095f" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1" />
+      <group targetFramework=".NETFramework5.0" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Reflection.Emit.Lightweight" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <icon>Dapper.png</icon>
+    <readme>readme.md</readme>
+  </metadata>
+</package>
