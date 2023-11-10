@@ -1,0 +1,39 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.CodeDom",
+          "Version": "6.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/runtime"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://dot.net/"
+    }
+  ]
+}

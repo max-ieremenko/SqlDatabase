@@ -1,0 +1,34 @@
+{
+  "Source": "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Reflection.Emit.ILGeneration",
+          "Version": "4.7.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "project",
+      "Code": null,
+      "HRef": "https://github.com/dotnet/corefx"
+    }
+  ]
+}

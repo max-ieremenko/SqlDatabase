@@ -3,12 +3,12 @@ System.Buffers [4.5.1](https://www.nuget.org/packages/System.Buffers/4.5.1)
 
 Used by: SqlDatabase
 
-Target frameworks: net472, net6.0, net7.0, netstandard2.0
+Target frameworks: net472, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://github.com/dotnet/corefx/blob/master/LICENSE.TXT) 
-- project license: [Unknown](https://dot.net/) , License should be verified on https://dot.net/
+- project license: [Unknown](https://dot.net/) 
 
 Description
 -----------

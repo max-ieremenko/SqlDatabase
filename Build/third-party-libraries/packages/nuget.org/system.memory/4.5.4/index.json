@@ -10,8 +10,6 @@
       "InternalOnly": false,
       "TargetFrameworks": [
         "net472",
-        "net6.0",
-        "net7.0",
         "netstandard2.0"
       ],
       "Dependencies": [
@@ -39,8 +37,7 @@
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://dot.net/",
-      "Description": "License should be verified on https://dot.net/"
+      "HRef": "https://dot.net/"
     }
   ]
 }

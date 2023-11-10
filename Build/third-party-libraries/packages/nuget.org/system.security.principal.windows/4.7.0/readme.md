@@ -8,7 +8,7 @@ Target frameworks: net472, net6.0, net7.0, netstandard2.0
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
-- project license: [Unknown](https://github.com/dotnet/corefx) , License should be verified on https://github.com/dotnet/corefx
+- project license: [Unknown](https://github.com/dotnet/corefx) 
 
 Description
 -----------

@@ -20,7 +20,23 @@
           "Version": "4.7.0"
         },
         {
+          "Name": "System.Buffers",
+          "Version": "4.5.1"
+        },
+        {
+          "Name": "System.Diagnostics.DiagnosticSource",
+          "Version": "4.7.0"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.4"
+        },
+        {
           "Name": "System.Security.Principal.Windows",
+          "Version": "4.7.0"
+        },
+        {
+          "Name": "System.Text.Encoding.CodePages",
           "Version": "4.7.0"
         }
       ]
@@ -35,8 +51,7 @@
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://github.com/dotnet/corefx",
-      "Description": "License should be verified on https://github.com/dotnet/corefx"
+      "HRef": "https://github.com/dotnet/corefx"
     }
   ]
 }

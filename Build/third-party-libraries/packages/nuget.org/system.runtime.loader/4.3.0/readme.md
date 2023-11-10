@@ -3,12 +3,12 @@ System.Runtime.Loader [4.3.0](https://www.nuget.org/packages/System.Runtime.Load
 
 Used by: SqlDatabase
 
-Target frameworks: net472, net6.0, net7.0, netstandard2.0
+Target frameworks: netstandard2.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 
 - package license: [ms-net-library](http://go.microsoft.com/fwlink/?LinkId=329770) 
-- project license: [Unknown](https://dot.net/) , License should be verified on https://dot.net/
+- project license: [Unknown](https://dot.net/) 
 
 Description
 -----------
