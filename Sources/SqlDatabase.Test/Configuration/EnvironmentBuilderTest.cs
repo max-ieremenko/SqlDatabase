@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -57,8 +56,8 @@ public class EnvironmentBuilderTest
             .WithDataBase("Data Source=.;Initial Catalog=SqlDatabaseTest", TransactionMode.None, false)
             .WithVariables(variables);
 
-        _configuration.Variables.Add(new NameValueConfigurationElement("b", "2.2"));
-        _configuration.Variables.Add(new NameValueConfigurationElement("c", "3"));
+        _configuration.Variables.Add("b", "2.2");
+        _configuration.Variables.Add("c", "3");
 
         var actual = _sut.BuildDatabase().ShouldBeOfType<Database>();
 
@@ -79,7 +78,7 @@ public class EnvironmentBuilderTest
             .WithDataBase("Data Source=.;Initial Catalog=SqlDatabaseTest", TransactionMode.None, false)
             .WithVariables(variables);
 
-        _configuration.Variables.Add(new NameValueConfigurationElement("c d", "1"));
+        _configuration.Variables.Add("c d", "1");
 
         var ex = Assert.Throws<InvalidOperationException>(() => _sut.BuildDatabase());
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.MsSql;
 using SqlDatabase.Adapter.MySql;

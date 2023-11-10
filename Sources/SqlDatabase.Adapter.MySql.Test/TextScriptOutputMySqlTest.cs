@@ -4,7 +4,6 @@ using Moq;
 using MySqlConnector;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql;
 using SqlDatabase.TestApi;
 

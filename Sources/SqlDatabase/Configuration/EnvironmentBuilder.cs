@@ -48,7 +48,7 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
     public IEnvironmentBuilder WithAssemblyScripts()
     {
         var configuration = GetConfiguration().AssemblyScript;
-        _assemblyScript = new AssemblyScriptFactory(configuration.ClassName, configuration.ClassName);
+        _assemblyScript = new AssemblyScriptFactory(configuration.ClassName, configuration.MethodName);
         return this;
     }
 
@@ -132,9 +132,9 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
         var database = new Database(adapter, GetLogger(), _transactionMode, _whatIf);
 
         var configurationVariables = GetConfiguration().Variables;
-        foreach (var name in configurationVariables.AllKeys)
+        foreach (var name in configurationVariables.Keys)
         {
-            database.Variables.SetValue(VariableSource.ConfigurationFile, name, configurationVariables[name].Value);
+            database.Variables.SetValue(VariableSource.ConfigurationFile, name, configurationVariables[name]);
         }
 
         foreach (var entry in _variables)

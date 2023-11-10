@@ -1,6 +1,4 @@
-﻿using System;
-using System.Configuration;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.FileSystem;

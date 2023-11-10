@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,19 @@ namespace SqlDatabase.TestApi;
 
 public static class ResourceReader
 {
+    public static Stream GetManifestResourceStream(string resourceName, Type? resourceAnchor = null)
+    {
+        if (resourceAnchor == null)
+        {
+            resourceAnchor = new StackTrace().GetFrame(1)!.GetMethod()!.DeclaringType;
+        }
+
+        var result = resourceAnchor!.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
+        result.ShouldNotBeNull(resourceName);
+
+        return result;
+    }
+
     public static IEnumerable<(string Name, string Input, string[] Expected)> Read(Assembly assembly, string filter)
     {
         var sources = assembly

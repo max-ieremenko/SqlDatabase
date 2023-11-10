@@ -11,14 +11,6 @@
     <ToolCommandName>SqlDatabase</ToolCommandName>
     <PackageId>SqlDatabase.GlobalTool</PackageId>
   </PropertyGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <Reference Include="System.Configuration" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
@@ -27,6 +19,7 @@
     <ProjectReference Include="..\SqlDatabase.Adapter.PgSql\SqlDatabase.Adapter.PgSql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Configuration\SqlDatabase.Configuration.csproj" />
     <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
   </ItemGroup>
 

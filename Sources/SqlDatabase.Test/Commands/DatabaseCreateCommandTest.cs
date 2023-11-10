@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Configuration;
 using Moq;
 using NUnit.Framework;
 using SqlDatabase.Adapter;
+using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
 using SqlDatabase.TestApi;

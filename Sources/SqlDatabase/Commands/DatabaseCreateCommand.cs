@@ -1,6 +1,6 @@
-﻿using System.Configuration;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using SqlDatabase.Adapter;
+using SqlDatabase.Configuration;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
 

@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 
@@ -13,7 +12,7 @@ public class AppConfigurationTest
     {
         var configuration = LoadFromResource("AppConfiguration.empty.xml");
 
-        configuration.ShouldBeNull();
+        configuration.ShouldNotBeNull();
     }
 
     [Test]
@@ -57,28 +56,24 @@ public class AppConfigurationTest
         configuration.AssemblyScript.ClassName.ShouldBe("class-name");
         configuration.AssemblyScript.MethodName.ShouldBe("method-name");
 
-        configuration.Variables.AllKeys.ShouldBe(new[] { "x", "y" });
-        configuration.Variables["x"].Value.ShouldBe("1");
-        configuration.Variables["y"].Value.ShouldBe("2");
+        configuration.Variables.Keys.ShouldBe(new[] { "x", "y" });
+        configuration.Variables["x"].ShouldBe("1");
+        configuration.Variables["y"].ShouldBe("2");
 
         configuration.MsSql.GetCurrentVersionScript.ShouldBe("get-mssql-version");
         configuration.MsSql.SetCurrentVersionScript.ShouldBe("set-mssql-version");
-        configuration.MsSql.Variables.AllKeys.ShouldBe(new[] { "mssql1" });
-        configuration.MsSql.Variables["mssql1"].Value.ShouldBe("10");
+        configuration.MsSql.Variables.Keys.ShouldBe(new[] { "mssql1" });
+        configuration.MsSql.Variables["mssql1"].ShouldBe("10");
 
         configuration.PgSql.GetCurrentVersionScript.ShouldBe("get-pgsql-version");
         configuration.PgSql.SetCurrentVersionScript.ShouldBe("set-pgsql-version");
-        configuration.PgSql.Variables.AllKeys.ShouldBe(new[] { "pgsql1" });
-        configuration.PgSql.Variables["pgsql1"].Value.ShouldBe("20");
+        configuration.PgSql.Variables.Keys.ShouldBe(new[] { "pgsql1" });
+        configuration.PgSql.Variables["pgsql1"].ShouldBe("20");
     }
 
     private static AppConfiguration LoadFromResource(string resourceName)
     {
-        using (var temp = new TempDirectory())
-        {
-            var fileName = temp.CopyFileFromResources(resourceName);
-            var configuration = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(new ExeConfigurationFileMap { ExeConfigFilename = fileName }, ConfigurationUserLevel.None);
-            return (AppConfiguration)configuration.GetSection(AppConfiguration.SectionName);
-        }
+        using var source = ResourceReader.GetManifestResourceStream(resourceName);
+        return ConfigurationReader.Read(source);
     }
 }

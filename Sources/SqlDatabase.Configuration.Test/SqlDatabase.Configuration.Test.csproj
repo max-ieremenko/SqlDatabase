@@ -2,18 +2,27 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
-    <RootNamespace>SqlDatabase</RootNamespace>
+    <RootNamespace>SqlDatabase.Configuration</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper.StrongName" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Configuration\SqlDatabase.Configuration.csproj" />
     <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
-    <ProjectReference Include="..\SqlDatabase\SqlDatabase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AppConfiguration.*.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SqlDatabase.dll.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
