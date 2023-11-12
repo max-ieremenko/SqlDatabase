@@ -3,7 +3,7 @@ Microsoft.TestPlatform.ObjectModel [17.7.2](https://www.nuget.org/packages/Micro
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net6.0, net7.0
+Target frameworks: net472, net6.0, net7.0, net8.0
 
 License: [ms-net-library](../../../../licenses/ms-net-library) 
 
