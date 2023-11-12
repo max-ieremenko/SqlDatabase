@@ -8,7 +8,7 @@ task Default `
     , BuildMySqlDatabase
 
 Enter-Build {
-    $context = Join-Path $PSScriptRoot "..\Sources\Docker"
+    $context = Join-Path $PSScriptRoot "..\..\Sources\Docker"
 }
 
 task BuildMsSqlDatabase {

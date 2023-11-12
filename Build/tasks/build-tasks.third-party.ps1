@@ -5,12 +5,12 @@ param(
 task Default Update, Test, Publish
 
 Enter-Build {
-    $repository = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "third-party-libraries"))
+    $repository = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "../third-party-libraries"))
     $sources = $settings.sources
 }
 
 task Update {
-    Update-ThirdPartyLibrariesRepository -AppName "SqlDatabase" -Source $sources -Repository $repository
+    Update-ThirdPartyLibrariesRepository -AppName "SqlDatabase" -Source $sources -Repository $repository -GithubPersonalAccessToken $settings.githubToken
 }
 
 task Test {

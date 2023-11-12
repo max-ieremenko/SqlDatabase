@@ -5,7 +5,7 @@ param(
 
 task Default RunContainers, CopyModule, PublishModule, RunTest
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 $containerId = ""
 $connectionString = ""

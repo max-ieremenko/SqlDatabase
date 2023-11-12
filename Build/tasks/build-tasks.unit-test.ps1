@@ -12,7 +12,7 @@ param(
 
 task Default RunContainers, UpdateConfig, RunTests
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 $containerIds = @()
 $mssqlConnectionString = ""

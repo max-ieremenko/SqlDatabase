@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - 'release/**'
+      - 'feature/**'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
+      - master
+      - 'release/**'
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    name: win-build-and-test
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      shell: pwsh
+      run: ./Build/install-dependencies.ps1
+
+    - name: Dotnet info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: Build
+      shell: pwsh
+      run: ./Build/build.ps1 -Mode "github" -GithubToken "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: packages
+        path: |
+          .\bin\artifacts\*.nupkg
+          .\bin\artifacts\*.zip
+        if-no-files-found: error
