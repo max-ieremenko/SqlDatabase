@@ -13,6 +13,7 @@
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
   <PropertyGroup>

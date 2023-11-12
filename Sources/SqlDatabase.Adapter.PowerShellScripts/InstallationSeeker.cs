@@ -131,7 +131,9 @@ internal static class InstallationSeeker
 
     private static bool IsCompatibleVersion(Version version)
     {
-#if NET7_0
+#if NET8_0
+        return version < new Version("7.5");
+#elif NET7_0
         return version < new Version("7.4");
 #elif NET6_0
         return version < new Version("7.3");

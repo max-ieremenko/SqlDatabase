@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net6.0;net7.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net472;net6.0;net7.0;net8.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net472'">
@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 

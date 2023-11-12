@@ -1,8 +1,10 @@
 task Default `
     BuildDotnetSdk60 `
-    , BuildDotnetRuntime60 `
     , BuildDotnetSdk70 `
+    , BuildDotnetSdk80 `
+    , BuildDotnetRuntime60 `
     , BuildDotnetRuntime70 `
+    , BuildDotnetRuntime80 `
     , BuildMsSqlDatabase `
     , BuildPgSqlDatabase `
     , BuildMySqlDatabase
@@ -77,6 +79,26 @@ task BuildDotnetRuntime70 {
         docker build `
             -f $dockerfile `
             -t sqldatabase/dotnet_pwsh:7.0-runtime `
+            .
+    }
+}
+
+task BuildDotnetSdk80 {
+    $dockerfile = Join-Path $context "image-dotnet-sdk-8.0.dockerfile"
+    exec {
+        docker build `
+            -f $dockerfile `
+            -t sqldatabase/dotnet_pwsh:8.0-sdk `
+            .
+    }
+}
+
+task BuildDotnetRuntime80 {
+    $dockerfile = Join-Path $context "image-dotnet-runtime-8.0.dockerfile"
+    exec {
+        docker build `
+            -f $dockerfile `
+            -t sqldatabase/dotnet_pwsh:8.0-runtime `
             .
     }
 }
