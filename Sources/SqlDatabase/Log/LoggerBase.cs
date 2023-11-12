@@ -1,17 +1,18 @@
 ﻿using System;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Log;
 
 internal abstract class LoggerBase : ILogger
 {
-    private string _indentation;
+    private string? _indentation;
 
     public void Error(string message)
     {
         WriteError(message);
     }
 
-    public void Info(string message)
+    public void Info(string? message)
     {
         WriteInfo(_indentation + message);
     }

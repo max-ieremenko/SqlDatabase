@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Log;
 
@@ -70,7 +71,7 @@ internal static class Program
         }
     }
 
-    private static ICommandLine ResolveCommandLine(CommandLineFactory factory, ILogger logger)
+    private static ICommandLine? ResolveCommandLine(CommandLineFactory factory, ILogger logger)
     {
         try
         {
@@ -84,7 +85,7 @@ internal static class Program
         return null;
     }
 
-    private static CommandLineFactory ResolveFactory(string[] args, ILogger logger)
+    private static CommandLineFactory? ResolveFactory(string[] args, ILogger logger)
     {
         try
         {
@@ -105,7 +106,7 @@ internal static class Program
         return null;
     }
 
-    private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger combined)
+    private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger? combined)
     {
         combined = null;
         var fileName = CommandLineParser.GetLogFileName(args);
@@ -117,7 +118,7 @@ internal static class Program
         ILogger fileLogger;
         try
         {
-            fileLogger = new FileLogger(fileName);
+            fileLogger = new FileLogger(fileName!);
         }
         catch (Exception ex)
         {
@@ -131,10 +132,10 @@ internal static class Program
 
     private static string GetHelpFileName(string commandName)
     {
-#if NET452
-        const string Runtime = ".net452";
+#if NET472
+        const string Runtime = ".net472";
 #else
-        const string Runtime = null;
+        const string? Runtime = null;
 #endif
         return "CommandLine." + commandName + Runtime + ".txt";
     }
@@ -152,11 +153,11 @@ internal static class Program
 
         if (resourceName == null)
         {
-            throw new InvalidOperationException("Help file [{0}] not found.".FormatWith(fullName));
+            throw new InvalidOperationException($"Help file [{fullName}] not found.");
         }
 
         using (var stream = scope.Assembly.GetManifestResourceStream(resourceName))
-        using (var reader = new StreamReader(stream))
+        using (var reader = new StreamReader(stream!))
         {
             return reader.ReadToEnd();
         }

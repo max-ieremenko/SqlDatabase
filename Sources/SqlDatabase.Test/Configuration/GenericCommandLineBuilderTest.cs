@@ -1,13 +1,13 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration;
 
 [TestFixture]
 public class GenericCommandLineBuilderTest
 {
-    private GenericCommandLineBuilder _sut;
+    private GenericCommandLineBuilder _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -33,7 +33,7 @@ public class GenericCommandLineBuilderTest
 
         foreach (var arg in args)
         {
-            Console.WriteLine(arg);
+            TestOutput.WriteLine(arg);
         }
 
         CommandLineParser.GetLogFileName(args).ShouldBe("log file");

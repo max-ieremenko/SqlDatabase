@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
-using SqlDatabase.IO;
-using SqlDatabase.Scripts;
+using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Configuration;
 
 internal abstract class CommandLineBase : ICommandLine
 {
-    public string ConnectionString { get; set; }
+    public string? ConnectionString { get; set; }
 
     public IList<IFileSystemInfo> Scripts { get; } = new List<IFileSystemInfo>();
 
     public IDictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-    public string ConfigurationFile { get; set; }
+    public string? ConfigurationFile { get; set; }
 
     public IFileSystemFactory FileSystemFactory { get; set; } = new FileSystemFactory();
 
@@ -28,70 +27,18 @@ internal abstract class CommandLineBase : ICommandLine
 
         if (string.IsNullOrWhiteSpace(ConnectionString))
         {
-            throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Database));
+            throw new InvalidCommandLineException($"Options {Arg.Database} is not specified.");
         }
 
         if (Scripts.Count == 0)
         {
-            throw new InvalidCommandLineException("Options {0} is not specified.".FormatWith(Arg.Scripts));
+            throw new InvalidCommandLineException($"Options {Arg.Scripts} is not specified.");
         }
 
         Validate();
     }
 
     public abstract ICommand CreateCommand(ILogger logger);
-
-    internal Database CreateDatabase(ILogger logger, IConfigurationManager configuration, TransactionMode transaction, bool whatIf)
-    {
-        IDatabaseAdapter adapter;
-        try
-        {
-            adapter = DatabaseAdapterFactory.CreateAdapter(ConnectionString, configuration.SqlDatabase, logger);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidCommandLineException(Arg.Database, "Invalid connection string value.", ex);
-        }
-
-        var database = new Database
-        {
-            Adapter = adapter,
-            Log = logger,
-            Transaction = transaction,
-            WhatIf = whatIf
-        };
-
-        var configurationVariables = configuration.SqlDatabase.Variables;
-        foreach (var name in configurationVariables.AllKeys)
-        {
-            database.Variables.SetValue(VariableSource.ConfigurationFile, name, configurationVariables[name].Value);
-        }
-
-        foreach (var entry in Variables)
-        {
-            database.Variables.SetValue(VariableSource.CommandLine, entry.Key, entry.Value);
-        }
-
-        var invalidNames = database
-            .Variables
-            .GetNames()
-            .OrderBy(i => i)
-            .Where(i => !SqlScriptVariableParser.IsValidVariableName(i))
-            .Select(i => "[{0}]".FormatWith(i))
-            .ToList();
-
-        if (invalidNames.Count == 1)
-        {
-            throw new InvalidOperationException("The variable name {0} is invalid.".FormatWith(invalidNames[0]));
-        }
-
-        if (invalidNames.Count > 1)
-        {
-            throw new InvalidOperationException("The following variable names are invalid: {0}.".FormatWith(string.Join(", ", invalidNames)));
-        }
-
-        return database;
-    }
 
     protected internal virtual void Validate()
     {
@@ -122,10 +69,15 @@ internal abstract class CommandLineBase : ICommandLine
         return false;
     }
 
-    protected void SetInLineScript(string value)
+    protected void SetInLineScript(string? value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            return;
+        }
+
         var index = Scripts.Count + 1;
-        var script = FileSystemFactory.FromContent("from{0}.sql".FormatWith(index), value);
+        var script = FileSystemFactory.FromContent($"from{index}.sql", value!);
 
         Scripts.Add(script);
     }
@@ -143,12 +95,12 @@ internal abstract class CommandLineBase : ICommandLine
         }
         catch (Exception ex)
         {
-            throw new InvalidCommandLineException("Fail to parse option [{0}].".FormatWith(arg), ex);
+            throw new InvalidCommandLineException($"Fail to parse option [{arg}].", ex);
         }
 
         if (!isParsed)
         {
-            throw new InvalidCommandLineException("Unknown option [{0}].".FormatWith(arg));
+            throw new InvalidCommandLineException($"Unknown option [{arg}].");
         }
     }
 
@@ -166,7 +118,7 @@ internal abstract class CommandLineBase : ICommandLine
             return true;
         }
 
-        if (arg.Key.StartsWith(Arg.Variable, StringComparison.OrdinalIgnoreCase))
+        if (arg.Key != null && arg.Key.StartsWith(Arg.Variable, StringComparison.OrdinalIgnoreCase))
         {
             SetVariable(arg.Key.Substring(Arg.Variable.Length), arg.Value);
             return true;
@@ -181,28 +133,28 @@ internal abstract class CommandLineBase : ICommandLine
         return false;
     }
 
-    private void SetScripts(string value)
+    private void SetScripts(string? value)
     {
         Scripts.Add(FileSystemFactory.FileSystemInfoFromPath(value));
     }
 
-    private void SetVariable(string name, string value)
+    private void SetVariable(string? name, string? value)
     {
         name = name?.Trim();
         if (string.IsNullOrEmpty(name))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Invalid variable name [{0}].".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Invalid variable name [{name}].");
         }
 
-        if (Variables.ContainsKey(name))
+        if (Variables.ContainsKey(name!))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Variable with name [{0}] is duplicated.".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Variable with name [{name}] is duplicated.");
         }
 
-        Variables.Add(name, value);
+        Variables.Add(name!, value ?? string.Empty);
     }
 
-    private void SetConfigurationFile(string configurationFile)
+    private void SetConfigurationFile(string? configurationFile)
     {
         ConfigurationFile = configurationFile;
     }

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0;net7.0;net8.0;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net472'">
+    <PackageReference Include="PowerShellStandard.Library" VersionOverride="5.1.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.WSMan.Runtime" VersionOverride="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter\SqlDatabase.Adapter.csproj" />
+  </ItemGroup>
+
+</Project>

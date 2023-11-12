@@ -2,28 +2,34 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.Scripts;
 
 internal sealed class Database : IDatabase
 {
-    public Database()
+    public Database(IDatabaseAdapter adapter, ILogger log, TransactionMode transaction, bool whatIf)
     {
+        Adapter = adapter;
+        Log = log;
+        Transaction = transaction;
+        WhatIf = whatIf;
         Variables = new Variables();
     }
 
-    public IDatabaseAdapter Adapter { get; set; }
+    public IDatabaseAdapter Adapter { get; }
 
-    public ILogger Log { get; set; }
+    public ILogger Log { get; }
 
-    public TransactionMode Transaction { get; set; }
+    public TransactionMode Transaction { get; internal set; }
 
-    public bool WhatIf { get; set; }
+    public bool WhatIf { get; internal set; }
 
     internal Variables Variables { get; }
 
-    public Version GetCurrentVersion(string moduleName)
+    public Version GetCurrentVersion(string? moduleName)
     {
         Variables.ModuleName = moduleName;
 
@@ -45,7 +51,7 @@ internal sealed class Database : IDatabase
             command.CommandText = Adapter.GetServerVersionSelectScript();
 
             connection.Open();
-            return Convert.ToString(command.ExecuteScalar());
+            return Convert.ToString(command.ExecuteScalar())!;
         }
     }
 
@@ -111,16 +117,13 @@ internal sealed class Database : IDatabase
         }
         catch (DbException ex)
         {
-            throw new InvalidOperationException("Fail to update the version, script: {0}".FormatWith(script), ex);
+            throw new InvalidOperationException($"Fail to update the version, script: {script}", ex);
         }
 
         var checkVersion = ReadCurrentVersion(command);
         if (checkVersion != targetVersion)
         {
-            throw new InvalidOperationException("Set version script works incorrectly: expected version is {0}, but actual is {1}. Script: {2}".FormatWith(
-                targetVersion,
-                checkVersion,
-                script));
+            throw new InvalidOperationException($"Set version script works incorrectly: expected version is {targetVersion}, but actual is {checkVersion}. Script: {script}");
         }
     }
 
@@ -129,24 +132,24 @@ internal sealed class Database : IDatabase
         var script = new SqlScriptVariableParser(Variables).ApplyVariables(Adapter.GetVersionSelectScript());
         command.CommandText = script;
 
-        string version;
+        string? version;
         try
         {
             version = Convert.ToString(command.ExecuteScalar());
         }
         catch (DbException ex)
         {
-            throw new InvalidOperationException("Fail to read the version, script: {0}".FormatWith(script), ex);
+            throw new InvalidOperationException($"Fail to read the version, script: {script}", ex);
         }
 
         if (!Version.TryParse(version, out var result))
         {
             if (string.IsNullOrEmpty(Variables.ModuleName))
             {
-                throw new InvalidOperationException("The version [{0}] of database is invalid.".FormatWith(version));
+                throw new InvalidOperationException($"The version [{version}] of database is invalid.");
             }
 
-            throw new InvalidOperationException("The version [{0}] of module [{1}] is invalid.".FormatWith(version, Variables.ModuleName));
+            throw new InvalidOperationException($"The version [{version}] of module [{Variables.ModuleName}] is invalid.");
         }
 
         return result;
@@ -183,7 +186,7 @@ internal sealed class Database : IDatabase
             command.CommandTimeout = 0;
             connection.Open();
 
-            command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName);
+            command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName!);
             var value = command.ExecuteScalar();
 
             useMaster = value == null || Convert.IsDBNull(value);

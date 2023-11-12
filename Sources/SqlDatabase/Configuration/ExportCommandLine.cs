@@ -1,41 +1,38 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
+using SqlDatabase.Adapter;
+using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Commands;
-using SqlDatabase.Export;
-using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration;
 
 internal sealed class ExportCommandLine : CommandLineBase
 {
-    public string DestinationTableName { get; set; }
+    public string? DestinationTableName { get; set; }
 
-    public string DestinationFileName { get; set; }
+    public string? DestinationFileName { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger)
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+
+    internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {
-        var configuration = new ConfigurationManager();
-        configuration.LoadFrom(ConfigurationFile);
+        builder
+            .WithLogger(logger)
+            .WithConfiguration(ConfigurationFile)
+            .WithVariables(Variables)
+            .WithDataBase(ConnectionString!, TransactionMode.None, false);
 
-        var database = CreateDatabase(logger, configuration, TransactionMode.None, false);
+        var database = builder.BuildDatabase();
+        var scriptResolver = builder.BuildScriptResolver();
+        var sequence = builder.BuildCreateSequence(Scripts);
 
-        var sequence = new CreateScriptSequence
+        return new DatabaseExportCommand(
+            sequence,
+            scriptResolver,
+            CreateOutput(),
+            database,
+            WrapLogger(logger))
         {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            Sources = Scripts.ToArray()
-        };
-
-        return new DatabaseExportCommand
-        {
-            Log = WrapLogger(logger),
-            OpenOutput = CreateOutput(),
-            Database = database,
-            ScriptSequence = sequence,
             DestinationTableName = DestinationTableName
         };
     }

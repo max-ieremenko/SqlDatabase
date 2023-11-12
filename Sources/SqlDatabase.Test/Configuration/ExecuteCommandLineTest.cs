@@ -1,19 +1,18 @@
 ﻿using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
-using SqlDatabase.IO;
-using SqlDatabase.Scripts;
-using SqlDatabase.TestApi;
+using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Configuration;
 
 [TestFixture]
 public class ExecuteCommandLineTest
 {
-    private Mock<ILogger> _log;
-    private Mock<IFileSystemFactory> _fs;
-    private ExecuteCommandLine _sut;
+    private Mock<ILogger> _log = null!;
+    private Mock<IFileSystemFactory> _fs = null!;
+    private ExecuteCommandLine _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -74,20 +73,28 @@ public class ExecuteCommandLineTest
     public void CreateCommand()
     {
         _sut.WhatIf = true;
-        _sut.ConnectionString = MsSqlQuery.ConnectionString;
+        _sut.ConnectionString = "connection string";
+        _sut.Transaction = TransactionMode.PerStep;
         _sut.UsePowerShell = @"c:\PowerShell";
 
+        var builder = new EnvironmentBuilderMock()
+            .WithLogger(_log.Object)
+            .WithConfiguration(_sut.ConfigurationFile)
+            .WithPowerShellScripts(_sut.UsePowerShell)
+            .WithAssemblyScripts()
+            .WithVariables(_sut.Variables)
+            .WithDataBase(_sut.ConnectionString, _sut.Transaction, _sut.WhatIf)
+            .WithCreateSequence(_sut.Scripts);
+
         var actual = _sut
-            .CreateCommand(_log.Object)
+            .CreateCommand(_log.Object, builder.Build())
             .ShouldBeOfType<DatabaseExecuteCommand>();
 
+        builder.VerifyAll();
+
         actual.Log.ShouldBe(_log.Object);
-        var database = actual.Database.ShouldBeOfType<Database>();
-        database.WhatIf.ShouldBeTrue();
-
-        var scriptFactory = actual.ScriptSequence.ShouldBeOfType<CreateScriptSequence>().ScriptFactory.ShouldBeOfType<ScriptFactory>();
-        scriptFactory.PowerShellFactory.InstallationPath.ShouldBe(@"c:\PowerShell");
-
-        actual.PowerShellFactory.ShouldBe(scriptFactory.PowerShellFactory);
+        actual.Database.ShouldBe(builder.Database);
+        actual.ScriptResolver.ShouldBe(builder.ScriptResolver);
+        actual.ScriptSequence.ShouldBe(builder.CreateSequence);
     }
 }

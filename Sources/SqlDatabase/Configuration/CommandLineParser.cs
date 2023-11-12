@@ -5,7 +5,7 @@ namespace SqlDatabase.Configuration;
 
 internal sealed class CommandLineParser
 {
-    public static string GetLogFileName(IList<string> args)
+    public static string? GetLogFileName(IList<string> args)
     {
         for (var i = 0; i < args.Count; i++)
         {
@@ -27,7 +27,7 @@ internal sealed class CommandLineParser
         {
             if (!ParseArg(arg, out var value))
             {
-                throw new InvalidCommandLineException("Invalid option [{0}].".FormatWith(arg));
+                throw new InvalidCommandLineException($"Invalid option [{arg}].");
             }
 
             if (!IsLog(value))
@@ -63,7 +63,7 @@ internal sealed class CommandLineParser
         return true;
     }
 
-    private static bool SplitKeyValue(string keyValue, int offset, out string key, out string value)
+    private static bool SplitKeyValue(string keyValue, int offset, out string key, out string? value)
     {
         keyValue = keyValue.Substring(offset);
         key = keyValue;

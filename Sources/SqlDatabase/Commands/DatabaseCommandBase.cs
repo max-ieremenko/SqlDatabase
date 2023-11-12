@@ -1,12 +1,19 @@
-﻿using SqlDatabase.Scripts;
+﻿using SqlDatabase.Adapter;
+using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Commands;
 
 internal abstract class DatabaseCommandBase : ICommand
 {
-    public ILogger Log { get; set; }
+    protected DatabaseCommandBase(IDatabase database, ILogger log)
+    {
+        Database = database;
+        Log = log;
+    }
 
-    public IDatabase Database { get; set; }
+    public ILogger Log { get; }
+
+    public IDatabase Database { get; }
 
     public void Execute()
     {

@@ -1,93 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(GlobalTool)' != true">net452;netcoreapp3.1;net5.0;net6.0;net7.0;netstandard2.0</TargetFrameworks>
-	<TargetFrameworks Condition="'$(GlobalTool)' == true">netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
-  </PropertyGroup>
+    <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net7.0;net8.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0;net8.0</TargetFrameworks>
 
-  <PropertyGroup>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
     <OutputPath>..\..\bin\SqlDatabase</OutputPath>
-  </PropertyGroup>
 
-  <PropertyGroup>
     <ToolCommandName>SqlDatabase</ToolCommandName>
     <PackageId>SqlDatabase.GlobalTool</PackageId>
-
-    <Authors>Max Ieremenko</Authors>
-    <Description>SqlDatabase is a tool for MSSQL Server, PostgreSQL and MySQL, allows executing scripts, database migrations and data export.</Description>
-    <PackageReleaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/max-ieremenko/SqlDatabase</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/max-ieremenko/SqlDatabase</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
-    <PackageIcon>icon-32.png</PackageIcon>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>(C) 2018-2022 Max Ieremenko.</Copyright>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>sqlserver database postgresql mysql mysql-database sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</PackageTags>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.MsSql\SqlDatabase.Adapter.MsSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.MySql\SqlDatabase.Adapter.MySql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.PgSql\SqlDatabase.Adapter.PgSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Configuration\SqlDatabase.Configuration.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)' != 'Debug'" Label="Packaging">
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
     <None Include="..\..\icon-32.png" Pack="true" PackagePath="icon-32.png" />
     <Content Include="..\..\bin\ThirdPartyNotices.txt" PackagePath="ThirdPartyNotices.txt" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <EmbeddedResource Include="Configuration\CommandLine.export.net452.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.execute.net452.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net452.txt" />
-    <EmbeddedResource Include="Configuration\CommandLine.create.net452.txt" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <EmbeddedResource Include="Configuration\CommandLine.export.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.execute.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.upgrade.net472.txt" />
+    <EmbeddedResource Include="Configuration\CommandLine.create.net472.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
     <EmbeddedResource Include="Configuration\CommandLine.export.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.execute.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.upgrade.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.create.txt" />
     <EmbeddedResource Include="Configuration\CommandLine.txt" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Management.Automation">
-      <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.0.5" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.2.0" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="Microsoft.WSMan.Runtime" Version="7.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net452'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
-    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="1.3.10" />
-    <PackageReference Include="Npgsql" Version="4.0.11" />
-  </ItemGroup>
-
 </Project>

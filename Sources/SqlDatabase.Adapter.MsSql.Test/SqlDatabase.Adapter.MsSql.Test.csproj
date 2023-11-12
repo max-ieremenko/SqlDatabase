@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
+    <RootNamespace>SqlDatabase.Adapter.MsSql</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter.MsSql\SqlDatabase.Adapter.MsSql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MsSqlTextReaderTest.Go\*.sql" />
+  </ItemGroup>
+</Project>

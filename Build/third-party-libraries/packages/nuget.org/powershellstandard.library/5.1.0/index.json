@@ -1,4 +1,5 @@
 {
+  "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,13 +9,11 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net472",
         "net6.0",
         "net7.0",
-        "net452",
-        "netstandard2.0",
-        "net472"
+        "net8.0",
+        "netstandard2.0"
       ]
     }
   ],
@@ -22,14 +21,12 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt",
-      "Description": null
+      "HRef": "https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt"
     },
     {
       "Subject": "project",
       "Code": "MIT",
-      "HRef": "https://github.com/PowerShell/PowerShellStandard",
-      "Description": null
+      "HRef": "https://github.com/PowerShell/PowerShellStandard"
     }
   ]
 }

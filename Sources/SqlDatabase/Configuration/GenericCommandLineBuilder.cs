@@ -49,20 +49,20 @@ internal sealed class GenericCommandLineBuilder
         return this;
     }
 
-    public GenericCommandLineBuilder SetVariable(string name, string value)
+    public GenericCommandLineBuilder SetVariable(string? name, string? value)
     {
         name = name?.Trim();
         if (string.IsNullOrEmpty(name))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Invalid variable name [{0}].".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Invalid variable name [{name}].");
         }
 
-        if (Line.Variables.ContainsKey(name))
+        if (Line.Variables.ContainsKey(name!))
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Variable with name [{0}] is duplicated.".FormatWith(name));
+            throw new InvalidCommandLineException(Arg.Variable, $"Variable with name [{name}] is duplicated.");
         }
 
-        Line.Variables.Add(name, value);
+        Line.Variables.Add(name!, value ?? string.Empty);
 
         return this;
     }
@@ -72,25 +72,25 @@ internal sealed class GenericCommandLineBuilder
         if (!CommandLineParser.ParseArg(Arg.Sign + nameValue, out var arg)
             || !arg.IsPair)
         {
-            throw new InvalidCommandLineException(Arg.Variable, "Invalid variable value definition [{0}].".FormatWith(nameValue));
+            throw new InvalidCommandLineException(Arg.Variable, $"Invalid variable value definition [{nameValue}].");
         }
 
         return SetVariable(arg.Key, arg.Value);
     }
 
-    public GenericCommandLineBuilder SetConfigurationFile(string configurationFile)
+    public GenericCommandLineBuilder SetConfigurationFile(string? configurationFile)
     {
         Line.ConfigurationFile = configurationFile;
         return this;
     }
 
-    public GenericCommandLineBuilder SetExportToTable(string name)
+    public GenericCommandLineBuilder SetExportToTable(string? name)
     {
         Line.ExportToTable = name;
         return this;
     }
 
-    public GenericCommandLineBuilder SetExportToFile(string fileName)
+    public GenericCommandLineBuilder SetExportToFile(string? fileName)
     {
         Line.ExportToFile = fileName;
         return this;
@@ -108,7 +108,7 @@ internal sealed class GenericCommandLineBuilder
         return this;
     }
 
-    public GenericCommandLineBuilder SetLogFileName(string fileName)
+    public GenericCommandLineBuilder SetLogFileName(string? fileName)
     {
         Line.LogFileName = fileName;
         return this;
@@ -125,8 +125,8 @@ internal sealed class GenericCommandLineBuilder
 
         var result = new List<string>
         {
-            cmd.Command,
-            CombineArg(Arg.Database, cmd.Connection)
+            cmd.Command!,
+            CombineArg(Arg.Database, cmd.Connection!)
         };
 
         foreach (var script in cmd.Scripts)
@@ -146,17 +146,17 @@ internal sealed class GenericCommandLineBuilder
 
         if (!string.IsNullOrEmpty(cmd.ConfigurationFile))
         {
-            result.Add(CombineArg(Arg.Configuration, cmd.ConfigurationFile));
+            result.Add(CombineArg(Arg.Configuration, cmd.ConfigurationFile!));
         }
 
         if (!string.IsNullOrEmpty(cmd.ExportToTable))
         {
-            result.Add(CombineArg(Arg.ExportToTable, cmd.ExportToTable));
+            result.Add(CombineArg(Arg.ExportToTable, cmd.ExportToTable!));
         }
 
         if (!string.IsNullOrEmpty(cmd.ExportToFile))
         {
-            result.Add(CombineArg(Arg.ExportToFile, cmd.ExportToFile));
+            result.Add(CombineArg(Arg.ExportToFile, cmd.ExportToFile!));
         }
 
         foreach (var entry in cmd.Variables)
@@ -176,7 +176,7 @@ internal sealed class GenericCommandLineBuilder
 
         if (!string.IsNullOrEmpty(cmd.LogFileName))
         {
-            result.Add(CombineArg(Arg.Log, cmd.LogFileName));
+            result.Add(CombineArg(Arg.Log, cmd.LogFileName!));
         }
 
         return result.ToArray();

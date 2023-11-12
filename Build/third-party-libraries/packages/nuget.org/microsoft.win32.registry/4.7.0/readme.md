@@ -3,12 +3,12 @@ Microsoft.Win32.Registry [4.7.0](https://www.nuget.org/packages/Microsoft.Win32.
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net472, net6.0, net7.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
-- project license: [Unknown](https://github.com/dotnet/corefx) , License should be verified on https://github.com/dotnet/corefx
+- project license: [Unknown](https://github.com/dotnet/corefx) 
 
 Description
 -----------
@@ -28,11 +28,13 @@ Remarks
 no remarks
 
 
-Dependencies 2
+Dependencies 4
 -----------
 
 |Name|Version|
 |----------|:----|
+|[System.Buffers](../../../../packages/nuget.org/system.buffers/4.5.1)|4.5.1|
+|[System.Memory](../../../../packages/nuget.org/system.memory/4.5.4)|4.5.4|
 |[System.Security.AccessControl](../../../../packages/nuget.org/system.security.accesscontrol/4.7.0)|4.7.0|
 |[System.Security.Principal.Windows](../../../../packages/nuget.org/system.security.principal.windows/4.7.0)|4.7.0|
 

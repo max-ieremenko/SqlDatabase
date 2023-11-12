@@ -3,8 +3,7 @@ using System.Runtime.Serialization;
 
 namespace SqlDatabase.Configuration;
 
-[Serializable]
-public class InvalidCommandLineException : SystemException
+public sealed class InvalidCommandLineException : SystemException
 {
     public InvalidCommandLineException()
     {
@@ -32,18 +31,5 @@ public class InvalidCommandLineException : SystemException
         Argument = argument;
     }
 
-    protected InvalidCommandLineException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-        Argument = info.GetString(nameof(Argument));
-    }
-
-    public string Argument { get; }
-
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-
-        info.AddValue(nameof(Argument), Argument);
-    }
+    public string? Argument { get; }
 }

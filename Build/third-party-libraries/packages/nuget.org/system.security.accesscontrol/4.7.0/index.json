@@ -1,4 +1,5 @@
 {
+  "Source": "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -8,11 +9,10 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "netcoreapp3.1",
-        "net5.0",
+        "net472",
         "net6.0",
         "net7.0",
-        "net452",
+        "net8.0",
         "netstandard2.0"
       ],
       "Dependencies": [
@@ -27,14 +27,12 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://licenses.nuget.org/MIT",
-      "Description": null
+      "HRef": "https://licenses.nuget.org/MIT"
     },
     {
       "Subject": "project",
       "Code": null,
-      "HRef": "https://github.com/dotnet/corefx",
-      "Description": "License should be verified on https://github.com/dotnet/corefx"
+      "HRef": "https://github.com/dotnet/corefx"
     }
   ]
 }

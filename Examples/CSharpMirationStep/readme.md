@@ -3,13 +3,13 @@
 
 Any assembly script is
 
-- .exe or .dll for target framework is 4.5.2+
-- .dll for .net 7.0, 6.0, 5.0 or .net core 3.1
+- .exe or .dll for target framework is 4.7.2+
+- .dll for .net 6.0+
 - has exactly one class with script implementation
 
 This project is an example of script implementation.
-The build output is 2.1_2.2.dll with target framework 4.5.2.
-Due to the current dependencies, 2.1_2.2.dll works well on .net 7.0 - .net core 3.1.
+The build output is 2.1_2.2.dll with target framework 4.7.2.
+Due to the current dependencies, 2.1_2.2.dll works well on .net 6.0+.
 
 ## Script source
 
@@ -81,7 +81,7 @@ After the migration step is finished or failed
 - the domain will be unloaded
 - temporary directory will be deleted
 
-## Runtime .NET Core
+## Runtime .NET
 
 At runtime the assembly will be loaded into the current application domain (`AssemblyLoadContext.Default`).
 

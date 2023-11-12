@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
+    <RootNamespace>SqlDatabase.Adapter.AssemblyScripts</RootNamespace>
+    <NoWarn>NU1702</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="System.Data.SqlClient" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Adapter.AssemblyScripts\SqlDatabase.Adapter.AssemblyScripts.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
+    <ProjectReference Include="..\..\Examples\CSharpMirationStep\CSharpMirationStep.csproj" />
+  </ItemGroup>
+
+</Project>

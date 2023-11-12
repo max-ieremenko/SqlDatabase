@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
+    <RootNamespace>SqlDatabase.Sequence</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
+    <ProjectReference Include="..\SqlDatabase.TestApi\SqlDatabase.TestApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DependencyParserTest\*.sql" />
+    <EmbeddedResource Include="UpgradeScriptSequenceTest\*.json" />
+  </ItemGroup>
+</Project>

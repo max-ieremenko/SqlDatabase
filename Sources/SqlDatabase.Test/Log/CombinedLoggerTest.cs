@@ -2,15 +2,16 @@
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Log;
 
 [TestFixture]
 public class CombinedLoggerTest
 {
-    private CombinedLogger _sut;
-    private Mock<IDisposableLogger> _logger1;
-    private Mock<IDisposableLogger> _logger2;
+    private CombinedLogger _sut = null!;
+    private Mock<IDisposableLogger> _logger1 = null!;
+    private Mock<IDisposableLogger> _logger2 = null!;
 
     public interface IDisposableLogger : ILogger, IDisposable
     {

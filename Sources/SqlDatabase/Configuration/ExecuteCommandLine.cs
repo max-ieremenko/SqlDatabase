@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
+using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
-using SqlDatabase.Scripts;
-using SqlDatabase.Scripts.PowerShellInternal;
 
 namespace SqlDatabase.Configuration;
 
@@ -10,36 +8,27 @@ internal sealed class ExecuteCommandLine : CommandLineBase
 {
     public TransactionMode Transaction { get; set; }
 
-    public string UsePowerShell { get; set; }
+    public string? UsePowerShell { get; set; }
 
     public bool WhatIf { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger)
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+
+    internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {
-        var configuration = new ConfigurationManager();
-        configuration.LoadFrom(ConfigurationFile);
+        builder
+            .WithLogger(logger)
+            .WithConfiguration(ConfigurationFile)
+            .WithPowerShellScripts(UsePowerShell)
+            .WithAssemblyScripts()
+            .WithVariables(Variables)
+            .WithDataBase(ConnectionString!, Transaction, WhatIf);
 
-        var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
-        var database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf);
+        var database = builder.BuildDatabase();
+        var scriptResolver = builder.BuildScriptResolver();
+        var sequence = builder.BuildCreateSequence(Scripts);
 
-        var sequence = new CreateScriptSequence
-        {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                PowerShellFactory = powerShellFactory,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            Sources = Scripts.ToArray()
-        };
-
-        return new DatabaseExecuteCommand
-        {
-            Log = logger,
-            Database = database,
-            ScriptSequence = sequence,
-            PowerShellFactory = powerShellFactory
-        };
+        return new DatabaseExecuteCommand(sequence, scriptResolver, database, logger);
     }
 
     protected override bool ParseArg(Arg arg)
@@ -56,7 +45,7 @@ internal sealed class ExecuteCommandLine : CommandLineBase
             return true;
         }
 
-#if NETCOREAPP || NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER
         if (Arg.UsePowerShell.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
         {
             UsePowerShell = arg.Value;
@@ -72,11 +61,11 @@ internal sealed class ExecuteCommandLine : CommandLineBase
         return false;
     }
 
-    private void SetTransaction(string modeName)
+    private void SetTransaction(string? modeName)
     {
         if (!Enum.TryParse<TransactionMode>(modeName, true, out var mode))
         {
-            throw new InvalidCommandLineException(Arg.Transaction, "Unknown transaction mode [{0}].".FormatWith(modeName));
+            throw new InvalidCommandLineException(Arg.Transaction, $"Unknown transaction mode [{modeName}].");
         }
 
         Transaction = mode;

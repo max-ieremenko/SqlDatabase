@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.Internal;
+using SqlDatabase.TestApi;
 using Command = System.Management.Automation.Runspaces.Command;
 
 namespace SqlDatabase.PowerShell.TestApi;
@@ -17,8 +18,8 @@ namespace SqlDatabase.PowerShell.TestApi;
 public abstract class SqlDatabaseCmdLetTest<TSubject>
 {
     private readonly IList<GenericCommandLine> _commandLines = new List<GenericCommandLine>();
-    private Runspace _runSpace;
-    private System.Management.Automation.PowerShell _powerShell;
+    private Runspace _runSpace = null!;
+    private System.Management.Automation.PowerShell _powerShell = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -52,7 +53,7 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
 
         foreach (var row in _powerShell.Streams.Information)
         {
-            Console.WriteLine(row);
+            TestOutput.WriteLine(row);
         }
 
         _powerShell?.Dispose();
@@ -90,7 +91,7 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
         var cmdlet = (CmdletAttribute)typeof(TSubject).GetCustomAttribute(typeof(CmdletAttribute));
         cmdlet.ShouldNotBeNull();
 
-        yield return "{0}-{1}".FormatWith(cmdlet.VerbName, cmdlet.NounName);
+        yield return $"{cmdlet.VerbName}-{cmdlet.NounName}";
 
         var alias = (AliasAttribute)typeof(TSubject).GetCustomAttribute(typeof(AliasAttribute));
         if (alias != null)

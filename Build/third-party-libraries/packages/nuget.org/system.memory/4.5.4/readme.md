@@ -3,12 +3,12 @@ System.Memory [4.5.4](https://www.nuget.org/packages/System.Memory/4.5.4)
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net472, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://github.com/dotnet/corefx/blob/master/LICENSE.TXT) 
-- project license: [Unknown](https://dot.net/) , License should be verified on https://dot.net/
+- project license: [Unknown](https://dot.net/) 
 
 Description
 -----------

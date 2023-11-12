@@ -1,36 +1,53 @@
 ﻿using System.Diagnostics;
+using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
+using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Commands;
 
 internal sealed class DatabaseExecuteCommand : DatabaseCommandBase
 {
-    public ICreateScriptSequence ScriptSequence { get; set; }
+    public DatabaseExecuteCommand(
+        ICreateScriptSequence scriptSequence,
+        IScriptResolver scriptResolver,
+        IDatabase database,
+        ILogger log)
+        : base(database, log)
+    {
+        ScriptSequence = scriptSequence;
+        ScriptResolver = scriptResolver;
+    }
 
-    public IPowerShellFactory PowerShellFactory { get; set; }
+    public ICreateScriptSequence ScriptSequence { get; }
+
+    public IScriptResolver ScriptResolver { get; }
 
     protected override void Greet(string databaseLocation)
     {
-        Log.Info("Execute script on {0}".FormatWith(databaseLocation));
+        Log.Info($"Execute script on {databaseLocation}");
     }
 
     protected override void ExecuteCore()
     {
         var sequences = ScriptSequence.BuildSequence();
+        if (sequences.Count == 0)
+        {
+            return;
+        }
 
-        PowerShellFactory.InitializeIfRequested(Log);
+        ScriptResolver.InitializeEnvironment(Log, sequences);
 
         foreach (var script in sequences)
         {
             var timer = Stopwatch.StartNew();
-            Log.Info("execute {0} ...".FormatWith(script.DisplayName));
+            Log.Info($"execute {script.DisplayName} ...");
 
             using (Log.Indent())
             {
                 Database.Execute(script);
             }
 
-            Log.Info("done in {0}".FormatWith(timer.Elapsed));
+            Log.Info($"done in {timer.Elapsed}");
         }
     }
 }

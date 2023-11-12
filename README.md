@@ -1,7 +1,7 @@
 SqlDatabase
 ===========
 
-[![NuGet](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square&label=nuget%20net%204.5.2)](https://www.nuget.org/packages/SqlDatabase/)
+[![NuGet](https://img.shields.io/nuget/v/SqlDatabase.svg?style=flat-square&label=nuget%20net%204.7.2)](https://www.nuget.org/packages/SqlDatabase/)
 [![NuGet](https://img.shields.io/nuget/v/SqlDatabase.GlobalTool.svg?style=flat-square&label=nuget%20dotnet%20tool)](https://www.nuget.org/packages/SqlDatabase.GlobalTool/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SqlDatabase.svg?style=flat-square)](https://www.powershellgallery.com/packages/SqlDatabase)
 [![GitHub release](https://img.shields.io/github/release/max-ieremenko/SqlDatabase.svg?style=flat-square&label=manual%20download)](https://github.com/max-ieremenko/SqlDatabase/releases)
@@ -41,9 +41,9 @@ Installation
 
 PowerShell module is compatible with Powershell Core 6.1+ and PowerShell Desktop 5.1.
 
-.net tool is compatible with .net sdk 7.0, 6.0, 5.0 and .net core 3.1.
+.net tool is compatible with .net sdk 8.0, 7.0, and 6.0.
 
-Command-line tool is compatible with .net runtime 7.0, 6.0, 5.0, .net core runtime 3.1 and .net framework 4.5.2+.
+Command-line tool is compatible with .net runtime 8.0, 7.0, 6.0 and .net framework 4.7.2+.
 
 ### PowerShell, from gallery
 

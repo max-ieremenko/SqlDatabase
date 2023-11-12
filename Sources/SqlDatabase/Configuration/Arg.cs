@@ -22,7 +22,7 @@ internal readonly struct Arg
 
     internal const string Log = "log";
 
-    public Arg(string key, string value)
+    public Arg(string key, string? value)
     {
         IsPair = true;
         Key = key;
@@ -38,15 +38,15 @@ internal readonly struct Arg
 
     public bool IsPair { get; }
 
-    public string Key { get; }
+    public string? Key { get; }
 
-    public string Value { get; }
+    public string? Value { get; }
 
-    public override string ToString()
+    public override string? ToString()
     {
         if (IsPair)
         {
-            return "{0}={1}".FormatWith(Key, Value);
+            return $"{Key}={Value}";
         }
 
         return Value;

@@ -3,12 +3,12 @@ System.Text.Encoding.CodePages [4.7.0](https://www.nuget.org/packages/System.Tex
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net472, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
 - package license: [MIT](https://licenses.nuget.org/MIT) 
-- project license: [Unknown](https://github.com/dotnet/corefx) , License should be verified on https://github.com/dotnet/corefx
+- project license: [Unknown](https://github.com/dotnet/corefx) 
 
 Description
 -----------

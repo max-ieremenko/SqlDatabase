@@ -6,19 +6,21 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
+using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts;
 
 [TestFixture]
 public class DatabaseTest
 {
-    private Database _sut;
-    private Mock<IDatabaseAdapter> _adapter;
-    private Mock<IDbCommand> _command;
-    private Mock<IDbConnection> _connection;
-    private Mock<IDbTransaction> _transaction;
-    private IList<string> _logOutput;
+    private Database _sut = null!;
+    private Mock<IDatabaseAdapter> _adapter = null!;
+    private Mock<IDbCommand> _command = null!;
+    private Mock<IDbConnection> _connection = null!;
+    private Mock<IDbTransaction> _transaction = null!;
+    private IList<string> _logOutput = null!;
 
     [SetUp]
     public void BeforeEachTest()
@@ -29,14 +31,14 @@ public class DatabaseTest
             .Setup(l => l.Error(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Error: {0}", m);
+                TestOutput.WriteLine("Error: {0}", m);
                 _logOutput.Add(m);
             });
         log
             .Setup(l => l.Info(It.IsAny<string>()))
             .Callback<string>(m =>
             {
-                Console.WriteLine("Info: {0}", m);
+                TestOutput.WriteLine("Info: {0}", m);
                 _logOutput.Add(m);
             });
 
@@ -63,11 +65,7 @@ public class DatabaseTest
 
         _adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
 
-        _sut = new Database
-        {
-            Adapter = _adapter.Object,
-            Log = log.Object
-        };
+        _sut = new Database(_adapter.Object, log.Object, TransactionMode.None, false);
     }
 
     [Test]
@@ -150,7 +148,7 @@ public class DatabaseTest
 
         var actual = Assert.Throws<InvalidOperationException>(() => _sut.GetCurrentVersion(null));
 
-        actual.InnerException.ShouldBe(ex.Object);
+        actual!.InnerException.ShouldBe(ex.Object);
         actual.Message.ShouldContain("select 1");
     }
 
@@ -172,7 +170,7 @@ public class DatabaseTest
 
         var actual = Assert.Throws<InvalidOperationException>(() => _sut.GetCurrentVersion(null));
 
-        actual.Message.ShouldContain("abc");
+        actual!.Message.ShouldContain("abc");
     }
 
     [Test]
@@ -193,7 +191,7 @@ public class DatabaseTest
 
         var actual = Assert.Throws<InvalidOperationException>(() => _sut.GetCurrentVersion("my module-name"));
 
-        actual.Message.ShouldContain("abc");
+        actual!.Message.ShouldContain("abc");
         actual.Message.ShouldContain("my module-name");
     }
 

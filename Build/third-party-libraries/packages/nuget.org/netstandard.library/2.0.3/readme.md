@@ -3,7 +3,7 @@ NETStandard.Library [2.0.3](https://www.nuget.org/packages/NETStandard.Library/2
 
 Used by: SqlDatabase
 
-Target frameworks: net452, net5.0, net6.0, net7.0, netcoreapp3.1, netstandard2.0
+Target frameworks: net472, net6.0, net7.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

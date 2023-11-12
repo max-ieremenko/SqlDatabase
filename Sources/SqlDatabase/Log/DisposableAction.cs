@@ -4,7 +4,7 @@ namespace SqlDatabase.Log;
 
 internal sealed class DisposableAction : IDisposable
 {
-    private Action _action;
+    private Action? _action;
 
     public DisposableAction(Action action)
     {

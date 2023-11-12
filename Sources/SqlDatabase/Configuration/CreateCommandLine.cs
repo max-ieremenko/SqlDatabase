@@ -1,47 +1,36 @@
-﻿using System.Linq;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.Commands;
-using SqlDatabase.Scripts;
-using SqlDatabase.Scripts.PowerShellInternal;
 
 namespace SqlDatabase.Configuration;
 
 internal sealed class CreateCommandLine : CommandLineBase
 {
-    public string UsePowerShell { get; set; }
+    public string? UsePowerShell { get; set; }
 
     public bool WhatIf { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger)
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+
+    internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {
-        var configuration = new ConfigurationManager();
-        configuration.LoadFrom(ConfigurationFile);
+        builder
+            .WithLogger(logger)
+            .WithConfiguration(ConfigurationFile)
+            .WithPowerShellScripts(UsePowerShell)
+            .WithAssemblyScripts()
+            .WithVariables(Variables)
+            .WithDataBase(ConnectionString!, TransactionMode.None, WhatIf);
 
-        var powerShellFactory = PowerShellFactory.Create(UsePowerShell);
-        var database = CreateDatabase(logger, configuration, TransactionMode.None, WhatIf);
+        var database = builder.BuildDatabase();
+        var scriptResolver = builder.BuildScriptResolver();
+        var sequence = builder.BuildCreateSequence(Scripts);
 
-        var sequence = new CreateScriptSequence
-        {
-            ScriptFactory = new ScriptFactory
-            {
-                AssemblyScriptConfiguration = configuration.SqlDatabase.AssemblyScript,
-                PowerShellFactory = powerShellFactory,
-                TextReader = database.Adapter.CreateSqlTextReader()
-            },
-            Sources = Scripts.ToArray()
-        };
-
-        return new DatabaseCreateCommand
-        {
-            Log = logger,
-            Database = database,
-            ScriptSequence = sequence,
-            PowerShellFactory = powerShellFactory
-        };
+        return new DatabaseCreateCommand(sequence, scriptResolver, database, logger);
     }
 
     protected override bool ParseArg(Arg arg)
     {
-#if NETCOREAPP || NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER
         if (Arg.UsePowerShell.Equals(arg.Key, System.StringComparison.OrdinalIgnoreCase))
         {
             UsePowerShell = arg.Value;

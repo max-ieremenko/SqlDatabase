@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Scripts;
 
@@ -10,7 +11,7 @@ internal interface IDatabase
 
     string GetServerVersion();
 
-    Version GetCurrentVersion(string moduleName);
+    Version GetCurrentVersion(string? moduleName);
 
     void Execute(IScript script, string moduleName, Version currentVersion, Version targetVersion);
 

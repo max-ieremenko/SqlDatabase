@@ -6,7 +6,7 @@ namespace SqlDatabase.Scripts;
 [TestFixture]
 public class VariablesTest
 {
-    private Variables _sut;
+    private Variables _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
