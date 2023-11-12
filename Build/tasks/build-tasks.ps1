@@ -1,22 +1,32 @@
-task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, IntegrationTest
+param(
+    [Parameter()]
+    [string]
+    $GithubToken
+)
+
+task GithubBuild Initialize, Clean, Build, ThirdPartyNotices, Pack
+task LocalBuild GithubBuild, UnitTest, IntegrationTest
+
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget472, PackManualDownload
 task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 task Initialize {
-    $sources = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\Sources"))
-    $bin = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\bin"))
+    $root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\"))
+    $sources = Join-Path $root "Sources"
+    $bin = Join-Path $root "bin"
     $artifacts = Join-Path $bin "artifacts"
 
     $script:settings = @{
-        nugetexe            = Join-Path $PSScriptRoot "nuget.exe"
+        nugetexe            = Join-Path $root "Build\nuget.exe"
         sources             = $sources
         bin                 = $bin
         artifacts           = $artifacts
         artifactsPowerShell = Join-Path $artifacts "PowerShell"
         integrationTests    = Join-Path $bin "IntegrationTests"
-        version             = Get-Version -SourcePath $sources
+        version             = Get-ReleaseVersion -SourcePath $sources
+        githubToken         = $GithubToken
         repositoryCommitId  = git rev-parse HEAD
     }
 
@@ -41,7 +51,7 @@ task Build {
 }
 
 task ThirdPartyNotices {
-    Invoke-Build -File build-tasks.third-party.ps1 -settings $settings
+    Invoke-Build -File "build-tasks.third-party.ps1" -settings $settings
 }
 
 task PackGlobalTool {

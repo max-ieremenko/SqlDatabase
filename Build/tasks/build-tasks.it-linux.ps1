@@ -2,18 +2,20 @@ param(
     $settings
     , $targetFramework
     , $database
+    , $image
 )
 
 task Default StartDatabase, UnZip, RunTest
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot 'scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
 $containerId = ""
 $connectionString = ""
+$remoteConnectionString = ""
 $tempDir = Join-Path $settings.bin ([Guid]::NewGuid().ToString())
 
 Enter-Build {
-    Write-Output "$targetFramework"
+    Write-Output "$database on $targetFramework on $image"
 }
 
 task UnZip {
@@ -27,6 +29,7 @@ task StartDatabase {
     $info = & "Start-$database"
 
     $script:containerId = $info.containerId
+    $script:remoteConnectionString = $info.remoteConnectionString
     $script:connectionString = $info.connectionString
 
     Write-Output $connectionString
@@ -35,11 +38,19 @@ task StartDatabase {
 task RunTest {
     & "Wait-$database" $connectionString
 
-    $app = Join-Path $tempDir "SqlDatabase.exe"
-    $script = (Join-Path $settings.integrationTests $database)
-    $script = Join-Path $script "Test.ps1"
+    $app = $tempDir + ":/app"
+    $test = (Join-Path $settings.integrationTests $database) + ":/test"
 
-    & $script $app $connectionString
+    exec {
+        docker run --rm `
+            -v $app `
+            -v $test `
+            --env connectionString=$remoteConnectionString `
+            --env test=/test `
+            -w "/app" `
+            $image `
+            bash /test/Test.sh
+    }
 }
 
 Exit-Build {

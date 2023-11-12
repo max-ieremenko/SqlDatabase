@@ -1,4 +1,4 @@
-function Get-Version {
+function Get-ReleaseVersion {
     param (
         [Parameter(Mandatory)]
         [ValidateScript({ Test-Path $_ })]
