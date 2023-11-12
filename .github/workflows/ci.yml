@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - 'release/**'
-      - 'feature/**'
     paths-ignore:
       - '**.md'
   pull_request:
@@ -17,7 +16,7 @@ on:
 
 jobs:
   build:
-    name: win-build-and-test
+    name: win-build
     runs-on: windows-latest
 
     steps:
