@@ -4,7 +4,7 @@
 Any assembly script is
 
 - .exe or .dll for target framework is 4.7.2+
-- .dll for .net 7.0 or 6.0
+- .dll for .net 6.0+
 - has exactly one class with script implementation
 
 This project is an example of script implementation.
