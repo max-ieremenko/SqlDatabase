@@ -19,7 +19,7 @@ function Start-Mysql {
     
         $file = Join-Path $PSScriptRoot '..\..\..\Sources\Docker\mysql.create-database.sql'
         $file = [System.IO.Path]::GetFullPath($file)
-        Set-Content -Path $file -Value (Get-Content -Path $file -Raw)
+        #Set-Content -Path $file -Value (Get-Content -Path $file -Raw)
 
         exec { mysql.exe -uroot -proot -e "source $file" }
     }

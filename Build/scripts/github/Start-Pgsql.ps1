@@ -17,7 +17,7 @@ function Start-Pgsql {
 
         $file = Join-Path $PSScriptRoot '..\..\..\Sources\Docker\pgsql.create-database.sql'
         $file = [System.IO.Path]::GetFullPath($file)
-        Set-Content -Path $file -Value (Get-Content -Path $file -Raw)
+        #Set-Content -Path $file -Value (Get-Content -Path $file -Raw)
 
         $env:PGPASSWORD = 'root'
 

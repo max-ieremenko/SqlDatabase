@@ -11,7 +11,7 @@ function Start-Mssql {
     if (-not $databaseExists) {
         $file = Join-Path $PSScriptRoot '..\..\..\Sources\Docker\mssql.create-database.sql'
         $file = [System.IO.Path]::GetFullPath($file)
-        Set-Content -Path $file -Value (Get-Content -Path $file -Raw)
+        #Set-Content -Path $file -Value (Get-Content -Path $file -Raw)
 
         exec { sqlcmd.exe -S $dataSource -i $file }
     }
