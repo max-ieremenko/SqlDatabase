@@ -6,8 +6,8 @@ param(
 
 . (Join-Path $PSScriptRoot '../scripts/Import-All.ps1')
 
-task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, LocalBuild
-task LocalBuild -If { (Get-CurentEnvironment) -ne 'github' } UnitTest, IntegrationTest
+task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, LocalBuild
+task LocalBuild -If { (Get-CurentEnvironment) -ne 'github' } IntegrationTest
 
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget472, PackManualDownload
 task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
