@@ -6,8 +6,7 @@ param(
 
 . (Join-Path $PSScriptRoot '../scripts/Import-All.ps1')
 
-task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, LocalBuild
-task LocalBuild -If { (Get-CurentEnvironment) -ne 'github' } IntegrationTest
+task Default Initialize, Clean, Build, ThirdPartyNotices, Pack, UnitTest, IntegrationTest
 
 task Pack PackGlobalTool, PackPoweShellModule, PackNuget472, PackManualDownload
 task IntegrationTest InitializeIntegrationTest, PsDesktopTest, PsCoreTest, SdkToolTest, NetRuntimeLinuxTest, NetRuntimeWindowsTest
@@ -181,7 +180,7 @@ task PsDesktopTest {
     Build-Parallel $builds -ShowParameter database -MaximumBuilds 1
 }
 
-task PsCoreTest {
+task PsCoreTest -If { (Get-CurentEnvironment) -ne 'github' } {
     # show-powershell-images.ps1
     $images = $(
         'mcr.microsoft.com/powershell:6.1.0-ubuntu-18.04'
@@ -226,7 +225,7 @@ task PsCoreTest {
     Build-Parallel $builds -ShowParameter database, image -MaximumBuilds 4
 }
 
-task SdkToolTest {
+task SdkToolTest -If { (Get-CurentEnvironment) -ne 'github' } {
     $images = $(
         'sqldatabase/dotnet_pwsh:6.0-sdk'
         , 'sqldatabase/dotnet_pwsh:7.0-sdk'
@@ -247,7 +246,7 @@ task SdkToolTest {
     Build-Parallel $builds -ShowParameter database, image -MaximumBuilds 4
 }
 
-task NetRuntimeLinuxTest {
+task NetRuntimeLinuxTest -If { (Get-CurentEnvironment) -ne 'github' } {
     $testCases = $(
         @{ targetFramework = 'net6.0'; image = 'sqldatabase/dotnet_pwsh:6.0-runtime' }
         , @{ targetFramework = 'net7.0'; image = 'sqldatabase/dotnet_pwsh:7.0-runtime' }
@@ -270,7 +269,7 @@ task NetRuntimeLinuxTest {
     Build-Parallel $builds -ShowParameter database, targetFramework, image -MaximumBuilds 4
 }
 
-task NetRuntimeWindowsTest {
+task NetRuntimeWindowsTest -If { (Get-CurentEnvironment) -ne 'github' } {
     $builds = @()
     foreach ($case in $frameworks) {
         foreach ($database in $databases) {
