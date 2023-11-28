@@ -7,11 +7,11 @@ param(
 
 task Default StartDatabase, UnZip, RunTest
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+. (Join-Path $PSScriptRoot '../scripts/Import-All.ps1')
 
-$containerId = ""
-$connectionString = ""
-$remoteConnectionString = ""
+$containerId = ''
+$connectionString = ''
+$remoteConnectionString = ''
 $tempDir = Join-Path $settings.bin ([Guid]::NewGuid().ToString())
 
 Enter-Build {
@@ -38,8 +38,8 @@ task StartDatabase {
 task RunTest {
     & "Wait-$database" $connectionString
 
-    $app = $tempDir + ":/app"
-    $test = (Join-Path $settings.integrationTests $database) + ":/test"
+    $app = $tempDir + ':/app'
+    $test = (Join-Path $settings.integrationTests $database) + ':/test'
 
     exec {
         docker run --rm `
@@ -47,7 +47,7 @@ task RunTest {
             -v $test `
             --env connectionString=$remoteConnectionString `
             --env test=/test `
-            -w "/app" `
+            -w '/app' `
             $image `
             bash /test/Test.sh
     }

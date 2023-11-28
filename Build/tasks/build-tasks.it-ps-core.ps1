@@ -6,10 +6,10 @@ param(
 
 task Default StartDatabase, RunTest
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+. (Join-Path $PSScriptRoot '../scripts/Import-All.ps1')
 
-$containerId = ""
-$connectionString = ""
+$containerId = ''
+$connectionString = ''
 
 Enter-Build {
     Write-Output "$database on $image"
@@ -26,8 +26,8 @@ task StartDatabase {
 }
 
 task RunTest {
-    $app = $settings.artifactsPowerShell + ":/root/.local/share/powershell/Modules/SqlDatabase"
-    $test = (Join-Path $settings.integrationTests $database) + ":/test"
+    $app = $settings.artifactsPowerShell + ':/root/.local/share/powershell/Modules/SqlDatabase'
+    $test = (Join-Path $settings.integrationTests $database) + ':/test'
 
     exec {
         docker run --rm `

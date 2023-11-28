@@ -5,19 +5,12 @@
 [CmdletBinding()]
 param (
     [Parameter()]
-    [ValidateSet("local", "github")] 
-    [string]
-    $Mode,
-
-    [Parameter()]
     [string]
     $GithubToken
 )
 
 Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
-$file = Join-Path $PSScriptRoot "tasks/build-tasks.ps1"
-$task = ($Mode -eq "github") ? "GithubBuild" : "LocalBuild"
-
-Invoke-Build -File $file -Task $task -GithubToken $GithubToken
+$file = Join-Path $PSScriptRoot 'tasks/build-tasks.ps1'
+Invoke-Build -File $file -GithubToken $GithubToken

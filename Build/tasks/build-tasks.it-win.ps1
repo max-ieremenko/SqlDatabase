@@ -6,10 +6,10 @@ param(
 
 task Default StartDatabase, UnZip, RunTest
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+. (Join-Path $PSScriptRoot '../scripts/Import-All.ps1')
 
-$containerId = ""
-$connectionString = ""
+$containerId = ''
+$connectionString = ''
 $tempDir = Join-Path $settings.bin ([Guid]::NewGuid().ToString())
 
 Enter-Build {
@@ -35,9 +35,9 @@ task StartDatabase {
 task RunTest {
     & "Wait-$database" $connectionString
 
-    $app = Join-Path $tempDir "SqlDatabase.exe"
+    $app = Join-Path $tempDir 'SqlDatabase.exe'
     $script = (Join-Path $settings.integrationTests $database)
-    $script = Join-Path $script "Test.ps1"
+    $script = Join-Path $script 'Test.ps1'
 
     & $script $app $connectionString
 }

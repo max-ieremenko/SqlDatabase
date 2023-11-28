@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - 'release/**'
+      - 'feature/**'
     paths-ignore:
       - '**.md'
   pull_request:
@@ -32,7 +33,7 @@ jobs:
 
     - name: Build
       shell: pwsh
-      run: ./Build/build.ps1 -Mode "github" -GithubToken "${{ secrets.GITHUB_TOKEN }}"
+      run: ./Build/build.ps1 -GithubToken "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Artifacts
       uses: actions/upload-artifact@v3

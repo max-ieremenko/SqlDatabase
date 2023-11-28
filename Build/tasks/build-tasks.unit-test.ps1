@@ -5,19 +5,19 @@ param(
     $Sources,
 
     [Parameter(Mandatory)]
-    [ValidateSet("net472", "net6.0", "net7.0", "net8.0")] 
+    [ValidateSet('net472', 'net6.0', 'net7.0', 'net8.0')] 
     [string]
     $Framework
 )
 
+. (Join-Path $PSScriptRoot '../scripts/Import-All.ps1')
+
 task Default RunContainers, UpdateConfig, RunTests
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
-
 $containerIds = @()
-$mssqlConnectionString = ""
-$pgsqlConnectionString = ""
-$mysqlConnectionString = ""
+$mssqlConnectionString = ''
+$pgsqlConnectionString = ''
+$mysqlConnectionString = ''
 
 Enter-Build {
     $testList = Get-ChildItem -Path $Sources -Recurse -Filter *.Test.dll `
@@ -27,7 +27,7 @@ Enter-Build {
     | ForEach-Object { $_.FullName }
 
     if (-not $testList) {
-        throw "Test list is empty."
+        throw 'Test list is empty.'
     }
     
     $testList
@@ -41,17 +41,26 @@ Exit-Build {
 
 task RunContainers {
     $info = Start-Mssql
-    $script:containerIds += $info.containerId
+    if ($info.containerId) {
+        $script:containerIds += $info.containerId
+    }
+
     $script:mssqlConnectionString = $info.connectionString
     Write-Output $mssqlConnectionString
 
     $info = Start-Pgsql
-    $script:containerIds += $info.containerId
+    if ($info.containerId) {
+        $script:containerIds += $info.containerId
+    }
+    
     $script:pgsqlConnectionString = $info.connectionString
     Write-Output $pgsqlConnectionString
 
     $info = Start-Mysql
-    $script:containerIds += $info.containerId
+    if ($info.containerId) {
+        $script:containerIds += $info.containerId
+    }
+    
     $script:mysqlConnectionString = $info.connectionString
     Write-Output $mysqlConnectionString
 
@@ -67,19 +76,19 @@ task UpdateConfig {
 
         $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'mssql']")
         if ($node) {
-            $node.Attributes["connectionString"].InnerText = $mssqlConnectionString
+            $node.Attributes['connectionString'].InnerText = $mssqlConnectionString
             $config.Save($configFile)
         }
 
         $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'pgsql']")
         if ($node) {
-            $node.Attributes["connectionString"].InnerText = $pgsqlConnectionString
+            $node.Attributes['connectionString'].InnerText = $pgsqlConnectionString
             $config.Save($configFile)
         }
 
         $node = $config.SelectSingleNode("configuration/connectionStrings/add[@name = 'mysql']")
         if ($node) {
-            $node.Attributes["connectionString"].InnerText = $mysqlConnectionString
+            $node.Attributes['connectionString'].InnerText = $mysqlConnectionString
             $config.Save($configFile)
         }
     }

@@ -9,26 +9,26 @@ function Start-Container {
         $ContainerPort
     )
     
-    $containerId = exec { 
+    [string]$containerId = exec { 
         docker run `
             -d `
             -p $ContainerPort `
             $Image
     }
     
-    $ip = exec { 
+    [string]$ip = exec { 
         docker inspect `
-            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
+            --format '{{.NetworkSettings.Networks.bridge.IPAddress}}'  `
             $containerId
     }
 
-    $hostPort = exec { 
+    [int]$hostPort = exec { 
         docker inspect `
             --format "{{(index (index .NetworkSettings.Ports \""$ContainerPort/tcp\"") 0).HostPort}}"  `
             $containerId
     }
 
-    return @{
+    @{
         containerId = $containerId
         ip          = $ip
         port        = $hostPort
