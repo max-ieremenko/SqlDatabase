@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <SqlDatabaseVersion>4.2.0</SqlDatabaseVersion>
+    <SqlDatabaseVersion>4.2.1</SqlDatabaseVersion>
     <Version>$(SqlDatabaseVersion)</Version>
     <AssemblyVersion>$(SqlDatabaseVersion).0</AssemblyVersion>
     <FileVersion>$(SqlDatabaseVersion).0</FileVersion>
