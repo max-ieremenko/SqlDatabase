@@ -152,19 +152,19 @@ task InitializeIntegrationTest {
         Copy-Item -Path $assemblyScript -Destination (Join-Path $dest "$database\Upgrade") -Force
     }
 
-    $bashLine = "sed -i 's/\r//g'"
-    foreach ($database in $databases) {
-        $bashLine += " test/$database/TestGlobalTool.sh test/$database/Test.sh"
-    }
+    # $bashLine = "sed -i 's/\r//g'"
+    # foreach ($database in $databases) {
+    #     $bashLine += " test/$database/TestGlobalTool.sh test/$database/Test.sh"
+    # }
 
-    # fix unix line endings
-    $test = $dest + ':/test'
-    exec {
-        docker run --rm `
-            -v $test `
-            mcr.microsoft.com/dotnet/sdk:7.0 `
-            bash -c $bashLine
-    }
+    # # fix unix line endings
+    # $test = $dest + ':/test'
+    # exec {
+    #     docker run --rm `
+    #         -v $test `
+    #         mcr.microsoft.com/dotnet/sdk:7.0 `
+    #         bash -c $bashLine
+    # }
 }
 
 task PsDesktopTest {
