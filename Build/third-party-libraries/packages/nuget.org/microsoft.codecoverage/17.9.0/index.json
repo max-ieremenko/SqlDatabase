@@ -12,14 +12,7 @@
         "net472",
         "net6.0",
         "net7.0",
-        "net8.0",
-        "netstandard2.0"
-      ],
-      "Dependencies": [
-        {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.3"
-        }
+        "net8.0"
       ]
     }
   ],
@@ -27,12 +20,18 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
+      "HRef": "LICENSE_MIT.txt",
+      "Description": "The license file is identical to the repository license file."
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/vstest"
     },
     {
       "Subject": "project",
-      "Code": null,
-      "HRef": "https://dot.net/"
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/vstest"
     }
   ]
 }
