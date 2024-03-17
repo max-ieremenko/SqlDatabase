@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SqlDatabase.Adapter.PowerShellScripts;
+﻿namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal sealed partial class PowerShellFactory : IPowerShellFactory
 {

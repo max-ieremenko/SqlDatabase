@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.Loader;
 

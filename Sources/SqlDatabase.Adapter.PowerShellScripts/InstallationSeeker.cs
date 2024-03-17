@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-
-namespace SqlDatabase.Adapter.PowerShellScripts;
+﻿namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal static class InstallationSeeker
 {

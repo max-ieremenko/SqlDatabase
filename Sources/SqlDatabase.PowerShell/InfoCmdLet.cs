@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using System.Runtime.InteropServices;
 using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.Internal;

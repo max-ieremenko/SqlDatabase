@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Moq;
+﻿using Moq;
 using MySqlConnector;
 using NUnit.Framework;
 using Shouldly;

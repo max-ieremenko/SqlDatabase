@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SqlDatabase.Configuration;
+﻿namespace SqlDatabase.Configuration;
 
 internal readonly struct CommandLine
 {

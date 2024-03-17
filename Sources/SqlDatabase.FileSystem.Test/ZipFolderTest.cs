@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
 

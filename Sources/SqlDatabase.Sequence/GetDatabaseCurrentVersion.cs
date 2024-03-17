@@ -1,5 +1,3 @@
-﻿using System;
-
-namespace SqlDatabase.Sequence;
+﻿namespace SqlDatabase.Sequence;
 
 public delegate Version GetDatabaseCurrentVersion(string? moduleName);

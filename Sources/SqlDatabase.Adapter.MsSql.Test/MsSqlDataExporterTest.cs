@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Text;
+﻿using System.Data.SqlClient;
 using Moq;
 using NUnit.Framework;
 using Shouldly;

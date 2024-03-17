@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace SqlDatabase.TestApi;
+﻿namespace SqlDatabase.TestApi;
 
 public sealed class TempConsoleOut : IDisposable
 {

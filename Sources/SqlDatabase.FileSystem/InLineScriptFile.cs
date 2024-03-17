@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Text;
-
-namespace SqlDatabase.FileSystem;
+﻿namespace SqlDatabase.FileSystem;
 
 internal sealed class InLineScriptFile : IFile
 {

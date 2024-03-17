@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using SqlDatabase.Configuration;
 
 namespace SqlDatabase.PowerShell.Internal;

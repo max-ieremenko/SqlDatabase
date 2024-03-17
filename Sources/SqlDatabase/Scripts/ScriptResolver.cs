@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Scripts;

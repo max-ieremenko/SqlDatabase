@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Commands;
 

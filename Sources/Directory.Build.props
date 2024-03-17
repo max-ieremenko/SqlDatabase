@@ -9,6 +9,7 @@
     <AssemblyOriginatorKeyFile>..\SqlDatabase.snk</AssemblyOriginatorKeyFile>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
 
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
@@ -38,5 +39,12 @@
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers.Unstable" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Text" />
+    <Using Include="System.Data" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
   </ItemGroup>
 </Project>

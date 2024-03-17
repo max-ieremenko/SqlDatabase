@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using SqlDatabase.FileSystem;
+﻿using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 

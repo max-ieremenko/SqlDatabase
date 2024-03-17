@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-
-namespace SqlDatabase.Adapter.AssemblyScripts;
+﻿namespace SqlDatabase.Adapter.AssemblyScripts;
 
 internal interface IEntryPoint
 {

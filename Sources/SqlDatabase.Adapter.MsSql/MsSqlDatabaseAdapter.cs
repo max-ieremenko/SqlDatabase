@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using System.IO;
+﻿using System.Data.SqlClient;
 
 namespace SqlDatabase.Adapter.MsSql;
 

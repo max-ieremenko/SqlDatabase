@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SqlDatabase.FileSystem;
+﻿namespace SqlDatabase.FileSystem;
 
 public interface IFolder : IFileSystemInfo
 {

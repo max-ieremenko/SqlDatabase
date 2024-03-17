@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace SqlDatabase.Configuration;
+﻿namespace SqlDatabase.Configuration;
 
 internal sealed class CommandLineFactory
 {

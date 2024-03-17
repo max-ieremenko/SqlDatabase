@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SqlDatabase.Sequence;
+﻿namespace SqlDatabase.Sequence;
 
 internal readonly struct ScriptDependency : IEquatable<ScriptDependency>
 {
