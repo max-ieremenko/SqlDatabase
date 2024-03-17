@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.FileSystem;
@@ -14,7 +15,7 @@ public class FileSystemFactoryTest
         using (var dir = new TempDirectory("Content.zip"))
         {
             var folder = FileSystemFactory.FileSystemInfoFromPath(dir.Location);
-            Assert.IsInstanceOf<FileSystemFolder>(folder);
+            folder.ShouldBeOfType<FileSystemFolder>();
         }
     }
 
@@ -24,20 +25,20 @@ public class FileSystemFactoryTest
     [TestCase(@"Content.zip\2\2.2", "2.2.txt")]
     [TestCase(@"Content.zip\inner.zip", "11.txt")]
     [TestCase(@"Content.zip\inner.zip\2", "22.txt")]
-    public void NewZipFolder(string path, string fileName)
+    public void NewZipFolder(string path, string? fileName)
     {
         using (var dir = new TempDirectory())
         {
             dir.CopyFileFromResources("Content.zip");
 
             var folder = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, path));
-            Assert.IsNotNull(folder);
+            folder.ShouldNotBeNull();
 
             var files = ((IFolder)folder).GetFiles().ToList();
             if (fileName != null)
             {
-                Assert.AreEqual(1, files.Count);
-                Assert.AreEqual(fileName, files[0].Name);
+                files.Count.ShouldBe(1);
+                files[0].Name.ShouldBe(fileName);
             }
         }
     }
@@ -46,7 +47,7 @@ public class FileSystemFactoryTest
     [TestCase("Content.nupkg", null)]
     [TestCase(@"Content.nupkg\2", "22.txt")]
     [TestCase(@"Content.nupkg\inner.zip", "11.txt")]
-    public void NewNuGetFolder(string path, string fileName)
+    public void NewNuGetFolder(string path, string? fileName)
     {
         using (var dir = new TempDirectory())
         {
@@ -54,13 +55,13 @@ public class FileSystemFactoryTest
             File.Move(Path.Combine(dir.Location, "Content.zip"), Path.Combine(dir.Location, "Content.nupkg"));
 
             var folder = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, path));
-            Assert.IsNotNull(folder);
+            folder.ShouldNotBeNull();
 
             var files = ((IFolder)folder).GetFiles().ToList();
             if (fileName != null)
             {
-                Assert.AreEqual(1, files.Count);
-                Assert.AreEqual(fileName, files[0].Name);
+                files.Count.ShouldBe(1);
+                files[0].Name.ShouldBe(fileName);
             }
         }
     }
@@ -86,7 +87,7 @@ public class FileSystemFactoryTest
             dir.CopyFileFromResources("Content.zip");
 
             var fullPath = Path.Combine(dir.Location, path);
-            Assert.Throws<IOException>(() => FileSystemFactory.FileSystemInfoFromPath(fullPath));
+            Should.Throw<IOException>(() => FileSystemFactory.FileSystemInfoFromPath(fullPath));
         }
     }
 
@@ -96,10 +97,10 @@ public class FileSystemFactoryTest
         using (var dir = new TempDirectory())
         {
             var fileName = Path.Combine(dir.Location, "11.txt");
-            File.WriteAllBytes(fileName, new byte[] { 1 });
+            File.WriteAllBytes(fileName, [1]);
 
             var file = FileSystemFactory.FileSystemInfoFromPath(fileName);
-            Assert.IsInstanceOf<FileSystemFile>(file);
+            file.ShouldBeOfType<FileSystemFile>();
         }
     }
 
@@ -114,7 +115,7 @@ public class FileSystemFactoryTest
             dir.CopyFileFromResources("Content.zip");
 
             var file = FileSystemFactory.FileSystemInfoFromPath(Path.Combine(dir.Location, fileName));
-            Assert.IsInstanceOf<ZipFolderFile>(file);
+            file.ShouldBeOfType<ZipFolderFile>();
 
             ((IFile)file).OpenRead().Dispose();
         }

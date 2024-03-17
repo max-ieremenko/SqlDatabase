@@ -23,14 +23,14 @@ public class ZipFolderTest
     [TearDown]
     public void AfterEachTest()
     {
-        _temp?.Dispose();
+        _temp.Dispose();
     }
 
     [Test]
     public void Ctor()
     {
         var folder = new ZipFolder(@"d:\11.zip");
-        Assert.AreEqual("11.zip", folder.Name);
+        folder.Name.ShouldBe("11.zip");
     }
 
     [Test]
@@ -38,24 +38,22 @@ public class ZipFolderTest
     {
         var subFolders = _sut.GetFolders().OrderBy(i => i.Name).ToArray();
 
-        CollectionAssert.AreEqual(
-            new[] { "1", "2", "inner.zip" },
-            subFolders.Select(i => i.Name).ToArray());
+        subFolders.Select(i => i.Name).ShouldBe(["1", "2", "inner.zip"], ignoreOrder: true);
     }
 
     [Test]
     public void GetFiles()
     {
         var files = _sut.GetFiles().OrderBy(i => i.Name).ToArray();
-        CollectionAssert.AreEqual(new[] { "11.txt" }, files.Select(i => i.Name).ToArray());
+        files.Select(i => i.Name).ShouldBe(["11.txt"]);
 
         using (var stream = files[0].OpenRead())
         using (var reader = new StreamReader(stream))
         {
-            Assert.AreEqual("11", reader.ReadToEnd());
+            reader.ReadToEnd().ShouldBe("11");
         }
 
-        files[0].GetParent()!.GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
+        files[0].GetParent().ShouldNotBeNull().GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
     }
 
     [Test]
@@ -64,19 +62,19 @@ public class ZipFolderTest
         var subFolders = _sut.GetFolders().OrderBy(i => i.Name).ToArray();
 
         // 1
-        Assert.AreEqual(0, subFolders[0].GetFolders().Count());
-        Assert.AreEqual(0, subFolders[0].GetFiles().Count());
+        subFolders[0].GetFolders().ShouldBeEmpty();
+        subFolders[0].GetFiles().ShouldBeEmpty();
 
         // 2
-        Assert.AreEqual(1, subFolders[1].GetFolders().Count());
+        subFolders[1].GetFolders().Count().ShouldBe(1);
 
         var files = subFolders[1].GetFiles().ToArray();
-        CollectionAssert.AreEqual(new[] { "22.txt" }, files.Select(i => i.Name).ToArray());
+        files.Select(i => i.Name).ShouldBe(["22.txt"]);
 
         using (var stream = files[0].OpenRead())
         using (var reader = new StreamReader(stream))
         {
-            Assert.AreEqual("22", reader.ReadToEnd());
+            reader.ReadToEnd().ShouldBe("22");
         }
 
         files[0].GetParent().ShouldBe(subFolders[1]);
@@ -87,17 +85,17 @@ public class ZipFolderTest
     {
         var innerZip = _sut.GetFolders().OrderBy(i => i.Name).Last();
 
-        Assert.AreEqual(2, innerZip.GetFolders().Count());
+        innerZip.GetFolders().Count().ShouldBe(2);
 
         var files = innerZip.GetFiles().ToArray();
-        CollectionAssert.AreEqual(new[] { "11.txt" }, files.Select(i => i.Name).ToArray());
+        files.Select(i => i.Name).ShouldBe(["11.txt"]);
 
         using (var stream = files[0].OpenRead())
         using (var reader = new StreamReader(stream))
         {
-            Assert.AreEqual("11", reader.ReadToEnd());
+            reader.ReadToEnd().ShouldBe("11");
         }
 
-        files[0].GetParent()!.GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
+        files[0].GetParent().ShouldNotBeNull().GetFiles().OrderBy(i => i.Name).First().ShouldBe(files[0]);
     }
 }

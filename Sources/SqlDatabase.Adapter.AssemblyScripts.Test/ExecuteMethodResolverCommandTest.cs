@@ -2,6 +2,7 @@
 using System.Reflection;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 
@@ -21,24 +22,28 @@ public class ExecuteMethodResolverCommandTest
     public void IsMatch()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsTrue(_sut.IsMatch(method!));
+
+        method.ShouldNotBeNull();
+        _sut.IsMatch(method).ShouldBeTrue();
     }
 
     [Test]
     public void CreateDelegate()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        var actual = _sut.CreateDelegate(this, method!);
-        Assert.IsNotNull(actual);
+        method.ShouldNotBeNull();
+
+        var actual = _sut.CreateDelegate(this, method);
+        actual.ShouldNotBeNull();
 
         var command = new Mock<IDbCommand>(MockBehavior.Strict);
         actual(command.Object, null!);
-        Assert.AreEqual(_executeCommand, command.Object);
+        command.Object.ShouldBe(_executeCommand);
     }
 
     private void Execute(IDbCommand command)
     {
-        Assert.IsNull(_executeCommand);
+        _executeCommand.ShouldBeNull();
         _executeCommand = command;
     }
 }

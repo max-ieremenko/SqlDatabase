@@ -120,7 +120,7 @@ public class ExportCommandLineTest
                 writer.Write("hello 1");
             }
 
-            FileAssert.Exists(file.Location);
+            Assert.That(file.Location, Does.Exist.IgnoreDirectories);
             File.ReadAllText(file.Location).ShouldBe("hello 1");
 
             using (var writer = actual())

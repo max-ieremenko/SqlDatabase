@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.FileSystem;
@@ -12,7 +13,7 @@ public class FileSystemFolderTest
     public void Ctor()
     {
         var folder = new FileSystemFolder(@"d:\11\22");
-        Assert.AreEqual("22", folder.Name);
+        folder.Name.ShouldBe("22");
     }
 
     [Test]
@@ -21,7 +22,7 @@ public class FileSystemFolderTest
         using (var dir = new TempDirectory())
         {
             var folder = new FileSystemFolder(dir.Location);
-            Assert.AreEqual(0, folder.GetFiles().Count());
+            folder.GetFiles().ShouldBeEmpty();
 
             dir.CopyFileFromResources("Content.zip");
             Directory.CreateDirectory(Path.Combine(dir.Location, "11.txt"));
@@ -29,8 +30,7 @@ public class FileSystemFolderTest
             File.WriteAllText(Path.Combine(dir.Location, "22.txt"), string.Empty);
             File.WriteAllText(Path.Combine(dir.Location, "33.txt"), string.Empty);
 
-            var files = folder.GetFiles().ToArray();
-            CollectionAssert.AreEquivalent(new[] { "22.txt", "33.txt" }, files.Select(i => i.Name).ToArray());
+            folder.GetFiles().Select(i => i.Name).ShouldBe(["22.txt", "33.txt"], ignoreOrder: true);
         }
     }
 
@@ -40,7 +40,7 @@ public class FileSystemFolderTest
         using (var dir = new TempDirectory())
         {
             var folder = new FileSystemFolder(dir.Location);
-            Assert.AreEqual(0, folder.GetFolders().Count());
+            folder.GetFolders().ShouldBeEmpty();
 
             File.WriteAllText(Path.Combine(dir.Location, "11.txt"), string.Empty);
 
@@ -48,8 +48,7 @@ public class FileSystemFolderTest
             Directory.CreateDirectory(Path.Combine(dir.Location, "22.txt"));
             Directory.CreateDirectory(Path.Combine(dir.Location, "33"));
 
-            var folders = folder.GetFolders().ToArray();
-            CollectionAssert.AreEquivalent(new[] { "22.txt", "33", "Content.zip" }, folders.Select(i => i.Name).ToArray());
+            folder.GetFolders().Select(i => i.Name).ShouldBe(["22.txt", "33", "Content.zip"], ignoreOrder: true);
         }
     }
 }
