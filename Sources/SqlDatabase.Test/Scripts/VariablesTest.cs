@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Scripts;
 
@@ -23,13 +24,13 @@ public class VariablesTest
     {
         const string Key = "TEMP";
 
-        Assert.IsNotNull(_sut.GetValue(Key));
-        Assert.AreEqual(Environment.GetEnvironmentVariable(Key), _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldNotBeNull();
+        _sut.GetValue(Key).ShouldBe(Environment.GetEnvironmentVariable(Key));
 
         _sut.SetValue(source, Key, "new value");
 
         var expected = isOverridden ? "new value" : Environment.GetEnvironmentVariable(Key);
-        Assert.AreEqual(expected, _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBe(expected);
     }
 
     [Test]
@@ -37,16 +38,16 @@ public class VariablesTest
     {
         const string Key = "some name";
 
-        Assert.IsNull(_sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBeNull();
 
         _sut.SetValue(VariableSource.CommandLine, Key, "1");
-        Assert.AreEqual("1", _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBe("1");
 
         _sut.SetValue(VariableSource.CommandLine, Key, string.Empty);
-        Assert.AreEqual(string.Empty, _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBe(string.Empty);
 
         _sut.SetValue(VariableSource.CommandLine, Key, null);
-        Assert.IsNull(_sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBeNull();
     }
 
     [Test]
@@ -63,28 +64,28 @@ public class VariablesTest
         const string CompetitorValue = "competitor";
 
         // default
-        Assert.IsNull(_sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBeNull();
 
         // competitor, expected
         _sut.SetValue(competitor, Key, CompetitorValue);
         _sut.SetValue(expected, Key, ExpectedValue);
 
-        Assert.AreEqual(ExpectedValue, _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBe(ExpectedValue);
 
         // try to remove by competitor
         _sut.SetValue(competitor, Key, null);
 
-        Assert.AreEqual(ExpectedValue, _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBe(ExpectedValue);
 
         // try to remove by expected
         _sut.SetValue(expected, Key, null);
 
-        Assert.IsNull(_sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBeNull();
 
         // expected, competitor
         _sut.SetValue(expected, Key, ExpectedValue);
         _sut.SetValue(competitor, Key, CompetitorValue);
 
-        Assert.AreEqual(ExpectedValue, _sut.GetValue(Key));
+        _sut.GetValue(Key).ShouldBe(ExpectedValue);
     }
 }

@@ -13,6 +13,6 @@ public class PowerShellCommandBaseTest
 
         PowerShellCommandBase.AppendDefaultConfiguration(command);
 
-        FileAssert.Exists(command.ConfigurationFile);
+        Assert.That(command.ConfigurationFile, Does.Exist.IgnoreDirectories);
     }
 }

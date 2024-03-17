@@ -2,6 +2,7 @@
 using System.Reflection;
 using Moq;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 
@@ -21,15 +22,18 @@ public class ExecuteMethodResolverDbConnectionTest
     public void IsMatch()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsTrue(_sut.IsMatch(method!));
+        method.ShouldNotBeNull();
+        _sut.IsMatch(method).ShouldBeTrue();
     }
 
     [Test]
     public void CreateDelegate()
     {
         var method = GetType().GetMethod(nameof(Execute), BindingFlags.Instance | BindingFlags.NonPublic);
-        var actual = _sut.CreateDelegate(this, method!);
-        Assert.IsNotNull(actual);
+        method.ShouldNotBeNull();
+
+        var actual = _sut.CreateDelegate(this, method);
+        actual.ShouldNotBeNull();
 
         var connection = new Mock<IDbConnection>(MockBehavior.Strict);
 
@@ -39,12 +43,12 @@ public class ExecuteMethodResolverDbConnectionTest
             .Returns(connection.Object);
 
         actual(command.Object, null!);
-        Assert.AreEqual(_executeConnection, connection.Object);
+        connection.Object.ShouldBe(_executeConnection);
     }
 
     private void Execute(IDbConnection connection)
     {
-        Assert.IsNull(_executeConnection);
+        _executeConnection.ShouldBeNull();
         _executeConnection = connection;
     }
 }
