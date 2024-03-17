@@ -205,7 +205,8 @@ task PsCoreTest {
         , "mcr.microsoft.com/powershell:7.2.1-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.2.2-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.3-ubuntu-20.04"
-        , "mcr.microsoft.com/powershell:7.4-ubuntu-20.04")
+        , "mcr.microsoft.com/powershell:7.4-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:preview-7.5-ubuntu-20.04")
 
     $builds = @()
     foreach ($image in $images) {
