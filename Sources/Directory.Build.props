@@ -30,7 +30,7 @@
     <PackageIconUrl>https://github.com/max-ieremenko/SqlDatabase/raw/master/icon-32.png</PackageIconUrl>
     <PackageIcon>icon-32.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>(C) 2018-2023 Max Ieremenko.</Copyright>
+    <Copyright>(C) 2018-2024 Max Ieremenko.</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>sqlserver database postgresql mysql mysql-database sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</PackageTags>
     <IncludeSymbols>false</IncludeSymbols>
