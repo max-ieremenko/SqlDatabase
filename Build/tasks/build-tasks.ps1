@@ -206,12 +206,10 @@ task PsCoreTest {
         , "mcr.microsoft.com/powershell:7.2.2-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.3-ubuntu-20.04")
 
-    foreach ($image in $images) {
-        exec { docker pull $image }
-    }
-
     $builds = @()
     foreach ($image in $images) {
+        exec { docker pull -q $image }
+
         foreach ($database in $databases) {
             $builds += @{
                 File     = "build-tasks.it-ps-core.ps1"
