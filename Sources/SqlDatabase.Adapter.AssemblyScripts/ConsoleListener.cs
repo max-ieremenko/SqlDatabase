@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
-
-namespace SqlDatabase.Adapter.AssemblyScripts;
+﻿namespace SqlDatabase.Adapter.AssemblyScripts;
 
 internal sealed class ConsoleListener : TextWriter
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace SqlDatabase.Adapter.PowerShellScripts;
+﻿namespace SqlDatabase.Adapter.PowerShellScripts;
 
 [DebuggerDisplay("{Version}")]
 internal readonly struct InstallationInfo : IComparable<InstallationInfo>

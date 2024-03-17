@@ -1,6 +1,4 @@
 ﻿#if NET5_0_OR_GREATER
-using System;
-using System.IO;
 using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.CompilerServices;

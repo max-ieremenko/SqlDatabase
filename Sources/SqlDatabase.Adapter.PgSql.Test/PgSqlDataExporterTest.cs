@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Dynamic;
-using System.IO;
-using System.Text;
 using Moq;
 using Npgsql;
 using NpgsqlTypes;

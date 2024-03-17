@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace SqlDatabase.Configuration;
+﻿namespace SqlDatabase.Configuration;
 
 public sealed class InvalidCommandLineException : SystemException
 {

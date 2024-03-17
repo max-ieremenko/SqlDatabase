@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;

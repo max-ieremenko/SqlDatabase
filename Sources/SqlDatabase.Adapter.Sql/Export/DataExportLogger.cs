@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-namespace SqlDatabase.Adapter.Sql.Export;
+﻿namespace SqlDatabase.Adapter.Sql.Export;
 
 public sealed class DataExportLogger : ILogger
 {

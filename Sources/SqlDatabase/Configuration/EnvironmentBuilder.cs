@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.AssemblyScripts;
 using SqlDatabase.Adapter.PowerShellScripts;
 using SqlDatabase.Adapter.Sql;

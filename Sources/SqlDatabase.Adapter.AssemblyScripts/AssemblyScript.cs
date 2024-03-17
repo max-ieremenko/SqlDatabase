@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-
-namespace SqlDatabase.Adapter.AssemblyScripts;
+﻿namespace SqlDatabase.Adapter.AssemblyScripts;
 
 internal sealed class AssemblyScript : IScript
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SqlDatabase.Log;
+﻿namespace SqlDatabase.Log;
 
 internal sealed class DisposableAction : IDisposable
 {

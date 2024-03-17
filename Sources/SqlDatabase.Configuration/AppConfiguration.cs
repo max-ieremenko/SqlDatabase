@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SqlDatabase.Configuration;
+﻿namespace SqlDatabase.Configuration;
 
 public sealed class AppConfiguration
 {

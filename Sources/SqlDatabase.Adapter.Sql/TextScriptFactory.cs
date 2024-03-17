@@ -1,5 +1,4 @@
-﻿using System;
-using SqlDatabase.FileSystem;
+﻿using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Adapter.Sql;
 

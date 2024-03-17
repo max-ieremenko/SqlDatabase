@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.IO;
-using Npgsql;
+﻿using Npgsql;
 
 namespace SqlDatabase.Adapter.PgSql;
 

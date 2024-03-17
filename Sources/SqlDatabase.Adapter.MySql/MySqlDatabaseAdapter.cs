@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.IO;
-using MySqlConnector;
+﻿using MySqlConnector;
 
 namespace SqlDatabase.Adapter.MySql;
 

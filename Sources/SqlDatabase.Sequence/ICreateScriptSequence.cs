@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Sequence;
 

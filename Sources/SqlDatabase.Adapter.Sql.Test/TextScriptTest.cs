@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;

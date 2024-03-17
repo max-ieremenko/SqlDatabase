@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SqlDatabase.Configuration;
+﻿namespace SqlDatabase.Configuration;
 
 public sealed class ConfigurationErrorsException : ApplicationException
 {

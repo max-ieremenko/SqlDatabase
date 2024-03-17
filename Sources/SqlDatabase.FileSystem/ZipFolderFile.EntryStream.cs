@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace SqlDatabase.FileSystem;
+﻿namespace SqlDatabase.FileSystem;
 
 internal partial class ZipFolderFile
 {

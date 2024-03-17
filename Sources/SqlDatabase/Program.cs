@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.Configuration;
 using SqlDatabase.Log;
 

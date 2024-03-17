@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 
 namespace SqlDatabase.Sequence;
 
