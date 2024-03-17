@@ -3,7 +3,7 @@
 [DebuggerDisplay("{Version}")]
 internal readonly struct InstallationInfo : IComparable<InstallationInfo>
 {
-    public InstallationInfo(string location, Version version, string productVersion)
+    public InstallationInfo(string location, Version version, string? productVersion)
     {
         Location = location;
         Version = version;
