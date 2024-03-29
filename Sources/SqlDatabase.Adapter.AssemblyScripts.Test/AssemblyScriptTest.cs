@@ -34,7 +34,18 @@ public class AssemblyScriptTest
             .Callback(() => _executedScripts.Add(_command.Object.CommandText))
             .Returns(0);
 
-        _sut = new AssemblyScript("dummy", null, null, null!, null!);
+#if NET472
+        var frameworkVersion = FrameworkVersion.Net472;
+#else
+        var frameworkVersion = FrameworkVersion.Net6;
+#endif
+        _sut = new AssemblyScript(
+            frameworkVersion,
+            "dummy",
+            null,
+            null,
+            null!,
+            null!);
     }
 
     [Test]
@@ -55,9 +66,7 @@ public class AssemblyScriptTest
         _sut.DisplayName = "2.1_2.2.dll";
         _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
-#if !NET472
         using (new ConsoleListener(_log.Object))
-#endif
         {
             _sut.Execute(new DbCommandStub(_command.Object), _variables.Object, _log.Object);
         }
@@ -91,9 +100,7 @@ public class AssemblyScriptTest
         _sut.DisplayName = "2.1_2.2.dll";
         _sut.ReadAssemblyContent = () => File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "2.1_2.2.dll"));
 
-#if !NET472
         using (new ConsoleListener(_log.Object))
-#endif
         {
             _sut.Execute(new DbCommandStub(_command.Object), _variables.Object, _log.Object);
         }
