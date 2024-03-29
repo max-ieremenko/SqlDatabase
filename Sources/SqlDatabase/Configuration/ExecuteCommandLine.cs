@@ -11,7 +11,7 @@ internal sealed class ExecuteCommandLine : CommandLineBase
 
     public bool WhatIf { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder(Runtime));
 
     internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {
@@ -44,13 +44,12 @@ internal sealed class ExecuteCommandLine : CommandLineBase
             return true;
         }
 
-#if NET5_0_OR_GREATER
-        if (Arg.UsePowerShell.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
+        if (Runtime.SupportUsePowerShell() && Arg.UsePowerShell.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
         {
             UsePowerShell = arg.Value;
             return true;
         }
-#endif
+
         if (TryParseWhatIf(arg, out var value))
         {
             WhatIf = value;

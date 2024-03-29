@@ -3,11 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>..\..\bin\SqlDatabase.PowerShell</OutputPath>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" PrivateAssets="All" />
+    <PackageReference Include="System.Data.SqlClient" GeneratePathProperty="true" PrivateAssets="All" />
+    <PackageReference Include="Npgsql" GeneratePathProperty="true" PrivateAssets="All" />
+    <PackageReference Include="MySqlConnector" GeneratePathProperty="true" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,22 +27,27 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <MakeDir Directories="$(OutDir)ps-core" />
-    <Move SourceFiles="$(OutDir)SqlDatabase.Adapter.MsSql.dll" DestinationFolder="$(OutDir)ps-core" />
-
-    <MakeDir Directories="$(OutDir)ps-desktop" />
-    <Copy SourceFiles="$(OutDir)..\..\..\Sources\SqlDatabase.Adapter.MsSql\bin\net472\SqlDatabase.Adapter.MsSql.dll" DestinationFolder="$(OutDir)ps-desktop"/>
-    <Copy SourceFiles="$(OutDir)..\..\..\Sources\SqlDatabase.Adapter.MsSql\bin\net472\SqlDatabase.Adapter.MsSql.pdb" DestinationFolder="$(OutDir)ps-desktop"/>
-    <Move SourceFiles="$(OutDir)System.Buffers.dll" DestinationFolder="$(OutDir)ps-desktop"/>
-    <Move SourceFiles="$(OutDir)System.Memory.dll" DestinationFolder="$(OutDir)ps-desktop"/>
-    <Move SourceFiles="$(OutDir)System.Runtime.CompilerServices.Unsafe.dll" DestinationFolder="$(OutDir)ps-desktop"/>
-    <Move SourceFiles="$(OutDir)System.Threading.Tasks.Extensions.dll" DestinationFolder="$(OutDir)ps-desktop"/>
-
     <ItemGroup>
-      <FilesToDelete Include="$(OutDir)System*.*"/>
-      <FilesToDelete Include="$(OutDir)Microsoft*.*"/>
-    </ItemGroup>
-    <Delete Files="@(FilesToDelete)" />
-  </Target>
+      <CommonDependency Include="$(PKGNpgsql)\lib\netstandard2.0\Npgsql.dll" />
+      <CommonDependency Include="$(PKGMySqlConnector)\lib\netstandard2.0\MySqlConnector.dll" />
 
+      <PsDesktopDependency Include="$(PKGSystem_Data_SqlClient)\lib\net461\System.Data.SqlClient.dll" />
+      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Threading.Tasks.Extensions.dll" />
+      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Memory.dll" />
+      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Runtime.CompilerServices.Unsafe.dll" />
+      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Buffers.dll" />
+
+      <ToDeleteDependency Include="$(OutDir)System*.*" />
+      <ToDeleteDependency Include="$(OutDir)Microsoft*.*" />
+    </ItemGroup>
+
+    <RemoveDir Directories="$(OutDir)ps-core" />
+    <RemoveDir Directories="$(OutDir)ps-desktop" />
+    <MakeDir Directories="$(OutDir)ps-core" />
+    <MakeDir Directories="$(OutDir)ps-desktop" />
+
+    <Copy SourceFiles="@(CommonDependency)" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="@(PsDesktopDependency)" DestinationFolder="$(OutDir)ps-desktop" />
+    <Delete Files="@(ToDeleteDependency)" />
+  </Target>
  </Project>

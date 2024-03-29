@@ -2,29 +2,24 @@
 
 internal static class InstallationSeeker
 {
+    public const string PowershellFileName = "pwsh.dll";
     public const string RootAssemblyName = "System.Management.Automation";
     public const string RootAssemblyFileName = RootAssemblyName + ".dll";
 
-    public static bool TryFindByParentProcess([NotNullWhen(true)] out string? installationPath)
+    public static bool TryFindByParentProcess(HostedRuntime runtime, [NotNullWhen(true)] out string? installationPath)
     {
-        int processId;
-        DateTime processStartTime;
-        using (var current = Process.GetCurrentProcess())
-        {
-            processId = current.Id;
-            processStartTime = current.StartTime;
-        }
+        installationPath = DiagnosticsTools.FindPowerShellProcess(runtime);
 
-        installationPath = FindPowerShellProcess(processId, processStartTime);
         return !string.IsNullOrEmpty(installationPath)
                && TryGetInfo(installationPath!, out var info)
-               && IsCompatibleVersion(info.Version);
+               && IsCompatibleVersion(runtime.Version, info.Version);
     }
 
-    public static bool TryFindOnDisk([NotNullWhen(true)] out string? installationPath)
+    public static bool TryFindOnDisk(HostedRuntime runtime, [NotNullWhen(true)] out string? installationPath)
     {
         installationPath = null;
-        var root = GetDefaultInstallationRoot();
+
+        var root = runtime.IsWindows ? PowerShellWindows.GetInstallationPath() : PowerShellLinux.GetInstallationPath();
         if (!Directory.Exists(root))
         {
             return false;
@@ -36,7 +31,7 @@ internal static class InstallationSeeker
         for (var i = 0; i < directories.Length; i++)
         {
             if (TryGetInfo(directories[i], out var info)
-                && IsCompatibleVersion(info.Version))
+                && IsCompatibleVersion(runtime.Version, info.Version))
             {
                 candidates.Add(info);
             }
@@ -57,7 +52,7 @@ internal static class InstallationSeeker
         info = default;
 
         var root = Path.Combine(installationPath, RootAssemblyFileName);
-        if (!File.Exists(Path.Combine(installationPath, "pwsh.dll"))
+        if (!File.Exists(Path.Combine(installationPath, PowershellFileName))
             || !File.Exists(root))
         {
             return false;
@@ -75,64 +70,23 @@ internal static class InstallationSeeker
         return true;
     }
 
-    private static string? FindPowerShellProcess(int processId, DateTime processStartTime)
+    private static bool IsCompatibleVersion(FrameworkVersion runtimeVersion, Version version)
     {
-        var parentId = DiagnosticsTools.GetParentProcessId(processId);
-        if (!parentId.HasValue || parentId == processId)
+        if (runtimeVersion == FrameworkVersion.Net8)
         {
-            return null;
+            return version < new Version("7.5");
         }
 
-        string? parentLocation = null;
-        try
+        if (runtimeVersion == FrameworkVersion.Net7)
         {
-            using (var parent = Process.GetProcessById(parentId.Value))
-            {
-                if (parent.StartTime < processStartTime)
-                {
-                    parentLocation = parent.MainModule?.FileName;
-                }
-            }
-        }
-        catch
-        {
+            return version < new Version("7.4");
         }
 
-        if (string.IsNullOrWhiteSpace(parentLocation) || !File.Exists(parentLocation))
+        if (runtimeVersion == FrameworkVersion.Net6)
         {
-            return null;
+            return version < new Version("7.3");
         }
 
-        var fileName = Path.GetFileName(parentLocation);
-        if (!"pwsh.exe".Equals(fileName, StringComparison.OrdinalIgnoreCase) && !"pwsh".Equals(fileName, StringComparison.OrdinalIgnoreCase))
-        {
-            // try parent
-            return FindPowerShellProcess(parentId.Value, processStartTime);
-        }
-
-        return Path.GetDirectoryName(parentLocation);
-    }
-
-    private static string GetDefaultInstallationRoot()
-    {
-        if (DiagnosticsTools.IsOSPlatformWindows())
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PowerShell");
-        }
-
-        return "/opt/microsoft/powershell";
-    }
-
-    private static bool IsCompatibleVersion(Version version)
-    {
-#if NET8_0
-        return version < new Version("7.5");
-#elif NET7_0
-        return version < new Version("7.4");
-#elif NET6_0
-        return version < new Version("7.3");
-#else
         return false;
-#endif
     }
 }

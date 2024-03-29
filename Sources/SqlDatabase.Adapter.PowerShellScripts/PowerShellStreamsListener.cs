@@ -9,12 +9,12 @@ internal sealed class PowerShellStreamsListener : IDisposable
     private readonly ILogger _logger;
     private readonly IList _information;
 
-    public PowerShellStreamsListener(PSDataStreams streams, ILogger logger)
+    public PowerShellStreamsListener(PSDataStreams streams, FrameworkVersion version, ILogger logger)
     {
         _streams = streams;
         _logger = logger;
 
-        _information = GetInformation(streams);
+        _information = version == FrameworkVersion.Net472 ? ReflectionGetInformation(streams) : streams.Information;
 
         InvokeDataAdded(_information, OnInformation, true);
         streams.Verbose.DataAdded += OnVerbose;
@@ -30,15 +30,6 @@ internal sealed class PowerShellStreamsListener : IDisposable
         _streams.Error.DataAdded -= OnError;
         _streams.Warning.DataAdded -= OnWarning;
         InvokeDataAdded(_information, OnInformation, false);
-    }
-
-    private static IList GetInformation(PSDataStreams streams)
-    {
-#if !NET472
-        return streams.Information;
-#else
-        return ReflectionGetInformation(streams);
-#endif
     }
 
     private static IList ReflectionGetInformation(PSDataStreams streams)
@@ -57,11 +48,11 @@ internal sealed class PowerShellStreamsListener : IDisposable
 
         if (subscribe)
         {
-            evt.AddMethod!.Invoke(dataCollection, new object[] { handler });
+            evt.AddMethod!.Invoke(dataCollection, [handler]);
         }
         else
         {
-            evt.RemoveMethod!.Invoke(dataCollection, new object[] { handler });
+            evt.RemoveMethod!.Invoke(dataCollection, [handler]);
         }
     }
 

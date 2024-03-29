@@ -1,8 +1,4 @@
 ﻿#if NET472
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -41,9 +37,10 @@ public partial class Net472SubDomainTest
             .Returns(0);
 
         _sut = SubDomainFactory.Create(
-            log.Object,
-            GetType().Assembly.Location,
-            () => File.ReadAllBytes(GetType().Assembly.Location))
+                FrameworkVersion.Net472,
+                log.Object,
+                GetType().Assembly.Location,
+                () => File.ReadAllBytes(GetType().Assembly.Location))
             .ShouldBeOfType<Net472SubDomain>();
 
         _sut.Initialize();

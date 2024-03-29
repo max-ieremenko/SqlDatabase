@@ -29,6 +29,7 @@ public sealed class InfoCmdLet : PSCmdlet
             psVersionTable.PSEdition,
             psVersionTable.PSVersion,
             Version = assembly.GetName().Version,
+            ClrVersion = Environment.Version,
             RuntimeInformation.FrameworkDescription,
             RuntimeInformation.OSDescription,
             RuntimeInformation.OSArchitecture,

@@ -6,13 +6,13 @@ Licenses
 |[Apache-2.0](licenses/apache-2.0)|no|no|2|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|1|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|1|
-|[MIT](licenses/mit)|no|no|42|
+|[MIT](licenses/mit)|no|no|40|
 |[ms-net-library](licenses/ms-net-library)|no|no|2|
 |[PostgreSQL](licenses/postgresql)|no|no|1|
 
 
 
-Packages 49
+Packages 47
 --------
 
 |Name|Version|Source|License|Used by|
@@ -27,8 +27,6 @@ Packages 49
 |[Microsoft.TestPlatform.ObjectModel](packages/nuget.org/microsoft.testplatform.objectmodel/17.9.0)|17.9.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.ObjectModel/17.9.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/17.9.0)|17.9.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/17.9.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Win32.Registry](packages/nuget.org/microsoft.win32.registry/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0)|[MIT](licenses/mit)|SqlDatabase|
-|[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.2.0)|7.2.0|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.2.0)|[MIT](licenses/mit)|SqlDatabase|
-|[Microsoft.WSMan.Runtime](packages/nuget.org/microsoft.wsman.runtime/7.3.0)|7.3.0|[nuget.org](https://www.nuget.org/packages/Microsoft.WSMan.Runtime/7.3.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Moq](packages/nuget.org/moq/4.20.70)|4.20.70|[nuget.org](https://www.nuget.org/packages/Moq/4.20.70)|[BSD-3-Clause](licenses/bsd-3-clause)|SqlDatabase internal|
 |[MySqlConnector](packages/nuget.org/mysqlconnector/1.3.10)|1.3.10|[nuget.org](https://www.nuget.org/packages/MySqlConnector/1.3.10)|[MIT](licenses/mit)|SqlDatabase|
 |[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|SqlDatabase|

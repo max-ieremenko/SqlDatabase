@@ -1,4 +1,6 @@
-﻿namespace SqlDatabase.Configuration;
+﻿using SqlDatabase.Adapter;
+
+namespace SqlDatabase.Configuration;
 
 internal sealed class CommandLineFactory
 {
@@ -9,6 +11,8 @@ internal sealed class CommandLineFactory
     internal const string CommandEcho = "Echo";
 
     public CommandLine Args { get; set; }
+
+    public HostedRuntime Runtime { get; set; }
 
     public string ActiveCommandName { get; private set; } = null!;
 
@@ -58,7 +62,16 @@ internal sealed class CommandLineFactory
     public ICommandLine? Resolve()
     {
         var command = CreateCommand(ActiveCommandName);
-        command?.Parse(Args);
+        if (command != null)
+        {
+            if (command is CommandLineBase supportRuntime)
+            {
+                supportRuntime.Runtime = Runtime;
+            }
+
+            command.Parse(Args);
+        }
+
         return command;
     }
 

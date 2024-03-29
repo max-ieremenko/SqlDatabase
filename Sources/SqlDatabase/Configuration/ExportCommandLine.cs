@@ -10,7 +10,7 @@ internal sealed class ExportCommandLine : CommandLineBase
 
     public string? DestinationFileName { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder(Runtime));
 
     internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {

@@ -19,7 +19,7 @@ public class EnvironmentBuilderTest
         _log = new Mock<ILogger>(MockBehavior.Strict);
         _configuration = new AppConfiguration();
 
-        _sut = new EnvironmentBuilder();
+        _sut = new EnvironmentBuilder(HostedRuntimeResolver.GetRuntime(false));
 
         _sut
             .WithConfiguration(_configuration)
