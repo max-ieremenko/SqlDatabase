@@ -70,7 +70,7 @@ task PackGlobalTool {
 }
 
 task PackPoweShellModule {
-    $source = Join-Path $settings.bin "SqlDatabase.PowerShell\netstandard2.0\"
+    $source = Join-Path $settings.bin "SqlDatabase.PowerShell"
     $dest = $settings.artifactsPowerShell
     
     Copy-Item -Path $source -Destination $dest -Recurse
