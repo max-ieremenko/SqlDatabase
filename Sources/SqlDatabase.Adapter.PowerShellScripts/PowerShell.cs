@@ -5,6 +5,13 @@ namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal sealed class PowerShell : IPowerShell
 {
+    private readonly FrameworkVersion _version;
+
+    public PowerShell(FrameworkVersion version)
+    {
+        _version = version;
+    }
+
     public bool SupportsShouldProcess(string script)
     {
         var attributes = ScriptBlock.Create(script).Attributes;
@@ -28,7 +35,7 @@ internal sealed class PowerShell : IPowerShell
             runSpace.Open();
 
             using (var powerShell = System.Management.Automation.PowerShell.Create())
-            using (var listener = new PowerShellStreamsListener(powerShell.Streams, logger))
+            using (var listener = new PowerShellStreamsListener(powerShell.Streams, _version, logger))
             {
                 powerShell.Runspace = runSpace;
 

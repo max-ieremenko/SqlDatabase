@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System.Runtime.InteropServices;
+using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.TestApi;
@@ -31,7 +32,19 @@ public class PowerShellTest
             .Setup(l => l.Indent())
             .Returns((IDisposable)null!);
 
-        _factory = PowerShellFactory.Create(null);
+#if NET472
+        var version = FrameworkVersion.Net472;
+#elif NET6_0
+        var version = FrameworkVersion.Net6;
+#elif NET7_0
+        var version = FrameworkVersion.Net7;
+#else
+        var version = FrameworkVersion.Net8;
+#endif
+
+        var runtime = new HostedRuntime(false, RuntimeInformation.IsOSPlatform(OSPlatform.Windows), version);
+
+        _factory = new PowerShellFactory(runtime, null);
         _factory.Initialize(_logger.Object);
     }
 
