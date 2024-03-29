@@ -20,7 +20,11 @@ public class UpgradeCommandLineTest
         _log = new Mock<ILogger>(MockBehavior.Strict);
         _fs = new Mock<IFileSystemFactory>(MockBehavior.Strict);
 
-        _sut = new UpgradeCommandLine { FileSystemFactory = _fs.Object };
+        _sut = new UpgradeCommandLine
+        {
+            FileSystemFactory = _fs.Object,
+            Runtime = new HostedRuntime(false, true, FrameworkVersion.Net8)
+        };
     }
 
     [Test]
@@ -39,27 +43,20 @@ public class UpgradeCommandLineTest
             new Arg("configuration", "app.config"),
             new Arg("transaction", "perStep"),
             new Arg("folderAsModuleName"),
-#if !NET472
             new Arg("usePowerShell", @"c:\PowerShell"),
-#endif
             new Arg("whatIf")));
 
-        _sut.Scripts.ShouldBe(new[] { folder.Object });
+        _sut.Scripts.ShouldBe([folder.Object]);
 
         _sut.ConnectionString.ShouldBe("Data Source=.;Initial Catalog=test");
 
-        _sut.Variables.Keys.ShouldBe(new[] { "X", "Y" });
+        _sut.Variables.Keys.ShouldBe(["X", "Y"]);
         _sut.Variables["x"].ShouldBe("1 2 3");
         _sut.Variables["y"].ShouldBe("value");
 
         _sut.ConfigurationFile.ShouldBe("app.config");
-
         _sut.Transaction.ShouldBe(TransactionMode.PerStep);
-
-#if !NET472
         _sut.UsePowerShell.ShouldBe(@"c:\PowerShell");
-#endif
-
         _sut.WhatIf.ShouldBeTrue();
         _sut.FolderAsModuleName.ShouldBeTrue();
     }

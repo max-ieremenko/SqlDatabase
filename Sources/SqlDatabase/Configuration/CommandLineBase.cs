@@ -6,6 +6,8 @@ namespace SqlDatabase.Configuration;
 
 internal abstract class CommandLineBase : ICommandLine
 {
+    public HostedRuntime Runtime { get; set; }
+
     public string? ConnectionString { get; set; }
 
     public IList<IFileSystemInfo> Scripts { get; } = new List<IFileSystemInfo>();

@@ -9,7 +9,7 @@ internal sealed class CreateCommandLine : CommandLineBase
 
     public bool WhatIf { get; set; }
 
-    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder());
+    public override ICommand CreateCommand(ILogger logger) => CreateCommand(logger, new EnvironmentBuilder(Runtime));
 
     internal ICommand CreateCommand(ILogger logger, IEnvironmentBuilder builder)
     {
@@ -30,13 +30,11 @@ internal sealed class CreateCommandLine : CommandLineBase
 
     protected override bool ParseArg(Arg arg)
     {
-#if NET5_0_OR_GREATER
-        if (Arg.UsePowerShell.Equals(arg.Key, System.StringComparison.OrdinalIgnoreCase))
+        if (Runtime.SupportUsePowerShell() && Arg.UsePowerShell.Equals(arg.Key, StringComparison.OrdinalIgnoreCase))
         {
             UsePowerShell = arg.Value;
             return true;
         }
-#endif
 
         if (TryParseWhatIf(arg, out var value))
         {

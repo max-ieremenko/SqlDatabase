@@ -9,10 +9,10 @@ internal static class Program
     public static int Main(string[] args)
     {
         var logger = LoggerFactory.CreateDefault();
-        return Run(logger, args);
+        return Run(logger, false, args);
     }
 
-    internal static int Run(ILogger logger, string[] args)
+    internal static int Run(ILogger logger, bool isPowershell, string[] args)
     {
         if (!TryWrapWithUsersLogger(logger, args, out var userLogger))
         {
@@ -21,7 +21,7 @@ internal static class Program
 
         try
         {
-            return MainCore(userLogger ?? logger, args);
+            return MainCore(userLogger ?? logger, isPowershell, args);
         }
         finally
         {
@@ -29,9 +29,10 @@ internal static class Program
         }
     }
 
-    private static int MainCore(ILogger logger, string[] args)
+    private static int MainCore(ILogger logger, bool isPowershell, string[] args)
     {
-        var factory = ResolveFactory(args, logger);
+        var runtime = HostedRuntimeResolver.GetRuntime(isPowershell);
+        var factory = ResolveFactory(runtime, args, logger);
         if (factory == null)
         {
             logger.Info(LoadHelpContent("CommandLine.txt"));
@@ -40,7 +41,7 @@ internal static class Program
 
         if (factory.ShowCommandHelp)
         {
-            logger.Info(LoadHelpContent(GetHelpFileName(factory.ActiveCommandName)));
+            logger.Info(LoadHelpContent(GetHelpFileName(runtime, factory.ActiveCommandName)));
             return ExitCode.InvalidCommandLine;
         }
 
@@ -82,7 +83,7 @@ internal static class Program
         return null;
     }
 
-    private static CommandLineFactory? ResolveFactory(string[] args, ILogger logger)
+    private static CommandLineFactory? ResolveFactory(HostedRuntime runtime, string[] args, ILogger logger)
     {
         try
         {
@@ -92,7 +93,7 @@ internal static class Program
                 return null;
             }
 
-            var factory = new CommandLineFactory { Args = command };
+            var factory = new CommandLineFactory { Args = command, Runtime = runtime };
             return factory.Bind() ? factory : null;
         }
         catch (Exception ex)
@@ -127,14 +128,15 @@ internal static class Program
         return true;
     }
 
-    private static string GetHelpFileName(string commandName)
+    private static string GetHelpFileName(HostedRuntime runtime, string commandName)
     {
-#if NET472
-        const string Runtime = ".net472";
-#else
-        const string? Runtime = null;
-#endif
-        return "CommandLine." + commandName + Runtime + ".txt";
+        if (runtime.IsPowershell)
+        {
+            throw new NotSupportedException();
+        }
+
+        var suffix = runtime.Version == FrameworkVersion.Net472 ? ".net472" : null;
+        return "CommandLine." + commandName + suffix + ".txt";
     }
 
     private static string LoadHelpContent(string fileName)

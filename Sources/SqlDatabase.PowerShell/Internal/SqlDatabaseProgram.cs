@@ -15,6 +15,6 @@ internal sealed class SqlDatabaseProgram : ISqlDatabaseProgram
     public void ExecuteCommand(GenericCommandLine command)
     {
         var args = new GenericCommandLineBuilder(command).BuildArray();
-        Program.Run(_logger, args);
+        Program.Run(_logger, true, args);
     }
 }

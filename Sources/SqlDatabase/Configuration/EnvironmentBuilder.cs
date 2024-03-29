@@ -10,6 +10,8 @@ namespace SqlDatabase.Configuration;
 
 internal sealed class EnvironmentBuilder : IEnvironmentBuilder
 {
+    private readonly HostedRuntime _runtime;
+
     private ILogger? _logger;
     private AppConfiguration? _configuration;
     private string? _connectionString;
@@ -20,6 +22,11 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
     private AssemblyScriptFactory? _assemblyScript;
     private ScriptResolver? _scriptResolver;
     private IDatabase? _database;
+
+    public EnvironmentBuilder(HostedRuntime runtime)
+    {
+        _runtime = runtime;
+    }
 
     public IEnvironmentBuilder WithConfiguration(string? configurationFile)
     {
@@ -38,14 +45,14 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
 
     public IEnvironmentBuilder WithPowerShellScripts(string? installationPath)
     {
-        _powerShellScript = new PowerShellScriptFactory(installationPath);
+        _powerShellScript = new PowerShellScriptFactory(_runtime, installationPath);
         return this;
     }
 
     public IEnvironmentBuilder WithAssemblyScripts()
     {
         var configuration = GetConfiguration().AssemblyScript;
-        _assemblyScript = new AssemblyScriptFactory(configuration.ClassName, configuration.MethodName);
+        _assemblyScript = new AssemblyScriptFactory(_runtime.Version, configuration.ClassName, configuration.MethodName);
         return this;
     }
 

@@ -40,7 +40,7 @@ public sealed class ConfigurationManager : IConfigurationManager
         }
     }
 
-    private static IFile ResolveConfigurationFile(string probingPath)
+    private static IFile ResolveConfigurationFile(string? probingPath)
     {
         var info = FileSystemFactory.FileSystemInfoFromPath(probingPath);
         return ResolveFile(info);
