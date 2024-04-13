@@ -69,7 +69,7 @@ public class UpgradeScriptSequenceTest
         foreach (var version in testCase.Version)
         {
             _versionResolver
-                .Setup(r => r.GetCurrentVersion(version.Module ?? string.Empty))
+                .Setup(r => r.GetCurrentVersion(version.Module))
                 .Returns(new Version(version.Version));
         }
 
@@ -175,6 +175,8 @@ public class UpgradeScriptSequenceTest
         }
 
         public string Name { get; }
+
+        public string GetFullName() => throw new NotSupportedException();
 
         public IEnumerable<IFolder> GetFolders() => _subFolderByName.Values;
 

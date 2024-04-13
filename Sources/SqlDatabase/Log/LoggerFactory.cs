@@ -8,4 +8,24 @@ internal static class LoggerFactory
     {
         return new ConsoleLogger();
     }
+
+    public static ILogger WrapWithUsersLogger(ILogger logger, string? fileName)
+    {
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return logger;
+        }
+
+        ILogger fileLogger;
+        try
+        {
+            fileLogger = new FileLogger(fileName!);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Fail to create file log.", ex);
+        }
+
+        return new CombinedLogger(logger, false, fileLogger, true);
+    }
 }

@@ -1,5 +1,8 @@
 ﻿using SqlDatabase.Adapter;
+using SqlDatabase.CommandLine;
+using SqlDatabase.Commands;
 using SqlDatabase.Configuration;
+using SqlDatabase.FileSystem;
 using SqlDatabase.Log;
 
 namespace SqlDatabase;
@@ -9,130 +12,71 @@ internal static class Program
     public static int Main(string[] args)
     {
         var logger = LoggerFactory.CreateDefault();
-        return Run(logger, false, args);
-    }
-
-    internal static int Run(ILogger logger, bool isPowershell, string[] args)
-    {
-        if (!TryWrapWithUsersLogger(logger, args, out var userLogger))
-        {
-            return ExitCode.InvalidCommandLine;
-        }
 
         try
         {
-            return MainCore(userLogger ?? logger, isPowershell, args);
+            var runtime = HostedRuntimeResolver.GetRuntime(false);
+
+            if (CommandLineParser.HelpRequested(args, out var command))
+            {
+                logger.Info(LoadHelpContent(GetHelpFileName(runtime, command)));
+                return ExitCode.InvalidCommandLine;
+            }
+
+            var commandLine = CommandLineParser.Parse(runtime, args);
+            logger = LoggerFactory.WrapWithUsersLogger(logger, commandLine.Log);
+            MainCore(logger, runtime, commandLine, Environment.CurrentDirectory);
+        }
+        catch (InvalidCommandLineException ex)
+        {
+            logger.Error($"Invalid command line: {ex.Message}.", ex);
+            return ExitCode.InvalidCommandLine;
+        }
+        catch (Exception ex)
+        {
+            logger.Error("Something went wrong.", ex);
+            return ExitCode.ExecutionErrors;
         }
         finally
         {
-            userLogger?.Dispose();
+            (logger as IDisposable)?.Dispose();
         }
+
+        return ExitCode.Ok;
     }
 
-    private static int MainCore(ILogger logger, bool isPowershell, string[] args)
+    internal static void RunPowershell(ILogger logger, ICommandLine commandLine, string currentDirectory)
     {
-        var runtime = HostedRuntimeResolver.GetRuntime(isPowershell);
-        var factory = ResolveFactory(runtime, args, logger);
-        if (factory == null)
-        {
-            logger.Info(LoadHelpContent("CommandLine.txt"));
-            return ExitCode.InvalidCommandLine;
-        }
-
-        if (factory.ShowCommandHelp)
-        {
-            logger.Info(LoadHelpContent(GetHelpFileName(runtime, factory.ActiveCommandName)));
-            return ExitCode.InvalidCommandLine;
-        }
-
-        var cmd = ResolveCommandLine(factory, logger);
-        if (cmd == null)
-        {
-            return ExitCode.InvalidCommandLine;
-        }
-
-        var exitCode = ExecuteCommand(cmd, logger) ? ExitCode.Ok : ExitCode.ExecutionErrors;
-        return exitCode;
-    }
-
-    private static bool ExecuteCommand(ICommandLine cmd, ILogger logger)
-    {
+        logger = LoggerFactory.WrapWithUsersLogger(logger, commandLine.Log);
         try
         {
-            cmd.CreateCommand(logger).Execute();
-            return true;
+            var runtime = HostedRuntimeResolver.GetRuntime(true);
+            MainCore(logger, runtime, commandLine, currentDirectory);
         }
-        catch (Exception ex)
+        finally
         {
-            logger.Error(ex);
-            return false;
+            (logger as IDisposable)?.Dispose();
         }
     }
 
-    private static ICommandLine? ResolveCommandLine(CommandLineFactory factory, ILogger logger)
+    private static void MainCore(ILogger logger, HostedRuntime runtime, ICommandLine commandLine, string currentDirectory)
     {
-        try
-        {
-            return factory.Resolve();
-        }
-        catch (Exception ex)
-        {
-            logger.Error("Invalid command line.", ex);
-        }
-
-        return null;
+        var fileSystem = new FileSystemFactory(currentDirectory);
+        var factory = new CommandFactory(logger, new EnvironmentBuilder(runtime, fileSystem), fileSystem);
+        var command = factory.CreateCommand(commandLine);
+        command.Execute();
     }
 
-    private static CommandLineFactory? ResolveFactory(HostedRuntime runtime, string[] args, ILogger logger)
-    {
-        try
-        {
-            var command = new CommandLineParser().Parse(args);
-            if (command.Args.Count == 0)
-            {
-                return null;
-            }
-
-            var factory = new CommandLineFactory { Args = command, Runtime = runtime };
-            return factory.Bind() ? factory : null;
-        }
-        catch (Exception ex)
-        {
-            logger.Error("Invalid command line.", ex);
-        }
-
-        return null;
-    }
-
-    private static bool TryWrapWithUsersLogger(ILogger logger, string[] args, out CombinedLogger? combined)
-    {
-        combined = null;
-        var fileName = CommandLineParser.GetLogFileName(args);
-        if (string.IsNullOrEmpty(fileName))
-        {
-            return true;
-        }
-
-        ILogger fileLogger;
-        try
-        {
-            fileLogger = new FileLogger(fileName!);
-        }
-        catch (Exception ex)
-        {
-            logger.Error("Fail to create file log.", ex);
-            return false;
-        }
-
-        combined = new CombinedLogger(logger, false, fileLogger, true);
-        return true;
-    }
-
-    private static string GetHelpFileName(HostedRuntime runtime, string commandName)
+    private static string GetHelpFileName(HostedRuntime runtime, string? commandName)
     {
         if (runtime.IsPowershell)
         {
             throw new NotSupportedException();
+        }
+
+        if (commandName == null)
+        {
+            return "CommandLine.txt";
         }
 
         var suffix = runtime.Version == FrameworkVersion.Net472 ? ".net472" : null;

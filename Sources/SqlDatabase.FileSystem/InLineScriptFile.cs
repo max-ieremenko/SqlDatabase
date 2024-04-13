@@ -15,10 +15,9 @@ internal sealed class InLineScriptFile : IFile
 
     public string Extension { get; }
 
+    public string GetFullName() => Name;
+
     public IFolder? GetParent() => null;
 
-    public Stream OpenRead()
-    {
-        return new MemoryStream(Encoding.UTF8.GetBytes(Content));
-    }
+    public Stream OpenRead() => new MemoryStream(Encoding.UTF8.GetBytes(Content));
 }

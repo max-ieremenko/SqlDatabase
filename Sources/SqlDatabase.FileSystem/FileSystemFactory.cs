@@ -1,10 +1,18 @@
 ﻿namespace SqlDatabase.FileSystem;
 
+[DebuggerDisplay("{CurrentDirectory}")]
 public sealed class FileSystemFactory : IFileSystemFactory
 {
-    public static IFileSystemInfo FileSystemInfoFromPath(string? path)
+    public FileSystemFactory(string currentDirectory)
     {
-        path = FileTools.RootPath(path);
+        CurrentDirectory = currentDirectory;
+    }
+
+    public string CurrentDirectory { get; }
+
+    public IFileSystemInfo FileSystemInfoFromPath(string? path)
+    {
+        path = FileTools.RootPath(path, CurrentDirectory);
 
         if (File.Exists(path))
         {
@@ -21,8 +29,7 @@ public sealed class FileSystemFactory : IFileSystemFactory
 
         while (!string.IsNullOrEmpty(path))
         {
-            entryPoint = TryToResolveEntryPoint(path);
-            if (entryPoint != null)
+            if (TryToResolveEntryPoint(path, out entryPoint))
             {
                 break;
             }
@@ -66,18 +73,14 @@ public sealed class FileSystemFactory : IFileSystemFactory
         return folder;
     }
 
-    IFileSystemInfo IFileSystemFactory.FileSystemInfoFromPath(string? path) => FileSystemInfoFromPath(path);
+    public IFileSystemInfo FromContent(string name, string content) => new InLineScriptFile(name, content);
 
-    public IFileSystemInfo FromContent(string name, string content)
-    {
-        return new InLineScriptFile(name, content);
-    }
-
-    private static IFolder? TryToResolveEntryPoint(string path)
+    private static bool TryToResolveEntryPoint(string path, [NotNullWhen(true)] out IFolder? entryPoint)
     {
         if (Directory.Exists(path))
         {
-            return new FileSystemFolder(path);
+            entryPoint = new FileSystemFolder(path);
+            return true;
         }
 
         if (File.Exists(path))
@@ -87,9 +90,11 @@ public sealed class FileSystemFactory : IFileSystemFactory
                 throw new NotSupportedException($"File format [{Path.GetExtension(path)}] is not supported as .zip container.");
             }
 
-            return new ZipFolder(path);
+            entryPoint = new ZipFolder(path);
+            return true;
         }
 
-        return null;
+        entryPoint = null;
+        return false;
     }
 }

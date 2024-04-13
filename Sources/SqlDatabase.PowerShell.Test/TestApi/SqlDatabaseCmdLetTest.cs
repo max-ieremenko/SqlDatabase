@@ -5,7 +5,7 @@ using System.Reflection;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Configuration;
+using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.Internal;
 using SqlDatabase.TestApi;
 using Command = System.Management.Automation.Runspaces.Command;
@@ -14,7 +14,7 @@ namespace SqlDatabase.PowerShell.TestApi;
 
 public abstract class SqlDatabaseCmdLetTest<TSubject>
 {
-    private readonly IList<GenericCommandLine> _commandLines = new List<GenericCommandLine>();
+    private readonly List<ICommandLine> _commandLines = new();
     private Runspace _runSpace = null!;
     private System.Management.Automation.PowerShell _powerShell = null!;
 
@@ -36,17 +36,17 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
 
         var program = new Mock<ISqlDatabaseProgram>(MockBehavior.Strict);
         program
-            .Setup(p => p.ExecuteCommand(It.IsNotNull<GenericCommandLine>()))
-            .Callback<GenericCommandLine>(cmd => _commandLines.Add(cmd));
+            .Setup(p => p.ExecuteCommand(It.IsNotNull<ICommandLine>()))
+            .Callback<ICommandLine>(_commandLines.Add);
 
         _commandLines.Clear();
-        PowerShellCommandBase.Program = program.Object;
+        PowerShellCommand.Program = program.Object;
     }
 
     [TearDown]
     public void AfterEachTest()
     {
-        PowerShellCommandBase.Program = null;
+        PowerShellCommand.Program = null;
 
         foreach (var row in _powerShell.Streams.Information)
         {
@@ -65,12 +65,9 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
         return _powerShell.Invoke();
     }
 
-    protected GenericCommandLine[] InvokeSqlDatabase(string name, Action<Command> builder)
-    {
-        return InvokeInvokeSqlDatabasePipeLine(name, builder);
-    }
+    protected ICommandLine[] InvokeSqlDatabase(string name, Action<Command> builder) => InvokeInvokeSqlDatabasePipeLine(name, builder);
 
-    protected GenericCommandLine[] InvokeInvokeSqlDatabasePipeLine(string name, Action<Command> builder, params object[] args)
+    protected ICommandLine[] InvokeInvokeSqlDatabasePipeLine(string name, Action<Command> builder, params object[] args)
     {
         _commandLines.Clear();
 

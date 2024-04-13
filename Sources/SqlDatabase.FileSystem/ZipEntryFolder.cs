@@ -3,8 +3,11 @@
 [DebuggerDisplay("{Name}")]
 internal sealed class ZipEntryFolder : IFolder
 {
-    public ZipEntryFolder(string name)
+    private readonly string _fullName;
+
+    public ZipEntryFolder(string name, string fullName)
     {
+        _fullName = fullName;
         Name = name;
 
         FolderByName = new Dictionary<string, IFolder>(StringComparer.OrdinalIgnoreCase);
@@ -16,6 +19,8 @@ internal sealed class ZipEntryFolder : IFolder
     public IDictionary<string, IFolder> FolderByName { get; }
 
     public IList<ZipFolderFile> Files { get; }
+
+    public string GetFullName() => _fullName;
 
     public IEnumerable<IFolder> GetFolders() => FolderByName.Values;
 

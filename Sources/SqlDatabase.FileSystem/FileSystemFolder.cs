@@ -12,6 +12,8 @@ internal sealed class FileSystemFolder : IFolder
 
     public string Location { get; }
 
+    public string GetFullName() => Location;
+
     public IEnumerable<IFolder> GetFolders()
     {
         var folders = Directory

@@ -1,11 +1,12 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.Configuration;
+using SqlDatabase.Adapter;
+using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell;
 
 [Cmdlet(VerbsData.Update, "SqlDatabase")]
-[Alias(CommandLineFactory.CommandUpgrade + "-SqlDatabase")]
+[Alias("Upgrade-SqlDatabase")]
 public sealed class UpgradeCmdLet : PSCmdlet
 {
     [Parameter(Mandatory = true, Position = 1, HelpMessage = "Connection string to target database.")]
@@ -39,6 +40,19 @@ public sealed class UpgradeCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        new UpgradePowerShellCommand(this).Execute();
+        var commandLine = new UpgradeCommandLine
+        {
+            Database = Database,
+            Transaction = (TransactionMode)Transaction,
+            Configuration = Configuration,
+            Log = Log,
+            WhatIf = WhatIf,
+            FolderAsModuleName = FolderAsModuleName
+        };
+
+        CommandLineTools.AppendFrom(commandLine.From, false, From);
+        CommandLineTools.AppendVariables(commandLine.Variables, Var);
+
+        PowerShellCommand.Execute(this, commandLine);
     }
 }

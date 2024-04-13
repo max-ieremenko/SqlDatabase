@@ -1,4 +1,5 @@
 ﻿using System.Management.Automation;
+using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell;
@@ -37,6 +38,19 @@ public sealed class ExportCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        new ExportPowerShellCommand(this).Execute();
+        var commandLine = new ExportCommandLine
+        {
+            Database = Database,
+            Configuration = Configuration,
+            DestinationFileName = ToFile,
+            DestinationTableName = ToTable,
+            Log = Log
+        };
+
+        CommandLineTools.AppendFrom(commandLine.From, false, From);
+        CommandLineTools.AppendFrom(commandLine.From, true, FromSql);
+        CommandLineTools.AppendVariables(commandLine.Variables, Var);
+
+        PowerShellCommand.Execute(this, commandLine);
     }
 }

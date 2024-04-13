@@ -4,6 +4,7 @@ bin/
 build.out/
 
 launchSettings.json
+launchSettings.txt
 *.sln.DotSettings.user
 *.csproj.user
 

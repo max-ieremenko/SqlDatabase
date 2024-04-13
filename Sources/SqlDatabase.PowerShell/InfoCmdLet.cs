@@ -20,7 +20,6 @@ public sealed class InfoCmdLet : PSCmdlet
     private void WriteInfo()
     {
         var assembly = GetType().Assembly;
-        var location = Path.GetDirectoryName(assembly.Location);
 
         this.TryGetPSVersionTable(out var psVersionTable);
 
@@ -34,9 +33,9 @@ public sealed class InfoCmdLet : PSCmdlet
             RuntimeInformation.OSDescription,
             RuntimeInformation.OSArchitecture,
             RuntimeInformation.ProcessArchitecture,
-            Location = location,
+            Location = Path.GetDirectoryName(assembly.Location),
             WorkingDirectory = this.GetWorkingDirectory(),
-            DefaultConfigurationFile = ConfigurationManager.ResolveDefaultConfigurationFile(location)
+            DefaultConfigurationFile = ConfigurationManager.GetDefaultConfigurationFile()
         });
     }
 }

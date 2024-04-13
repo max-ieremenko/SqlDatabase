@@ -1,8 +1,8 @@
-﻿using SqlDatabase.Configuration;
+﻿using SqlDatabase.CommandLine;
 
 namespace SqlDatabase.PowerShell.Internal;
 
 internal interface ISqlDatabaseProgram
 {
-    void ExecuteCommand(GenericCommandLine command);
+    void ExecuteCommand(ICommandLine command);
 }

@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Configuration;
@@ -13,53 +15,51 @@ public class ConfigurationManagerTest
 </configuration>
 ";
 
-    private TempDirectory _temp = null!;
+    private Mock<IFileSystemFactory> _fileSystem = null!;
     private ConfigurationManager _sut = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
-        _temp = new TempDirectory();
-        _sut = new ConfigurationManager();
-    }
-
-    [TearDown]
-    public void AfterEachTest()
-    {
-        _temp.Dispose();
+        _fileSystem = new Mock<IFileSystemFactory>(MockBehavior.Strict);
+        _sut = new ConfigurationManager(_fileSystem.Object);
     }
 
     [Test]
-    public void LoadFromCurrentConfiguration()
+    public void LoadFromDefaultConfiguration()
     {
-        _sut.LoadFrom((string?)null);
+        var actual = _sut.LoadFrom(null);
 
-        _sut.SqlDatabase.ShouldNotBeNull();
-        _sut.SqlDatabase.Variables.Keys.ShouldBe(new[] { nameof(ConfigurationManagerTest) });
-        _sut.SqlDatabase.Variables[nameof(ConfigurationManagerTest)].ShouldBe(nameof(LoadFromCurrentConfiguration));
+        actual.Variables.Keys.ShouldBe(new[] { nameof(ConfigurationManagerTest) });
+        actual.Variables[nameof(ConfigurationManagerTest)].ShouldBe("LoadFromCurrentConfiguration");
     }
 
     [Test]
     public void LoadFromEmptyFile()
     {
-        var fileName = Path.Combine(_temp.Location, "app.config");
-        File.WriteAllText(fileName, "<configuration />");
+        const string FileName = "app.config";
 
-        _sut.LoadFrom(fileName);
+        _fileSystem
+            .Setup(f => f.FileSystemInfoFromPath(FileName))
+            .Returns(FileFactory.File(FileName, "<configuration />"));
 
-        _sut.SqlDatabase.ShouldNotBeNull();
+        var actual = _sut.LoadFrom(FileName);
+
+        actual.ShouldNotBeNull();
     }
 
     [Test]
     public void LoadFromFile()
     {
-        var fileName = Path.Combine(_temp.Location, "app.config");
-        File.WriteAllText(fileName, SomeConfiguration);
+        const string FileName = "app.config";
 
-        _sut.LoadFrom(fileName);
+        _fileSystem
+            .Setup(f => f.FileSystemInfoFromPath(FileName))
+            .Returns(FileFactory.File(FileName, SomeConfiguration));
 
-        _sut.SqlDatabase.ShouldNotBeNull();
-        _sut.SqlDatabase.GetCurrentVersionScript.ShouldBe("expected");
+        var actual = _sut.LoadFrom(FileName);
+
+        actual.GetCurrentVersionScript.ShouldBe("expected");
     }
 
     [Test]
@@ -67,34 +67,40 @@ public class ConfigurationManagerTest
     [TestCase(ConfigurationManager.Name2)]
     public void LoadFromDirectory(string fileName)
     {
-        File.WriteAllText(Path.Combine(_temp.Location, fileName), SomeConfiguration);
+        const string DirectoryName = "some/path";
 
-        _sut.LoadFrom(_temp.Location);
+        _fileSystem
+            .Setup(f => f.FileSystemInfoFromPath(DirectoryName))
+            .Returns(FileFactory.Folder(
+                "path",
+                FileFactory.File(fileName, SomeConfiguration)));
 
-        _sut.SqlDatabase.ShouldNotBeNull();
-        _sut.SqlDatabase.GetCurrentVersionScript.ShouldBe("expected");
+        var actual = _sut.LoadFrom(DirectoryName);
+
+        actual.GetCurrentVersionScript.ShouldBe("expected");
     }
 
     [Test]
     public void NotFoundInDirectory()
     {
-        Assert.Throws<FileNotFoundException>(() => _sut.LoadFrom(_temp.Location));
-    }
+        const string DirectoryName = "some/path";
 
-    [Test]
-    public void FileNotFound()
-    {
-        var fileName = Path.Combine(_temp.Location, "app.config");
+        _fileSystem
+            .Setup(f => f.FileSystemInfoFromPath(DirectoryName))
+            .Returns(FileFactory.Folder("path"));
 
-        Assert.Throws<IOException>(() => _sut.LoadFrom(fileName));
+        Assert.Throws<FileNotFoundException>(() => _sut.LoadFrom(DirectoryName));
     }
 
     [Test]
     public void LoadInvalidConfiguration()
     {
-        var fileName = Path.Combine(_temp.Location, "app.config");
-        File.WriteAllText(fileName, "<configuration>");
+        const string FileName = "app.config";
 
-        Assert.Throws<ConfigurationErrorsException>(() => _sut.LoadFrom(fileName));
+        _fileSystem
+            .Setup(f => f.FileSystemInfoFromPath(FileName))
+            .Returns(FileFactory.File(FileName, "<configuration>"));
+
+        Assert.Throws<ConfigurationErrorsException>(() => _sut.LoadFrom(FileName));
     }
 }

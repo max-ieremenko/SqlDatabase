@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;

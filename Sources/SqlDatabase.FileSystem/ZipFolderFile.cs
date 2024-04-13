@@ -22,6 +22,8 @@ internal sealed partial class ZipFolderFile : IFile
 
     public string Extension { get; }
 
+    public string GetFullName() => Path.Combine(_container.GetFullName(), EntryFullName);
+
     public IFolder GetParent() => _parent;
 
     public Stream OpenRead()

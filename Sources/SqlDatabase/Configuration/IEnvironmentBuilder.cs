@@ -1,7 +1,5 @@
 ﻿using SqlDatabase.Adapter;
-using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
-using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Configuration;
 
@@ -23,7 +21,5 @@ internal interface IEnvironmentBuilder
 
     IScriptResolver BuildScriptResolver();
 
-    IUpgradeScriptSequence BuildUpgradeSequence(IList<IFileSystemInfo> scripts, bool folderAsModuleName);
-
-    ICreateScriptSequence BuildCreateSequence(IList<IFileSystemInfo> scripts);
+    IScriptFactory BuildScriptFactory();
 }

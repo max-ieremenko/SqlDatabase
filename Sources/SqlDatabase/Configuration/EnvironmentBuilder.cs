@@ -2,15 +2,16 @@
 using SqlDatabase.Adapter.AssemblyScripts;
 using SqlDatabase.Adapter.PowerShellScripts;
 using SqlDatabase.Adapter.Sql;
+using SqlDatabase.CommandLine;
 using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
-using SqlDatabase.Sequence;
 
 namespace SqlDatabase.Configuration;
 
 internal sealed class EnvironmentBuilder : IEnvironmentBuilder
 {
     private readonly HostedRuntime _runtime;
+    private readonly IFileSystemFactory _fileSystem;
 
     private ILogger? _logger;
     private AppConfiguration? _configuration;
@@ -23,17 +24,16 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
     private ScriptResolver? _scriptResolver;
     private IDatabase? _database;
 
-    public EnvironmentBuilder(HostedRuntime runtime)
+    public EnvironmentBuilder(HostedRuntime runtime, IFileSystemFactory fileSystem)
     {
         _runtime = runtime;
+        _fileSystem = fileSystem;
     }
 
     public IEnvironmentBuilder WithConfiguration(string? configurationFile)
     {
-        var configuration = new ConfigurationManager();
-        configuration.LoadFrom(configurationFile);
-
-        return WithConfiguration(configuration.SqlDatabase);
+        var configuration = new ConfigurationManager(_fileSystem).LoadFrom(configurationFile);
+        return WithConfiguration(configuration);
     }
 
     public IEnvironmentBuilder WithLogger(ILogger logger)
@@ -90,25 +90,7 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
         return _scriptResolver;
     }
 
-    public IUpgradeScriptSequence BuildUpgradeSequence(IList<IFileSystemInfo> scripts, bool folderAsModuleName)
-    {
-        var scriptResolver = (ScriptResolver)BuildScriptResolver();
-        var database = BuildDatabase();
-
-        return new UpgradeScriptSequence(
-            scriptResolver,
-            database.GetCurrentVersion,
-            scripts.ToArray(),
-            GetLogger(),
-            folderAsModuleName,
-            _whatIf);
-    }
-
-    public ICreateScriptSequence BuildCreateSequence(IList<IFileSystemInfo> scripts)
-    {
-        var scriptResolver = (ScriptResolver)BuildScriptResolver();
-        return new CreateScriptSequence(scripts.ToArray(), scriptResolver);
-    }
+    public IScriptFactory BuildScriptFactory() => (ScriptResolver)BuildScriptResolver();
 
     internal IEnvironmentBuilder WithConfiguration(AppConfiguration configuration)
     {
@@ -130,7 +112,7 @@ internal sealed class EnvironmentBuilder : IEnvironmentBuilder
         }
         catch (Exception ex)
         {
-            throw new InvalidCommandLineException(Arg.Database, "Invalid connection string value.", ex);
+            throw new InvalidCommandLineException("Invalid connection string value.", ex);
         }
 
         var database = new Database(adapter, GetLogger(), _transactionMode, _whatIf);

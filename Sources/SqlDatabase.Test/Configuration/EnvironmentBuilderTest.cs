@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
+using SqlDatabase.FileSystem;
 using SqlDatabase.Scripts;
 
 namespace SqlDatabase.Configuration;
@@ -19,7 +20,7 @@ public class EnvironmentBuilderTest
         _log = new Mock<ILogger>(MockBehavior.Strict);
         _configuration = new AppConfiguration();
 
-        _sut = new EnvironmentBuilder(HostedRuntimeResolver.GetRuntime(false));
+        _sut = new EnvironmentBuilder(HostedRuntimeResolver.GetRuntime(false), new Mock<IFileSystemFactory>(MockBehavior.Strict).Object);
 
         _sut
             .WithConfiguration(_configuration)

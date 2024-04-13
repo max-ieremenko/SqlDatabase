@@ -1,20 +1,21 @@
 ﻿using SqlDatabase.Adapter;
-using SqlDatabase.Configuration;
+using SqlDatabase.CommandLine;
 
 namespace SqlDatabase.PowerShell.Internal;
 
 internal sealed class SqlDatabaseProgram : ISqlDatabaseProgram
 {
     private readonly ILogger _logger;
+    private readonly string _currentDirectory;
 
-    public SqlDatabaseProgram(ILogger logger)
+    public SqlDatabaseProgram(ILogger logger, string currentDirectory)
     {
         _logger = logger;
+        _currentDirectory = currentDirectory;
     }
 
-    public void ExecuteCommand(GenericCommandLine command)
+    public void ExecuteCommand(ICommandLine command)
     {
-        var args = new GenericCommandLineBuilder(command).BuildArray();
-        Program.Run(_logger, true, args);
+        Program.RunPowershell(_logger, command, _currentDirectory);
     }
 }
