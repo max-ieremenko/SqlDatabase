@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using SqlDatabase.Adapter;
+﻿using SqlDatabase.Adapter;
 using SqlDatabase.Scripts;
 using SqlDatabase.Sequence;
 

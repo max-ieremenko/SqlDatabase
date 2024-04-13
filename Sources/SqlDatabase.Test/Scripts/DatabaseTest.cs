@@ -3,7 +3,6 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.Adapter;
-using SqlDatabase.Configuration;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Scripts;

@@ -19,6 +19,7 @@
     <ProjectReference Include="..\SqlDatabase.Adapter.PgSql\SqlDatabase.Adapter.PgSql.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.PowerShellScripts\SqlDatabase.Adapter.PowerShellScripts.csproj" />
     <ProjectReference Include="..\SqlDatabase.Adapter.Sql\SqlDatabase.Adapter.Sql.csproj" />
+    <ProjectReference Include="..\SqlDatabase.CommandLine\SqlDatabase.CommandLine.csproj" />
     <ProjectReference Include="..\SqlDatabase.Configuration\SqlDatabase.Configuration.csproj" />
     <ProjectReference Include="..\SqlDatabase.Sequence\SqlDatabase.Sequence.csproj" />
   </ItemGroup>

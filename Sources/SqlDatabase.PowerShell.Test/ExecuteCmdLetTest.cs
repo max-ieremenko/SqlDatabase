@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Configuration;
+using SqlDatabase.Adapter;
+using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.TestApi;
 
 namespace SqlDatabase.PowerShell;
@@ -20,7 +21,7 @@ public class ExecuteCmdLetTest : SqlDatabaseCmdLetTest<ExecuteCmdLet>
                 c.Parameters.Add(nameof(ExecuteCmdLet.Database), "connection string");
                 c.Parameters.Add(nameof(ExecuteCmdLet.From), new[] { "file 1", "file 2" });
                 c.Parameters.Add(nameof(ExecuteCmdLet.FromSql), new[] { "sql text 1", "sql text 2" });
-                c.Parameters.Add(nameof(ExecuteCmdLet.Transaction), TransactionMode.PerStep);
+                c.Parameters.Add(nameof(ExecuteCmdLet.Transaction), PSTransactionMode.PerStep);
                 c.Parameters.Add(nameof(ExecuteCmdLet.Configuration), "app.config");
                 c.Parameters.Add(nameof(ExecuteCmdLet.Var), new[] { "x=1", "y=2" });
                 c.Parameters.Add(nameof(ExecuteCmdLet.WhatIf));
@@ -28,31 +29,24 @@ public class ExecuteCmdLetTest : SqlDatabaseCmdLetTest<ExecuteCmdLet>
             });
 
         commandLines.Length.ShouldBe(1);
-        var commandLine = commandLines[0];
+        var actual = commandLines[0].ShouldBeOfType<ExecuteCommandLine>();
 
-        commandLine.Command.ShouldBe(CommandLineFactory.CommandExecute);
-        commandLine.Connection.ShouldBe("connection string");
+        actual.Database.ShouldBe("connection string");
+        actual.From.ShouldBe([
+            new(false, "file 1"),
+            new(false, "file 2"),
+            new(true, "sql text 1"),
+            new(true, "sql text 2")
+        ]);
+        actual.Transaction.ShouldBe(TransactionMode.PerStep);
+        actual.Configuration.ShouldBe("app.config");
+        actual.Log.ShouldBe("log.txt");
+        actual.UsePowerShell.ShouldBeNull();
+        actual.WhatIf.ShouldBeTrue();
 
-        commandLine.Scripts.Count.ShouldBe(2);
-        Path.IsPathRooted(commandLine.Scripts[0]).ShouldBeTrue();
-        Path.GetFileName(commandLine.Scripts[0]).ShouldBe("file 1");
-        Path.IsPathRooted(commandLine.Scripts[1]).ShouldBeTrue();
-        Path.GetFileName(commandLine.Scripts[1]).ShouldBe("file 2");
-
-        commandLine.InLineScript.ShouldBe(new[] { "sql text 1", "sql text 2" });
-        commandLine.Transaction.ShouldBe(TransactionMode.PerStep);
-
-        Path.IsPathRooted(commandLine.ConfigurationFile).ShouldBeTrue();
-        Path.GetFileName(commandLine.ConfigurationFile).ShouldBe("app.config");
-
-        Path.IsPathRooted(commandLine.LogFileName).ShouldBeTrue();
-        Path.GetFileName(commandLine.LogFileName).ShouldBe("log.txt");
-
-        commandLine.WhatIf.ShouldBeTrue();
-
-        commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
-        commandLine.Variables["x"].ShouldBe("1");
-        commandLine.Variables["y"].ShouldBe("2");
+        actual.Variables.Keys.ShouldBe(new[] { "x", "y" });
+        actual.Variables["x"].ShouldBe("1");
+        actual.Variables["y"].ShouldBe("2");
     }
 
     [Test]
@@ -68,18 +62,12 @@ public class ExecuteCmdLetTest : SqlDatabaseCmdLetTest<ExecuteCmdLet>
 
         commandLines.Length.ShouldBe(2);
 
-        commandLines[0].Command.ShouldBe(CommandLineFactory.CommandExecute);
-        commandLines[0].Connection.ShouldBe("connection string");
-        commandLines[0].Scripts.Count.ShouldBe(1);
-        Path.IsPathRooted(commandLines[0].Scripts[0]).ShouldBeTrue();
-        Path.GetFileName(commandLines[0].Scripts[0]).ShouldBe("file 1");
-        commandLines[0].InLineScript.Count.ShouldBe(0);
+        var actual0 = commandLines[0].ShouldBeOfType<ExecuteCommandLine>();
+        actual0.Database.ShouldBe("connection string");
+        actual0.From.ShouldBe([new(false, "file 1")]);
 
-        commandLines[1].Command.ShouldBe(CommandLineFactory.CommandExecute);
-        commandLines[1].Connection.ShouldBe("connection string");
-        commandLines[1].Scripts.Count.ShouldBe(1);
-        Path.IsPathRooted(commandLines[1].Scripts[0]).ShouldBeTrue();
-        Path.GetFileName(commandLines[1].Scripts[0]).ShouldBe("file 2");
-        commandLines[1].InLineScript.Count.ShouldBe(0);
+        var actual1 = commandLines[1].ShouldBeOfType<ExecuteCommandLine>();
+        actual1.Database.ShouldBe("connection string");
+        actual1.From.ShouldBe([new(false, "file 2")]);
     }
 }

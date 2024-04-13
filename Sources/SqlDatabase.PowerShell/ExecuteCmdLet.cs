@@ -1,11 +1,12 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.Configuration;
+using SqlDatabase.Adapter;
+using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell;
 
 [Cmdlet(VerbsLifecycle.Invoke, "SqlDatabase")]
-[Alias(CommandLineFactory.CommandExecute + "-SqlDatabase")]
+[Alias("Execute-SqlDatabase")]
 public sealed class ExecuteCmdLet : PSCmdlet
 {
     [Parameter(Mandatory = true, Position = 1, HelpMessage = "Connection string to target database.")]
@@ -40,6 +41,19 @@ public sealed class ExecuteCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        new ExecutePowerShellCommand(this).Execute();
+        var commandLine = new ExecuteCommandLine
+        {
+            Database = Database,
+            Transaction = (TransactionMode)Transaction,
+            Configuration = Configuration,
+            Log = Log,
+            WhatIf = WhatIf
+        };
+
+        CommandLineTools.AppendFrom(commandLine.From, false, From);
+        CommandLineTools.AppendFrom(commandLine.From, true, FromSql);
+        CommandLineTools.AppendVariables(commandLine.Variables, Var);
+
+        PowerShellCommand.Execute(this, commandLine);
     }
 }
