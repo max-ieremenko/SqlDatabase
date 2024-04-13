@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace SqlDatabase.TestApi;
+﻿namespace SqlDatabase.TestApi;
 
 public static class TextExtensions
 {

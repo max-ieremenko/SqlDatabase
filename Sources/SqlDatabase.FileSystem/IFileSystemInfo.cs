@@ -3,4 +3,6 @@
 public interface IFileSystemInfo
 {
     string Name { get; }
+
+    string GetFullName();
 }

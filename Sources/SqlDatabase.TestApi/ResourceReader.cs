@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using Shouldly;
 
 namespace SqlDatabase.TestApi;

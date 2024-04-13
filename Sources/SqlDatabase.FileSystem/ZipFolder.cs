@@ -25,6 +25,16 @@ internal sealed class ZipFolder : IFolder
 
     public string FileName { get; }
 
+    public string GetFullName()
+    {
+        if (_parent == null)
+        {
+            return FileName;
+        }
+
+        return Path.Combine(_parent.GetFullName(), FileName);
+    }
+
     public IEnumerable<IFolder> GetFolders() => BuildOrGetTree().GetFolders();
 
     public IEnumerable<IFile> GetFiles() => BuildOrGetTree().GetFiles();
@@ -64,19 +74,20 @@ internal sealed class ZipFolder : IFolder
             inner.zip
          */
 
-        var tree = new ZipEntryFolder(Name);
+        var tree = new ZipEntryFolder(Name, GetFullName());
 
         foreach (var entry in entries)
         {
             var owner = tree;
-            var path = entry.FullName.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var path = entry.FullName.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+            var fullName = Path.Combine(GetFullName(), entry.FullName);
 
             for (var i = 0; i < path.Length - 1; i++)
             {
                 var pathItem = path[i];
                 if (!owner.FolderByName.TryGetValue(pathItem, out var next))
                 {
-                    next = new ZipEntryFolder(pathItem);
+                    next = new ZipEntryFolder(pathItem, fullName);
                     owner.FolderByName.Add(pathItem, next);
                 }
 
@@ -88,7 +99,7 @@ internal sealed class ZipFolder : IFolder
             {
                 if (!owner.FolderByName.ContainsKey(entryName))
                 {
-                    owner.FolderByName.Add(entryName, new ZipEntryFolder(entryName));
+                    owner.FolderByName.Add(entryName, new ZipEntryFolder(entryName, fullName));
                 }
             }
             else if (FileTools.IsZip(entry.FullName))

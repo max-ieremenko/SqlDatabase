@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Shouldly;
+﻿using Shouldly;
 
 namespace SqlDatabase.TestApi;
 
@@ -17,10 +16,11 @@ public sealed class TempDirectory : IDisposable
     {
         if (resourceAnchor == null)
         {
-            resourceAnchor = new StackTrace().GetFrame(1)!.GetMethod()!.DeclaringType;
+            resourceAnchor = new StackTrace().GetFrame(1)?.GetMethod()?.DeclaringType;
         }
 
-        var source = resourceAnchor!.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
+        resourceAnchor.ShouldNotBeNull();
+        var source = resourceAnchor.Assembly.GetManifestResourceStream(resourceAnchor.Namespace + "." + resourceName);
         source.ShouldNotBeNull(resourceName);
 
         var fileName = Path.Combine(Location, resourceName);
@@ -28,7 +28,7 @@ public sealed class TempDirectory : IDisposable
         using (source)
         using (var dest = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
         {
-            source!.CopyTo(dest);
+            source.CopyTo(dest);
         }
 
         return fileName;
