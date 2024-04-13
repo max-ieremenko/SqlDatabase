@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using System.Runtime.InteropServices;
 using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.Internal;
@@ -21,7 +20,6 @@ public sealed class InfoCmdLet : PSCmdlet
     private void WriteInfo()
     {
         var assembly = GetType().Assembly;
-        var location = Path.GetDirectoryName(assembly.Location);
 
         this.TryGetPSVersionTable(out var psVersionTable);
 
@@ -30,13 +28,14 @@ public sealed class InfoCmdLet : PSCmdlet
             psVersionTable.PSEdition,
             psVersionTable.PSVersion,
             Version = assembly.GetName().Version,
+            ClrVersion = Environment.Version,
             RuntimeInformation.FrameworkDescription,
             RuntimeInformation.OSDescription,
             RuntimeInformation.OSArchitecture,
             RuntimeInformation.ProcessArchitecture,
-            Location = location,
+            Location = Path.GetDirectoryName(assembly.Location),
             WorkingDirectory = this.GetWorkingDirectory(),
-            DefaultConfigurationFile = ConfigurationManager.ResolveDefaultConfigurationFile(location)
+            DefaultConfigurationFile = ConfigurationManager.GetDefaultConfigurationFile()
         });
     }
 }

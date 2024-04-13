@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using Shouldly;
 using SqlDatabase.FileSystem;
@@ -15,7 +14,7 @@ public class AssemblyScriptFactoryTest
     [SetUp]
     public void BeforeEachTest()
     {
-        _sut = new AssemblyScriptFactory("class-name", "method-name");
+        _sut = new AssemblyScriptFactory(FrameworkVersion.Net472, "class-name", "method-name");
     }
 
     [Test]
@@ -38,7 +37,7 @@ public class AssemblyScriptFactoryTest
     {
         var file = FileFactory.File(
             "11.dll",
-            new byte[] { 1, 2, 3 },
+            [1, 2, 3],
             FileFactory.Folder("name", FileFactory.File("11.txt", "3, 2, 1")));
 
         var script = _sut.FromFile(file).ShouldBeOfType<AssemblyScript>();
@@ -46,7 +45,7 @@ public class AssemblyScriptFactoryTest
         script.DisplayName.ShouldBe("11.dll");
         script.ClassName.ShouldBe("class-name");
         script.MethodName.ShouldBe("method-name");
-        script.ReadAssemblyContent().ShouldBe(new byte[] { 1, 2, 3 });
+        script.ReadAssemblyContent().ShouldBe([1, 2, 3]);
         new StreamReader(script.ReadDescriptionContent()!).ReadToEnd().ShouldBe("3, 2, 1");
     }
 }

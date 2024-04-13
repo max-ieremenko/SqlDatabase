@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-
-namespace SqlDatabase.FileSystem;
+﻿namespace SqlDatabase.FileSystem;
 
 [DebuggerDisplay(@"zip\{EntryName}")]
 internal sealed partial class ZipFolderFile : IFile
@@ -24,6 +21,8 @@ internal sealed partial class ZipFolderFile : IFile
     public string EntryFullName { get; }
 
     public string Extension { get; }
+
+    public string GetFullName() => Path.Combine(_container.GetFullName(), EntryFullName);
 
     public IFolder GetParent() => _parent;
 

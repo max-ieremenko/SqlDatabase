@@ -1,7 +1,4 @@
-﻿using System.Data;
-using System.IO;
-
-namespace SqlDatabase.Adapter;
+﻿namespace SqlDatabase.Adapter;
 
 public interface IDatabaseAdapter
 {

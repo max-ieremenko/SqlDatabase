@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data;
-using System.IO;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using SqlDatabase.Adapter;
 using SqlDatabase.Adapter.Sql.Export;

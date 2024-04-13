@@ -1,45 +1,37 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using SqlDatabase.FileSystem;
+﻿using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 
 public sealed class AssemblyScriptFactory : IScriptFactory, IScriptEnvironment
 {
+    private readonly FrameworkVersion _version;
     private readonly string? _configurationClassName;
     private readonly string? _configurationMethodName;
 
-    public AssemblyScriptFactory(string? configurationClassName, string? configurationMethodName)
+    public AssemblyScriptFactory(FrameworkVersion version, string? configurationClassName, string? configurationMethodName)
     {
+        _version = version;
         _configurationClassName = configurationClassName;
         _configurationMethodName = configurationMethodName;
     }
 
-    public bool IsSupported(IFile file)
-    {
-        return ".exe".Equals(file.Extension, StringComparison.OrdinalIgnoreCase)
-               || ".dll".Equals(file.Extension, StringComparison.OrdinalIgnoreCase);
-    }
+    public bool IsSupported(IFile file) =>
+        ".exe".Equals(file.Extension, StringComparison.OrdinalIgnoreCase)
+        || ".dll".Equals(file.Extension, StringComparison.OrdinalIgnoreCase);
 
-    public IScript FromFile(IFile file)
-    {
-        return new AssemblyScript(
-            file.Name,
-            _configurationClassName,
-            _configurationMethodName,
-            CreateBinaryReader(file),
-            CreateScriptDescriptionReader(file));
-    }
+    public IScript FromFile(IFile file) => new AssemblyScript(
+        _version,
+        file.Name,
+        _configurationClassName,
+        _configurationMethodName,
+        CreateBinaryReader(file),
+        CreateScriptDescriptionReader(file));
 
     public bool IsSupported(IScript script) => script is AssemblyScript;
 
-    public void Initialize(ILogger logger) => SubDomainFactory.Test();
+    public void Initialize(ILogger logger) => SubDomainFactory.Test(_version);
 
-    private static Func<byte[]> CreateBinaryReader(IFile file)
-    {
-        return () => BinaryRead(file);
-    }
+    private static Func<byte[]> CreateBinaryReader(IFile file) => () => BinaryRead(file);
 
     private static byte[] BinaryRead(IFile file)
     {

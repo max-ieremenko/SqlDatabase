@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace SqlDatabase.TestApi;
+﻿namespace SqlDatabase.TestApi;
 
 public static class TestOutput
 {

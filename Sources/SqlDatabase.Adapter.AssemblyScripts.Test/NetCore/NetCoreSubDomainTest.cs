@@ -1,8 +1,4 @@
 ﻿#if !NET472
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
@@ -41,6 +37,7 @@ public partial class NetCoreSubDomainTest
             .Returns(0);
 
         _sut = SubDomainFactory.Create(
+                FrameworkVersion.Net6,
                 log.Object,
                 GetType().Assembly.Location,
                 () => File.ReadAllBytes(GetType().Assembly.Location))

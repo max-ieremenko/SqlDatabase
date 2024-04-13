@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace SqlDatabase.Adapter.Sql.Export;
+﻿namespace SqlDatabase.Adapter.Sql.Export;
 
 public interface IDataExporter
 {

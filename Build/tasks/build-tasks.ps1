@@ -70,7 +70,7 @@ task PackGlobalTool {
 }
 
 task PackPoweShellModule {
-    $source = Join-Path $settings.bin "SqlDatabase.PowerShell\netstandard2.0\"
+    $source = Join-Path $settings.bin "SqlDatabase.PowerShell"
     $dest = $settings.artifactsPowerShell
     
     Copy-Item -Path $source -Destination $dest -Recurse
@@ -204,14 +204,14 @@ task PsCoreTest {
         , "mcr.microsoft.com/powershell:7.2.0-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.2.1-ubuntu-20.04"
         , "mcr.microsoft.com/powershell:7.2.2-ubuntu-20.04"
-        , "mcr.microsoft.com/powershell:7.3-ubuntu-20.04")
-
-    foreach ($image in $images) {
-        exec { docker pull $image }
-    }
+        , "mcr.microsoft.com/powershell:7.3-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:7.4-ubuntu-20.04"
+        , "mcr.microsoft.com/powershell:preview-7.5-ubuntu-20.04")
 
     $builds = @()
     foreach ($image in $images) {
+        exec { docker pull -q $image }
+
         foreach ($database in $databases) {
             $builds += @{
                 File     = "build-tasks.it-ps-core.ps1"

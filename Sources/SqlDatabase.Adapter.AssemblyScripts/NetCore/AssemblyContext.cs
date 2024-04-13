@@ -1,7 +1,4 @@
-﻿#if !NET472
-using System;
-using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.Loader;
 
 namespace SqlDatabase.Adapter.AssemblyScripts.NetCore;
@@ -30,4 +27,3 @@ internal sealed class AssemblyContext : AssemblyLoadContext
         return isScriptAssembly ? ScriptAssembly : null;
     }
 }
-#endif

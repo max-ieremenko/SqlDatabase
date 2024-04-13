@@ -1,4 +1,4 @@
-﻿using SqlDatabase.Configuration;
+﻿using SqlDatabase.Adapter;
 
 namespace SqlDatabase.PowerShell;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data;
-
-namespace SqlDatabase.Adapter.AssemblyScripts.NetCore;
+﻿namespace SqlDatabase.Adapter.AssemblyScripts.NetCore;
 
 internal sealed class NetCoreSubDomain : ISubDomain
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SqlDatabase.Adapter;
+﻿namespace SqlDatabase.Adapter;
 
 public interface ILogger
 {

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-
-namespace SqlDatabase.Adapter;
+﻿namespace SqlDatabase.Adapter;
 
 public interface ISqlTextReader
 {

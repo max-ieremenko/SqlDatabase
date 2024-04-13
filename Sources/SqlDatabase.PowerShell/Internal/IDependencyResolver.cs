@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SqlDatabase.PowerShell.Internal;
+﻿namespace SqlDatabase.PowerShell.Internal;
 
 internal interface IDependencyResolver : IDisposable
 {

@@ -1,7 +1,6 @@
-﻿using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Shouldly;
-using SqlDatabase.Configuration;
+using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.TestApi;
 
 namespace SqlDatabase.PowerShell;
@@ -27,29 +26,22 @@ public class ExportCmdLetTest : SqlDatabaseCmdLetTest<ExportCmdLet>
             });
 
         commandLines.Length.ShouldBe(1);
-        var commandLine = commandLines[0];
+        var actual = commandLines[0].ShouldBeOfType<ExportCommandLine>();
 
-        commandLine.Command.ShouldBe(CommandLineFactory.CommandExport);
-        commandLine.Connection.ShouldBe("connection string");
+        actual.Database.ShouldBe("connection string");
+        actual.From.ShouldBe([
+            new(false, "file 1"),
+            new(false, "file 2"),
+            new(true, "sql text 1"),
+            new(true, "sql text 2")
+        ]);
+        actual.DestinationTableName.ShouldBe("to table");
+        actual.DestinationFileName.ShouldBe("to file");
+        actual.Configuration.ShouldBe("app.config");
+        actual.Log.ShouldBe("log.txt");
 
-        commandLine.Scripts.Count.ShouldBe(2);
-        Path.IsPathRooted(commandLine.Scripts[0]).ShouldBeTrue();
-        Path.GetFileName(commandLine.Scripts[0]).ShouldBe("file 1");
-        Path.IsPathRooted(commandLine.Scripts[1]).ShouldBeTrue();
-        Path.GetFileName(commandLine.Scripts[1]).ShouldBe("file 2");
-
-        commandLine.InLineScript.ShouldBe(new[] { "sql text 1", "sql text 2" });
-        commandLine.ExportToFile.ShouldBe("to file");
-        commandLine.ExportToTable.ShouldBe("to table");
-
-        Path.IsPathRooted(commandLine.ConfigurationFile).ShouldBeTrue();
-        Path.GetFileName(commandLine.ConfigurationFile).ShouldBe("app.config");
-
-        Path.IsPathRooted(commandLine.LogFileName).ShouldBeTrue();
-        Path.GetFileName(commandLine.LogFileName).ShouldBe("log.txt");
-
-        commandLine.Variables.Keys.ShouldBe(new[] { "x", "y" });
-        commandLine.Variables["x"].ShouldBe("1");
-        commandLine.Variables["y"].ShouldBe("2");
+        actual.Variables.Keys.ShouldBe(new[] { "x", "y" });
+        actual.Variables["x"].ShouldBe("1");
+        actual.Variables["y"].ShouldBe("2");
     }
 }

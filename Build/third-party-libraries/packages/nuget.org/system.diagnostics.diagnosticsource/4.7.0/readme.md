@@ -3,7 +3,7 @@ System.Diagnostics.DiagnosticSource [4.7.0](https://www.nuget.org/packages/Syste
 
 Used by: SqlDatabase
 
-Target frameworks: net472, netstandard2.0
+Target frameworks: netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

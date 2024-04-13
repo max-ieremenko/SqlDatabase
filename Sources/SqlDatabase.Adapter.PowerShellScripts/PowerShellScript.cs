@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-
-namespace SqlDatabase.Adapter.PowerShellScripts;
+﻿namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal sealed class PowerShellScript : IScript
 {

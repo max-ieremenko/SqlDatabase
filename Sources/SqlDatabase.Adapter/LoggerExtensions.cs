@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace SqlDatabase.Adapter;
+﻿namespace SqlDatabase.Adapter;
 
 public static class LoggerExtensions
 {

@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.Adapter;
 using SqlDatabase.FileSystem;
 using SqlDatabase.TestApi;
@@ -71,17 +70,14 @@ public class CreateScriptSequenceTest
         var actual = _sut.BuildSequence();
 
         // sorted A-Z, first files then folders
-        CollectionAssert.AreEqual(
-            new[]
-            {
-                @"root\" + files[1].Name,
-                @"root\" + files[0].Name,
-                @"root\a\" + folderA[1].Name,
-                @"root\a\" + folderA[0].Name,
-                @"root\x\" + folderX[0].Name,
-                @"root\x\" + folderX[1].Name
-            },
-            actual.Select(i => i.DisplayName).ToArray());
+        actual.Select(i => i.DisplayName).ShouldBe([
+            @"root\" + files[1].Name,
+            @"root\" + files[0].Name,
+            @"root\a\" + folderA[1].Name,
+            @"root\a\" + folderA[0].Name,
+            @"root\x\" + folderX[0].Name,
+            @"root\x\" + folderX[1].Name
+        ]);
     }
 
     [Test]
@@ -95,8 +91,6 @@ public class CreateScriptSequenceTest
         var actual = _sut.BuildSequence();
 
         // sorted A-Z, first files then folders
-        CollectionAssert.AreEqual(
-            new[] { @"root\10.sql", @"root\20.sql", "02.sql", "01.sql" },
-            actual.Select(i => i.DisplayName).ToArray());
+        actual.Select(i => i.DisplayName).ShouldBe([@"root\10.sql", @"root\20.sql", "02.sql", "01.sql"]);
     }
 }

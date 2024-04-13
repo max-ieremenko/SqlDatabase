@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace SqlDatabase.FileSystem;
+﻿namespace SqlDatabase.FileSystem;
 
 internal sealed class FileSystemFolder : IFolder
 {
@@ -15,6 +11,8 @@ internal sealed class FileSystemFolder : IFolder
     public string Name { get; }
 
     public string Location { get; }
+
+    public string GetFullName() => Location;
 
     public IEnumerable<IFolder> GetFolders()
     {

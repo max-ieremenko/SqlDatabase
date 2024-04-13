@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SqlDatabase.Adapter;
+﻿namespace SqlDatabase.Adapter;
 
 public sealed class ExportTable
 {

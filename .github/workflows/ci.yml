@@ -20,7 +20,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install dependencies
       shell: pwsh
@@ -35,7 +35,7 @@ jobs:
       run: ./Build/build.ps1 -Mode "github" -GithubToken "${{ secrets.GITHUB_TOKEN }}"
 
     - name: Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: packages
         path: |

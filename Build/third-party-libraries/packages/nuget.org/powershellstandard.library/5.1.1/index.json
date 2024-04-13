@@ -1,0 +1,29 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "net472",
+        "netstandard2.0"
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/PowerShell/PowerShellStandard"
+    }
+  ]
+}

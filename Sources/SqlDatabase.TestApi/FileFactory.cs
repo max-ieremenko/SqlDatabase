@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Moq;
+﻿using Moq;
 using Shouldly;
 using SqlDatabase.FileSystem;
 
@@ -44,6 +40,7 @@ public static class FileFactory
         var folder = new Mock<IFolder>(MockBehavior.Strict);
 
         folder.SetupGet(f => f.Name).Returns(name);
+        folder.Setup(f => f.GetFullName()).Returns(name);
 
         var files = content.OfType<IFile>().ToArray();
         folder.Setup(f => f.GetFiles()).Returns(files);

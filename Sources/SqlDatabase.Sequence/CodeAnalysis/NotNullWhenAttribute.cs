@@ -1,5 +1,4 @@
-﻿#if NET472 || NETSTANDARD2_0
-namespace System.Diagnostics.CodeAnalysis;
+﻿namespace System.Diagnostics.CodeAnalysis;
 
 internal sealed class NotNullWhenAttribute : Attribute
 {
@@ -7,4 +6,3 @@ internal sealed class NotNullWhenAttribute : Attribute
 
     public bool ReturnValue { get; }
 }
-#endif

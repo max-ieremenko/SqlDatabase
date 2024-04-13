@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
+using Shouldly;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
@@ -49,16 +47,16 @@ public class DefaultEntryPointTest
 
         _sut.Method = (c, v) =>
         {
-            Assert.AreEqual(_command.Object, c);
-            Assert.AreEqual(_variables.Object, v);
+            _command.Object.ShouldBe(c);
+            _variables.Object.ShouldBe(v);
 
             executeCounter++;
         };
 
-        Assert.IsTrue(_sut.Execute(_command.Object, _variables.Object));
+        _sut.Execute(_command.Object, _variables.Object).ShouldBeTrue();
 
-        Assert.AreEqual(1, executeCounter);
-        Assert.AreEqual(0, _logOutput.Count);
+        executeCounter.ShouldBe(1);
+        _logOutput.ShouldBeEmpty();
     }
 
     [Test]
@@ -68,11 +66,11 @@ public class DefaultEntryPointTest
         instance.Setup(i => i.Dispose());
 
         _sut.ScriptInstance = instance.Object;
-        _sut.Method = (c, v) =>
+        _sut.Method = (_, _) =>
         {
         };
 
-        Assert.IsTrue(_sut.Execute(_command.Object, _variables.Object));
+        _sut.Execute(_command.Object, _variables.Object).ShouldBeTrue();
 
         instance.VerifyAll();
     }
@@ -80,10 +78,10 @@ public class DefaultEntryPointTest
     [Test]
     public void ExceptionOnExecute()
     {
-        _sut.Method = (c, v) => throw new InvalidOperationException();
+        _sut.Method = (_, _) => throw new InvalidOperationException();
 
-        Assert.IsFalse(_sut.Execute(_command.Object, _variables.Object));
+        _sut.Execute(_command.Object, _variables.Object).ShouldBeFalse();
 
-        Assert.Greater(_logOutput.Count, 0);
+        _logOutput.ShouldNotBeEmpty();
     }
 }

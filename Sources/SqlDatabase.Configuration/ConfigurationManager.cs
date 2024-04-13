@@ -1,73 +1,66 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using SqlDatabase.FileSystem;
+﻿using SqlDatabase.FileSystem;
 
 namespace SqlDatabase.Configuration;
 
-public sealed class ConfigurationManager : IConfigurationManager
+public sealed class ConfigurationManager
 {
     internal const string Name1 = "SqlDatabase.exe.config";
     internal const string Name2 = "SqlDatabase.dll.config";
 
-    public AppConfiguration SqlDatabase { get; private set; } = null!;
+    private readonly IFileSystemFactory _fileSystem;
 
-    public static string ResolveDefaultConfigurationFile(string probingPath)
+    public ConfigurationManager(IFileSystemFactory fileSystem)
     {
-        var fileName = ResolveConfigurationFile(probingPath).Name;
-        return Path.Combine(probingPath, fileName);
+        _fileSystem = fileSystem;
     }
 
-    public void LoadFrom(string? configurationFile)
+    public static string GetDefaultConfigurationFile() => GetDefaultFile().GetFullName();
+
+    public AppConfiguration LoadFrom(string? configurationFile)
     {
-        IFile source;
-        if (string.IsNullOrWhiteSpace(configurationFile))
-        {
-            source = ResolveConfigurationFile(Path.GetDirectoryName(GetType().Assembly.Location));
-        }
-        else
-        {
-            source = ResolveConfigurationFile(configurationFile!);
-        }
+        var source = string.IsNullOrWhiteSpace(configurationFile) ? GetDefaultFile() : GetFile(_fileSystem, configurationFile);
 
         try
         {
             using (var stream = source.OpenRead())
             {
-                SqlDatabase = ConfigurationReader.Read(stream);
+                return ConfigurationReader.Read(stream);
             }
         }
-        catch (Exception ex) when ((ex as IOException) == null)
+        catch (Exception ex) when (ex is not IOException)
         {
             throw new ConfigurationErrorsException($"Fail to load configuration from [{configurationFile}].", ex);
         }
     }
 
-    private static IFile ResolveConfigurationFile(string probingPath)
+    private static IFile GetDefaultFile()
     {
-        var info = FileSystemFactory.FileSystemInfoFromPath(probingPath);
-        return ResolveFile(info);
+        var fileSystem = new FileSystemFactory(Path.GetDirectoryName(typeof(ConfigurationManager).Assembly.Location)!);
+        return GetFile(fileSystem, null);
     }
 
-    private static IFile ResolveFile(IFileSystemInfo info)
+    private static IFile GetFile(IFileSystemFactory fileSystem, string? configurationFile)
     {
-        IFile? file;
-        if (info is IFolder folder)
+        var location = fileSystem.FileSystemInfoFromPath(configurationFile);
+        if (location is IFile file)
         {
-            file = folder
-                .GetFiles()
-                .Where(i => Name1.Equals(i.Name, StringComparison.OrdinalIgnoreCase) || Name2.Equals(i.Name, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(i => i.Name, StringComparer.OrdinalIgnoreCase)
-                .FirstOrDefault();
-
-            if (file == null)
-            {
-                throw new FileNotFoundException($"Configuration file {Name2} not found in {info.Name}.");
-            }
+            return file;
         }
-        else
+
+        return FindFile((IFolder)location);
+    }
+
+    private static IFile FindFile(IFolder folder)
+    {
+        var file = folder
+            .GetFiles()
+            .Where(i => Name1.Equals(i.Name, StringComparison.OrdinalIgnoreCase) || Name2.Equals(i.Name, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(i => i.Name, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+
+        if (file == null)
         {
-            file = (IFile)info;
+            throw new FileNotFoundException($"Configuration file {Name2} not found in {folder.GetFullName()}.");
         }
 
         return file;

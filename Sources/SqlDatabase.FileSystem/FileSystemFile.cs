@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace SqlDatabase.FileSystem;
+﻿namespace SqlDatabase.FileSystem;
 
 internal sealed class FileSystemFile : IFile
 {
@@ -17,13 +15,9 @@ internal sealed class FileSystemFile : IFile
 
     public string Extension { get; }
 
-    public IFolder GetParent()
-    {
-        return new FileSystemFolder(Path.GetDirectoryName(Location)!);
-    }
+    public string GetFullName() => Location;
 
-    public Stream OpenRead()
-    {
-        return File.OpenRead(Location);
-    }
+    public IFolder GetParent() => new FileSystemFolder(Path.GetDirectoryName(Location)!);
+
+    public Stream OpenRead() => File.OpenRead(Location);
 }

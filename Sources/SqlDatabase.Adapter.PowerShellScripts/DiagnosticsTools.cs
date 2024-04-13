@@ -1,135 +1,60 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Runtime.InteropServices;
-
-namespace SqlDatabase.Adapter.PowerShellScripts;
+﻿namespace SqlDatabase.Adapter.PowerShellScripts;
 
 internal static class DiagnosticsTools
 {
-    public static bool IsOSPlatformWindows()
+    public static string? FindPowerShellProcess(HostedRuntime runtime)
     {
-#if NET472
-        return true;
-#else
-        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-#endif
+        if (runtime.Version == FrameworkVersion.Net472)
+        {
+            return null;
+        }
+
+        int processId;
+        DateTime processStartTime;
+        using (var current = Process.GetCurrentProcess())
+        {
+            processId = current.Id;
+            processStartTime = current.StartTime;
+        }
+
+        return TryParentProcess(runtime, processId, processStartTime);
     }
 
-    public static int? GetParentProcessId(int processId)
+    private static string? TryParentProcess(HostedRuntime runtime, int childId, DateTime processStartTime)
     {
-#if NET472
-        return null;
-#else
-        return IsOSPlatformWindows() ? GetParentProcessIdWindows(processId) : GetParentProcessIdLinux(processId);
-#endif
-    }
+        var parentId = runtime.IsWindows ? PowerShellWindows.GetParentProcessId(childId) : PowerShellLinux.GetParentProcessId(childId);
+        if (!parentId.HasValue || parentId == childId)
+        {
+            return null;
+        }
 
-    internal static int? ParseParentProcessIdLinux(string fileName)
-    {
-        string? line = null;
-
+        string? parentLocation = null;
         try
         {
-            using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true))
+            using (var parent = Process.GetProcessById(parentId.Value))
             {
-                line = reader.ReadLine();
+                if (parent.StartTime < processStartTime)
+                {
+                    parentLocation = parent.MainModule?.FileName;
+                }
             }
         }
         catch
         {
         }
 
-        if (string.IsNullOrWhiteSpace(line))
+        if (string.IsNullOrWhiteSpace(parentLocation) || !File.Exists(parentLocation))
         {
             return null;
         }
 
-        // (2) comm  %s: The filename of the executable, in parentheses.
-        var startIndex = line!.LastIndexOf(')');
-        if (startIndex <= 0 || startIndex >= line.Length)
+        var fileName = Path.GetFileName(parentLocation);
+        if (!PowerShellWindows.IsExecutable(fileName) && PowerShellLinux.IsExecutable(fileName))
         {
-            return null;
+            // try parent
+            return TryParentProcess(runtime, parentId.Value, processStartTime);
         }
 
-        // (3) state  %c
-        startIndex = line.IndexOf(' ', startIndex + 1);
-        if (startIndex <= 0 || startIndex >= line.Length)
-        {
-            return null;
-        }
-
-        // (4) ppid  %d: The PID of the parent of this process.
-        startIndex = line.IndexOf(' ', startIndex + 1);
-        if (startIndex <= 0 || startIndex >= line.Length)
-        {
-            return null;
-        }
-
-        var endIndex = line.IndexOf(' ', startIndex + 1);
-        if (endIndex <= startIndex)
-        {
-            return null;
-        }
-
-        var ppid = line.Substring(startIndex + 1, endIndex - startIndex - 1);
-        if (int.TryParse(ppid, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
-        {
-            return result;
-        }
-
-        return null;
+        return Path.GetDirectoryName(parentLocation);
     }
-
-#if !NET472
-    private static int? GetParentProcessIdLinux(int processId)
-    {
-        // /proc/[pid]/stat https://man7.org/linux/man-pages/man5/procfs.5.html
-        var fileName = "/proc/" + processId.ToString(CultureInfo.InvariantCulture) + "/stat";
-
-        return ParseParentProcessIdLinux(fileName);
-    }
-
-    private static int? GetParentProcessIdWindows(int processId)
-    {
-        const int DesiredAccess = 0x0400; // PROCESS_QUERY_INFORMATION
-        const int ProcessInfoClass = 0; // ProcessBasicInformation
-
-        int? result = null;
-        using (var hProcess = OpenProcess(DesiredAccess, false, processId))
-        {
-            if (!hProcess.IsInvalid)
-            {
-                var basicInformation = default(ProcessBasicInformation);
-                var pSize = 0;
-                var pbiSize = (uint)Marshal.SizeOf<ProcessBasicInformation>();
-
-                if (NtQueryInformationProcess(hProcess, ProcessInfoClass, ref basicInformation, pbiSize, ref pSize) == 0)
-                {
-                    result = (int)basicInformation.InheritedFromUniqueProcessId;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern Microsoft.Win32.SafeHandles.SafeProcessHandle OpenProcess(int dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
-
-    [DllImport("ntdll.dll")]
-    private static extern int NtQueryInformationProcess(Microsoft.Win32.SafeHandles.SafeProcessHandle hProcess, int pic, ref ProcessBasicInformation pbi, uint cb, ref int pSize);
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct ProcessBasicInformation
-    {
-        public uint ExitStatus;
-        public IntPtr PebBaseAddress;
-        public UIntPtr AffinityMask;
-        public int BasePriority;
-        public UIntPtr UniqueProcessId;
-        public UIntPtr InheritedFromUniqueProcessId;
-    }
-#endif
 }

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Moq;
+﻿using Moq;
 using Moq.Protected;
 using NUnit.Framework;
+using Shouldly;
 
 namespace SqlDatabase.Log;
 
@@ -36,9 +36,8 @@ public class LoggerBaseTest
     {
         _sut.Info("the text");
 
-        Assert.AreEqual(1, _info.Count);
-        Assert.AreEqual(0, _error.Count);
-        Assert.AreEqual("the text", _info[0]);
+        _info.ShouldBe(["the text"]);
+        _error.ShouldBeEmpty();
     }
 
     [Test]
@@ -46,9 +45,8 @@ public class LoggerBaseTest
     {
         _sut.Error("the text");
 
-        Assert.AreEqual(0, _info.Count);
-        Assert.AreEqual(1, _error.Count);
-        Assert.AreEqual("the text", _error[0]);
+        _info.ShouldBeEmpty();
+        _error.ShouldBe(["the text"]);
     }
 
     [Test]
@@ -57,7 +55,7 @@ public class LoggerBaseTest
         _sut.Indent();
         _sut.Error("the text");
 
-        Assert.AreEqual("the text", _error[0]);
+        _error[0].ShouldBe("the text");
     }
 
     [Test]
@@ -77,10 +75,11 @@ public class LoggerBaseTest
             _sut.Info("2+");
         }
 
-        Assert.AreEqual(4, _info.Count);
-        Assert.AreEqual("1-", _info[0]);
-        Assert.AreEqual("   2-", _info[1]);
-        Assert.AreEqual("      3", _info[2]);
-        Assert.AreEqual("   2+", _info[3]);
+        _info.ShouldBe([
+            "1-",
+            "   2-",
+            "      3",
+            "   2+"
+        ]);
     }
 }

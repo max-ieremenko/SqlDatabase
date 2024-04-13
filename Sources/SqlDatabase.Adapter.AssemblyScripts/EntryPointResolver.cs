@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 
 namespace SqlDatabase.Adapter.AssemblyScripts;
 

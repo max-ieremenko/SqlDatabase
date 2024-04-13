@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-
-namespace SqlDatabase.Adapter.AssemblyScripts;
+﻿namespace SqlDatabase.Adapter.AssemblyScripts;
 
 internal sealed class AssemblyScript : IScript
 {
     private const string DefaultClassName = "SqlDatabaseScript";
     private const string DefaultMethodName = "Execute";
 
+    private readonly FrameworkVersion _version;
+
     public AssemblyScript(
+        FrameworkVersion version,
         string displayName,
         string? className,
         string? methodName,
         Func<byte[]> readAssemblyContent,
         Func<Stream?> readDescriptionContent)
     {
+        _version = version;
         DisplayName = displayName;
         ClassName = string.IsNullOrWhiteSpace(className) ? DefaultClassName : className!;
         MethodName = string.IsNullOrWhiteSpace(methodName) ? DefaultMethodName : methodName!;
@@ -36,7 +35,7 @@ internal sealed class AssemblyScript : IScript
 
     public void Execute(IDbCommand? command, IVariables variables, ILogger logger)
     {
-        var domain = SubDomainFactory.Create(logger, DisplayName, ReadAssemblyContent);
+        var domain = SubDomainFactory.Create(_version, logger, DisplayName, ReadAssemblyContent);
 
         using (domain)
         {

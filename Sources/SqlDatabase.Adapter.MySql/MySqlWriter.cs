@@ -1,9 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Globalization;
 
 namespace SqlDatabase.Adapter.MySql;
 
