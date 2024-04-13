@@ -11,7 +11,7 @@ Upgrade an existing database
         -from=C:\MyDatabase\UpgradeScripts.zip - execute migration steps on MyDatabase from UpgradeScripts.zip archive
         -from=C:\MyDatabase.zip\UpgradeScripts - execute migration steps on MyDatabase from UpgradeScripts folder in MyDatabase.zip archive
 
-  -folderAsModuleName: TODO
+  -folderAsModuleName
 
   -var: set a variable in format "-var[name of variable]=[value of variable]"
         -varRecoveryModel=FULL - usage: ALTER DATABASE [{{NewDatabase}}] SET RECOVERY {{RecoveryModel}} WITH NO_WAIT

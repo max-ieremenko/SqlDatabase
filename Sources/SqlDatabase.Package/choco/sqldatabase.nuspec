@@ -19,7 +19,7 @@
 Requires Powershell Core 6.1+ or PowerShell Desktop 5.1.</description>
     <releaseNotes>https://github.com/max-ieremenko/SqlDatabase/releases</releaseNotes>
     <copyright>(C) 2018-2022 Max Ieremenko.</copyright>
-    <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool miration-step sql-script sql-database database-migrations export-data</tags>
+    <tags>sqlserver sqlcmd migration-tool c-sharp command-line-tool migration-step sql-script sql-database database-migrations export-data</tags>
   </metadata>
 
   <files>
