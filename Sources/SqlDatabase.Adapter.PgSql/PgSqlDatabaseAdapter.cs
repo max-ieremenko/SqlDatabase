@@ -27,10 +27,7 @@ internal sealed class PgSqlDatabaseAdapter : IDatabaseAdapter
 
         DatabaseName = builder.Database;
         _connectionString = builder.ToString();
-
-        builder.Database = null;
         _connectionStringMaster = builder.ToString();
-
         _onConnectionNotice = OnConnectionNotice;
     }
 
