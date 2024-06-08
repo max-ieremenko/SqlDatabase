@@ -32,7 +32,7 @@ Packages 47
 |[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|SqlDatabase|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.1)|13.0.1|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.1)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.3)|13.0.3|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.3)|[MIT](licenses/mit)|SqlDatabase internal|
-|[Npgsql](packages/nuget.org/npgsql/4.0.11)|4.0.11|[nuget.org](https://www.nuget.org/packages/Npgsql/4.0.11)|[PostgreSQL](licenses/postgresql)|SqlDatabase|
+|[Npgsql](packages/nuget.org/npgsql/4.0.16)|4.0.16|[nuget.org](https://www.nuget.org/packages/Npgsql/4.0.16)|[PostgreSQL](licenses/postgresql)|SqlDatabase|
 |[NUnit](packages/nuget.org/nunit/4.1.0)|4.1.0|[nuget.org](https://www.nuget.org/packages/NUnit/4.1.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/4.5.0)|4.5.0|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/4.5.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[PowerShellStandard.Library](packages/nuget.org/powershellstandard.library/5.1.1)|5.1.1|[nuget.org](https://www.nuget.org/packages/PowerShellStandard.Library/5.1.1)|[MIT](licenses/mit)|SqlDatabase|
