@@ -18,7 +18,7 @@ internal abstract class DatabaseCommandBase : ICommand
     public void Execute()
     {
         Greet(Database.Adapter.GetUserFriendlyConnectionString());
-        Log.Info(Database.GetServerVersion());
+        Log.Info(GetServerVersion());
 
         ExecuteCore();
     }
@@ -26,4 +26,6 @@ internal abstract class DatabaseCommandBase : ICommand
     protected abstract void Greet(string databaseLocation);
 
     protected abstract void ExecuteCore();
+
+    protected virtual string GetServerVersion() => Database.GetServerVersion(false);
 }

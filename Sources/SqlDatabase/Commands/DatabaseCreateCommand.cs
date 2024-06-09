@@ -27,6 +27,8 @@ internal sealed class DatabaseCreateCommand : DatabaseCommandBase
         Log.Info($"Create {databaseLocation}");
     }
 
+    protected override string GetServerVersion() => Database.GetServerVersion(true);
+
     protected override void ExecuteCore()
     {
         var sequences = ScriptSequence.BuildSequence();
@@ -44,7 +46,7 @@ internal sealed class DatabaseCreateCommand : DatabaseCommandBase
 
             using (Log.Indent())
             {
-                Database.Execute(script);
+                Database.ExecuteWithDatabaseCheck(script);
             }
 
             Log.Info($"done in {timer.Elapsed}");
