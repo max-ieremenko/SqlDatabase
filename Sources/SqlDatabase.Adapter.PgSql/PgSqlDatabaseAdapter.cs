@@ -26,10 +26,11 @@ internal sealed class PgSqlDatabaseAdapter : IDatabaseAdapter
         };
 
         DatabaseName = builder.Database;
-        
-        builder.Database = "postgres";
         _connectionString = builder.ToString();
+        
+        builder.Database = "postgres"; // The master will always be set to postgres database
         _connectionStringMaster = builder.ToString();
+        
         _onConnectionNotice = OnConnectionNotice;
     }
 
