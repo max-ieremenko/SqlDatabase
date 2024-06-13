@@ -39,9 +39,9 @@ internal sealed class Database : IDatabase
         }
     }
 
-    public string GetServerVersion()
+    public string GetServerVersion(bool useMasterDatabase)
     {
-        using (var connection = Adapter.CreateConnection(true))
+        using (var connection = Adapter.CreateConnection(useMasterDatabase))
         using (var command = connection.CreateCommand())
         {
             command.CommandText = Adapter.GetServerVersionSelectScript();
@@ -78,7 +78,21 @@ internal sealed class Database : IDatabase
         }
         else
         {
-            InvokeExecute(script);
+            InvokeExecute(script, false);
+        }
+    }
+
+    public void ExecuteWithDatabaseCheck(IScript script)
+    {
+        Variables.DatabaseName = Adapter.DatabaseName;
+
+        if (WhatIf)
+        {
+            ExecuteWhatIf(script);
+        }
+        else
+        {
+            InvokeExecute(script, !DatabaseExists());
         }
     }
 
@@ -172,22 +186,8 @@ internal sealed class Database : IDatabase
         }
     }
 
-    private void InvokeExecute(IScript script)
+    private void InvokeExecute(IScript script, bool useMaster)
     {
-        bool useMaster;
-
-        using (var connection = Adapter.CreateConnection(true))
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandTimeout = 0;
-            connection.Open();
-
-            command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName!);
-            var value = command.ExecuteScalar();
-
-            useMaster = value == null || Convert.IsDBNull(value);
-        }
-
         using (var connection = Adapter.CreateConnection(useMaster))
         {
             connection.Open();
@@ -203,6 +203,21 @@ internal sealed class Database : IDatabase
 
                 transaction?.Commit();
             }
+        }
+    }
+
+    private bool DatabaseExists()
+    {
+        using (var connection = Adapter.CreateConnection(true))
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandTimeout = 0;
+            connection.Open();
+
+            command.CommandText = Adapter.GetDatabaseExistsScript(Variables.DatabaseName!);
+            var value = command.ExecuteScalar();
+
+            return value != null && !Convert.IsDBNull(value);
         }
     }
 

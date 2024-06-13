@@ -1,14 +1,14 @@
 function Start-Pgsql {
     param ()
     
-    $npgsqldll = Join-Path $env:USERPROFILE ".nuget\packages\npgsql\4.0.11\lib\netstandard2.0\Npgsql.dll"
+    $npgsqldll = Join-Path $env:USERPROFILE ".nuget\packages\npgsql\4.0.16\lib\netstandard2.0\Npgsql.dll"
     Add-Type -Path $npgsqldll
 
     $container = Start-Container -Image sqldatabase/postgres:13.3 -ContainerPort 5432
 
     $builder = New-Object -TypeName Npgsql.NpgsqlConnectionStringBuilder
     $builder["Database"] = "sqldatabasetest"
-    $builder["Username"] = "postgres"
+    $builder["Username"] = "adminuser"
     $builder["Password"] = "qwerty"
     $builder["Timeout"] = 5
 

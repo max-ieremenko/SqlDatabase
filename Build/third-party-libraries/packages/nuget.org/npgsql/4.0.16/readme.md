@@ -1,4 +1,4 @@
-Npgsql [4.0.11](https://www.nuget.org/packages/Npgsql/4.0.11)
+Npgsql [4.0.16](https://www.nuget.org/packages/Npgsql/4.0.16)
 --------------------
 
 Used by: SqlDatabase
