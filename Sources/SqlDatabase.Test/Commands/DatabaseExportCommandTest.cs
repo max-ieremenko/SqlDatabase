@@ -31,7 +31,7 @@ public class DatabaseExportCommandTest
 
         _database = new Mock<IDatabase>(MockBehavior.Strict);
         _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
-        _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
+        _database.Setup(d => d.GetServerVersion(false)).Returns("sql server 1.0");
 
         _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 

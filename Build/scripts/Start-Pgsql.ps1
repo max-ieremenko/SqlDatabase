@@ -8,7 +8,7 @@ function Start-Pgsql {
 
     $builder = New-Object -TypeName Npgsql.NpgsqlConnectionStringBuilder
     $builder["Database"] = "sqldatabasetest"
-    $builder["Username"] = "postgres"
+    $builder["Username"] = "adminuser"
     $builder["Password"] = "qwerty"
     $builder["Timeout"] = 5
 

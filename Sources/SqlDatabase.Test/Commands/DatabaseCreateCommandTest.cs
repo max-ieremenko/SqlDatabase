@@ -27,7 +27,7 @@ public class DatabaseCreateCommandTest
 
         _database = new Mock<IDatabase>(MockBehavior.Strict);
         _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
-        _database.Setup(d => d.GetServerVersion()).Returns("sql server 1.0");
+        _database.Setup(d => d.GetServerVersion(true)).Returns("sql server 1.0");
 
         _scriptSequence = new Mock<ICreateScriptSequence>(MockBehavior.Strict);
 
@@ -80,8 +80,8 @@ public class DatabaseCreateCommandTest
             .Setup(f => f.InitializeEnvironment(_log.Object, sequence));
 
         _database
-            .Setup(d => d.Execute(step1.Object))
-            .Callback(() => _database.Setup(d => d.Execute(step2.Object)));
+            .Setup(d => d.ExecuteWithDatabaseCheck(step1.Object))
+            .Callback(() => _database.Setup(d => d.ExecuteWithDatabaseCheck(step2.Object)));
 
         _scriptSequence
             .Setup(s => s.BuildSequence())
@@ -109,7 +109,7 @@ public class DatabaseCreateCommandTest
             .Setup(f => f.InitializeEnvironment(_log.Object, sequence));
 
         _database
-            .Setup(d => d.Execute(step1.Object))
+            .Setup(d => d.ExecuteWithDatabaseCheck(step1.Object))
             .Throws<InvalidOperationException>();
 
         _scriptSequence

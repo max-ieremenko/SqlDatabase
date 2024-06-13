@@ -191,13 +191,15 @@ public class DatabaseTest
     }
 
     [Test]
-    public void GetServerVersion()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void GetServerVersion(bool useMasterDatabase)
     {
         _adapter
             .Setup(a => a.GetServerVersionSelectScript())
             .Returns("select server version");
         _adapter
-            .Setup(a => a.CreateConnection(true))
+            .Setup(a => a.CreateConnection(useMasterDatabase))
             .Returns(_connection.Object);
 
         _command
@@ -208,7 +210,7 @@ public class DatabaseTest
             })
             .Returns("server version");
 
-        var actual = _sut.GetServerVersion();
+        var actual = _sut.GetServerVersion(useMasterDatabase);
 
         actual.ShouldBe("server version");
     }
@@ -328,6 +330,57 @@ public class DatabaseTest
             .SetupGet(a => a.DatabaseName)
             .Returns("database-name");
         _adapter
+            .Setup(a => a.CreateConnection(false))
+            .Returns(_connection.Object);
+
+        var script = new Mock<IScript>(MockBehavior.Strict);
+        script
+            .Setup(s => s.Execute(_command.Object, It.IsNotNull<IVariables>(), It.IsNotNull<ILogger>()))
+            .Callback<IDbCommand, IVariables, ILogger>((cmd, variables, s) =>
+            {
+                cmd.CommandTimeout.ShouldBe(0);
+
+                if (transaction == TransactionMode.PerStep)
+                {
+                    cmd.Transaction.ShouldBe(_transaction.Object);
+                }
+                else
+                {
+                    cmd.Transaction.ShouldBeNull();
+                }
+
+                variables.GetValue("DatabaseName").ShouldBe("database-name");
+                variables.GetValue("CurrentVersion").ShouldBeNullOrEmpty();
+                variables.GetValue("TargetVersion").ShouldBeNullOrEmpty();
+                variables.GetValue("ModuleName").ShouldBeNullOrEmpty();
+            });
+
+        _sut.Execute(script.Object);
+
+        script.VerifyAll();
+        _command.VerifyAll();
+    }
+
+    [Test]
+    [TestCase(TransactionMode.None)]
+    [TestCase(TransactionMode.PerStep)]
+    public void ExecuteWithDatabaseCheck(TransactionMode transaction)
+    {
+        _sut.Transaction = transaction;
+
+        _command
+            .SetupProperty(c => c.CommandTimeout, 30);
+        _command
+            .SetupProperty(c => c.Transaction);
+
+        _connection
+            .Setup(c => c.BeginTransaction(IsolationLevel.ReadCommitted))
+            .Returns(_transaction.Object);
+
+        _adapter
+            .SetupGet(a => a.DatabaseName)
+            .Returns("database-name");
+        _adapter
             .Setup(a => a.GetDatabaseExistsScript("database-name"))
             .Returns("database exits");
         _adapter
@@ -364,7 +417,7 @@ public class DatabaseTest
                 variables.GetValue("ModuleName").ShouldBeNullOrEmpty();
             });
 
-        _sut.Execute(script.Object);
+        _sut.ExecuteWithDatabaseCheck(script.Object);
 
         script.VerifyAll();
         _command.VerifyAll();
@@ -402,7 +455,7 @@ public class DatabaseTest
                 cmd.Transaction.ShouldBeNull();
             });
 
-        _sut.Execute(script.Object);
+        _sut.ExecuteWithDatabaseCheck(script.Object);
 
         script.VerifyAll();
         _command.VerifyAll();
