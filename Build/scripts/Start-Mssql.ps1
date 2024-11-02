@@ -5,15 +5,15 @@ function Start-Mssql {
     $port = $container.port
 
     $builder = New-Object -TypeName System.Data.SqlClient.SqlConnectionStringBuilder
-    $builder["Initial Catalog"] = "SqlDatabaseTest"
-    $builder["User Id"] = "sa"
-    $builder["Password"] = "P@ssw0rd"
-    $builder["Connect Timeout"] = 5
+    $builder['Initial Catalog'] = 'SqlDatabaseTest'
+    $builder['User Id'] = 'sa'
+    $builder['Password'] = 'P@ssw0rd'
+    $builder['Connect Timeout'] = 5
 
-    $builder["Data Source"] = ".,$port"
+    $builder['Data Source'] = ".,$port"
     $connectionString = $builder.ToString()
     
-    $builder["Data Source"] = $container.ip
+    $builder['Data Source'] = $container.ip
     $remoteConnectionString = $builder.ToString()
 
     return @{
