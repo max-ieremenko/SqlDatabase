@@ -3,13 +3,13 @@ param(
     , $database
 )
 
-task Default RunContainers, CopyModule, PublishModule, RunTest
+task . RunContainers, CopyModule, PublishModule, RunTest
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
-$containerId = ""
-$connectionString = ""
-$testDir = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "WindowsPowerShell\modules\SqlDatabase"
+$containerId = ''
+$connectionString = ''
+$testDir = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'WindowsPowerShell\modules\SqlDatabase'
 
 task CopyModule {
     if (Test-Path $testDir) {
@@ -20,7 +20,7 @@ task CopyModule {
 }
 
 task PublishModule {
-    $log = Join-Path $settings.artifacts "Publish-Module.whatif.log"
+    $log = Join-Path $settings.artifacts 'Publish-Module.whatif.log'
     $command = "Publish-Module -Name SqlDatabase -WhatIf -Verbose -NuGetApiKey 123 *> $log"
 
     exec { powershell -NoLogo -Command "$command" }
