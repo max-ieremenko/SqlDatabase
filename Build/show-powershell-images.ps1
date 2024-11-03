@@ -32,4 +32,5 @@ function Get-ShortVersion {
 (Invoke-RestMethod -Uri 'https://mcr.microsoft.com/v2/powershell/tags/list').tags `
 | Where-Object { ($_ -Like '[0-9]*') -or ($_ -Like 'preview-[0-9]*') } `
 | Get-ShortVersion `
+| Where-Object { ($_ -ge '7.2') } `
 | Sort-Object -Unique

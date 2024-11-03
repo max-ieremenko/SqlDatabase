@@ -39,7 +39,7 @@ Table of Contents
 Installation
 ------------
 
-PowerShell module is compatible with Powershell Core 6.1+ and PowerShell Desktop 5.1.
+PowerShell module is compatible with Powershell Core 7.2+ and PowerShell Desktop 5.1.
 
 .net tool is compatible with .net sdk 8.0 and 6.0.
 
