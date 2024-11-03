@@ -3,7 +3,7 @@ System.Runtime.CompilerServices.Unsafe [4.5.3](https://www.nuget.org/packages/Sy
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net6.0, net7.0, net8.0, netstandard2.0
+Target frameworks: net472, net6.0, net8.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
