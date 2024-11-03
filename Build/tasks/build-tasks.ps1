@@ -30,7 +30,7 @@ task Initialize {
         repositoryCommitId  = git rev-parse HEAD
     }
 
-    $script:frameworks = 'net472', 'net6.0', 'net7.0', 'net8.0'
+    $script:frameworks = 'net472', 'net6.0', 'net8.0'
     $script:databases = 'MsSql', 'PgSql', 'MySql'
 
     Write-Output "PackageVersion: $($settings.version)"
@@ -162,7 +162,7 @@ task InitializeIntegrationTest {
     exec {
         docker run --rm `
             -v $test `
-            mcr.microsoft.com/dotnet/sdk:7.0 `
+            mcr.microsoft.com/dotnet/sdk:8.0 `
             bash -c $bashLine
     }
 }
@@ -228,7 +228,6 @@ task PsCoreTest {
 task SdkToolTest {
     $images = $(
         'sqldatabase/dotnet_pwsh:6.0-sdk'
-        , 'sqldatabase/dotnet_pwsh:7.0-sdk'
         , 'sqldatabase/dotnet_pwsh:8.0-sdk')
 
     $builds = @()
@@ -249,7 +248,6 @@ task SdkToolTest {
 task NetRuntimeLinuxTest {
     $testCases = $(
         @{ targetFramework = 'net6.0'; image = 'sqldatabase/dotnet_pwsh:6.0-runtime' }
-        , @{ targetFramework = 'net7.0'; image = 'sqldatabase/dotnet_pwsh:7.0-runtime' }
         , @{ targetFramework = 'net8.0'; image = 'sqldatabase/dotnet_pwsh:8.0-runtime' }
     )
 

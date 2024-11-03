@@ -17,7 +17,6 @@ $ErrorActionPreference = 'Stop'
 
 if ('.net' -in $List) {
     Invoke-InstallDotNet -Version '6.0.419'
-    Invoke-InstallDotNet -Version '7.0.406'
 
     $version = (Get-Content -Raw (Join-Path $PSScriptRoot '../Sources/global.json') | ConvertFrom-Json).sdk.version
     Invoke-InstallDotNet -Version $version
