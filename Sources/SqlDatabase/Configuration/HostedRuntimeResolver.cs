@@ -37,8 +37,10 @@ internal static class HostedRuntimeResolver
         {
             case <= 6:
                 return FrameworkVersion.Net6;
-            default:
+            case <= 8:
                 return FrameworkVersion.Net8;
+            default:
+                return FrameworkVersion.Net9;
         }
     }
 

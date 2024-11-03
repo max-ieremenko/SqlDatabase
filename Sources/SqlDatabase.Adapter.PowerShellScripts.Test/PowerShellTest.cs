@@ -36,8 +36,10 @@ public class PowerShellTest
         var version = FrameworkVersion.Net472;
 #elif NET6_0
         var version = FrameworkVersion.Net6;
-#else
+#elif NET8_0
         var version = FrameworkVersion.Net8;
+#else
+        var version = FrameworkVersion.Net9;
 #endif
 
         var runtime = new HostedRuntime(false, RuntimeInformation.IsOSPlatform(OSPlatform.Windows), version);

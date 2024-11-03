@@ -41,9 +41,9 @@ Installation
 
 PowerShell module is compatible with Powershell Core 7.2+ and PowerShell Desktop 5.1.
 
-.net tool is compatible with .net sdk 8.0 and 6.0.
+.net tool is compatible with .net sdk 9.0, 8.0 and 6.0.
 
-Command-line tool is compatible with .net runtime 8.0, 6.0 and .net framework 4.7.2+.
+Command-line tool is compatible with .net runtime 9.0, 8.0, 6.0 and .net framework 4.7.2+.
 
 ### PowerShell, from gallery
 
