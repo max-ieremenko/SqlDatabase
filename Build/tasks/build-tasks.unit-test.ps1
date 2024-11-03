@@ -5,7 +5,7 @@ param(
     $Sources,
 
     [Parameter(Mandatory)]
-    [ValidateSet('net472', 'net6.0', 'net7.0', 'net8.0')]
+    [ValidateSet('net472', 'net6.0', 'net8.0')]
     [string]
     $Framework
 )
