@@ -36,8 +36,6 @@ public class PowerShellTest
         var version = FrameworkVersion.Net472;
 #elif NET6_0
         var version = FrameworkVersion.Net6;
-#elif NET7_0
-        var version = FrameworkVersion.Net7;
 #else
         var version = FrameworkVersion.Net8;
 #endif

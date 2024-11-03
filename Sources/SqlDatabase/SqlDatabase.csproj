@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net7.0;net8.0;netstandard2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GlobalTool)' != true">net472;net6.0;net8.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GlobalTool)' == true">net6.0;net8.0</TargetFrameworks>
 
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
