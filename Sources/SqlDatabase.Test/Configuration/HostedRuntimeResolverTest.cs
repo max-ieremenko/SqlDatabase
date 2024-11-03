@@ -19,8 +19,10 @@ public class HostedRuntimeResolverTest
         var expected = FrameworkVersion.Net472;
 #elif NET6_0
         var expected = FrameworkVersion.Net6;
-#else
+#elif NET8_0
         var expected = FrameworkVersion.Net8;
+#else
+        var expected = FrameworkVersion.Net9;
 #endif
 
         var actual = HostedRuntimeResolver.GetRuntime(false);

@@ -30,7 +30,7 @@ task Initialize {
         repositoryCommitId  = git rev-parse HEAD
     }
 
-    $script:frameworks = 'net472', 'net6.0', 'net8.0'
+    $script:frameworks = 'net472', 'net6.0', 'net8.0', 'net9.0'
     $script:databases = 'MsSql', 'PgSql', 'MySql'
 
     Write-Output "PackageVersion: $($settings.version)"
@@ -210,7 +210,8 @@ task PsCoreTest {
 task SdkToolTest {
     $images = $(
         'sqldatabase/dotnet_pwsh:6.0-sdk'
-        , 'sqldatabase/dotnet_pwsh:8.0-sdk')
+        , 'sqldatabase/dotnet_pwsh:8.0-sdk'
+        , 'sqldatabase/dotnet_pwsh:9.0-sdk')
 
     $builds = @()
     foreach ($image in $images) {
@@ -231,6 +232,7 @@ task NetRuntimeLinuxTest {
     $testCases = $(
         @{ targetFramework = 'net6.0'; image = 'sqldatabase/dotnet_pwsh:6.0-runtime' }
         , @{ targetFramework = 'net8.0'; image = 'sqldatabase/dotnet_pwsh:8.0-runtime' }
+        , @{ targetFramework = 'net9.0'; image = 'sqldatabase/dotnet_pwsh:9.0-runtime' }
     )
 
     $builds = @()
