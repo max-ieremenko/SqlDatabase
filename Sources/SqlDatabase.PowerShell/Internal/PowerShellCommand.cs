@@ -1,30 +1,34 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.CommandLine;
 
 namespace SqlDatabase.PowerShell.Internal;
 
 internal static class PowerShellCommand
 {
-    // only for tests
-    internal static ISqlDatabaseProgram? Program { get; set; }
+    private static CmdLetExecutorInvoker? _invoker;
 
-    public static void Execute(PSCmdlet cmdlet, ICommandLine command)
+    public static void Execute(PSCmdlet cmdlet, string methodName, IDictionary<string, object?> param)
     {
-        using (var resolver = DependencyResolverFactory.Create(cmdlet))
+        var logger = new CmdLetLogger(cmdlet);
+        try
         {
-            resolver.Initialize();
-
-            ResolveProgram(cmdlet).ExecuteCommand(command);
+            GetInvoker(cmdlet).Invoke(logger, cmdlet.GetWorkingDirectory(), methodName, param);
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex.Message);
+            throw;
         }
     }
 
-    private static ISqlDatabaseProgram ResolveProgram(PSCmdlet cmdlet)
+    public static string GetDefaultConfigurationFile(PSCmdlet cmdlet) => GetInvoker(cmdlet).GetDefaultConfigurationFile();
+
+    private static CmdLetExecutorInvoker GetInvoker(PSCmdlet cmdlet)
     {
-        if (Program != null)
+        if (_invoker == null)
         {
-            return Program;
+            _invoker = new CmdLetExecutorInvoker(DependencyResolverFactory.Create(cmdlet));
         }
 
-        return new SqlDatabaseProgram(new CmdLetLogger(cmdlet), cmdlet.GetWorkingDirectory());
+        return _invoker;
     }
 }

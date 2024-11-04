@@ -1,5 +1,4 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.Adapter;
 using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.Internal;
 
@@ -40,19 +39,17 @@ public sealed class UpgradeCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        var commandLine = new UpgradeCommandLine
+        var param = new Dictionary<string, object?>
         {
-            Database = Database,
-            Transaction = (TransactionMode)Transaction,
-            Configuration = Configuration,
-            Log = Log,
-            WhatIf = WhatIf,
-            FolderAsModuleName = FolderAsModuleName
+            { nameof(UpgradeCommandLine.Database), Database },
+            { nameof(UpgradeCommandLine.Transaction), (int)Transaction },
+            { nameof(UpgradeCommandLine.Configuration), Configuration },
+            { nameof(UpgradeCommandLine.Log), Log },
+            { nameof(UpgradeCommandLine.WhatIf), (bool)WhatIf },
+            { nameof(UpgradeCommandLine.FolderAsModuleName), (bool)FolderAsModuleName },
+            { nameof(UpgradeCommandLine.From), From },
+            { nameof(UpgradeCommandLine.Variables), Var }
         };
-
-        CommandLineTools.AppendFrom(commandLine.From, false, From);
-        CommandLineTools.AppendVariables(commandLine.Variables, Var);
-
-        PowerShellCommand.Execute(this, commandLine);
+        PowerShellCommand.Execute(this, nameof(CmdLetExecutor.RunUpdate), param);
     }
 }

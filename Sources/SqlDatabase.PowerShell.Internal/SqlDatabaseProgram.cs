@@ -14,8 +14,5 @@ internal sealed class SqlDatabaseProgram : ISqlDatabaseProgram
         _currentDirectory = currentDirectory;
     }
 
-    public void ExecuteCommand(ICommandLine command)
-    {
-        Program.RunPowershell(_logger, command, _currentDirectory);
-    }
+    public void ExecuteCommand(ICommandLine command) => Program.RunPowershell(_logger, command, _currentDirectory);
 }

@@ -1,5 +1,4 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.Adapter;
 using SqlDatabase.CommandLine;
 using SqlDatabase.PowerShell.Internal;
 
@@ -41,19 +40,17 @@ public sealed class ExecuteCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        var commandLine = new ExecuteCommandLine
+        var param = new Dictionary<string, object?>
         {
-            Database = Database,
-            Transaction = (TransactionMode)Transaction,
-            Configuration = Configuration,
-            Log = Log,
-            WhatIf = WhatIf
+            { nameof(ExecuteCommandLine.Database), Database },
+            { nameof(ExecuteCommandLine.Transaction), (int)Transaction },
+            { nameof(ExecuteCommandLine.Configuration), Configuration },
+            { nameof(ExecuteCommandLine.Log), Log },
+            { nameof(ExecuteCommandLine.WhatIf), (bool)WhatIf },
+            { nameof(ExecuteCommandLine.From), From },
+            { "FromSql", FromSql },
+            { nameof(ExecuteCommandLine.Variables), Var }
         };
-
-        CommandLineTools.AppendFrom(commandLine.From, false, From);
-        CommandLineTools.AppendFrom(commandLine.From, true, FromSql);
-        CommandLineTools.AppendVariables(commandLine.Variables, Var);
-
-        PowerShellCommand.Execute(this, commandLine);
+        PowerShellCommand.Execute(this, nameof(CmdLetExecutor.RunExecute), param);
     }
 }

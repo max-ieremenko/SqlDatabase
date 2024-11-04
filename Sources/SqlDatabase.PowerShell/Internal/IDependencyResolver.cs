@@ -1,6 +1,12 @@
-﻿namespace SqlDatabase.PowerShell.Internal;
+﻿using System.Reflection;
 
-internal interface IDependencyResolver : IDisposable
+namespace SqlDatabase.PowerShell.Internal;
+
+internal interface IDependencyResolver
 {
-    void Initialize();
+    void Attach();
+
+    void Detach();
+
+    Assembly? LoadDependency(string assemblyName);
 }

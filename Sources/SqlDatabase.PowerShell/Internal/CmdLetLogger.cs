@@ -1,28 +1,27 @@
 ﻿using System.Management.Automation;
-using SqlDatabase.Log;
 
 namespace SqlDatabase.PowerShell.Internal;
 
-internal sealed class CmdLetLogger : LoggerBase
+internal sealed class CmdLetLogger
 {
     private readonly Cmdlet _cmdlet;
 
     public CmdLetLogger(Cmdlet cmdlet)
     {
         _cmdlet = cmdlet;
+        Info = WriteInfo;
+        Error = WriteError;
     }
 
-    protected override void WriteError(string message)
-    {
-        _cmdlet.WriteError(new ErrorRecord(
-            new InvalidOperationException(message),
-            null,
-            ErrorCategory.NotSpecified,
-            null));
-    }
+    public Action<string> Info { get; }
 
-    protected override void WriteInfo(string message)
-    {
-        _cmdlet.WriteInformation(new InformationRecord(message, null));
-    }
+    public Action<string> Error { get; }
+
+    private void WriteError(string message) => _cmdlet.WriteError(new ErrorRecord(
+        new InvalidOperationException(message),
+        null,
+        ErrorCategory.NotSpecified,
+        null));
+
+    private void WriteInfo(string message) => _cmdlet.WriteInformation(new InformationRecord(message, null));
 }

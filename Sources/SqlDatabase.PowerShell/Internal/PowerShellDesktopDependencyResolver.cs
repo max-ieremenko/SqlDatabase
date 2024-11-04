@@ -5,26 +5,31 @@ namespace SqlDatabase.PowerShell.Internal;
 internal sealed class PowerShellDesktopDependencyResolver : IDependencyResolver
 {
     private readonly AssemblyCache _cache;
+    private int _refCounter;
 
     public PowerShellDesktopDependencyResolver()
     {
-        var psDesktop = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), "ps-desktop");
-        _cache = new AssemblyCache(psDesktop);
+        var common = GetType().Assembly.GetDirectoryLocation();
+        _cache = new AssemblyCache(common, Path.Combine(common, "ps-desktop"));
     }
 
-    public void Initialize()
+    public void Attach()
     {
-        AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+        if (Interlocked.Increment(ref _refCounter) == 1)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+        }
     }
 
-    public void Dispose()
+    public void Detach()
     {
-        AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
-        _cache.Dispose();
+        if (Interlocked.Decrement(ref _refCounter) == 0)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
+        }
     }
 
-    private Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
-    {
-        return _cache.Load(new AssemblyName(args.Name), Assembly.LoadFrom);
-    }
+    public Assembly? LoadDependency(string assemblyName) => _cache.Load(new AssemblyName(assemblyName), Assembly.LoadFrom);
+
+    private Assembly? AssemblyResolve(object sender, ResolveEventArgs args) => LoadDependency(args.Name);
 }
