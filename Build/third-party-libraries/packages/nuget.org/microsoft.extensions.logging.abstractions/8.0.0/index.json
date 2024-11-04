@@ -9,20 +9,20 @@
       "Name": "SqlDatabase",
       "InternalOnly": false,
       "TargetFrameworks": [
-        "net472",
-        "net6.0",
-        "net8.0",
-        "net9.0",
         "netstandard2.0"
       ],
       "Dependencies": [
         {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.3"
+          "Name": "Microsoft.Extensions.DependencyInjection.Abstractions",
+          "Version": "8.0.0"
         },
         {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "6.0.0"
+          "Name": "System.Buffers",
+          "Version": "4.5.1"
+        },
+        {
+          "Name": "System.Memory",
+          "Version": "4.5.5"
         }
       ]
     }
@@ -31,7 +31,12 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
