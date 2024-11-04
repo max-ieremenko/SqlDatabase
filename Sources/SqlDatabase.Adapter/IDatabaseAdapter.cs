@@ -10,6 +10,8 @@ public interface IDatabaseAdapter
 
     SqlWriterBase CreateSqlWriter(TextWriter output);
 
+    IValueDataReader CreateValueDataReader();
+
     IDbConnection CreateConnection(bool switchToMaster);
 
     string GetServerVersionSelectScript();

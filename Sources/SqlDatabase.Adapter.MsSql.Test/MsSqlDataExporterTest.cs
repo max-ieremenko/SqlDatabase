@@ -54,7 +54,7 @@ public class MsSqlDataExporterTest
 
             using (var reader = cmd.ExecuteReader())
             {
-                _sut.Export(reader, "#tmp");
+                _sut.Export(reader, new MsSqlValueDataReader(), "#tmp");
             }
         }
 
@@ -101,7 +101,7 @@ select * from @x";
                 table.Columns[1].SqlDataTypeName.ShouldBe("VARBINARY");
                 table.Columns[1].Size.ShouldBe(8);
 
-                _sut.Export(reader, "#tmp");
+                _sut.Export(reader, new MsSqlValueDataReader(), "#tmp");
             }
         }
 
@@ -187,7 +187,7 @@ select * from @x";
 
             using (var reader = cmd.ExecuteReader())
             {
-                _sut.Export(reader, "#tmp");
+                _sut.Export(reader, new MsSqlValueDataReader(), "#tmp");
                 slq500 = _output.ToString();
             }
 
@@ -195,7 +195,7 @@ select * from @x";
             _sut.MaxInsertBatchSize = 2;
             using (var reader = cmd.ExecuteReader())
             {
-                _sut.Export(reader, "#tmp");
+                _sut.Export(reader, new MsSqlValueDataReader(), "#tmp");
                 slq2 = _output.ToString();
             }
         }

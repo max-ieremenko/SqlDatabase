@@ -44,6 +44,8 @@ internal sealed class MsSqlDatabaseAdapter : IDatabaseAdapter
 
     public SqlWriterBase CreateSqlWriter(TextWriter output) => new MsSqlWriter(output);
 
+    public IValueDataReader CreateValueDataReader() => new MsSqlValueDataReader();
+
     public IDbConnection CreateConnection(bool switchToMaster)
     {
         var connectionString = switchToMaster ? _connectionStringMaster : _connectionString;
