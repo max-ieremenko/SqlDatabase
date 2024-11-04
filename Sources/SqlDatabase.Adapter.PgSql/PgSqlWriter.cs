@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Dynamic;
 using System.Globalization;
 using System.Reflection;
 using NpgsqlTypes;
+using SqlDatabase.Adapter.PgSql.UnmappedTypes;
 
 namespace SqlDatabase.Adapter.PgSql;
 
@@ -219,7 +219,7 @@ internal sealed class PgSqlWriter : SqlWriterBase
             throw new NotSupportedException($"{array.Rank}d array is not supported.");
         }
 
-        if (value is ExpandoObject composite)
+        if (value is Composite composite)
         {
             ValueComposite(composite);
             return true;
@@ -436,20 +436,24 @@ internal sealed class PgSqlWriter : SqlWriterBase
         Output.Write(Q);
     }
 
-    private void ValueComposite(IDictionary<string, object?> value)
+    private void ValueComposite(Composite value)
     {
+        if (value.Rows.Count != 1)
+        {
+            throw new NotSupportedException($"Composite object with {value.Rows.Count} rows is not supported.");
+        }
+
         Output.Write("ROW(");
 
-        var index = 0;
-        foreach (var entry in value.Values)
+        var row = value.Rows[0];
+        for (var i = 0; i < row.Length; i++)
         {
-            if (index > 0)
+            if (i > 0)
             {
                 Output.Write(", ");
             }
 
-            Value(entry);
-            index++;
+            Value(row[i]);
         }
 
         Output.Write(')');

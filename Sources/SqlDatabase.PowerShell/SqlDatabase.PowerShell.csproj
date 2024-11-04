@@ -8,9 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" PrivateAssets="All" />
-    <PackageReference Include="System.Data.SqlClient" GeneratePathProperty="true" PrivateAssets="All" />
-    <PackageReference Include="Npgsql" GeneratePathProperty="true" PrivateAssets="All" />
-    <PackageReference Include="MySqlConnector" GeneratePathProperty="true" PrivateAssets="All" />
+    <PackageReference Include="System.Data.SqlClient" PrivateAssets="All" />
+    <PackageReference Include="Npgsql" PrivateAssets="All" />
+    <PackageReference Include="MySqlConnector" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,16 +28,13 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <CopyCmd>pwsh -NonInteractive -command $(ProjectDir)Copy-Dependency.ps1</CopyCmd>
+      <CopyDesktop>$(CopyCmd) -Source ../SqlDatabase -SourceTarget '.NETFramework,Version=v4.7.2' -Destination $(OutDir)ps-desktop -AssemblyName</CopyDesktop>
+      <CopyCommon>$(CopyCmd) -Destination $(OutDir) -AssemblyName</CopyCommon>
+    </PropertyGroup>
+
     <ItemGroup>
-      <CommonDependency Include="$(PKGNpgsql)\lib\netstandard2.0\Npgsql.dll" />
-      <CommonDependency Include="$(PKGMySqlConnector)\lib\netstandard2.0\MySqlConnector.dll" />
-
-      <PsDesktopDependency Include="$(PKGSystem_Data_SqlClient)\lib\net461\System.Data.SqlClient.dll" />
-      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Threading.Tasks.Extensions.dll" />
-      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Memory.dll" />
-      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Runtime.CompilerServices.Unsafe.dll" />
-      <PsDesktopDependency Include="$(OutDir)..\SqlDatabase\net472\System.Buffers.dll" />
-
       <ToDeleteDependency Include="$(OutDir)System*.*" />
       <ToDeleteDependency Include="$(OutDir)Microsoft*.*" />
     </ItemGroup>
@@ -46,9 +43,9 @@
     <RemoveDir Directories="$(OutDir)ps-desktop" />
     <MakeDir Directories="$(OutDir)ps-core" />
     <MakeDir Directories="$(OutDir)ps-desktop" />
-
-    <Copy SourceFiles="@(CommonDependency)" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="@(PsDesktopDependency)" DestinationFolder="$(OutDir)ps-desktop" />
     <Delete Files="@(ToDeleteDependency)" />
+
+    <Exec Command="$(CopyDesktop) System.Data.SqlClient, System.Threading.Tasks.Extensions, System.Memory, System.Runtime.CompilerServices.Unsafe, System.Buffers" />
+    <Exec Command="$(CopyCommon) Npgsql, MySqlConnector, Microsoft.Extensions.Logging.Abstractions, Microsoft.Bcl.AsyncInterfaces, System.Text.Json, System.Numerics.Vectors, System.Threading.Channels, System.Diagnostics.DiagnosticSource" />
   </Target>
  </Project>

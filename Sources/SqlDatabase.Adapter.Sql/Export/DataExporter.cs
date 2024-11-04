@@ -8,7 +8,7 @@ public sealed class DataExporter : IDataExporter
 
     public ILogger Log { get; set; } = null!;
 
-    public void Export(IDataReader source, string tableName)
+    public void Export(IDataReader source, IValueDataReader valueReader, string tableName)
     {
         ExportTable table;
         using (var metadata = source.GetSchemaTable())
@@ -47,7 +47,8 @@ public sealed class DataExporter : IDataExporter
                     Output.Text(", ");
                 }
 
-                Output.Value(source[i], table.Columns[i].SqlDataTypeName);
+                var value = valueReader.Read(source, i);
+                Output.Value(value, table.Columns[i].SqlDataTypeName);
             }
 
             Output.Line(")");

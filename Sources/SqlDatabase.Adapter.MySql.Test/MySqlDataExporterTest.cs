@@ -31,7 +31,7 @@ public class MySqlDataExporterTest
 
     [Test]
     [TestCaseSource(nameof(GetExportCases))]
-    public void Export(string dataType, object minValue, object maxValue, bool allowNull, string expectedDataType)
+    public void Export(string dataType, object minValue, object maxValue, bool allowNull, string? expectedDataType)
     {
         var sql = new StringBuilder();
         var script = new MySqlWriter(new StringWriter(sql))
@@ -58,7 +58,7 @@ public class MySqlDataExporterTest
             cmd.CommandText = sql.ToString();
             using (var reader = cmd.ExecuteReader())
             {
-                _sut.Export(reader, "test_data");
+                _sut.Export(reader, new MySqlValueDataReader(), "test_data");
             }
         }
 

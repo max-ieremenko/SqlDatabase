@@ -16,11 +16,14 @@ public class DatabaseExportCommandTest
     private Mock<ICreateScriptSequence> _scriptSequence = null!;
     private Mock<IScriptResolver> _scriptResolver = null!;
     private Mock<ILogger> _logger = null!;
+    private Mock<IValueDataReader> _valueReader = null!;
     private Mock<IDataExporter> _exporter = null!;
 
     [SetUp]
     public void BeforeEachTest()
     {
+        _valueReader = new Mock<IValueDataReader>(MockBehavior.Strict);
+
         var adapter = new Mock<IDatabaseAdapter>(MockBehavior.Strict);
         adapter
             .Setup(a => a.GetUserFriendlyConnectionString())
@@ -28,6 +31,9 @@ public class DatabaseExportCommandTest
         adapter
             .Setup(a => a.CreateSqlWriter(It.IsAny<TextWriter>()))
             .Returns<TextWriter>(output => new Mock<SqlWriterBase>(MockBehavior.Loose, output) { CallBase = true }.Object);
+        adapter
+            .Setup(a => a.CreateValueDataReader())
+            .Returns(_valueReader.Object);
 
         _database = new Mock<IDatabase>(MockBehavior.Strict);
         _database.SetupGet(d => d.Adapter).Returns(adapter.Object);
@@ -81,10 +87,10 @@ public class DatabaseExportCommandTest
 
         _database
             .Setup(d => d.ExecuteReader(script.Object))
-            .Returns(new[] { reader.Object });
+            .Returns([reader.Object]);
 
         _exporter
-            .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport"));
+            .Setup(e => e.Export(reader.Object, _valueReader.Object, "dbo.SqlDatabaseExport"));
 
         _scriptSequence
             .Setup(s => s.BuildSequence())
@@ -120,10 +126,10 @@ public class DatabaseExportCommandTest
             .Returns(new[] { reader.Object });
 
         _exporter
-            .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport"));
+            .Setup(e => e.Export(reader.Object, _valueReader.Object, "dbo.SqlDatabaseExport"));
 
         _exporter
-            .Setup(e => e.Export(reader.Object, "dbo.SqlDatabaseExport_2"));
+            .Setup(e => e.Export(reader.Object, _valueReader.Object, "dbo.SqlDatabaseExport_2"));
 
         _scriptSequence
             .Setup(s => s.BuildSequence())

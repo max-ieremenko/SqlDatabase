@@ -90,7 +90,7 @@ internal sealed class TextScript : IScript
         using (var metadata = reader.GetSchemaTable())
         {
             // mssql: ColumnName is string.Empty if not defined
-            // pgsql: ColumnName is DbNull if not defined
+            // pgsql: ColumnName is ?column?
             return metadata
                 ?.Rows
                 .Cast<DataRow>()

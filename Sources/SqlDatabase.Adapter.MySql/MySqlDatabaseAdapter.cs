@@ -46,6 +46,8 @@ internal sealed class MySqlDatabaseAdapter : IDatabaseAdapter
 
     public SqlWriterBase CreateSqlWriter(TextWriter output) => new MySqlWriter(output);
 
+    public IValueDataReader CreateValueDataReader() => new MySqlValueDataReader();
+
     public IDbConnection CreateConnection(bool switchToMaster)
     {
         var connectionString = switchToMaster ? _connectionStringMaster : _connectionString;

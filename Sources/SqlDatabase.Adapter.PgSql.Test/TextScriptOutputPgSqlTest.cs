@@ -85,15 +85,16 @@ drop table public.TextScriptIntegrationTest;");
     [Test]
     public void NoColumnName()
     {
-        var sut = CreateSut("select 1");
+        var sut = CreateSut("select 1, 2");
 
         sut.Execute(_command, _variables.Object, _logger.Object);
 
-        _logOutput.Count.ShouldBe(4);
-        _logOutput[0].ShouldBe("output: (no name)");
+        _logOutput.Count.ShouldBe(5);
+        _logOutput[0].ShouldBe("output: ?column?; ?column?");
         _logOutput[1].ShouldBe("row 1");
-        _logOutput[2].ShouldBe("(no name) : 1");
-        _logOutput[3].ShouldBe("1 row selected");
+        _logOutput[2].ShouldBe("?column? : 1");
+        _logOutput[3].ShouldBe("?column? : 2");
+        _logOutput[4].ShouldBe("1 row selected");
     }
 
     [Test]
@@ -104,9 +105,9 @@ drop table public.TextScriptIntegrationTest;");
         sut.Execute(_command, _variables.Object, _logger.Object);
 
         _logOutput.Count.ShouldBe(4);
-        _logOutput[0].ShouldBe("output: (no name)");
+        _logOutput[0].ShouldBe("output: ?column?");
         _logOutput[1].ShouldBe("row 1");
-        _logOutput[2].ShouldBe("(no name) : NULL");
+        _logOutput[2].ShouldBe("?column? : NULL");
         _logOutput[3].ShouldBe("1 row selected");
     }
 

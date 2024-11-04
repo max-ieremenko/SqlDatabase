@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Dynamic;
 using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter.PgSql.UnmappedTypes;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.PgSql;
@@ -105,19 +105,17 @@ public class PgSqlWriterTest
     }
 
     [Test]
-    [TestCase("a fat cat")]
-    [TestCase("fat & rat")]
-    public void ValueTsVector(string value)
+    [TestCase("a fat cat", "'a' 'cat' 'fat'")]
+    [TestCase("fat & rat", "'&' 'fat' 'rat'")]
+    public void ValueTsVector(string value, string expected)
     {
-        var expected = NpgsqlTsVector.Parse(value);
-
         _sut
             .Text("SELECT ")
-            .Value(expected)
+            .Value(value)
             .Text("::tsvector");
 
         var actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeOfType<NpgsqlTsVector>();
-        actual.ShouldBe(expected);
+        actual.ToString().ShouldBe(expected);
     }
 
     [Test]
@@ -125,15 +123,18 @@ public class PgSqlWriterTest
     [TestCase("fat & (rat | cat)")]
     public void ValueTsQuery(string value)
     {
-        var expected = PgSqlQuery.ExecuteScalar($"SELECT '{value}'::tsquery").ShouldBeAssignableTo<NpgsqlTsQuery>();
+        var query = PgSqlQuery.ExecuteScalar($"SELECT '{value}'::tsquery").ShouldBeAssignableTo<NpgsqlTsQuery>().ShouldNotBeNull();
+
+        var expected = new StringBuilder();
+        query.Write(expected);
 
         _sut
             .Text("SELECT ")
-            .Value(NpgsqlTsQuery.Parse(value))
+            .Value(query)
             .Text("::tsquery");
 
-        var actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeAssignableTo<NpgsqlTsQuery>();
-        actual!.ToString().ShouldBe(expected!.ToString());
+        var actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeAssignableTo<NpgsqlTsQuery>().ShouldNotBeNull();
+        actual.ToString().ShouldBe(expected.ToString());
     }
 
     [Test]
@@ -173,22 +174,30 @@ public class PgSqlWriterTest
     [Test]
     public void ValueCompositeType()
     {
-        IDictionary<string, object?> expected = new ExpandoObject();
-        expected.Add("name", "fuzzy dice");
-        expected.Add("supplier_id", 42);
-        expected.Add("price", 1.99);
+        var expected = new Composite(["name", "supplier_id", "price"]);
+        expected.Rows.Add(["fuzzy dice", 42, 1.99]);
 
         _sut
             .Text("SELECT ")
             .Value(expected)
             .Text("::public.inventory_item");
 
-        IDictionary<string, object?> actual = PgSqlQuery.ExecuteScalar(_output.ToString()).ShouldBeOfType<ExpandoObject>();
-        actual.Keys.ShouldBe(expected.Keys);
-        foreach (var key in actual.Keys)
+        Composite actual;
+        using (var connection = PgSqlQuery.Open())
+        using (var cmd = connection.CreateCommand())
         {
-            actual[key].ShouldBe(expected[key]);
+            cmd.CommandText = _output.ToString();
+            using (var reader = cmd.ExecuteReader())
+            {
+                reader.Read().ShouldBeTrue();
+                actual = new PgSqlValueDataReader().Read(reader, 0).ShouldBeOfType<Composite>();
+                reader.Read().ShouldBeFalse();
+            }
         }
+
+        actual.Names.ShouldBe(expected.Names);
+        actual.Rows.Count.ShouldBe(1);
+        actual.Rows[0].ShouldBe(expected.Rows[0]);
     }
 
     [Test]
