@@ -1,10 +1,10 @@
 ﻿using System.Collections;
-using System.Dynamic;
 using Moq;
 using Npgsql;
 using NpgsqlTypes;
 using NUnit.Framework;
 using Shouldly;
+using SqlDatabase.Adapter.PgSql.UnmappedTypes;
 using SqlDatabase.Adapter.Sql.Export;
 using SqlDatabase.TestApi;
 
@@ -35,7 +35,7 @@ public class PgSqlDataExporterTest
 
     [Test]
     [TestCaseSource(nameof(GetExportCases))]
-    public void Export(string dataType, object minValue, object maxValue, bool allowNull, string expectedDataType)
+    public void Export(string dataType, object? minValue, object? maxValue, bool allowNull, string? expectedDataType)
     {
         var sql = new StringBuilder();
         var script = new PgSqlWriter(new StringWriter(sql))
@@ -64,7 +64,7 @@ public class PgSqlDataExporterTest
 
             using (var reader = cmd.ExecuteReader())
             {
-                _sut.Export(reader, "test_data");
+                _sut.Export(reader, new PgSqlValueDataReader(), "test_data");
             }
         }
 
@@ -79,18 +79,19 @@ public class PgSqlDataExporterTest
             cmd.CommandText = exportSql.Replace("CREATE TABLE", "CREATE TEMP TABLE") + "\r\n\r\nSELECT * FROM test_data;";
             connection.Open();
 
+            var valueReader = new PgSqlValueDataReader();
             using (var reader = cmd.ExecuteReader())
             {
                 reader.Read().ShouldBeTrue();
-                CompareValues(dataType, minValue, reader[0]);
+                CompareValues(dataType, minValue, valueReader.Read(reader, 0));
 
                 reader.Read().ShouldBeTrue();
-                CompareValues(dataType, maxValue, reader[0]);
+                CompareValues(dataType, maxValue, valueReader.Read(reader, 0));
 
                 if (allowNull)
                 {
                     reader.Read().ShouldBeTrue();
-                    reader[0].ShouldBe(DBNull.Value);
+                    valueReader.Read(reader, 0).ShouldBeOneOf(DBNull.Value, null);
                     reader.Read().ShouldBeFalse();
                 }
                 else
@@ -101,8 +102,14 @@ public class PgSqlDataExporterTest
         }
     }
 
-    private static void CompareValues(string dataType, object expected, object actual)
+    private static void CompareValues(string dataType, object? expected, object? actual)
     {
+        if (expected == null)
+        {
+            actual.ShouldBeNull();
+            return;
+        }
+
         if (dataType.StartsWith("bit", StringComparison.OrdinalIgnoreCase) && actual is bool)
         {
             actual.ShouldBe(((BitArray)expected)[0]);
@@ -111,23 +118,24 @@ public class PgSqlDataExporterTest
 
         if (dataType.Equals("tsvector", StringComparison.OrdinalIgnoreCase))
         {
-            actual.ShouldBeOfType<NpgsqlTsVector>().ShouldBe(NpgsqlTsVector.Parse((string)expected));
+            actual.ShouldBeOfType<NpgsqlTsVector>().ShouldBe(PgSqlQuery.ParseTsVector((string)expected));
             return;
         }
 
         if (dataType.Equals("tsquery", StringComparison.OrdinalIgnoreCase))
         {
-            actual.ShouldBeAssignableTo<NpgsqlTsQuery>()!.ToString().ShouldBe(NpgsqlTsQuery.Parse((string)expected).ToString());
+            actual.ShouldBeAssignableTo<NpgsqlTsQuery>()!.ToString().ShouldBe(PgSqlQuery.ParseTsQuery((string)expected).ToString());
             return;
         }
 
-        if (expected is IDictionary<string, object> compositeExpected)
+        if (expected is Composite compositeExpected)
         {
-            var compositeActual = actual.ShouldBeAssignableTo<IDictionary<string, object>>();
-            compositeActual!.Keys.ShouldBe(compositeExpected.Keys);
-            foreach (var key in compositeExpected.Keys)
+            var compositeActual = actual.ShouldBeOfType<Composite>();
+            compositeActual.Names.ShouldBe(compositeExpected.Names);
+            compositeActual.Rows.Count.ShouldBe(compositeExpected.Rows.Count);
+            for (var i = 0; i < compositeActual.Rows.Count; i++)
             {
-                compositeActual[key].ShouldBe(compositeExpected[key]);
+                compositeActual.Rows[i].ShouldBe(compositeExpected.Rows[i]);
             }
 
             return;
@@ -181,10 +189,10 @@ public class PgSqlDataExporterTest
         // Date/Time Types
         var date = new DateTime(2021, 05, 13, 18, 31, 30, 10);
         yield return new TestCaseData("timestamp", date, date, true, null) { TestName = "timestamp" };
-        yield return new TestCaseData("timestamp(6)", date, date, true, null) { TestName = "timestamp(6)" };
+        yield return new TestCaseData("timestamp(6)", date, date, true, "TIMESTAMP WITHOUT TIME ZONE") { TestName = "timestamp(6)" };
         yield return new TestCaseData("date", date.Date, date.Date, true, null) { TestName = "date" };
         yield return new TestCaseData("time", date.TimeOfDay, date.TimeOfDay, true, null) { TestName = "time" };
-        yield return new TestCaseData("time(6)", date.TimeOfDay, date.TimeOfDay, true, null) { TestName = "time(6)" };
+        yield return new TestCaseData("time(6)", date.TimeOfDay, date.TimeOfDay, true, "TIME WITHOUT TIME ZONE") { TestName = "time(6)" };
         yield return new TestCaseData("interval", TimeSpan.Parse("3.04:05:06"), TimeSpan.Parse("04:05:06"), true, null) { TestName = "interval" };
         yield return new TestCaseData("interval(6)", TimeSpan.Parse("3.04:05:06"), TimeSpan.Parse("04:05:06"), true, null) { TestName = "interval(6)" };
 
@@ -218,11 +226,10 @@ public class PgSqlDataExporterTest
         yield return new TestCaseData("integer[3]", new[] { 1, 2, 3 }, new[] { -1, -2, 3 }, true, "integer[]") { TestName = "integer[3]" };
 
         // Composite Types
-        IDictionary<string, object?> composite = new ExpandoObject();
-        composite.Add("name", "fuzzy dice");
-        composite.Add("supplier_id", 42);
-        composite.Add("price", 1.99);
+        var composite = new Composite(["name", "supplier_id", "price"]);
+        composite.Rows.Add(["fuzzy dice", 42, 1.99]);
         yield return new TestCaseData("public.inventory_item", composite, composite, true, null) { TestName = "composite" };
+        yield return new TestCaseData("public.inventory_item", null, null, true, null) { TestName = "composite null" };
 
         // Range Types
         yield return new TestCaseData("int4range", NpgsqlRange<int>.Parse("[21,30)"), NpgsqlRange<int>.Parse("[21,31)"), true, null) { TestName = "int4range" };

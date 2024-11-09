@@ -32,7 +32,7 @@ function Invoke-InstallDotNet {
         $versions = dotnet --list-sdks
         foreach ($installedVersion in $versions) {
             # 6.0.401 [C:\Program Files\dotnet\sdk]
-            $test = ($installedVersion -split " ")[0]
+            $test = ($installedVersion -split ' ')[0]
     
             if (Test-Version -Target $Version -Test $test) {
                 Write-Output ".net sdk $test is alredy installed"
@@ -41,15 +41,15 @@ function Invoke-InstallDotNet {
         }
     }
 
-    $installDir = "C:\Program Files\dotnet"
-    $installScript = "dotnet-install.ps1"
+    $installDir = 'C:\Program Files\dotnet'
+    $installScript = 'dotnet-install.ps1'
 
     if ($IsLinux) {
-        $installDir = "/usr/share/dotnet"
-        $installScript = "dotnet-install.sh"
+        $installDir = '/usr/share/dotnet'
+        $installScript = 'dotnet-install.sh'
     }
 
-    $downloadDir = Join-Path ([System.IO.Path]::GetTempPath()) "install-dotnet"
+    $downloadDir = Join-Path ([System.IO.Path]::GetTempPath()) 'install-dotnet'
     if (Test-Path $downloadDir) {
         Remove-Item -Path $downloadDir -Recurse -Force
     }

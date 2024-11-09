@@ -1,4 +1,4 @@
-FROM microsoft/mssql-server-linux:latest AS build
+FROM mcr.microsoft.com/mssql/server:latest AS build
 
 ENV ACCEPT_EULA=Y \
    SA_PASSWORD=P@ssw0rd \
@@ -7,11 +7,14 @@ ENV ACCEPT_EULA=Y \
 # copy scripts
 COPY create-database-scripts/ /sql-scripts/
 
-# install .net 6.0 sdk
+# switch to root
+USER root
+
+# install .net 8.0 sdk
 RUN apt-get update && \
    apt-get install -y apt-transport-https && \
    apt-get update && \
-   apt-get install -y dotnet-sdk-6.0
+   apt-get install -y dotnet-sdk-8.0
 
 # install SqlDatabase.GlobalTool
 RUN dotnet tool install --global SqlDatabase.GlobalTool
@@ -27,7 +30,10 @@ RUN /opt/mssql/bin/sqlservr & \
       -from=/sql-scripts && \
    pkill sqlservr
 
-FROM microsoft/mssql-server-linux:latest AS runtime
+# set mssql user as SqlServer files owner
+RUN chown -R mssql /var/opt/mssql/data 
+
+FROM mcr.microsoft.com/mssql/server:latest AS runtime
 
 ENV ACCEPT_EULA=Y \
    SA_PASSWORD=P@ssw0rd \

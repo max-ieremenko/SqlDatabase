@@ -72,14 +72,14 @@ internal static class InstallationSeeker
 
     private static bool IsCompatibleVersion(FrameworkVersion runtimeVersion, Version version)
     {
+        if (runtimeVersion == FrameworkVersion.Net9)
+        {
+            return version < new Version("7.6");
+        }
+
         if (runtimeVersion == FrameworkVersion.Net8)
         {
             return version < new Version("7.5");
-        }
-
-        if (runtimeVersion == FrameworkVersion.Net7)
-        {
-            return version < new Version("7.4");
         }
 
         if (runtimeVersion == FrameworkVersion.Net6)

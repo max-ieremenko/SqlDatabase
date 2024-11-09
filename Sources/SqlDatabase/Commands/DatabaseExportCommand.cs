@@ -109,7 +109,9 @@ internal sealed class DatabaseExportCommand : DatabaseCommandBase
             do
             {
                 readerSubIndex++;
-                exporter.Export(reader, GetExportTableName(DestinationTableName, readerIndex, readerSubIndex));
+                var valueReader = Database.Adapter.CreateValueDataReader();
+                var tableName = GetExportTableName(DestinationTableName, readerIndex, readerSubIndex);
+                exporter.Export(reader, valueReader, tableName);
             }
             while (reader.NextResult());
         }

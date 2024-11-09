@@ -18,13 +18,13 @@ function Start-Container {
     
     $ip = exec { 
         docker inspect `
-            --format "{{.NetworkSettings.Networks.bridge.IPAddress}}"  `
+            --format '{{.NetworkSettings.Networks.bridge.IPAddress}}'  `
             $containerId
     }
 
     $hostPort = exec { 
         docker inspect `
-            --format "{{(index (index .NetworkSettings.Ports \""$ContainerPort/tcp\"") 0).HostPort}}"  `
+            --format "{{(index (index .NetworkSettings.Ports ""$ContainerPort/tcp"") 0).HostPort}}"  `
             $containerId
     }
 

@@ -1,6 +1,5 @@
 ﻿using System.Management.Automation;
 using System.Runtime.InteropServices;
-using SqlDatabase.Configuration;
 using SqlDatabase.PowerShell.Internal;
 
 namespace SqlDatabase.PowerShell;
@@ -9,15 +8,6 @@ namespace SqlDatabase.PowerShell;
 public sealed class InfoCmdLet : PSCmdlet
 {
     protected override void ProcessRecord()
-    {
-        using (var resolver = DependencyResolverFactory.Create(this))
-        {
-            resolver.Initialize();
-            WriteInfo();
-        }
-    }
-
-    private void WriteInfo()
     {
         var assembly = GetType().Assembly;
 
@@ -33,9 +23,9 @@ public sealed class InfoCmdLet : PSCmdlet
             RuntimeInformation.OSDescription,
             RuntimeInformation.OSArchitecture,
             RuntimeInformation.ProcessArchitecture,
-            Location = Path.GetDirectoryName(assembly.Location),
+            Location = assembly.GetDirectoryLocation(),
             WorkingDirectory = this.GetWorkingDirectory(),
-            DefaultConfigurationFile = ConfigurationManager.GetDefaultConfigurationFile()
+            DefaultConfigurationFile = PowerShellCommand.GetDefaultConfigurationFile(this)
         });
     }
 }

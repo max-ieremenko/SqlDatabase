@@ -1,0 +1,63 @@
+{
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "PostgreSQL",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Bcl.HashCode",
+          "Version": "1.1.1"
+        },
+        {
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Collections.Immutable",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Diagnostics.DiagnosticSource",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "System.Runtime.CompilerServices.Unsafe",
+          "Version": "6.0.0"
+        },
+        {
+          "Name": "System.Text.Json",
+          "Version": "8.0.5"
+        },
+        {
+          "Name": "System.Threading.Channels",
+          "Version": "8.0.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "PostgreSQL",
+      "HRef": "https://licenses.nuget.org/PostgreSQL"
+    },
+    {
+      "Subject": "repository",
+      "Code": "PostgreSQL",
+      "HRef": "https://github.com/npgsql/npgsql"
+    },
+    {
+      "Subject": "project",
+      "Code": "PostgreSQL",
+      "HRef": "https://github.com/npgsql/npgsql"
+    }
+  ]
+}

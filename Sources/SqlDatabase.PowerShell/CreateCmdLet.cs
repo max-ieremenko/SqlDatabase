@@ -32,17 +32,15 @@ public sealed class CreateCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        var commandLine = new CreateCommandLine
+        var param = new Dictionary<string, object?>
         {
-            Database = Database,
-            Configuration = Configuration,
-            Log = Log,
-            WhatIf = WhatIf
+            { nameof(CreateCommandLine.Database), Database },
+            { nameof(CreateCommandLine.Configuration), Configuration },
+            { nameof(CreateCommandLine.Log), Log },
+            { nameof(CreateCommandLine.WhatIf), (bool)WhatIf },
+            { nameof(CreateCommandLine.From), From },
+            { nameof(CreateCommandLine.Variables), Var }
         };
-
-        CommandLineTools.AppendFrom(commandLine.From, false, From);
-        CommandLineTools.AppendVariables(commandLine.Variables, Var);
-
-        PowerShellCommand.Execute(this, commandLine);
+        PowerShellCommand.Execute(this, nameof(CmdLetExecutor.RunCreate), param);
     }
 }

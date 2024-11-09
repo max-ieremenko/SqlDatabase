@@ -4,12 +4,12 @@ param(
     , $image
 )
 
-task Default StartDatabase, RunTest
+task . StartDatabase, RunTest
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
-$containerId = ""
-$connectionString = ""
+$containerId = ''
+$connectionString = ''
 
 Enter-Build {
     Write-Output "$database on $image"
@@ -29,7 +29,7 @@ task RunTest {
     $packageVersion = $settings.version
     $packageName = "SqlDatabase.GlobalTool.$packageVersion.nupkg"
     $app = (Join-Path $settings.artifacts $packageName) + ":/app/$packageName"
-    $test = (Join-Path $settings.integrationTests $database) + ":/test"
+    $test = (Join-Path $settings.integrationTests $database) + ':/test'
 
     exec {
         docker run -it --rm `

@@ -6,5 +6,5 @@ public interface IDataExporter
 
     ILogger Log { get; set; }
 
-    void Export(IDataReader source, string tableName);
+    void Export(IDataReader source, IValueDataReader valueReader, string tableName);
 }

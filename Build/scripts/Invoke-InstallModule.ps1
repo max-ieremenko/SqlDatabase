@@ -10,7 +10,7 @@ function Invoke-InstallModule {
         $Version
     )
 
-    $test = Get-InstalledModule -Name $Name -MinimumVersion $Version -ErrorAction "SilentlyContinue"
+    $test = Get-InstalledModule -Name $Name -MinimumVersion $Version -ErrorAction 'SilentlyContinue'
     if ($test) {
         Write-Output "$Name $($test.Version) is alredy installed"
         return

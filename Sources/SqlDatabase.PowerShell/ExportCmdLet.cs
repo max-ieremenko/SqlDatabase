@@ -38,19 +38,17 @@ public sealed class ExportCmdLet : PSCmdlet
 
     protected override void ProcessRecord()
     {
-        var commandLine = new ExportCommandLine
+        var param = new Dictionary<string, object?>
         {
-            Database = Database,
-            Configuration = Configuration,
-            DestinationFileName = ToFile,
-            DestinationTableName = ToTable,
-            Log = Log
+            { nameof(ExportCommandLine.Database), Database },
+            { nameof(ExportCommandLine.Configuration), Configuration },
+            { nameof(ExportCommandLine.DestinationFileName), ToFile },
+            { nameof(ExportCommandLine.DestinationTableName), ToTable },
+            { nameof(ExportCommandLine.Log), Log },
+            { nameof(ExportCommandLine.From), From },
+            { "FromSql", FromSql },
+            { nameof(ExportCommandLine.Variables), Var }
         };
-
-        CommandLineTools.AppendFrom(commandLine.From, false, From);
-        CommandLineTools.AppendFrom(commandLine.From, true, FromSql);
-        CommandLineTools.AppendVariables(commandLine.Variables, Var);
-
-        PowerShellCommand.Execute(this, commandLine);
+        PowerShellCommand.Execute(this, nameof(CmdLetExecutor.RunExport), param);
     }
 }

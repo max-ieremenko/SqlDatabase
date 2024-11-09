@@ -11,8 +11,8 @@
       "TargetFrameworks": [
         "net472",
         "net6.0",
-        "net7.0",
-        "net8.0"
+        "net8.0",
+        "net9.0"
       ]
     }
   ],
@@ -24,13 +24,11 @@
     },
     {
       "Subject": "repository",
-      "Code": null,
       "HRef": "https://github.com/DapperLib/Dapper",
       "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "https://github.com/DapperLib/Dapper",
       "Description": "License code NOASSERTION"
     }

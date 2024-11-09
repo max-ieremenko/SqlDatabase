@@ -18,10 +18,10 @@ public class InstallationSeekerTest
         var version = FrameworkVersion.Net472;
 #elif NET6_0
         var version = FrameworkVersion.Net6;
-#elif NET7_0
-        var version = FrameworkVersion.Net7;
-#else
+#elif NET8_0
         var version = FrameworkVersion.Net8;
+#else
+        var version = FrameworkVersion.Net9;
 #endif
 
         _runtime = new HostedRuntime(false, RuntimeInformation.IsOSPlatform(OSPlatform.Windows), version);

@@ -2,39 +2,19 @@
 
 namespace SqlDatabase.PowerShell.Internal;
 
-internal sealed class AssemblyCache : IDisposable
+internal sealed class AssemblyCache
 {
     private readonly string[] _probingPaths;
-    private readonly IDictionary<string, Assembly?> _assemblyByName;
 
     public AssemblyCache(params string[] probingPaths)
     {
-        _probingPaths = new string[probingPaths.Length + 1];
-        _probingPaths[0] = Path.GetDirectoryName(GetType().Assembly.Location);
-        for (var i = 0; i < probingPaths.Length; i++)
-        {
-            _probingPaths[i + 1] = probingPaths[i];
-        }
-
-        _assemblyByName = new Dictionary<string, Assembly?>(StringComparer.OrdinalIgnoreCase);
+        _probingPaths = probingPaths;
     }
 
     public Assembly? Load(AssemblyName assemblyName, Func<string, Assembly> loader)
     {
         var fileName = assemblyName.Name + ".dll";
-        if (_assemblyByName.TryGetValue(fileName, out var assembly))
-        {
-            return assembly;
-        }
-
-        assembly = TryFindAndLoad(fileName, loader);
-        _assemblyByName[fileName] = assembly;
-        return assembly;
-    }
-
-    public void Dispose()
-    {
-        _assemblyByName.Clear();
+        return TryFindAndLoad(fileName, loader);
     }
 
     private Assembly? TryFindAndLoad(string fileName, Func<string, Assembly> loader)

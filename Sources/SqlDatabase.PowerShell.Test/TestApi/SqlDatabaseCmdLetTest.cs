@@ -40,13 +40,13 @@ public abstract class SqlDatabaseCmdLetTest<TSubject>
             .Callback<ICommandLine>(_commandLines.Add);
 
         _commandLines.Clear();
-        PowerShellCommand.Program = program.Object;
+        CmdLetExecutor.Program = program.Object;
     }
 
     [TearDown]
     public void AfterEachTest()
     {
-        PowerShellCommand.Program = null;
+        CmdLetExecutor.Program = null;
 
         foreach (var row in _powerShell.Streams.Information)
         {

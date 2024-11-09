@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using NpgsqlTypes;
 using SqlDatabase.TestApi;
 
 namespace SqlDatabase.Adapter.PgSql;
@@ -27,4 +28,10 @@ internal static class PgSqlQuery
             return cmd.ExecuteScalar();
         }
     }
+
+    // NpgsqlTsQuery.Parse(value)
+    public static NpgsqlTsQuery ParseTsQuery(string value) => (NpgsqlTsQuery)ExecuteScalar($"SELECT '{value}'::tsquery")!;
+
+    // NpgsqlTsVector.Parse(value)
+    public static NpgsqlTsVector ParseTsVector(string value) => (NpgsqlTsVector)ExecuteScalar($"SELECT '{value}'::tsvector")!;
 }

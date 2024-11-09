@@ -50,6 +50,8 @@ internal sealed class PgSqlDatabaseAdapter : IDatabaseAdapter
 
     public SqlWriterBase CreateSqlWriter(TextWriter output) => new PgSqlWriter(output);
 
+    public IValueDataReader CreateValueDataReader() => new PgSqlValueDataReader();
+
     public IDbConnection CreateConnection(bool switchToMaster)
     {
         var connectionString = switchToMaster ? _connectionStringMaster : _connectionString;
