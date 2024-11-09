@@ -13,16 +13,16 @@
       ],
       "Dependencies": [
         {
-          "Name": "System.Buffers",
-          "Version": "4.4.0"
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "7.0.1"
         },
         {
-          "Name": "System.Numerics.Vectors",
-          "Version": "4.4.0"
+          "Name": "System.Diagnostics.DiagnosticSource",
+          "Version": "7.0.2"
         },
         {
-          "Name": "System.Runtime.CompilerServices.Unsafe",
-          "Version": "4.5.0"
+          "Name": "System.Threading.Tasks.Extensions",
+          "Version": "4.5.4"
         }
       ]
     }
@@ -31,12 +31,16 @@
     {
       "Subject": "package",
       "Code": "MIT",
-      "HRef": "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/mysql-net/MySqlConnector.git"
     },
     {
       "Subject": "project",
-      "Code": null,
-      "HRef": "https://dot.net/"
+      "HRef": "https://mysqlconnector.net/"
     }
   ]
 }
