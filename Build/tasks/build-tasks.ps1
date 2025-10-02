@@ -45,7 +45,7 @@ task Clean {
 }
 
 task Build {
-    $solutionFile = Join-Path $settings.sources 'SqlDatabase.sln'
+    $solutionFile = Join-Path $settings.sources 'SqlDatabase.slnx'
     exec { dotnet restore $solutionFile }
     exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Release }
 }

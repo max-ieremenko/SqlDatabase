@@ -1,0 +1,38 @@
+<Solution>
+  <Folder Name="/Examples/">
+    <Project Path="../Examples/CSharpMirationStep/CSharpMirationStep.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="StyleCope.ruleset" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="SqlDatabase.Adapter.AssemblyScripts.Test/SqlDatabase.Adapter.AssemblyScripts.Test.csproj" />
+    <Project Path="SqlDatabase.Adapter.MsSql.Test/SqlDatabase.Adapter.MsSql.Test.csproj" />
+    <Project Path="SqlDatabase.Adapter.MySql.Test/SqlDatabase.Adapter.MySql.Test.csproj" />
+    <Project Path="SqlDatabase.Adapter.PgSql.Test/SqlDatabase.Adapter.PgSql.Test.csproj" />
+    <Project Path="SqlDatabase.Adapter.PowerShellScripts.Test/SqlDatabase.Adapter.PowerShellScripts.Test.csproj" />
+    <Project Path="SqlDatabase.Adapter.Sql.Test/SqlDatabase.Adapter.Sql.Test.csproj" />
+    <Project Path="SqlDatabase.CommandLine.Test/SqlDatabase.CommandLine.Test.csproj" />
+    <Project Path="SqlDatabase.Configuration.Test/SqlDatabase.Configuration.Test.csproj" />
+    <Project Path="SqlDatabase.FileSystem.Test/SqlDatabase.FileSystem.Test.csproj" />
+    <Project Path="SqlDatabase.PowerShell.Test/SqlDatabase.PowerShell.Test.csproj" />
+    <Project Path="SqlDatabase.Sequence.Test/SqlDatabase.Sequence.Test.csproj" />
+    <Project Path="SqlDatabase.Test/SqlDatabase.Test.csproj" />
+    <Project Path="SqlDatabase.TestApi/SqlDatabase.TestApi.csproj" />
+  </Folder>
+  <Project Path="SqlDatabase.Adapter.AssemblyScripts/SqlDatabase.Adapter.AssemblyScripts.csproj" />
+  <Project Path="SqlDatabase.Adapter.MsSql/SqlDatabase.Adapter.MsSql.csproj" />
+  <Project Path="SqlDatabase.Adapter.MySql/SqlDatabase.Adapter.MySql.csproj" />
+  <Project Path="SqlDatabase.Adapter.PgSql/SqlDatabase.Adapter.PgSql.csproj" />
+  <Project Path="SqlDatabase.Adapter.PowerShellScripts/SqlDatabase.Adapter.PowerShellScripts.csproj" />
+  <Project Path="SqlDatabase.Adapter.Sql/SqlDatabase.Adapter.Sql.csproj" />
+  <Project Path="SqlDatabase.Adapter/SqlDatabase.Adapter.csproj" />
+  <Project Path="SqlDatabase.CommandLine/SqlDatabase.CommandLine.csproj" />
+  <Project Path="SqlDatabase.Configuration/SqlDatabase.Configuration.csproj" />
+  <Project Path="SqlDatabase.FileSystem/SqlDatabase.FileSystem.csproj" />
+  <Project Path="SqlDatabase.Package/SqlDatabase.Package.csproj" />
+  <Project Path="SqlDatabase.PowerShell.Internal/SqlDatabase.PowerShell.Internal.csproj" />
+  <Project Path="SqlDatabase.PowerShell/SqlDatabase.PowerShell.csproj" />
+  <Project Path="SqlDatabase.Sequence/SqlDatabase.Sequence.csproj" />
+  <Project Path="SqlDatabase/SqlDatabase.csproj" />
+</Solution>
