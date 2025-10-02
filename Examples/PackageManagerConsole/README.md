@@ -3,7 +3,7 @@ How to use SqlDatabase in the VS Package manager console
 
 This example shows how to combine [SolutionScripts](https://www.nuget.org/packages/SolutionScripts/) and SqlDatabase
 
-Open this [solution](PackageManagerConsole.sln) in the Visual Studio. Open Package manage console (in the VS menu Tools/NuGet Package Manager/Package Manager Console)
+Open this [solution](PackageManagerConsole.slnx) in the Visual Studio. Open Package manage console (in the VS menu Tools/NuGet Package Manager/Package Manager Console)
 
 ![Console](Sreen.png)
 
