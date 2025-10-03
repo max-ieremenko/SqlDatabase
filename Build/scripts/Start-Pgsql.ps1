@@ -1,7 +1,8 @@
 function Start-Pgsql {
     param ()
     
-    $npgsqldll = Join-Path $env:USERPROFILE '.nuget\packages\npgsql\4.0.16\lib\netstandard2.0\Npgsql.dll'
+    # https://www.nuget.org/packages/Npgsql/4.0.16 lib/netstandard2.0/Npgsql.dll
+    $npgsqldll = Join-Path $PSScriptRoot 'Npgsql.dll'
     Add-Type -Path $npgsqldll
 
     $container = Start-Container -Image sqldatabase/postgres:13.3 -ContainerPort 5432
