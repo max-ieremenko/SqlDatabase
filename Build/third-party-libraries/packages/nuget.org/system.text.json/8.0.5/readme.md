@@ -17,11 +17,6 @@ Provides high-performance and low-allocating types that serialize objects to Jav
 
 The System.Text.Json library is built-in as part of the shared framework in .NET Runtime. The package can be installed when you need to use it in other target frameworks.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 6
 -----------
 

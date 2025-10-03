@@ -15,11 +15,6 @@ Description
 -----------
 Shouldly - Assertion framework for .NET. The way asserting *Should* be
 
-Remarks
------------
-no remarks
-
-
 Dependencies 3
 -----------
 

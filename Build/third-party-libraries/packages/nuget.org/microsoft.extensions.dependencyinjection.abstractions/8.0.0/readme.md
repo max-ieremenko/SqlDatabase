@@ -18,11 +18,6 @@ Abstractions for dependency injection.
 Commonly Used Types:
 Microsoft.Extensions.DependencyInjection.IServiceCollection
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

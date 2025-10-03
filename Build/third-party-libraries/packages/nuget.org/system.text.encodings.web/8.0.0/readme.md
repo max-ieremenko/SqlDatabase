@@ -20,11 +20,6 @@ System.Text.Encodings.Web.HtmlEncoder
 System.Text.Encodings.Web.UrlEncoder
 System.Text.Encodings.Web.JavaScriptEncoder
 
-Remarks
------------
-no remarks
-
-
 Dependencies 3
 -----------
 

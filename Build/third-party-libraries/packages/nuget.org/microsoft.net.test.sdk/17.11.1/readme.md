@@ -15,11 +15,6 @@ Description
 -----------
 The MSbuild targets and properties for building .NET test projects.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

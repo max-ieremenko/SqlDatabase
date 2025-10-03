@@ -15,11 +15,6 @@ Description
 -----------
 Castle Core, including DynamicProxy, Logging Abstractions and DictionaryAdapter
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

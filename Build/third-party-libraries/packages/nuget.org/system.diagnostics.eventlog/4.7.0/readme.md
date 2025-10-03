@@ -19,11 +19,6 @@ System.Diagnostics.EventLog
  
 When using NuGet 3.x this package requires at least version 3.4.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 1
 -----------
 
