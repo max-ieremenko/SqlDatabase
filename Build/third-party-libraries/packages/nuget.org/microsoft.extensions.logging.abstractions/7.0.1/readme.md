@@ -24,11 +24,6 @@ Microsoft.Extensions.Logging.Logger<T>
 Microsoft.Extensions.Logging.LoggerMessage
 Microsoft.Extensions.Logging.Abstractions.NullLogger
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

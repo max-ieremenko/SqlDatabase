@@ -15,11 +15,6 @@ Description
 -----------
 A truly async MySQL ADO.NET provider, supporting MySQL Server, MariaDB, Amazon Aurora, Azure Database for MySQL, Google Cloud SQL, and more.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 3
 -----------
 

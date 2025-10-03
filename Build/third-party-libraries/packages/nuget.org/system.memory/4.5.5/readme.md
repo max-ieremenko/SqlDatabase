@@ -27,11 +27,6 @@ System.Buffers.Text.Utf8Formatter
 32b491939fbd125f304031c35038b1e14b4e3958 
 When using NuGet 3.x this package requires at least version 3.4.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 5
 -----------
 

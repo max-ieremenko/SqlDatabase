@@ -15,11 +15,6 @@ Description
 -----------
 Moq is the most popular and friendly mocking framework for .NET.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

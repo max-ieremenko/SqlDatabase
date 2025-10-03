@@ -15,11 +15,6 @@ Description
 -----------
 Testplatform host executes the test using specified adapter.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

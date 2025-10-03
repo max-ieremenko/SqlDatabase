@@ -15,11 +15,6 @@ Description
 -----------
 The Microsoft Test Platform Object Model.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 1
 -----------
 

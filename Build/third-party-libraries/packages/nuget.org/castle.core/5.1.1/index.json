@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
   "Source": "https://api.nuget.org/v3/index.json",
   "License": {
     "Code": "Apache-2.0",
@@ -31,13 +32,11 @@
     },
     {
       "Subject": "repository",
-      "Code": null,
       "HRef": "https://github.com/castleproject/Core",
       "Description": "License code NOASSERTION"
     },
     {
       "Subject": "project",
-      "Code": null,
       "HRef": "http://www.castleproject.org/"
     }
   ]

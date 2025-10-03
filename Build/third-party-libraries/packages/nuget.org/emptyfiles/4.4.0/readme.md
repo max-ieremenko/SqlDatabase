@@ -15,11 +15,6 @@ Description
 -----------
 A collection of minimal binary files.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 1
 -----------
 

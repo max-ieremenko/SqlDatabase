@@ -19,11 +19,6 @@ Commonly Used Types:
 System.Diagnostics.DiagnosticListener
 System.Diagnostics.DiagnosticSource
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

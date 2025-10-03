@@ -15,11 +15,6 @@ Description
 -----------
 Launches diff tools based on file extensions. Designed to be consumed by snapshot testing libraries.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 2
 -----------
 

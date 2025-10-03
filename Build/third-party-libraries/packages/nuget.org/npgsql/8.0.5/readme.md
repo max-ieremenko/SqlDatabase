@@ -15,11 +15,6 @@ Description
 -----------
 Npgsql is the open source .NET data provider for PostgreSQL.
 
-Remarks
------------
-no remarks
-
-
 Dependencies 7
 -----------
 
