@@ -29,6 +29,7 @@ function Get-ShortVersion {
     }
 }
 
+# https://learn.microsoft.com/en-us/powershell/scripting/install/powershell-support-lifecycle
 (Invoke-RestMethod -Uri 'https://mcr.microsoft.com/v2/powershell/tags/list').tags `
 | Where-Object { ($_ -Like '[0-9]*') -or ($_ -Like 'preview-[0-9]*') } `
 | Get-ShortVersion `

@@ -16,9 +16,8 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'scripts/Invoke-InstallModule.ps1')
 
 if ('.net' -in $List) {
-    Invoke-InstallDotNet -Version '6.0.422'
     Invoke-InstallDotNet -Version '8.0.403'
-    Invoke-InstallDotNet -Version '9.0.100-rc.2.24474.11'
+    Invoke-InstallDotNet -Version '9.0.300'
 
     $version = (Get-Content -Raw (Join-Path $PSScriptRoot '../Sources/global.json') | ConvertFrom-Json).sdk.version
     Invoke-InstallDotNet -Version $version
