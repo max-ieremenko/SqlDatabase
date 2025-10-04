@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Dapper.StrongName</id>
+    <version>2.1.66</version>
+    <title>Dapper (Strong Named)</title>
+    <authors>Sam Saffron,Marc Gravell,Nick Craver</authors>
+    <owners>Sam Saffron,Marc Gravell,Nick Craver</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <projectUrl>https://github.com/DapperLib/Dapper</projectUrl>
+    <description>A high performance Micro-ORM supporting SQL Server, MySQL, Sqlite, SqlCE, Firebird etc. Major Sponsor: Dapper Plus from ZZZ Projects.</description>
+    <releaseNotes>https://dapperlib.github.io/Dapper/</releaseNotes>
+    <copyright>2019 Stack Exchange, Inc.</copyright>
+    <tags>orm sql micro-orm</tags>
+    <repository type="git" url="https://github.com/DapperLib/Dapper" commit="bd4f75b512de3e00f2c2631d5309961a1ecfea23" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="9.0.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework8.0" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="9.0.1" exclude="Build,Analyzers" />
+        <dependency id="System.Reflection.Emit.Lightweight" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <icon>Dapper.png</icon>
+    <readme>readme.md</readme>
+  </metadata>
+</package>

@@ -13,6 +13,12 @@
         "net472",
         "net8.0",
         "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "System.Collections.Immutable",
+          "Version": "1.5.0"
+        }
       ]
     }
   ],

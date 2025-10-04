@@ -3,7 +3,7 @@ System.Collections.Immutable [8.0.0](https://www.nuget.org/packages/System.Colle
 
 Used by: SqlDatabase
 
-Target frameworks: netstandard2.0
+Target frameworks: net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
