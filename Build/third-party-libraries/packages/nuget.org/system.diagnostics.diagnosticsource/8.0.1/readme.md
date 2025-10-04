@@ -1,4 +1,4 @@
-System.Diagnostics.DiagnosticSource [7.0.2](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/7.0.2)
+System.Diagnostics.DiagnosticSource [8.0.1](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/8.0.1)
 --------------------
 
 Used by: SqlDatabase

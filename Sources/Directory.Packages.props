@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageVersion Include="MySqlConnector" Version="2.3.7" />
-	<PackageVersion Include="Npgsql" Version="8.0.5" />
+	<PackageVersion Include="MySqlConnector" Version="2.4.0" />
+	<PackageVersion Include="Npgsql" Version="8.0.7" />
 
 	<PackageVersion Include="System.Data.SqlClient" Version="4.8.6" />
 	<PackageVersion Include="System.Runtime.Loader" Version="4.3.0" />

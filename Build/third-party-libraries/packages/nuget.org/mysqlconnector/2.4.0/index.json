@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": false,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Extensions.DependencyInjection.Abstractions",
+          "Version": "8.0.2"
+        },
+        {
+          "Name": "Microsoft.Extensions.Logging.Abstractions",
+          "Version": "8.0.2"
+        },
+        {
+          "Name": "System.Diagnostics.DiagnosticSource",
+          "Version": "8.0.1"
+        },
+        {
+          "Name": "System.Threading.Tasks.Extensions",
+          "Version": "4.5.4"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/mysql-net/MySqlConnector.git"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://mysqlconnector.net/"
+    }
+  ]
+}

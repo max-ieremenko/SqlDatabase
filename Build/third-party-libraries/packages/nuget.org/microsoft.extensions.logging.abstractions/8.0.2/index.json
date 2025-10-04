@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
-  "Source": "https://api.nuget.org/v3/index.json",
+  "Source": "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-public/nuget/v3/index.json",
   "License": {
     "Code": "MIT",
     "Status": "AutomaticallyApproved"
@@ -14,16 +14,20 @@
       ],
       "Dependencies": [
         {
-          "Name": "Microsoft.Extensions.Logging.Abstractions",
-          "Version": "7.0.1"
+          "Name": "Microsoft.Extensions.DependencyInjection.Abstractions",
+          "Version": "8.0.2"
+        },
+        {
+          "Name": "System.Buffers",
+          "Version": "4.5.1"
         },
         {
           "Name": "System.Diagnostics.DiagnosticSource",
-          "Version": "7.0.2"
+          "Version": "8.0.1"
         },
         {
-          "Name": "System.Threading.Tasks.Extensions",
-          "Version": "4.5.4"
+          "Name": "System.Memory",
+          "Version": "4.5.5"
         }
       ]
     }
@@ -37,11 +41,11 @@
     {
       "Subject": "repository",
       "Code": "MIT",
-      "HRef": "https://github.com/mysql-net/MySqlConnector.git"
+      "HRef": "https://github.com/dotnet/runtime"
     },
     {
       "Subject": "project",
-      "HRef": "https://mysqlconnector.net/"
+      "HRef": "https://dot.net/"
     }
   ]
 }
