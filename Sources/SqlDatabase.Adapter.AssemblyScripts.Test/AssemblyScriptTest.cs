@@ -37,7 +37,7 @@ public class AssemblyScriptTest
 #if NET472
         var frameworkVersion = FrameworkVersion.Net472;
 #else
-        var frameworkVersion = FrameworkVersion.Net6;
+        var frameworkVersion = FrameworkVersion.Net8;
 #endif
         _sut = new AssemblyScript(
             frameworkVersion,

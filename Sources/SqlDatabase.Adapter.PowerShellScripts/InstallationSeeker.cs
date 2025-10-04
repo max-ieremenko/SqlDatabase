@@ -74,17 +74,12 @@ internal static class InstallationSeeker
     {
         if (runtimeVersion == FrameworkVersion.Net9)
         {
-            return version < new Version("7.6");
+            return version <= new Version("7.6");
         }
 
         if (runtimeVersion == FrameworkVersion.Net8)
         {
             return version < new Version("7.5");
-        }
-
-        if (runtimeVersion == FrameworkVersion.Net6)
-        {
-            return version < new Version("7.3");
         }
 
         return false;
