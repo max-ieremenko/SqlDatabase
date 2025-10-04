@@ -3,7 +3,7 @@ NUnit [4.2.2](https://www.nuget.org/packages/NUnit/4.2.2)
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net6.0, net8.0, net9.0
+Target frameworks: net472, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

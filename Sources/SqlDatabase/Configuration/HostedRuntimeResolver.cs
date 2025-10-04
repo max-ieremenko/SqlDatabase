@@ -30,13 +30,11 @@ internal static class HostedRuntimeResolver
 
         if (description.IndexOf(" Core ", StringComparison.OrdinalIgnoreCase) > 0)
         {
-            return FrameworkVersion.Net6;
+            return FrameworkVersion.Net8;
         }
 
         switch (version.Major)
         {
-            case <= 6:
-                return FrameworkVersion.Net6;
             case <= 8:
                 return FrameworkVersion.Net8;
             default:

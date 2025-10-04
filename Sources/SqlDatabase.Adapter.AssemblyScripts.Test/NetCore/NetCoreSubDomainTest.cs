@@ -37,7 +37,7 @@ public partial class NetCoreSubDomainTest
             .Returns(0);
 
         _sut = SubDomainFactory.Create(
-                FrameworkVersion.Net6,
+                FrameworkVersion.Net8,
                 log.Object,
                 GetType().Assembly.Location,
                 () => File.ReadAllBytes(GetType().Assembly.Location))

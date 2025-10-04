@@ -1,8 +1,6 @@
 task . `
-    BuildDotnetSdk60 `
-    , BuildDotnetSdk80 `
+    BuildDotnetSdk80 `
     , BuildDotnetSdk90 `
-    , BuildDotnetRuntime60 `
     , BuildDotnetRuntime80 `
     , BuildDotnetRuntime90 `
     , BuildMsSqlDatabase `
@@ -43,28 +41,6 @@ task BuildMySqlDatabase {
             -f $dockerfile `
             -t sqldatabase/mysql:8.0.25 `
             $context
-    }
-}
-
-task BuildDotnetSdk60 {
-    $dockerfile = Join-Path $context 'image-dotnet-sdk-6.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:6.0-sdk `
-            .
-    }
-}
-
-task BuildDotnetRuntime60 {
-    $dockerfile = Join-Path $context 'image-dotnet-runtime-6.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:6.0-runtime `
-            .
     }
 }
 

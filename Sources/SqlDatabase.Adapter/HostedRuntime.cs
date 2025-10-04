@@ -3,7 +3,6 @@
 public enum FrameworkVersion
 {
     Net472,
-    Net6,
     Net8,
     Net9
 }

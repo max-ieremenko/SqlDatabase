@@ -3,7 +3,7 @@ Microsoft.CodeCoverage [17.11.1](https://www.nuget.org/packages/Microsoft.CodeCo
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net6.0, net8.0, net9.0
+Target frameworks: net472, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 
