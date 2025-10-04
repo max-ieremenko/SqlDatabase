@@ -1,4 +1,4 @@
-Npgsql [8.0.5](https://www.nuget.org/packages/Npgsql/8.0.5)
+Npgsql [8.0.7](https://www.nuget.org/packages/Npgsql/8.0.7)
 --------------------
 
 Used by: SqlDatabase

@@ -6,13 +6,13 @@ Licenses
 |[Apache-2.0](licenses/apache-2.0)|no|no|2|
 |[BSD-2-Clause](licenses/bsd-2-clause)|no|no|0|
 |[BSD-3-Clause](licenses/bsd-3-clause)|no|no|2|
-|[MIT](licenses/mit)|no|no|61|
+|[MIT](licenses/mit)|no|no|62|
 |[ms-net-library](licenses/ms-net-library)|no|no|1|
 |[PostgreSQL](licenses/postgresql)|no|no|1|
 
 
 
-Packages 67
+Packages 68
 --------
 
 |Name|Version|Source|License|Used by|
@@ -28,8 +28,9 @@ Packages 67
 |[Microsoft.CodeCoverage](packages/nuget.org/microsoft.codecoverage/18.0.0)|18.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CodeCoverage/18.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.CSharp](packages/nuget.org/microsoft.csharp/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/Microsoft.CSharp/4.7.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Extensions.DependencyInjection.Abstractions](packages/nuget.org/microsoft.extensions.dependencyinjection.abstractions/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0)|[MIT](licenses/mit)|SqlDatabase|
-|[Microsoft.Extensions.Logging.Abstractions](packages/nuget.org/microsoft.extensions.logging.abstractions/7.0.1)|7.0.1|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/7.0.1)|[MIT](licenses/mit)|SqlDatabase|
+|[Microsoft.Extensions.DependencyInjection.Abstractions](packages/nuget.org/microsoft.extensions.dependencyinjection.abstractions/8.0.2)|8.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions/8.0.2)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.Extensions.Logging.Abstractions](packages/nuget.org/microsoft.extensions.logging.abstractions/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/8.0.0)|[MIT](licenses/mit)|SqlDatabase|
+|[Microsoft.Extensions.Logging.Abstractions](packages/nuget.org/microsoft.extensions.logging.abstractions/8.0.2)|8.0.2|[nuget.org](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/8.0.2)|[MIT](licenses/mit)|SqlDatabase|
 |[Microsoft.NET.Test.Sdk](packages/nuget.org/microsoft.net.test.sdk/18.0.0)|18.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/18.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Testing.Extensions.Telemetry](packages/nuget.org/microsoft.testing.extensions.telemetry/1.7.3)|1.7.3|[nuget.org](https://www.nuget.org/packages/Microsoft.Testing.Extensions.Telemetry/1.7.3)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Testing.Extensions.TrxReport.Abstractions](packages/nuget.org/microsoft.testing.extensions.trxreport.abstractions/1.7.3)|1.7.3|[nuget.org](https://www.nuget.org/packages/Microsoft.Testing.Extensions.TrxReport.Abstractions/1.7.3)|[MIT](licenses/mit)|SqlDatabase internal|
@@ -42,11 +43,11 @@ Packages 67
 |[Microsoft.TestPlatform.TestHost](packages/nuget.org/microsoft.testplatform.testhost/18.0.0)|18.0.0|[nuget.org](https://www.nuget.org/packages/Microsoft.TestPlatform.TestHost/18.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Microsoft.Win32.Registry](packages/nuget.org/microsoft.win32.registry/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0)|[MIT](licenses/mit)|SqlDatabase|
 |[Moq](packages/nuget.org/moq/4.20.72)|4.20.72|[nuget.org](https://www.nuget.org/packages/Moq/4.20.72)|[BSD-3-Clause](licenses/bsd-3-clause)|SqlDatabase internal|
-|[MySqlConnector](packages/nuget.org/mysqlconnector/2.3.7)|2.3.7|[nuget.org](https://www.nuget.org/packages/MySqlConnector/2.3.7)|[MIT](licenses/mit)|SqlDatabase|
+|[MySqlConnector](packages/nuget.org/mysqlconnector/2.4.0)|2.4.0|[nuget.org](https://www.nuget.org/packages/MySqlConnector/2.4.0)|[MIT](licenses/mit)|SqlDatabase|
 |[NETStandard.Library](packages/nuget.org/netstandard.library/2.0.3)|2.0.3|[nuget.org](https://www.nuget.org/packages/NETStandard.Library/2.0.3)|[MIT](licenses/mit)|SqlDatabase|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.3)|13.0.3|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.3)|[MIT](licenses/mit)|SqlDatabase internal|
 |[Newtonsoft.Json](packages/nuget.org/newtonsoft.json/13.0.4)|13.0.4|[nuget.org](https://www.nuget.org/packages/Newtonsoft.Json/13.0.4)|[MIT](licenses/mit)|SqlDatabase internal|
-|[Npgsql](packages/nuget.org/npgsql/8.0.5)|8.0.5|[nuget.org](https://www.nuget.org/packages/Npgsql/8.0.5)|[PostgreSQL](licenses/postgresql)|SqlDatabase|
+|[Npgsql](packages/nuget.org/npgsql/8.0.7)|8.0.7|[nuget.org](https://www.nuget.org/packages/Npgsql/8.0.7)|[PostgreSQL](licenses/postgresql)|SqlDatabase|
 |[NUnit](packages/nuget.org/nunit/4.4.0)|4.4.0|[nuget.org](https://www.nuget.org/packages/NUnit/4.4.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[NUnit3TestAdapter](packages/nuget.org/nunit3testadapter/5.1.0)|5.1.0|[nuget.org](https://www.nuget.org/packages/NUnit3TestAdapter/5.1.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[PowerShellStandard.Library](packages/nuget.org/powershellstandard.library/5.1.1)|5.1.1|[nuget.org](https://www.nuget.org/packages/PowerShellStandard.Library/5.1.1)|[MIT](licenses/mit)|SqlDatabase|
@@ -59,8 +60,8 @@ Packages 67
 |[System.Data.SqlClient](packages/nuget.org/system.data.sqlclient/4.8.6)|4.8.6|[nuget.org](https://www.nuget.org/packages/System.Data.SqlClient/4.8.6)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/4.7.0)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/5.0.0)|5.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/5.0.0)|[MIT](licenses/mit)|SqlDatabase internal|
-|[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/7.0.2)|7.0.2|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/7.0.2)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/8.0.0)|8.0.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/8.0.0)|[MIT](licenses/mit)|SqlDatabase|
+|[System.Diagnostics.DiagnosticSource](packages/nuget.org/system.diagnostics.diagnosticsource/8.0.1)|8.0.1|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.DiagnosticSource/8.0.1)|[MIT](licenses/mit)|SqlDatabase|
 |[System.Diagnostics.EventLog](packages/nuget.org/system.diagnostics.eventlog/4.7.0)|4.7.0|[nuget.org](https://www.nuget.org/packages/System.Diagnostics.EventLog/4.7.0)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Management](packages/nuget.org/system.management/6.0.1)|6.0.1|[nuget.org](https://www.nuget.org/packages/System.Management/6.0.1)|[MIT](licenses/mit)|SqlDatabase internal|
 |[System.Memory](packages/nuget.org/system.memory/4.5.4)|4.5.4|[nuget.org](https://www.nuget.org/packages/System.Memory/4.5.4)|[MIT](licenses/mit)|SqlDatabase|
