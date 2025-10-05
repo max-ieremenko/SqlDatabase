@@ -1,8 +1,10 @@
 task . `
     BuildDotnetSdk80 `
     , BuildDotnetSdk90 `
+    , BuildDotnetSdk100 `
     , BuildDotnetRuntime80 `
     , BuildDotnetRuntime90 `
+    , BuildDotnetRuntime100 `
     , BuildMsSqlDatabase `
     , BuildPgSqlDatabase `
     , BuildMySqlDatabase
@@ -84,6 +86,28 @@ task BuildDotnetRuntime90 {
             --pull `
             -f $dockerfile `
             -t sqldatabase/dotnet_pwsh:9.0-runtime `
+            .
+    }
+}
+
+task BuildDotnetSdk100 {
+    $dockerfile = Join-Path $context 'image-dotnet-sdk-10.0.dockerfile'
+    exec {
+        docker build `
+            --pull `
+            -f $dockerfile `
+            -t sqldatabase/dotnet_pwsh:10.0-sdk `
+            .
+    }
+}
+
+task BuildDotnetRuntime100 {
+    $dockerfile = Join-Path $context 'image-dotnet-runtime-10.0.dockerfile'
+    exec {
+        docker build `
+            --pull `
+            -f $dockerfile `
+            -t sqldatabase/dotnet_pwsh:10.0-runtime `
             .
     }
 }

@@ -3,7 +3,7 @@ Microsoft.Bcl.AsyncInterfaces [9.0.1](https://www.nuget.org/packages/Microsoft.B
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net8.0, net9.0
+Target frameworks: net10.0, net472, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 

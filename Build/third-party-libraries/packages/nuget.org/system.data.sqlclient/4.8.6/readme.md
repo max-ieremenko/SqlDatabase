@@ -3,7 +3,7 @@ System.Data.SqlClient [4.8.6](https://www.nuget.org/packages/System.Data.SqlClie
 
 Used by: SqlDatabase
 
-Target frameworks: net472, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

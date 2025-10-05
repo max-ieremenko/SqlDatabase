@@ -4,7 +4,8 @@ public enum FrameworkVersion
 {
     Net472,
     Net8,
-    Net9
+    Net9,
+    Net10
 }
 
 public readonly struct HostedRuntime

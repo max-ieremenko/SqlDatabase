@@ -3,7 +3,7 @@ Microsoft.TestPlatform.ObjectModel [17.13.0](https://www.nuget.org/packages/Micr
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net8.0, net9.0
+Target frameworks: net10.0, net472, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 
