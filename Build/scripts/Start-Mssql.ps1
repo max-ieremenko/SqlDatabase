@@ -1,7 +1,7 @@
 function Start-Mssql {
     param ()
 
-    $container = Start-Container -Image sqldatabase/mssql:2017 -ContainerPort 1433
+    $container = Start-Container -Image sqldatabase/mssql:2025 -ContainerPort 1433
     $port = $container.port
 
     $builder = New-Object -TypeName System.Data.SqlClient.SqlConnectionStringBuilder

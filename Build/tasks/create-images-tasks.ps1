@@ -14,12 +14,12 @@ Enter-Build {
 }
 
 task BuildMsSqlDatabase {
-    $dockerfile = Join-Path $context 'image-mssql-2017.dockerfile'
+    $dockerfile = Join-Path $context 'image-mssql.dockerfile'
     exec {
         docker build `
             --pull `
             -f $dockerfile `
-            -t sqldatabase/mssql:2017 `
+            -t sqldatabase/mssql:2025 `
             $context
     }
 }
