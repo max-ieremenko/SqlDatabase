@@ -36,12 +36,12 @@ task BuildPgSqlDatabase {
 }
 
 task BuildMySqlDatabase {
-    $dockerfile = Join-Path $context 'image-mysql-8025.dockerfile'
+    $dockerfile = Join-Path $context 'image-mysql.dockerfile'
     exec {
         docker build `
             --pull `
             -f $dockerfile `
-            -t sqldatabase/mysql:8.0.25 `
+            -t sqldatabase/mysql:9.4 `
             $context
     }
 }

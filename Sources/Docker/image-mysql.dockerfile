@@ -1,4 +1,4 @@
-FROM mysql:8.0.25
+FROM mysql:9.4
 
 ENV MYSQL_ROOT_PASSWORD=qwerty
 
