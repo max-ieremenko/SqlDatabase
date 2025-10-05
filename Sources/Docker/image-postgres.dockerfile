@@ -1,4 +1,4 @@
-FROM postgres:13.3-alpine
+FROM postgres:18.0-alpine
 
 ENV POSTGRES_PASSWORD=qwerty
 

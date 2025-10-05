@@ -5,7 +5,7 @@ function Start-Pgsql {
     $npgsqldll = Join-Path $PSScriptRoot 'Npgsql.dll'
     Add-Type -Path $npgsqldll
 
-    $container = Start-Container -Image sqldatabase/postgres:13.3 -ContainerPort 5432
+    $container = Start-Container -Image sqldatabase/postgres:18.0 -ContainerPort 5432
 
     $builder = New-Object -TypeName Npgsql.NpgsqlConnectionStringBuilder
     $builder['Database'] = 'sqldatabasetest'

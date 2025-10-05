@@ -25,12 +25,12 @@ task BuildMsSqlDatabase {
 }
 
 task BuildPgSqlDatabase {
-    $dockerfile = Join-Path $context 'image-postgres-133.dockerfile'
+    $dockerfile = Join-Path $context 'image-postgres.dockerfile'
     exec {
         docker build `
             --pull `
             -f $dockerfile `
-            -t sqldatabase/postgres:13.3 `
+            -t sqldatabase/postgres:18.0 `
             $context
     }
 }
