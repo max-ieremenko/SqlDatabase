@@ -3,7 +3,7 @@ Microsoft.Win32.Registry [4.7.0](https://www.nuget.org/packages/Microsoft.Win32.
 
 Used by: SqlDatabase
 
-Target frameworks: net472, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 

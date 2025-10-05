@@ -3,7 +3,7 @@ Microsoft.Testing.Extensions.TrxReport.Abstractions [1.7.3](https://www.nuget.or
 
 Used by: SqlDatabase internal
 
-Target frameworks: net472, net8.0, net9.0
+Target frameworks: net10.0, net472, net8.0, net9.0
 
 License: [MIT](../../../../licenses/mit) 
 
