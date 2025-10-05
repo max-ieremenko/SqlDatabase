@@ -85,7 +85,7 @@ internal static class Program
 
     private static string LoadHelpContent(string fileName)
     {
-        var scope = typeof(ICommandLine);
+        var scope = typeof(IEnvironmentBuilder);
 
         // .net core resource name is case-sensitive
         var fullName = scope.Namespace + "." + fileName;
