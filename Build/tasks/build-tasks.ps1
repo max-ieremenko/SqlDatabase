@@ -19,7 +19,6 @@ task Initialize {
     $artifacts = Join-Path $bin 'artifacts'
 
     $script:settings = @{
-        nugetexe            = Join-Path $root 'Build\nuget.exe'
         sources             = $sources
         bin                 = $bin
         artifacts           = $artifacts
@@ -62,8 +61,6 @@ task PackGlobalTool {
             -c Release `
             -p:PackAsTool=true `
             -p:GlobalTool=true `
-            -p:PackageVersion=$($settings.version) `
-            -p:RepositoryCommit=$($settings.repositoryCommitId) `
             -o $($settings.artifacts) `
             $projectFile
     }
@@ -95,14 +92,13 @@ task PackNuget472 PackPoweShellModule, {
     }
 
     $nuspec = Join-Path $settings.sources 'SqlDatabase.Package\nuget\package.nuspec'
-    exec { 
-        & $($settings.nugetexe) pack `
-            -NoPackageAnalysis `
-            -verbosity detailed `
-            -OutputDirectory $($settings.artifacts) `
-            -Version $($settings.version) `
-            -p RepositoryCommit=$($settings.repositoryCommitId) `
-            -p bin=$bin `
+    exec {
+        dotnet pack `
+            --no-build `
+            --version=$($settings.version) `
+            -p:RepositoryCommit=$($settings.repositoryCommitId) `
+            -p:bin=$bin `
+            -o $($settings.artifacts) `
             $nuspec
     }
 }
