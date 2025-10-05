@@ -1,8 +1,4 @@
 ﻿#if NET472
-using System;
-using System.Data;
-using System.IO;
-
 namespace SqlDatabase.Adapter.AssemblyScripts.Net472;
 
 public partial class Net472SubDomainTest

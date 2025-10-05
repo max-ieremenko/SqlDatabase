@@ -3,7 +3,7 @@ System.Collections.Immutable [8.0.0](https://www.nuget.org/packages/System.Colle
 
 Used by: SqlDatabase
 
-Target frameworks: netstandard2.0
+Target frameworks: net10.0, net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -16,11 +16,6 @@ Description
 This package provides collections that are thread safe and guaranteed to never change their contents, also known as immutable collections. Like strings, any methods that perform modifications will not change the existing instance but instead return a new instance. For efficiency reasons, the implementation uses a sharing mechanism to ensure that newly created instances share as much data as possible with the previous instance while ensuring that operations have a predictable time complexity.
 
 The System.Collections.Immutable library is built-in as part of the shared framework in .NET Runtime. The package can be installed when you need to use it in other target frameworks.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

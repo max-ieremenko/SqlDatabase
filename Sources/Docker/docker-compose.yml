@@ -1,19 +1,18 @@
-version: "3"
 services:
   mssql:
-    image: sqldatabase/mssql:2017
+    image: sqldatabase/mssql:2025
     restart: always
     ports:
       - 1433:1433
 
   pgsql:
-    image: sqldatabase/postgres:13.3
+    image: sqldatabase/postgres:18.0
     restart: always
     ports:
       - 5432:5432
 
   mysql:
-    image: sqldatabase/mysql:8.0.25
+    image: sqldatabase/mysql:9.4
     restart: always
     ports:
       - 3306:3306

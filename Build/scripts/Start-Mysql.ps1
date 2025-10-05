@@ -1,10 +1,11 @@
 function Start-Mysql {
     param ()
     
-    $sqlConnectordll = Join-Path $env:USERPROFILE '\.nuget\packages\mysqlconnector\1.3.10\lib\netstandard2.0\MySqlConnector.dll'
+    # https://www.nuget.org/packages/MySqlConnector/1.3.10 lib/netstandard2.0/MySqlConnector.dll
+    $sqlConnectordll = Join-Path $PSScriptRoot 'MySqlConnector.dll'
     Add-Type -Path $sqlConnectordll
 
-    $container = Start-Container -Image sqldatabase/mysql:8.0.25 -ContainerPort 3306
+    $container = Start-Container -Image sqldatabase/mysql:9.4 -ContainerPort 3306
 
     $builder = New-Object -TypeName MySqlConnector.MySqlConnectionStringBuilder
     $builder['Database'] = 'sqldatabasetest'

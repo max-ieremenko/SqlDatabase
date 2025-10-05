@@ -3,7 +3,7 @@ System.Diagnostics.DiagnosticSource [8.0.0](https://www.nuget.org/packages/Syste
 
 Used by: SqlDatabase
 
-Target frameworks: netstandard2.0
+Target frameworks: net10.0, net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -18,11 +18,6 @@ Provides Classes that allow you to decouple code logging rich (unserializable) d
 Commonly Used Types:
 System.Diagnostics.DiagnosticListener
 System.Diagnostics.DiagnosticSource
-
-Remarks
------------
-no remarks
-
 
 Dependencies 2
 -----------

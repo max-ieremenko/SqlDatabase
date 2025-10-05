@@ -19,7 +19,6 @@ task Initialize {
     $artifacts = Join-Path $bin 'artifacts'
 
     $script:settings = @{
-        nugetexe            = Join-Path $root 'Build\nuget.exe'
         sources             = $sources
         bin                 = $bin
         artifacts           = $artifacts
@@ -30,7 +29,7 @@ task Initialize {
         repositoryCommitId  = git rev-parse HEAD
     }
 
-    $script:frameworks = 'net472', 'net6.0', 'net8.0', 'net9.0'
+    $script:frameworks = 'net472', 'net8.0', 'net9.0', 'net10.0'
     $script:databases = 'MsSql', 'PgSql', 'MySql'
 
     Write-Output "PackageVersion: $($settings.version)"
@@ -45,7 +44,7 @@ task Clean {
 }
 
 task Build {
-    $solutionFile = Join-Path $settings.sources 'SqlDatabase.sln'
+    $solutionFile = Join-Path $settings.sources 'SqlDatabase.slnx'
     exec { dotnet restore $solutionFile }
     exec { dotnet build $solutionFile -t:Rebuild -p:Configuration=Release }
 }
@@ -62,8 +61,6 @@ task PackGlobalTool {
             -c Release `
             -p:PackAsTool=true `
             -p:GlobalTool=true `
-            -p:PackageVersion=$($settings.version) `
-            -p:RepositoryCommit=$($settings.repositoryCommitId) `
             -o $($settings.artifacts) `
             $projectFile
     }
@@ -95,14 +92,13 @@ task PackNuget472 PackPoweShellModule, {
     }
 
     $nuspec = Join-Path $settings.sources 'SqlDatabase.Package\nuget\package.nuspec'
-    exec { 
-        & $($settings.nugetexe) pack `
-            -NoPackageAnalysis `
-            -verbosity detailed `
-            -OutputDirectory $($settings.artifacts) `
-            -Version $($settings.version) `
-            -p RepositoryCommit=$($settings.repositoryCommitId) `
-            -p bin=$bin `
+    exec {
+        dotnet pack `
+            --no-build `
+            --version=$($settings.version) `
+            -p:RepositoryCommit=$($settings.repositoryCommitId) `
+            -p:bin=$bin `
+            -o $($settings.artifacts) `
             $nuspec
     }
 }
@@ -188,7 +184,8 @@ task PsCoreTest {
         , 'mcr.microsoft.com/powershell:7.2.2-ubuntu-20.04'
         , 'mcr.microsoft.com/powershell:7.3-ubuntu-20.04'
         , 'mcr.microsoft.com/powershell:7.4-ubuntu-20.04'
-        , 'mcr.microsoft.com/powershell:preview-7.5-ubuntu-20.04')
+        , 'mcr.microsoft.com/powershell:7.5-ubuntu-24.04'
+        , 'mcr.microsoft.com/powershell:preview-7.6-ubuntu-24.04')
 
     $builds = @()
     foreach ($image in $images) {
@@ -209,9 +206,9 @@ task PsCoreTest {
 
 task SdkToolTest {
     $images = $(
-        'sqldatabase/dotnet_pwsh:6.0-sdk'
-        , 'sqldatabase/dotnet_pwsh:8.0-sdk'
-        , 'sqldatabase/dotnet_pwsh:9.0-sdk')
+        'sqldatabase/dotnet_pwsh:8.0-sdk'
+        , 'sqldatabase/dotnet_pwsh:9.0-sdk'
+        , 'sqldatabase/dotnet_pwsh:10.0-sdk')
 
     $builds = @()
     foreach ($image in $images) {
@@ -230,9 +227,9 @@ task SdkToolTest {
 
 task NetRuntimeLinuxTest {
     $testCases = $(
-        @{ targetFramework = 'net6.0'; image = 'sqldatabase/dotnet_pwsh:6.0-runtime' }
-        , @{ targetFramework = 'net8.0'; image = 'sqldatabase/dotnet_pwsh:8.0-runtime' }
+        @{ targetFramework = 'net8.0'; image = 'sqldatabase/dotnet_pwsh:8.0-runtime' }
         , @{ targetFramework = 'net9.0'; image = 'sqldatabase/dotnet_pwsh:9.0-runtime' }
+        , @{ targetFramework = 'net10.0'; image = 'sqldatabase/dotnet_pwsh:10.0-runtime' }
     )
 
     $builds = @()

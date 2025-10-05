@@ -1,6 +1,6 @@
 #Requires -Version "7.0"
-#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.11.3" }
-#Requires -Modules @{ ModuleName="ThirdPartyLibraries"; ModuleVersion="3.6.0" }
+#Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.14.19" }
+#Requires -Modules @{ ModuleName="ThirdPartyLibraries"; ModuleVersion="3.8.0" }
 
 [CmdletBinding()]
 param (

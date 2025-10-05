@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net472",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.TestPlatform.AdapterUtilities",
+          "Version": "17.13.0"
+        },
+        {
+          "Name": "Microsoft.TestPlatform.ObjectModel",
+          "Version": "18.0.0"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.Telemetry",
+          "Version": "1.7.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
+          "Version": "1.7.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform",
+          "Version": "1.7.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/testfx"
+    },
+    {
+      "Subject": "project",
+      "Code": "MIT",
+      "HRef": "https://github.com/microsoft/testfx"
+    }
+  ]
+}

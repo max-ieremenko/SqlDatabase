@@ -19,11 +19,6 @@ Commonly Used Types:
 System.Threading.Channel
 System.Threading.Channel<T>
 
-Remarks
------------
-no remarks
-
-
 Dependencies 1
 -----------
 

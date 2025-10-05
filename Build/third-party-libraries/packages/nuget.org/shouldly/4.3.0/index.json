@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "BSD-3-Clause",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "netstandard2.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "DiffEngine",
+          "Version": "11.3.0"
+        },
+        {
+          "Name": "EmptyFiles",
+          "Version": "4.4.0"
+        },
+        {
+          "Name": "Microsoft.CSharp",
+          "Version": "4.7.0"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "BSD-3-Clause",
+      "HRef": "https://licenses.nuget.org/BSD-3-Clause"
+    },
+    {
+      "Subject": "repository",
+      "HRef": "https://github.com/shouldly/shouldly.git",
+      "Description": "License code NOASSERTION"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://docs.shouldly.org/"
+    }
+  ]
+}

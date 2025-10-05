@@ -3,7 +3,7 @@ System.Data.SqlClient [4.8.6](https://www.nuget.org/packages/System.Data.SqlClie
 
 Used by: SqlDatabase
 
-Target frameworks: net472, net6.0, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -26,11 +26,6 @@ System.Data.SqlClient.SqlParameterCollection
 System.Data.SqlClient.SqlClientFactory
  
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 6
 -----------

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/max-ieremenko/ThirdPartyLibraries/refs/heads/master/Docs/schema.package-index.json",
+  "Source": "https://api.nuget.org/v3/index.json",
+  "License": {
+    "Code": "MIT",
+    "Status": "AutomaticallyApproved"
+  },
+  "UsedBy": [
+    {
+      "Name": "SqlDatabase",
+      "InternalOnly": true,
+      "TargetFrameworks": [
+        "net10.0",
+        "net472",
+        "net8.0",
+        "net9.0"
+      ],
+      "Dependencies": [
+        {
+          "Name": "Microsoft.Testing.Extensions.VSTestBridge",
+          "Version": "1.7.3"
+        },
+        {
+          "Name": "Microsoft.Testing.Platform.MSBuild",
+          "Version": "1.7.3"
+        }
+      ]
+    }
+  ],
+  "Licenses": [
+    {
+      "Subject": "package",
+      "Code": "MIT",
+      "HRef": "https://licenses.nuget.org/MIT"
+    },
+    {
+      "Subject": "repository",
+      "Code": "MIT",
+      "HRef": "https://github.com/nunit/nunit3-vs-adapter"
+    },
+    {
+      "Subject": "project",
+      "HRef": "https://docs.nunit.org/articles/vs-test-adapter/Index.html"
+    }
+  ]
+}

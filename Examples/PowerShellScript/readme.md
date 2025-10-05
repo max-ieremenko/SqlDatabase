@@ -67,15 +67,15 @@ The version with which you run the module.
 
 Installed Powershell Desktop version.
 
-### .net SDK tool for .net 6.0+
+### .net SDK tool for .net 8.0+
 
 [![NuGet](https://img.shields.io/nuget/v/SqlDatabase.GlobalTool.svg?style=flat-square&label=nuget%20dotnet%20tool)](https://www.nuget.org/packages/SqlDatabase.GlobalTool/)
 
 Pre-installed Powershell Core is required, will be used by SqlDatabase as external component. Due to the Powershell Core design:
 
+* SqlDatabase .net 10.0 can host Powershell Core versions below 7.7
 * SqlDatabase .net 9.0 can host Powershell Core versions below 7.6
 * SqlDatabase .net 8.0 can host Powershell Core versions below 7.5
-* SqlDatabase .net 6.0 can host Powershell Core versions below 7.3
 
 see [PowerShell release history](https://learn.microsoft.com/en-us/powershell/scripting/install/powershell-support-lifecycle?view=powershell-7.2#release-history).
 

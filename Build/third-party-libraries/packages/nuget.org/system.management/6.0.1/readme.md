@@ -20,11 +20,6 @@ System.Management.ManagementClass
 System.Management.ManagementObject
 System.Management.SelectQuery
 
-Remarks
------------
-no remarks
-
-
 Dependencies 1
 -----------
 

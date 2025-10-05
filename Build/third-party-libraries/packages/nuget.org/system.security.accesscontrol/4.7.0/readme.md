@@ -3,7 +3,7 @@ System.Security.AccessControl [4.7.0](https://www.nuget.org/packages/System.Secu
 
 Used by: SqlDatabase
 
-Target frameworks: net472, net6.0, net8.0, net9.0, netstandard2.0
+Target frameworks: net10.0, net472, net8.0, net9.0, netstandard2.0
 
 License: [MIT](../../../../licenses/mit) 
 
@@ -22,11 +22,6 @@ System.Security.AccessControl.ObjectAuditRule
 System.Security.AccessControl.ObjectSecurity
  
 When using NuGet 3.x this package requires at least version 3.4.
-
-Remarks
------------
-no remarks
-
 
 Dependencies 1
 -----------
