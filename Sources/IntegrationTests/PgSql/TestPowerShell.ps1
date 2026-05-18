@@ -1,6 +1,9 @@
 $ErrorActionPreference = "Stop"
 
 $connectionString = $env:connectionString
+if (($PSVersionTable.PSEdition -eq 'Desktop') -or $IsWindows) {
+    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+}
 
 Import-Module "SqlDatabase"
 
