@@ -10,8 +10,9 @@ param (
     [string[]]
     $AssemblyName,
 
-    [string]
-    $SourceTarget = '.NETStandard,Version=v2.0',
+    # TODO: remove backward compatibility after switching GitHub workflow to .NET SDK 10.0.300+
+    [string[]]
+    $SourceTarget = ('.NETStandard,Version=v2.0', 'netstandard2.0'),
 
     [string]
     $Source
@@ -28,7 +29,8 @@ else {
 }
 
 $assets = Get-Content -Path $assetsFile -Raw | ConvertFrom-Json
-$targets = $assets.targets.$SourceTarget
+$tragetPropertyName = $assets.version -eq 3 ? $SourceTarget[0] : $SourceTarget[1]
+$targets = $assets.targets.$tragetPropertyName
 
 $nugetCache = Join-Path $HOME .nuget/packages
 $copyTo = Join-Path $PSScriptRoot $Destination
