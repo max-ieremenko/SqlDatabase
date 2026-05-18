@@ -9,8 +9,10 @@ task . `
     , BuildPgSqlDatabase `
     , BuildMySqlDatabase
 
+Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
+
 Enter-Build {
-    $context = Join-Path $PSScriptRoot '..\..\Sources\Docker'
+    $context = Join-Path $PSScriptRoot '../../Sources/Docker'
 }
 
 task BuildMsSqlDatabase {
@@ -46,68 +48,14 @@ task BuildMySqlDatabase {
     }
 }
 
-task BuildDotnetSdk80 {
-    $dockerfile = Join-Path $context 'image-dotnet-sdk-8.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:8.0-sdk `
-            .
-    }
-}
+task BuildDotnetSdk80 { Build-DotNetImage -Type 'sdk' -DotNetVersion '8.0' -PwshVersion '7.4.15' }
 
-task BuildDotnetRuntime80 {
-    $dockerfile = Join-Path $context 'image-dotnet-runtime-8.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:8.0-runtime `
-            .
-    }
-}
+task BuildDotnetRuntime80 { Build-DotNetImage -Type 'runtime' -DotNetVersion '8.0' -PwshVersion '7.4.15' }
 
-task BuildDotnetSdk90 {
-    $dockerfile = Join-Path $context 'image-dotnet-sdk-9.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:9.0-sdk `
-            .
-    }
-}
+task BuildDotnetSdk90 { Build-DotNetImage -Type 'sdk' -DotNetVersion '9.0' -PwshVersion '7.5.5' }
 
-task BuildDotnetRuntime90 {
-    $dockerfile = Join-Path $context 'image-dotnet-runtime-9.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:9.0-runtime `
-            .
-    }
-}
+task BuildDotnetRuntime90 { Build-DotNetImage -Type 'runtime' -DotNetVersion '9.0' -PwshVersion '7.5.5' }
 
-task BuildDotnetSdk100 {
-    $dockerfile = Join-Path $context 'image-dotnet-sdk-10.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:10.0-sdk `
-            .
-    }
-}
+task BuildDotnetSdk100 { Build-DotNetImage -Type 'sdk' -DotNetVersion '10.0' -PwshVersion '7.6.1' }
 
-task BuildDotnetRuntime100 {
-    $dockerfile = Join-Path $context 'image-dotnet-runtime-10.0.dockerfile'
-    exec {
-        docker build `
-            --pull `
-            -f $dockerfile `
-            -t sqldatabase/dotnet_pwsh:10.0-runtime `
-            .
-    }
-}
+task BuildDotnetRuntime100 { Build-DotNetImage -Type 'runtime' -DotNetVersion '10.0' -PwshVersion '7.6.1' }
