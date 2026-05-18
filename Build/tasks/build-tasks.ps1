@@ -34,6 +34,10 @@ task Initialize {
 
     Write-Output "PackageVersion: $($settings.version)"
     Write-Output "CommitId: $($settings.repositoryCommitId)"
+
+    if ($IsWindows) {
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+    }
 }
 
 task Clean {
@@ -164,16 +168,9 @@ task InitializeIntegrationTest {
 }
 
 task PsDesktopTest {
-    $builds = @()
     foreach ($database in $databases) {
-        $builds += @{
-            File     = 'build-tasks.it-ps-desktop.ps1'
-            settings = $settings
-            database = $database
-        }
+        Invoke-Build -File 'build-tasks.it-ps-desktop.ps1' -settings $settings -database MsSql
     }
-
-    Build-Parallel $builds -ShowParameter database -MaximumBuilds 1
 }
 
 task PsCoreTest {

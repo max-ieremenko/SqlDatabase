@@ -1,6 +1,9 @@
 $ErrorActionPreference = "Stop"
 
 $connectionString = $env:connectionString
+if (($PSVersionTable.PSEdition -eq 'Desktop') -or $IsWindows) {
+    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+}
 
 Import-Module "SqlDatabase"
 
@@ -11,13 +14,13 @@ Write-Host "----- create new database ---"
 Create-SqlDatabase `
     -database $connectionString `
     -from "New" `
-    -var JohnCity=London,MariaCity=Paris
+    -var JohnCity=London, MariaCity=Paris
 
 Write-Host "----- update database ---"
 Upgrade-SqlDatabase `
     -database $connectionString `
     -from "Upgrade" `
-    -var JohnSecondName=Smitt,MariaSecondName=X `
+    -var JohnSecondName=Smitt, MariaSecondName=X `
     -configuration "Upgrade/SqlDatabase.exe.config"
 
 Write-Host "----- update database (modularity) ---"
