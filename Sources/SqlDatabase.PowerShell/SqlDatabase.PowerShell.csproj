@@ -30,7 +30,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
       <CopyCmd>pwsh -NonInteractive -command $(ProjectDir)Copy-Dependency.ps1</CopyCmd>
-      <CopyDesktop>$(CopyCmd) -Source ../SqlDatabase -SourceTarget '.NETFramework,Version=v4.7.2' -Destination $(OutDir)ps-desktop -AssemblyName</CopyDesktop>
+      <CopyDesktop>$(CopyCmd) -Source ../SqlDatabase -SourceTarget '.NETFramework,Version=v4.7.2', 'net472' -Destination $(OutDir)ps-desktop -AssemblyName</CopyDesktop>
       <CopyCommon>$(CopyCmd) -Destination $(OutDir) -AssemblyName</CopyCommon>
     </PropertyGroup>
 
