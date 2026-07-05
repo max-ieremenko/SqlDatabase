@@ -4,7 +4,7 @@
 
 [CmdletBinding()]
 param (
-    [Parameter()]
+    [Parameter(Mandatory)]
     [ValidateSet('local', 'github')] 
     [string]
     $Mode,
@@ -16,6 +16,7 @@ param (
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 
 $file = Join-Path $PSScriptRoot 'tasks/build-tasks.ps1'
 $task = ($Mode -eq 'github') ? 'GithubBuild' : 'LocalBuild'

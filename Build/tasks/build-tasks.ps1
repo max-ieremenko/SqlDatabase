@@ -174,26 +174,17 @@ task PsDesktopTest {
 }
 
 task PsCoreTest {
-    # show-powershell-images.ps1
-    $images = $(
-        'mcr.microsoft.com/powershell:7.2.0-ubuntu-20.04'
-        , 'mcr.microsoft.com/powershell:7.2.1-ubuntu-20.04'
-        , 'mcr.microsoft.com/powershell:7.2.2-ubuntu-20.04'
-        , 'mcr.microsoft.com/powershell:7.3-ubuntu-20.04'
-        , 'mcr.microsoft.com/powershell:7.4-ubuntu-20.04'
-        , 'mcr.microsoft.com/powershell:7.5-ubuntu-24.04'
-        , 'mcr.microsoft.com/powershell:preview-7.6-ubuntu-24.04')
+    # show-powershell-releases.ps1
+    $versions = '7.2.0', '7.3.0', '7.4.0', '7.5.0', '7.6.0'
 
     $builds = @()
-    foreach ($image in $images) {
-        exec { docker pull -q $image }
-
+    foreach ($version in $versions) {
         foreach ($database in $databases) {
             $builds += @{
                 File     = 'build-tasks.it-ps-core.ps1'
                 settings = $settings
                 database = $database
-                image    = $image
+                image    = "sqldatabase/pwsh:$version"
             }
         }
     }
@@ -202,19 +193,16 @@ task PsCoreTest {
 }
 
 task SdkToolTest {
-    $images = $(
-        'sqldatabase/dotnet_pwsh:8.0-sdk'
-        , 'sqldatabase/dotnet_pwsh:9.0-sdk'
-        , 'sqldatabase/dotnet_pwsh:10.0-sdk')
+    $versions = '8.0', '9.0', '10.0'
 
     $builds = @()
-    foreach ($image in $images) {
+    foreach ($version in $versions) {
         foreach ($database in $databases) {
             $builds += @{
                 File     = 'build-tasks.it-tool-linux.ps1'
                 settings = $settings
                 database = $database
-                image    = $image
+                image    = "sqldatabase/dotnet_pwsh:$version-sdk"
             }
         }
     }
@@ -223,21 +211,17 @@ task SdkToolTest {
 }
 
 task NetRuntimeLinuxTest {
-    $testCases = $(
-        @{ targetFramework = 'net8.0'; image = 'sqldatabase/dotnet_pwsh:8.0-runtime' }
-        , @{ targetFramework = 'net9.0'; image = 'sqldatabase/dotnet_pwsh:9.0-runtime' }
-        , @{ targetFramework = 'net10.0'; image = 'sqldatabase/dotnet_pwsh:10.0-runtime' }
-    )
+    $versions = '8.0', '9.0', '10.0'
 
     $builds = @()
-    foreach ($case in $testCases) {
+    foreach ($version in $versions) {
         foreach ($database in $databases) {
             $builds += @{
                 File            = 'build-tasks.it-linux.ps1'
                 settings        = $settings
-                targetFramework = $case.targetFramework
+                targetFramework = "net$version"
                 database        = $database
-                image           = $case.image
+                image           = "sqldatabase/dotnet_pwsh:$version-runtime"
             }
         }
     }
