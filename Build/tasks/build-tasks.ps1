@@ -175,7 +175,7 @@ task PsDesktopTest {
 
 task PsCoreTest {
     # show-powershell-releases.ps1
-    $versions = '7.2.0', '7.3.0', '7.4.0', '7.5.0', '7.6.0'
+    $versions = '7.2.0', '7.3.0', '7.4.0', '7.4.17', '7.5.0', '7.5.8', '7.6.0', '7.6.3', '7.7.0-preview.2'
 
     $builds = @()
     foreach ($version in $versions) {
