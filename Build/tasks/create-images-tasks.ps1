@@ -1,13 +1,8 @@
-task . `
-    BuildDotnetSdk80 `
-    , BuildDotnetSdk90 `
-    , BuildDotnetSdk100 `
-    , BuildDotnetRuntime80 `
-    , BuildDotnetRuntime90 `
-    , BuildDotnetRuntime100 `
-    , BuildMsSqlDatabase `
-    , BuildPgSqlDatabase `
-    , BuildMySqlDatabase
+task . Dotnet, Database, Pwsh
+
+task Dotnet DotnetSdk80, DotnetRuntime80, DotnetSdk90, DotnetRuntime90, DotnetSdk100, DotnetRuntime100
+task Database MsSqlDatabase, PgSqlDatabase, MySqlDatabase
+task Pwsh Pwsh720, Pwsh730, Pwsh740, Pwsh750, Pwsh760
 
 Get-ChildItem -Path (Join-Path $PSScriptRoot '../scripts') -Filter *.ps1 | ForEach-Object { . $_.FullName }
 
@@ -15,7 +10,7 @@ Enter-Build {
     $context = Join-Path $PSScriptRoot '../../Sources/Docker'
 }
 
-task BuildMsSqlDatabase {
+task MsSqlDatabase {
     $dockerfile = Join-Path $context 'image-mssql.dockerfile'
     exec {
         docker build `
@@ -26,7 +21,7 @@ task BuildMsSqlDatabase {
     }
 }
 
-task BuildPgSqlDatabase {
+task PgSqlDatabase {
     $dockerfile = Join-Path $context 'image-postgres.dockerfile'
     exec {
         docker build `
@@ -37,7 +32,7 @@ task BuildPgSqlDatabase {
     }
 }
 
-task BuildMySqlDatabase {
+task MySqlDatabase {
     $dockerfile = Join-Path $context 'image-mysql.dockerfile'
     exec {
         docker build `
@@ -48,14 +43,17 @@ task BuildMySqlDatabase {
     }
 }
 
-task BuildDotnetSdk80 { Build-DotNetImage -Type 'sdk' -DotNetVersion '8.0' -PwshVersion '7.4.15' }
+task DotnetSdk80 { Build-DotNetImage -Type 'sdk' -DotNetVersion '8.0' -PwshVersion '7.4.15' }
+task DotnetRuntime80 { Build-DotNetImage -Type 'runtime' -DotNetVersion '8.0' -PwshVersion '7.4.15' }
 
-task BuildDotnetRuntime80 { Build-DotNetImage -Type 'runtime' -DotNetVersion '8.0' -PwshVersion '7.4.15' }
+task DotnetSdk90 { Build-DotNetImage -Type 'sdk' -DotNetVersion '9.0' -PwshVersion '7.5.5' }
+task DotnetRuntime90 { Build-DotNetImage -Type 'runtime' -DotNetVersion '9.0' -PwshVersion '7.5.5' }
 
-task BuildDotnetSdk90 { Build-DotNetImage -Type 'sdk' -DotNetVersion '9.0' -PwshVersion '7.5.5' }
+task DotnetSdk100 { Build-DotNetImage -Type 'sdk' -DotNetVersion '10.0' -PwshVersion '7.6.1' }
+task DotnetRuntime100 { Build-DotNetImage -Type 'runtime' -DotNetVersion '10.0' -PwshVersion '7.6.1' }
 
-task BuildDotnetRuntime90 { Build-DotNetImage -Type 'runtime' -DotNetVersion '9.0' -PwshVersion '7.5.5' }
-
-task BuildDotnetSdk100 { Build-DotNetImage -Type 'sdk' -DotNetVersion '10.0' -PwshVersion '7.6.1' }
-
-task BuildDotnetRuntime100 { Build-DotNetImage -Type 'runtime' -DotNetVersion '10.0' -PwshVersion '7.6.1' }
+task Pwsh720 { Build-PwshImage -PwshVersion '7.2.0' -OsVersion '20.04' }
+task Pwsh730 { Build-PwshImage -PwshVersion '7.3.0' -OsVersion '22.04' }
+task Pwsh740 { Build-PwshImage -PwshVersion '7.4.0' -OsVersion '22.04' }
+task Pwsh750 { Build-PwshImage -PwshVersion '7.5.0' -OsVersion '24.04' }
+task Pwsh760 { Build-PwshImage -PwshVersion '7.6.0' -OsVersion '24.04' }

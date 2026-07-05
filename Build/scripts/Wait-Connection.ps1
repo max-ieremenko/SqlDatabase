@@ -37,6 +37,6 @@ function Wait-Connection {
         Test-Connection
     }
     catch {
-        throw "$ConnectionName $ConnectionString"
+        throw "$ConnectionName $ConnectionString $_"
     }    
 }
